@@ -10,8 +10,6 @@ using System.Text;
 
 namespace TallyConnector
 {
-    public class TallyConnector
-    {
 
 		public class Tally
 		{
@@ -197,8 +195,9 @@ namespace TallyConnector
 						string EGXml = "<ENVELOPE><HEADER><VERSION>1</VERSION><TALLYREQUEST>Export</TALLYREQUEST><TYPE>Data</TYPE><ID>List of Cost Center</ID></HEADER><BODY><DESC><STATICVARIABLES><SVEXPORTFORMAT>$$SysName:XML</SVEXPORTFORMAT><SVCURRENTCOMPANY>" + COMPANY + "</SVCURRENTCOMPANY><SVFROMDATE TYPE=\"Date\">" + COMPANY_STARTDATE + "</SVFROMDATE></STATICVARIABLES><TDL><TDLMESSAGE><REPORT NAME=\"List of Cost Center\" ISMODIFY=\"No\" ISFIXED=\"No\" ISINITIALIZE=\"No\" ISOPTION=\"No\" ISINTERNAL=\"No\"><FORMS>List of Cost Center</FORMS></REPORT><FORM NAME=\"List of Cost Center\" ISMODIFY=\"No\" ISFIXED=\"No\" ISINITIALIZE=\"No\" ISOPTION=\"No\" ISINTERNAL=\"No\"><TOPPARTS>List of Cost Center</TOPPARTS><XMLTAG>\"List of Cost Centers\"</XMLTAG></FORM><PART NAME=\"List of Cost Center\" ISMODIFY=\"No\" ISFIXED=\"No\" ISINITIALIZE=\"No\" ISOPTION=\"No\" ISINTERNAL=\"No\"><TOPLINES>List of Cost Center</TOPLINES><REPEAT>List of Cost Center : Collection of Cost Center</REPEAT><SCROLLED>Vertical</SCROLLED></PART><LINE NAME=\"List of Cost Center\" ISMODIFY=\"No\" ISFIXED=\"No\" ISINITIALIZE=\"No\" ISOPTION=\"No\" ISINTERNAL=\"No\"><LEFTFIELDS>Name</LEFTFIELDS></LINE><FIELD NAME=\"Name\" ISMODIFY=\"No\" ISFIXED=\"No\" ISINITIALIZE=\"No\" ISOPTION=\"No\" ISINTERNAL=\"No\"><SET>$Name</SET><XMLTAG>\"EMPLOYEEGROUP\"</XMLTAG></FIELD><COLLECTION NAME=\"Collection of Cost Center\" ISMODIFY=\"No\" ISFIXED=\"No\" ISINITIALIZE=\"No\" ISOPTION=\"No\" ISINTERNAL=\"No\"><TYPE>COSTCENTER</TYPE><TYPE>COSTCENTER</TYPE><FILTERS>IsEmployeeGroup</FILTERS></COLLECTION><SYSTEM TYPE=\"Formulae\" NAME=\"IsEmployeeGroup\">$ISEMPLOYEEGROUP</SYSTEM></TDLMESSAGE></TDL></DESC></BODY></ENVELOPE>";
 						string EmeeXml = "<ENVELOPE><HEADER><VERSION>1</VERSION><TALLYREQUEST>Export</TALLYREQUEST><TYPE>Data</TYPE><ID>List of Cost Center</ID></HEADER><BODY><DESC><STATICVARIABLES><SVEXPORTFORMAT>$$SysName:XML</SVEXPORTFORMAT><SVCURRENTCOMPANY>" + COMPANY + "</SVCURRENTCOMPANY><SVFROMDATE TYPE=\"Date\">" + COMPANY_STARTDATE + "</SVFROMDATE></STATICVARIABLES><TDL><TDLMESSAGE><REPORT NAME=\"List of Cost Center\" ISMODIFY=\"No\" ISFIXED=\"No\" ISINITIALIZE=\"No\" ISOPTION=\"No\" ISINTERNAL=\"No\"><FORMS>List of Cost Center</FORMS></REPORT><FORM NAME=\"List of Cost Center\" ISMODIFY=\"No\" ISFIXED=\"No\" ISINITIALIZE=\"No\" ISOPTION=\"No\" ISINTERNAL=\"No\"><TOPPARTS>List of Cost Center</TOPPARTS><XMLTAG>\"List of Cost Centers\"</XMLTAG></FORM><PART NAME=\"List of Cost Center\" ISMODIFY=\"No\" ISFIXED=\"No\" ISINITIALIZE=\"No\" ISOPTION=\"No\" ISINTERNAL=\"No\"><TOPLINES>List of Cost Center</TOPLINES><REPEAT>List of Cost Center : Collection of Cost Center</REPEAT><SCROLLED>Vertical</SCROLLED></PART><LINE NAME=\"List of Cost Center\" ISMODIFY=\"No\" ISFIXED=\"No\" ISINITIALIZE=\"No\" ISOPTION=\"No\" ISINTERNAL=\"No\"><LEFTFIELDS>Name</LEFTFIELDS></LINE><FIELD NAME=\"Name\" ISMODIFY=\"No\" ISFIXED=\"No\" ISINITIALIZE=\"No\" ISOPTION=\"No\" ISINTERNAL=\"No\"><SET>$Name</SET><XMLTAG>\"EMPLOYEE\"</XMLTAG></FIELD><COLLECTION NAME=\"Collection of Cost Center\" ISMODIFY=\"No\" ISFIXED=\"No\" ISINITIALIZE=\"No\" ISOPTION=\"No\" ISINTERNAL=\"No\"><TYPE>COSTCENTER</TYPE><TYPE>COSTCENTER</TYPE><FILTERS>IsEmployeeGroup</FILTERS><FILTERS>payroll</FILTERS></COLLECTION><SYSTEM TYPE=\"Formulae\" NAME=\"IsEmployeeGroup\"> Not $ISEMPLOYEEGROUP</SYSTEM><SYSTEM TYPE=\"Formulae\" NAME=\"payroll\">$FORPAYROLL</SYSTEM></TDLMESSAGE></TDL></DESC></BODY></ENVELOPE>";
 						Dictionary<int, List<string>> Tags = new Dictionary<int, List<string>>();
-						List<string> XmlList = new List<string>
-					{
+					List<string> XmlList = new List<string>()
+
+						{
 						LXml,
 						GXml,
 						CCatXml,
@@ -474,8 +473,21 @@ namespace TallyConnector
 				}
 				return result;
 			}
+		public string ReplaceXMLText(string strXmlText)
+		{
+			string result = null;
+			if (strXmlText != null)
+			{
+				//result = strXmlText.Replace("&amp;", "&");
+				//result = result.Replace( "&apos;", "'");
+				//result = result.Replace("&quot;","\"\"");
+				//result = result.Replace("&gt;", ">");
+				result = strXmlText.Replace("&#x4;", "");
+			}
+			return result;
+		}
 
-			public Task<string> GetGXml(string _Action, string Company, string GName, string GParent, string Alias, string IsSubLedger, string IsCalculable, string AllocType)
+		public Task<string> GetGXml(string _Action, string Company, string GName, string GParent, string Alias, string IsSubLedger, string IsCalculable, string AllocType)
 			{
 				string str = "<ENVELOPE>\n<HEADER>\n<VERSION>1</VERSION>\n<TALLYREQUEST>Import</TALLYREQUEST>\n<TYPE>Data</TYPE>\n<ID>All Masters</ID>\n</HEADER>\n<BODY>\n<DESC>\n<STATICVARIABLES>\n<SVCURRENTCOMPANY>" + Company + "</SVCURRENTCOMPANY>\n</STATICVARIABLES>\n</DESC>\n<DATA>\n<TALLYMESSAGE>\n";
 				str += ((_Action != "Create") ? ("<GROUP NAME=\"" + GName + "\" ACTION=\"" + _Action + "\">\n") : "<GROUP>\n");
@@ -907,4 +919,4 @@ namespace TallyConnector
 
 
 	}
-}
+
