@@ -7,32 +7,33 @@ using System.Windows;
 using System.Xml.Serialization;
 using System.IO;
 using System.Text;
+using TallyConnector.Models;
 
 namespace TallyConnector
 {
 
-		public class Tally
-		{
-			static readonly HttpClient client = new HttpClient();
-			public static string BASE_URL = "http://localhost";
+	public class Tally
+	{
+		static readonly HttpClient client = new HttpClient();
+		public static string BASE_URL = "http://localhost";
 
 
-			//public  int Tally_Port;
+		//public  int Tally_Port;
 			//private string Tally_status;
 
 			//private string Company;
 
-			public static string STATUS
+		public static string STATUS
 			{
 				get;
 				set;
 
 			}
-			public static string COMPANY { get; set; }
-			public static string COMPANY_STARTDATE { get; set; }
+		public static string COMPANY { get; set; }
+		public static string COMPANY_STARTDATE { get; set; }
 
-			public static int PORT { get; set; }
-			public string FULL_URL
+		public static int PORT { get; set; }
+		public string FULL_URL
 			{
 				get
 				{
@@ -40,7 +41,7 @@ namespace TallyConnector
 					return BASE_URL + ":" + PORT;
 				}
 			}
-			// private List<string> Ledgers_List = new List<string>();
+		// private List<string> Ledgers_List = new List<string>();
 			// //private List<string> Ledgers_List = new List<string>();
 			// private List<string> Parents_List = new List<string>();
 			// private List<string> Groups_List = new List<string>();
@@ -52,80 +53,80 @@ namespace TallyConnector
 			// private List<string> VoucherTypes_List = new List<string>();
 			// private List<string> Units_List = new List<string>();
 			//private List<string> Currencies_List = new List<string>();
-			private IDictionary<string, Double> EInfo = new Dictionary<string, double>();
+		private IDictionary<string, Double> EInfo = new Dictionary<string, double>();
 
 
 
-			public static List<string> LEDGERS
+		public static List<string> LEDGERS
 			{
 				get; private set;
 			}
-			public static List<string> PARENTS
+		public static List<string> PARENTS
 			{
 				get; private set;
 			}
-			public static List<string> GROUPS
+		public static List<string> GROUPS
 			{
 				get; private set;
 			}
-			public static List<string> COSTCATEGORY
+		public static List<string> COSTCATEGORY
 			{
 				get; private set;
 			}
-			public static List<string> COSTCENTER
+		public static List<string> COSTCENTER
 			{
 				get; private set;
 			}
-			public static List<string> STOCKGROUPS
+		public static List<string> STOCKGROUPS
 			{
 				get; private set;
 			}
-			public static List<string> STOCKCATEGORY { get; private set; }
+		public static List<string> STOCKCATEGORY { get; private set; }
 
-			public static List<string> STOCKITEMS
+		public static List<string> STOCKITEMS
 			{
 				get; private set;
 			}
-			public static List<string> GODOWN
+		public static List<string> GODOWN
 			{
 				get; private set;
 			}
-			public static List<string> VOUCHERTYPES
+		public static List<string> VOUCHERTYPES
 			{
 				get; private set;
 			}
-			public static List<string> UNITS
+		public static List<string> UNITS
 			{
 				get; private set;
 			}
-			public static List<string> CURRENCIES
-			{
-				get; private set;
-			}
-
-			public static List<string> ATTENDANCETYPE
-			{
-				get; private set;
-			}
-			public static List<string> EMPLOYEEGROUP
-			{
-				get; private set;
-			}
-			public static List<string> EMPLOYEE
+		public static List<string> CURRENCIES
 			{
 				get; private set;
 			}
 
-			public static IDictionary<string, Double> EINFO
+		public static List<string> ATTENDANCETYPE
+			{
+				get; private set;
+			}
+		public static List<string> EMPLOYEEGROUP
+			{
+				get; private set;
+			}
+		public static List<string> EMPLOYEE
 			{
 				get; private set;
 			}
 
-			//private List<string> Groups_TagList = new List<string>() {"N" };
-			public static Dictionary<string, List<string>> COMPANYINFO { get; set; }
-			public static List<string> COMPANYLIST { get; set; }
+		public static IDictionary<string, Double> EINFO
+			{
+				get; private set;
+			}
 
-			public static async Task Check()
+		//private List<string> Groups_TagList = new List<string>() {"N" };
+		public static Dictionary<string, List<string>> COMPANYINFO { get; set; }
+		public static List<string> COMPANYLIST { get; set; }
+
+		public static async Task Check()
 			{
 				XmlDocument xDoc = new XmlDocument();
 				Tally Ctally = new Tally();
@@ -144,11 +145,11 @@ namespace TallyConnector
 				}
 			}
 
-			public static async Task GetCompanies()
+		public static async Task GetCompanies()
 			{
 				XmlDocument Xmldoc = new XmlDocument();
 				Tally tally = new Tally();
-				string Xml = "<ENVELOPE><HEADER><VERSION>1</VERSION><TALLYREQUEST>Export</TALLYREQUEST><TYPE>Data</TYPE><ID>List of Companies</ID></HEADER><BODY><DESC><TDL><TDLMESSAGE><REPORT NAME=\"List of Companies\" ISMODIFY=\"No\" ISFIXED=\"No\" ISINITIALIZE=\"No\" ISOPTION=\"No\" ISINTERNAL=\"No\"> <FORMS>List of Companies</FORMS>  </REPORT><FORM NAME=\"List of Companies\" ISMODIFY=\"No\" ISFIXED=\"No\" ISINITIALIZE=\"No\" ISOPTION=\"No\" ISINTERNAL=\"No\"> <TOPPARTS>List of Companies</TOPPARTS>  <XMLTAG>\"List of Companies\"</XMLTAG>  </FORM><PART NAME=\"List of Companies\" ISMODIFY=\"No\" ISFIXED=\"No\" ISINITIALIZE=\"No\" ISOPTION=\"No\" ISINTERNAL=\"No\"> <TOPLINES>List of Companies</TOPLINES>  <REPEAT>List of Companies : Collection of Companies</REPEAT>  <SCROLLED>Vertical</SCROLLED>  </PART><LINE NAME=\"List of Companies\" ISMODIFY=\"No\" ISFIXED=\"No\" ISINITIALIZE=\"No\" ISOPTION=\"No\" ISINTERNAL=\"No\"> <LEFTFIELDS>Name</LEFTFIELDS> <RIGHTFIELDS>StartDate</RIGHTFIELDS>  </LINE><FIELD NAME=\"Name\" ISMODIFY=\"No\" ISFIXED=\"No\" ISINITIALIZE=\"No\" ISOPTION=\"No\" ISINTERNAL=\"No\"> <SET>$Name</SET>  <XMLTAG>\"NAME\"</XMLTAG>  </FIELD><FIELD NAME=\"StartDate\" ISMODIFY=\"No\" ISFIXED=\"No\" ISINITIALIZE=\"No\" ISOPTION=\"No\" ISINTERNAL=\"No\"> <SET>$StartingFrom</SET>  <XMLTAG>\"StartDate\"</XMLTAG>  </FIELD><COLLECTION NAME=\"Collection of Companies\" ISMODIFY=\"No\" ISFIXED=\"No\" ISINITIALIZE=\"No\" ISOPTION=\"No\" ISINTERNAL=\"No\"> <TYPE>Company</TYPE>  </COLLECTION> </TDLMESSAGE> </TDL></DESC></BODY></ENVELOPE>";
+				string Xml = "<ENVELOPE><HEADER><VERSION>1</VERSION><TALLYREQUEST>Export</TALLYREQUEST><TYPE>Data</TYPE><ID>List of Companies</ID></HEADER><BODY><DESC><STATICVARIABLES><SVEXPORTFORMAT>$$SysName:XML</SVEXPORTFORMAT></STATICVARIABLES><TDL><TDLMESSAGE><REPORT NAME=\"List of Companies\" ISMODIFY=\"No\" ISFIXED=\"No\" ISINITIALIZE=\"No\" ISOPTION=\"No\" ISINTERNAL=\"No\"> <FORMS>List of Companies</FORMS>  </REPORT><FORM NAME=\"List of Companies\" ISMODIFY=\"No\" ISFIXED=\"No\" ISINITIALIZE=\"No\" ISOPTION=\"No\" ISINTERNAL=\"No\"> <TOPPARTS>List of Companies</TOPPARTS>  <XMLTAG>\"List of Companies\"</XMLTAG>  </FORM><PART NAME=\"List of Companies\" ISMODIFY=\"No\" ISFIXED=\"No\" ISINITIALIZE=\"No\" ISOPTION=\"No\" ISINTERNAL=\"No\"> <TOPLINES>List of Companies</TOPLINES>  <REPEAT>List of Companies : Collection of Companies</REPEAT>  <SCROLLED>Vertical</SCROLLED>  </PART><LINE NAME=\"List of Companies\" ISMODIFY=\"No\" ISFIXED=\"No\" ISINITIALIZE=\"No\" ISOPTION=\"No\" ISINTERNAL=\"No\"> <LEFTFIELDS>Name</LEFTFIELDS> <RIGHTFIELDS>StartDate</RIGHTFIELDS>  </LINE><FIELD NAME=\"Name\" ISMODIFY=\"No\" ISFIXED=\"No\" ISINITIALIZE=\"No\" ISOPTION=\"No\" ISINTERNAL=\"No\"> <SET>$Name</SET>  <XMLTAG>\"NAME\"</XMLTAG>  </FIELD><FIELD NAME=\"StartDate\" ISMODIFY=\"No\" ISFIXED=\"No\" ISINITIALIZE=\"No\" ISOPTION=\"No\" ISINTERNAL=\"No\"> <SET>$StartingFrom</SET>  <XMLTAG>\"StartDate\"</XMLTAG>  </FIELD><COLLECTION NAME=\"Collection of Companies\" ISMODIFY=\"No\" ISFIXED=\"No\" ISINITIALIZE=\"No\" ISOPTION=\"No\" ISINTERNAL=\"No\"> <TYPE>Company</TYPE>  </COLLECTION> </TDLMESSAGE> </TDL></DESC></BODY></ENVELOPE>";
 				Xmldoc.LoadXml(await tally.SendRequest(Xml));
 				XmlNodeList list = Xmldoc.GetElementsByTagName("NAME");
 				XmlNodeList list2 = Xmldoc.GetElementsByTagName("STARTDATE");
@@ -170,9 +171,10 @@ namespace TallyConnector
 				{
 					COMPANYLIST = CList;
 				}
+
 			}
 
-			public static async Task GetTallyData()
+		public static async Task GetTallyData()
 			{
 				Tally tally = new Tally();
 				await Check();
@@ -302,7 +304,23 @@ namespace TallyConnector
 				}
 			}
 
-			private async Task<Dictionary<string, List<string>>> Fetchdata(List<string> Xml_L, Dictionary<int, List<string>> TagsDic)
+		public async Task<VouchersList> GetVoucherListByType(string VchTypeName,string FromDate = null,String ToDate = null)
+        {
+			string Xml = "<ENVELOPE><HEADER><VERSION>1</VERSION><TALLYREQUEST>Export</TALLYREQUEST><TYPE>Data</TYPE><ID>List of Vouchers</ID></HEADER><BODY><DESC>";
+			Xml += "<STATICVARIABLES><SVEXPORTFORMAT>$$SysName:XML</SVEXPORTFORMAT>";
+			Xml = Tally.COMPANY == null? Xml: Xml += "<SVCURRENTCOMPANY>" + Tally.COMPANY + "</SVCURRENTCOMPANY>";
+			Xml = FromDate == null ? Xml : Xml += "<SVFROMDATE TYPE=\"Date\">"+FromDate+"</SVFROMDATE>";
+			Xml = ToDate == null? Xml : Xml += "<SVTODATE TYPE=\"Date\">" + ToDate + "</SVTODATE>";
+			Xml +="</STATICVARIABLES><TDL><TDLMESSAGE><REPORT NAME=\"List of Vouchers\" ISMODIFY=\"No\" ISFIXED=\"No\" ISINITIALIZE=\"No\" ISOPTION=\"No\" ISINTERNAL=\"No\"><FORMS>List of Voucher</FORMS></REPORT><FORM NAME=\"List of Voucher\" ISMODIFY=\"No\" ISFIXED=\"No\" ISINITIALIZE=\"No\" ISOPTION=\"No\" ISINTERNAL=\"No\"><TOPPARTS>List of Vouchers</TOPPARTS><XMLTAG>\"List of Vouchers\"</XMLTAG></FORM><PART NAME=\"List of Vouchers\" ISMODIFY=\"No\" ISFIXED=\"No\" ISINITIALIZE=\"No\" ISOPTION=\"No\" ISINTERNAL=\"No\"><TOPLINES>List of Vouchers</TOPLINES><REPEAT>List of Vouchers : Collection of Vouchers</REPEAT><SCROLLED>Vertical</SCROLLED></PART><LINE NAME=\"List of Vouchers\" ISMODIFY=\"No\" ISFIXED=\"No\" ISINITIALIZE=\"No\" ISOPTION=\"No\" ISINTERNAL=\"No\"><LEFTFIELDS>Number</LEFTFIELDS><LEFTFIELDS>MasterID</LEFTFIELDS></LINE><FIELD NAME=\"Number\" ISMODIFY=\"No\" ISFIXED=\"No\" ISINITIALIZE=\"No\" ISOPTION=\"No\" ISINTERNAL=\"No\"><SET>$VoucherNumber</SET><XMLTAG>\"Number\"</XMLTAG></FIELD><FIELD NAME=\"MasterID\" ISMODIFY=\"No\" ISFIXED=\"No\" ISINITIALIZE=\"No\" ISOPTION=\"No\" ISINTERNAL=\"No\"><SET>$MASTERID</SET><XMLTAG>\"MasterID\"</XMLTAG></FIELD><COLLECTION NAME=\"Collection of Vouchers\" ISMODIFY=\"No\" ISFIXED=\"No\" ISINITIALIZE=\"No\" ISOPTION=\"No\" ISINTERNAL=\"No\"><TYPE>Voucher</TYPE><FILTERS>IsVchType</FILTERS></COLLECTION><SYSTEM TYPE=\"Formulae\" NAME=\"IsVchType\">$VoucherTypeName=\"" + VchTypeName + "\"</SYSTEM></TDLMESSAGE></TDL></DESC></BODY></ENVELOPE>";
+			string RespXML = await SendRequest(Xml);
+			XmlSerializer serlizer = new XmlSerializer(typeof(VouchersList));
+			StringReader XmlString = new StringReader(RespXML);
+			VouchersList VList = (VouchersList)serlizer.Deserialize(XmlString);
+			return VList;
+
+		}
+
+		private async Task<Dictionary<string, List<string>>> Fetchdata(List<string> Xml_L, Dictionary<int, List<string>> TagsDic)
 			{
 				XmlDocument xml = new XmlDocument();
 				Dictionary<string, List<string>> Dic = new Dictionary<string, List<string>>();
@@ -334,7 +352,7 @@ namespace TallyConnector
 				}
 			}
 
-			public async Task<string> SendRequest(string SXml)
+		public async Task<string> SendRequest(string SXml)
 			{
 				string Resxml = "";
 				await Check();
@@ -358,7 +376,7 @@ namespace TallyConnector
 				return Resxml;
 			}
 
-			public Task<string> GetLXml(string _Action, string Company, string Name, string Parent, string alias = null, string OpeningBalance = null, string Currency = null, string BillWise = null, string CreditPeriod = null, string Creditdayscheck = null, string CreditLimit = null, string EffectStock = null, string MailingName = null, List<string> Address = null, string Country = null, string State = null, string PinCode = null, string ContactPerson = null, string PhoneNo = null, string MobileNo = null, string FaxNo = null, string Mail = null, string CCMail = null, string Website = null, string ITNum = null, string GSTRegType = null, string ISOtherTerritory = null, string IsEcommerce = null, string DeemedExporter = null, string PartyType = null, string GSTIN = null, string IsTransporter = null, string TransporterID = null, string Description = null, string Notes = null)
+		public Task<string> GetLXml(string _Action, string Company, string Name, string Parent, string alias = null, string OpeningBalance = null, string Currency = null, string BillWise = null, string CreditPeriod = null, string Creditdayscheck = null, string CreditLimit = null, string EffectStock = null, string MailingName = null, List<string> Address = null, string Country = null, string State = null, string PinCode = null, string ContactPerson = null, string PhoneNo = null, string MobileNo = null, string FaxNo = null, string Mail = null, string CCMail = null, string Website = null, string ITNum = null, string GSTRegType = null, string ISOtherTerritory = null, string IsEcommerce = null, string DeemedExporter = null, string PartyType = null, string GSTIN = null, string IsTransporter = null, string TransporterID = null, string Description = null, string Notes = null)
 			{
 				string str = "<ENVELOPE>\n<HEADER>\n<VERSION>1</VERSION>\n<TALLYREQUEST>Import</TALLYREQUEST>\n<TYPE>Data</TYPE>\n<ID>All Masters</ID>\n</HEADER>\n<BODY>\n<DESC>\n<STATICVARIABLES>\n<SVCURRENTCOMPANY>" + Company + "</SVCURRENTCOMPANY>\n</STATICVARIABLES>\n</DESC>\n<DATA>\n<TALLYMESSAGE>\n";
 				str += ((_Action != "Create") ? ("<LEDGER NAME=\"" + Name + "\" ACTION=\"" + _Action + "\">\n") : "<LEDGER>\n");
@@ -405,7 +423,7 @@ namespace TallyConnector
 				return Task.FromResult(str);
 			}
 
-			public async Task<string> Send(string xml, string EType, string Name = null)
+		public async Task<string> Send(string xml, string EType, string Name = null)
 			{
 				XmlDocument LXml = new XmlDocument();
 				try
@@ -460,7 +478,7 @@ namespace TallyConnector
 				return STATUS;
 			}
 
-			public string ReplaceXML(string strXmlText)
+		public string ReplaceXML(string strXmlText)
 			{
 				string result = null;
 				if (strXmlText != null)
@@ -483,6 +501,7 @@ namespace TallyConnector
 				//result = result.Replace("&quot;","\"\"");
 				//result = result.Replace("&gt;", ">");
 				result = strXmlText.Replace("&#x4;", "");
+				result = result.Replace("&#4;", "");
 			}
 			return result;
 		}
@@ -499,7 +518,7 @@ namespace TallyConnector
 				return Task.FromResult(str);
 			}
 
-			public Task<string> GetVXml(string _Action, string Company, string VCHTYPE, string Date, string VoucherID = null, string EffectiveDate = null, string Narration = null, Dictionary<int, Dictionary<string, List<Dictionary<string, string>>>> Ledger = null)
+		public Task<string> GetVXml(string _Action, string Company, string VCHTYPE, string Date, string VoucherID = null, string EffectiveDate = null, string Narration = null, Dictionary<int, Dictionary<string, List<Dictionary<string, string>>>> Ledger = null)
 			{
 				string str = "<ENVELOPE>\n<HEADER>\n<VERSION>1</VERSION>\n<TALLYREQUEST>Import</TALLYREQUEST>\n<TYPE>Data</TYPE>\n<ID>Vouchers</ID>\n</HEADER>\n<BODY>\n<DESC>\n<STATICVARIABLES>\n<SVCURRENTCOMPANY>" + Company + "</SVCURRENTCOMPANY>\n</STATICVARIABLES>\n</DESC>\n<DATA>\n<TALLYMESSAGE>\n<VOUCHER Action=\"" + _Action + "\" VCHTYPE =\"" + VCHTYPE + "\">\n<DATE>" + Date + "</DATE>\n<NARRATION>" + Narration + "</NARRATION>\n<VOUCHERTYPENAME>" + VCHTYPE + "</VOUCHERTYPENAME>\n<EFFECTIVEDATE>" + EffectiveDate + "</EFFECTIVEDATE>\n";
 				str += ((VoucherID != null) ? ("<VOUCHERNUMBER>" + VoucherID + "</VOUCHERNUMBER>\n") : null);
@@ -530,7 +549,7 @@ namespace TallyConnector
 				return Task.FromResult(str);
 			}
 
-			public Task<string> GetVchXml(string _Action, string VCHTYPE, string Date, List<VLedgers> LedgersList, string VoucherID, string Narration = null, string EffectiveDate = null, string PartyName = null, string PartyMailingName = null, List<string> Address = null, string State = null, string Country = null, string GSTIN = null, string POS = null)
+		public Task<string> GetVchXml(string _Action, string VCHTYPE, string Date, List<VLedgers> LedgersList, string VoucherID, string Narration = null, string EffectiveDate = null, string PartyName = null, string PartyMailingName = null, List<string> Address = null, string State = null, string Country = null, string GSTIN = null, string POS = null)
 			{
 				Voucher voucher = new Voucher();
 				Header header2 = (voucher.Header = new Header
@@ -585,177 +604,177 @@ namespace TallyConnector
 				xmlSerializer.Serialize(textWriter, voucher);
 				return Task.FromResult(textWriter.ToString());
 			}
-		}
+	}
 
 
-		[XmlRoot(ElementName = "ALLLEDGERENTRIES.LIST")]
-		public class VLedgers
-		{
-			[XmlElement(ElementName = "LEDGERNAME")]
-			public string LedgerName
-			{
-				get;
-				set;
-			}
-
-			[XmlElement(ElementName = "ISDEEMEDPOSITIVE")]
-			public string IsdeemedPositive
+	[XmlRoot(ElementName = "ALLLEDGERENTRIES.LIST")]
+	public class VLedgers
+	{
+		[XmlElement(ElementName = "LEDGERNAME")]
+		public string LedgerName
 			{
 				get;
 				set;
 			}
 
-			[XmlElement(ElementName = "AMOUNT")]
-			public string Amount
+		[XmlElement(ElementName = "ISDEEMEDPOSITIVE")]
+		public string IsdeemedPositive
 			{
 				get;
 				set;
 			}
 
-			[XmlElement(ElementName = "BILLALLOCATIONS.LIST")]
-			public List<BillAllocations> BillAllocationsList
-			{
-				get;
-				set;
-			}
-		}
-		[XmlRoot(ElementName = "BILLALLOCATIONS.LIST")]
-		public class BillAllocations
-		{
-			[XmlElement(ElementName = "NAME")]
-			public string Name
+		[XmlElement(ElementName = "AMOUNT")]
+		public string Amount
 			{
 				get;
 				set;
 			}
 
-			[XmlElement(ElementName = "BILLTYPE")]
-			public string BillType
+		[XmlElement(ElementName = "BILLALLOCATIONS.LIST")]
+		public List<BillAllocations> BillAllocationsList
+			{
+				get;
+				set;
+			}
+	}
+	[XmlRoot(ElementName = "BILLALLOCATIONS.LIST")]
+	public class BillAllocations
+	{
+		[XmlElement(ElementName = "NAME")]
+		public string Name
 			{
 				get;
 				set;
 			}
 
-			[XmlElement(ElementName = "AMOUNT")]
-			public string Amount
-			{
-				get;
-				set;
-			}
-		}
-		[XmlRoot(ElementName = "ENVELOPE")]
-		public class Voucher
-		{
-			[XmlElement(ElementName = "HEADER")]
-			public Header Header
+		[XmlElement(ElementName = "BILLTYPE")]
+		public string BillType
 			{
 				get;
 				set;
 			}
 
-			[XmlElement(ElementName = "BODY")]
-			public Body Body
+		[XmlElement(ElementName = "AMOUNT")]
+		public string Amount
 			{
 				get;
 				set;
 			}
-		}
-		[XmlRoot(ElementName = "VOUCHER")]
-		public class VData
-		{
-			[XmlElement(ElementName = "DATE")]
-			public string Date
-			{
-				get;
-				set;
-			}
-
-			[XmlElement(ElementName = "VOUCHERNUMBER")]
-			public string VoucherNumber
+	}
+	[XmlRoot(ElementName = "ENVELOPE")]
+	public class Voucher
+	{
+		[XmlElement(ElementName = "HEADER")]
+		public Header Header
 			{
 				get;
 				set;
 			}
 
-			[XmlElement(ElementName = "NARRATION")]
-			public string Narration
+		[XmlElement(ElementName = "BODY")]
+		public Body Body
+			{
+				get;
+				set;
+			}
+	}
+	[XmlRoot(ElementName = "VOUCHER")]
+	public class VData
+	{
+		[XmlElement(ElementName = "DATE")]
+		public string Date
 			{
 				get;
 				set;
 			}
 
-			[XmlElement(ElementName = "VOUCHERTYPENAME")]
-			public string VoucherType
+		[XmlElement(ElementName = "VOUCHERNUMBER")]
+		public string VoucherNumber
 			{
 				get;
 				set;
 			}
 
-			[XmlElement(ElementName = "EFFECTIVEDATE")]
-			public string EffectiveDate
+		[XmlElement(ElementName = "NARRATION")]
+		public string Narration
 			{
 				get;
 				set;
 			}
 
-			[XmlElement(ElementName = "PARTYNAME")]
-			public string PartyName
+		[XmlElement(ElementName = "VOUCHERTYPENAME")]
+		public string VoucherType
 			{
 				get;
 				set;
 			}
 
-			[XmlElement(ElementName = "PARTYMAILINGNAME")]
-			public string PartyMailingName
+		[XmlElement(ElementName = "EFFECTIVEDATE")]
+		public string EffectiveDate
 			{
 				get;
 				set;
 			}
 
-			[XmlElement(ElementName = "ADDRESS")]
-			public List<string> Address
+		[XmlElement(ElementName = "PARTYNAME")]
+		public string PartyName
 			{
 				get;
 				set;
 			}
 
-			[XmlElement(ElementName = "STATENAME")]
-			public string State
+		[XmlElement(ElementName = "PARTYMAILINGNAME")]
+		public string PartyMailingName
 			{
 				get;
 				set;
 			}
 
-			[XmlElement(ElementName = "PARTYGSTIN")]
-			public string GSTIN
+		[XmlElement(ElementName = "ADDRESS")]
+		public List<string> Address
 			{
 				get;
 				set;
 			}
 
-			[XmlElement(ElementName = "PLACEOFSUPPLY")]
-			public string PlaceOfSupply
+		[XmlElement(ElementName = "STATENAME")]
+		public string State
 			{
 				get;
 				set;
 			}
 
-			[XmlElement(ElementName = "COUNTRYOFRESIDENCE")]
-			public string Country
+		[XmlElement(ElementName = "PARTYGSTIN")]
+		public string GSTIN
 			{
 				get;
 				set;
 			}
 
-			[XmlElement(ElementName = "ALLLEDGERENTRIES.LIST")]
-			public List<VLedgers> LedgersList
+		[XmlElement(ElementName = "PLACEOFSUPPLY")]
+		public string PlaceOfSupply
 			{
 				get;
 				set;
 			}
 
-			[XmlAttribute(AttributeName = "DATE")]
-			public string Dt
+		[XmlElement(ElementName = "COUNTRYOFRESIDENCE")]
+		public string Country
+			{
+				get;
+				set;
+			}
+
+		[XmlElement(ElementName = "ALLLEDGERENTRIES.LIST")]
+		public List<VLedgers> LedgersList
+			{
+				get;
+				set;
+			}
+
+		[XmlAttribute(AttributeName = "DATE")]
+		public string Dt
 			{
 				get
 				{
@@ -767,8 +786,8 @@ namespace TallyConnector
 				}
 			}
 
-			[XmlAttribute(AttributeName = "TAGNAME")]
-			public string TAGNAME
+		[XmlAttribute(AttributeName = "TAGNAME")]
+		public string TAGNAME
 			{
 				get
 				{
@@ -780,8 +799,8 @@ namespace TallyConnector
 				}
 			}
 
-			[XmlAttribute(AttributeName = "TAGVALUE")]
-			public string TAGVALUE
+		[XmlAttribute(AttributeName = "TAGVALUE")]
+		public string TAGVALUE
 			{
 				get
 				{
@@ -793,15 +812,15 @@ namespace TallyConnector
 				}
 			}
 
-			[XmlAttribute(AttributeName = "Action")]
-			public string Action
+		[XmlAttribute(AttributeName = "Action")]
+		public string Action
 			{
 				get;
 				set;
 			}
 
-			[XmlAttribute(AttributeName = "VCHTYPE")]
-			public string VCHTYPE
+		[XmlAttribute(AttributeName = "VCHTYPE")]
+		public string VCHTYPE
 			{
 				get
 				{
@@ -812,109 +831,109 @@ namespace TallyConnector
 					VoucherType = value;
 				}
 			}
-		}
-		[XmlRoot(ElementName = "STATICVARIABLES")]
-		public class StaticVariables
-		{
-			[XmlElement(ElementName = "SVCURRENTCOMPANY")]
-			public string SVCompany
+	}
+	[XmlRoot(ElementName = "STATICVARIABLES")]
+	public class StaticVariables
+	{
+		[XmlElement(ElementName = "SVCURRENTCOMPANY")]
+		public string SVCompany
 			{
 				get;
 				set;
 			}
 
-			[XmlElement(ElementName = "SVFROMDATE")]
-			public string SVFromDate
+		[XmlElement(ElementName = "SVFROMDATE")]
+		public string SVFromDate
 			{
 				get;
 				set;
 			}
 
-			[XmlElement(ElementName = "SVTODATE")]
-			public string SVToDate
+		[XmlElement(ElementName = "SVTODATE")]
+		public string SVToDate
 			{
 				get;
 				set;
 			}
-		}
-		[XmlRoot(ElementName = "HEADER")]
-		public class Header
-		{
-			[XmlElement(ElementName = "VERSION")]
-			public int Version
-			{
-				get;
-				set;
-			}
-
-			[XmlElement(ElementName = "TALLYREQUEST")]
-			public string Request
+	}
+	[XmlRoot(ElementName = "HEADER")]
+	public class Header
+	{
+		[XmlElement(ElementName = "VERSION")]
+		public int Version
 			{
 				get;
 				set;
 			}
 
-			[XmlElement(ElementName = "TYPE")]
-			public string Type
+		[XmlElement(ElementName = "TALLYREQUEST")]
+		public string Request
 			{
 				get;
 				set;
 			}
 
-			[XmlElement(ElementName = "ID")]
-			public string ID
-			{
-				get;
-				set;
-			}
-		}
-		[XmlRoot(ElementName = "DESC")]
-		public class Description
-		{
-			[XmlElement(ElementName = "STATICVARIABLES")]
-			public StaticVariables StaticVariables
-			{
-				get;
-				set;
-			}
-		}
-		[XmlRoot(ElementName = "DATA")]
-		public class Data
-		{
-			[XmlElement(ElementName = "TALLYMESSAGE")]
-			public Message Message
-			{
-				get;
-				set;
-			}
-		}
-		[XmlRoot(ElementName = "BODY")]
-		public class Body
-		{
-			[XmlElement(ElementName = "DESC")]
-			public Description Desc
+		[XmlElement(ElementName = "TYPE")]
+		public string Type
 			{
 				get;
 				set;
 			}
 
-			[XmlElement(ElementName = "DATA")]
-			public Data Data
+		[XmlElement(ElementName = "ID")]
+		public string ID
 			{
 				get;
 				set;
 			}
-		}
-		[XmlRoot(ElementName = "TALLYMESSAGE")]
-		public class Message
-		{
-			[XmlElement(ElementName = "VOUCHER")]
-			public VData Voucher
+	}
+	[XmlRoot(ElementName = "DESC")]
+	public class Description
+	{
+		[XmlElement(ElementName = "STATICVARIABLES")]
+		public StaticVariables StaticVariables
 			{
 				get;
 				set;
 			}
-		}
+	}
+	[XmlRoot(ElementName = "DATA")]
+	public class Data
+	{
+		[XmlElement(ElementName = "TALLYMESSAGE")]
+		public Message Message
+			{
+				get;
+				set;
+			}
+	}
+	[XmlRoot(ElementName = "BODY")]
+	public class Body
+	{
+		[XmlElement(ElementName = "DESC")]
+		public Description Desc
+			{
+				get;
+				set;
+			}
+
+		[XmlElement(ElementName = "DATA")]
+		public Data Data
+			{
+				get;
+				set;
+			}
+	}
+	[XmlRoot(ElementName = "TALLYMESSAGE")]
+	public class Message
+	{
+		[XmlElement(ElementName = "VOUCHER")]
+		public VData Voucher
+			{
+				get;
+				set;
+			}
+	}
 
 
 
