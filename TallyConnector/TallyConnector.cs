@@ -12,7 +12,7 @@ using TallyConnector.Models;
 namespace TallyConnector
 {
 
-	public class Tally
+	public class CTally
 	{
 		static readonly HttpClient client = new HttpClient();
 		public static string BASE_URL = "http://localhost";
@@ -129,7 +129,7 @@ namespace TallyConnector
 		public static async Task Check()
 			{
 				XmlDocument xDoc = new XmlDocument();
-				Tally Ctally = new Tally();
+				CTally Ctally = new CTally();
 				try
 				{
 					HttpResponseMessage response = await client.GetAsync(Ctally.FULL_URL);
@@ -148,7 +148,7 @@ namespace TallyConnector
 		public static async Task GetCompanies()
 			{
 				XmlDocument Xmldoc = new XmlDocument();
-				Tally tally = new Tally();
+				CTally tally = new CTally();
 				string Xml = "<ENVELOPE><HEADER><VERSION>1</VERSION><TALLYREQUEST>Export</TALLYREQUEST><TYPE>Data</TYPE><ID>List of Companies</ID></HEADER><BODY><DESC><STATICVARIABLES><SVEXPORTFORMAT>$$SysName:XML</SVEXPORTFORMAT></STATICVARIABLES><TDL><TDLMESSAGE><REPORT NAME=\"List of Companies\" ISMODIFY=\"No\" ISFIXED=\"No\" ISINITIALIZE=\"No\" ISOPTION=\"No\" ISINTERNAL=\"No\"> <FORMS>List of Companies</FORMS>  </REPORT><FORM NAME=\"List of Companies\" ISMODIFY=\"No\" ISFIXED=\"No\" ISINITIALIZE=\"No\" ISOPTION=\"No\" ISINTERNAL=\"No\"> <TOPPARTS>List of Companies</TOPPARTS>  <XMLTAG>\"List of Companies\"</XMLTAG>  </FORM><PART NAME=\"List of Companies\" ISMODIFY=\"No\" ISFIXED=\"No\" ISINITIALIZE=\"No\" ISOPTION=\"No\" ISINTERNAL=\"No\"> <TOPLINES>List of Companies</TOPLINES>  <REPEAT>List of Companies : Collection of Companies</REPEAT>  <SCROLLED>Vertical</SCROLLED>  </PART><LINE NAME=\"List of Companies\" ISMODIFY=\"No\" ISFIXED=\"No\" ISINITIALIZE=\"No\" ISOPTION=\"No\" ISINTERNAL=\"No\"> <LEFTFIELDS>Name</LEFTFIELDS> <RIGHTFIELDS>StartDate</RIGHTFIELDS>  </LINE><FIELD NAME=\"Name\" ISMODIFY=\"No\" ISFIXED=\"No\" ISINITIALIZE=\"No\" ISOPTION=\"No\" ISINTERNAL=\"No\"> <SET>$Name</SET>  <XMLTAG>\"NAME\"</XMLTAG>  </FIELD><FIELD NAME=\"StartDate\" ISMODIFY=\"No\" ISFIXED=\"No\" ISINITIALIZE=\"No\" ISOPTION=\"No\" ISINTERNAL=\"No\"> <SET>$StartingFrom</SET>  <XMLTAG>\"StartDate\"</XMLTAG>  </FIELD><COLLECTION NAME=\"Collection of Companies\" ISMODIFY=\"No\" ISFIXED=\"No\" ISINITIALIZE=\"No\" ISOPTION=\"No\" ISINTERNAL=\"No\"> <TYPE>Company</TYPE>  </COLLECTION> </TDLMESSAGE> </TDL></DESC></BODY></ENVELOPE>";
 				Xmldoc.LoadXml(await tally.SendRequest(Xml));
 				XmlNodeList list = Xmldoc.GetElementsByTagName("NAME");
@@ -176,7 +176,7 @@ namespace TallyConnector
 
 		public static async Task GetTallyData()
 			{
-				Tally tally = new Tally();
+				CTally tally = new CTally();
 				await Check();
 				if (STATUS == "Running")
 				{
@@ -308,7 +308,7 @@ namespace TallyConnector
         {
 			string Xml = "<ENVELOPE><HEADER><VERSION>1</VERSION><TALLYREQUEST>Export</TALLYREQUEST><TYPE>Data</TYPE><ID>List of Vouchers</ID></HEADER><BODY><DESC>";
 			Xml += "<STATICVARIABLES><SVEXPORTFORMAT>$$SysName:XML</SVEXPORTFORMAT>";
-			Xml = Tally.COMPANY == null? Xml: Xml += "<SVCURRENTCOMPANY>" + Tally.COMPANY + "</SVCURRENTCOMPANY>";
+			Xml = CTally.COMPANY == null? Xml: Xml += "<SVCURRENTCOMPANY>" + CTally.COMPANY + "</SVCURRENTCOMPANY>";
 			Xml = FromDate == null ? Xml : Xml += "<SVFROMDATE TYPE=\"Date\">"+FromDate+"</SVFROMDATE>";
 			Xml = ToDate == null? Xml : Xml += "<SVTODATE TYPE=\"Date\">" + ToDate + "</SVTODATE>";
 			Xml +="</STATICVARIABLES><TDL><TDLMESSAGE><REPORT NAME=\"List of Vouchers\" ISMODIFY=\"No\" ISFIXED=\"No\" ISINITIALIZE=\"No\" ISOPTION=\"No\" ISINTERNAL=\"No\"><FORMS>List of Voucher</FORMS></REPORT><FORM NAME=\"List of Voucher\" ISMODIFY=\"No\" ISFIXED=\"No\" ISINITIALIZE=\"No\" ISOPTION=\"No\" ISINTERNAL=\"No\"><TOPPARTS>List of Vouchers</TOPPARTS><XMLTAG>\"List of Vouchers\"</XMLTAG></FORM><PART NAME=\"List of Vouchers\" ISMODIFY=\"No\" ISFIXED=\"No\" ISINITIALIZE=\"No\" ISOPTION=\"No\" ISINTERNAL=\"No\"><TOPLINES>List of Vouchers</TOPLINES><REPEAT>List of Vouchers : Collection of Vouchers</REPEAT><SCROLLED>Vertical</SCROLLED></PART><LINE NAME=\"List of Vouchers\" ISMODIFY=\"No\" ISFIXED=\"No\" ISINITIALIZE=\"No\" ISOPTION=\"No\" ISINTERNAL=\"No\"><LEFTFIELDS>Number</LEFTFIELDS><LEFTFIELDS>MasterID</LEFTFIELDS></LINE><FIELD NAME=\"Number\" ISMODIFY=\"No\" ISFIXED=\"No\" ISINITIALIZE=\"No\" ISOPTION=\"No\" ISINTERNAL=\"No\"><SET>$VoucherNumber</SET><XMLTAG>\"Number\"</XMLTAG></FIELD><FIELD NAME=\"MasterID\" ISMODIFY=\"No\" ISFIXED=\"No\" ISINITIALIZE=\"No\" ISOPTION=\"No\" ISINTERNAL=\"No\"><SET>$MASTERID</SET><XMLTAG>\"MasterID\"</XMLTAG></FIELD><COLLECTION NAME=\"Collection of Vouchers\" ISMODIFY=\"No\" ISFIXED=\"No\" ISINITIALIZE=\"No\" ISOPTION=\"No\" ISINTERNAL=\"No\"><TYPE>Voucher</TYPE><FILTERS>IsVchType</FILTERS></COLLECTION><SYSTEM TYPE=\"Formulae\" NAME=\"IsVchType\">$VoucherTypeName=\"" + VchTypeName + "\"</SYSTEM></TDLMESSAGE></TDL></DESC></BODY></ENVELOPE>";

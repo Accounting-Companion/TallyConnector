@@ -18,12 +18,13 @@ namespace TallyConnector
             return Json;
         }
 
-        public string GetXML()
+        public string GetXML(bool indent=false)
         {
             TextWriter textWriter = new StringWriter();
             XmlWriterSettings settings = new XmlWriterSettings
             {
                 OmitXmlDeclaration = true,
+                Indent= indent,
                 
             };
             XmlSerializerNamespaces ns = new XmlSerializerNamespaces(
@@ -32,6 +33,14 @@ namespace TallyConnector
             var writer = XmlWriter.Create(textWriter, settings);
             xmlSerializer.Serialize(writer, this, ns);
             return textWriter.ToString(); ;
+        }
+
+        public object GetObj(string Xml)
+        {
+            XmlSerializer xmlSerializer = new XmlSerializer(this.GetType());
+            StringReader XmlStream = new StringReader(Xml);
+            var obj =  xmlSerializer.Deserialize(XmlStream);
+            return obj;
         }
     }
 }

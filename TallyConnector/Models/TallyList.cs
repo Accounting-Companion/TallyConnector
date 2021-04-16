@@ -10,6 +10,18 @@ namespace TallyConnector.Models
 
     }
 
+    [XmlRoot(ElementName = "LISTOFCOMPANIES")]
+    public class CompaniesList:TallyXmlJson
+    {
+
+        [XmlElement(ElementName = "NAME")]
+        public List<string> Name { get; set; }
+
+        [XmlElement(ElementName = "STARDATE")]
+        public List<string> StartDate { get; set; }
+
+        
+    }
     [XmlRoot(ElementName = "LISTOFVOUCHERS")]
     public class VouchersList
     {
