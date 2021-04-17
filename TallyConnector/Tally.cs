@@ -44,6 +44,10 @@ namespace TallyConnector
 
 		public Dictionary<string,string> CompaniesInfo { get; private set; }
 
+		private string Company { get; set; }
+		private string FromDate { get; set; }
+		private string ToDate { get; set; }
+
 		//Set URL and port during Intialisation
 		public Tally(string baseURL, int port)
 		{
@@ -59,12 +63,15 @@ namespace TallyConnector
 		}
 
 		//sets Tally URL with Port
-		public void Setup(string baseURL, int port)
+		public void Setup(string baseURL, int port,string company = null, string fromDate = null, string toDate = null)
         {
-			this.BaseURL = baseURL;
-			this.Port = port;
-			
-        }
+			BaseURL = baseURL;
+			Port = port;
+			Company = company;
+			FromDate = fromDate;
+			ToDate = toDate;
+
+		}
 
 
 		//Check whether Tally is running in given Port
@@ -218,29 +225,43 @@ namespace TallyConnector
 
 
 		//Gets Group From Tally by Name
-		public async Task<Group> GetGroup(String GroupName,string Company = null, string FromDate = null, string ToDate = null, string Format=null)
+		public async Task<Group> GetGroup(String GroupName,string company = null, string fromDate = null, string toDate = null, string format = "XML")
         {
-			Group group = (await GetObjFromTally<GroupEnvelope>(GroupName, "Group", Company, FromDate, ToDate, Format)).Body.Data.Message.Group;
+			//If parameter is null Get value from instance
+			company ??= Company; 
+			fromDate ??= FromDate;
+			toDate ??= ToDate;
+
+			Group group = (await GetObjFromTally<GroupEnvelope>(GroupName, "Group", company, fromDate, toDate, format)).Body.Data.Message.Group;
 
 			return group;
         }
 
 		//Gets Ledger from Tally by Name
-		public async Task<Ledger> GetLedger(String ledgerName, string Company = null, string FromDate = null, string ToDate = null, string Format = null)
+		public async Task<Ledger> GetLedger(String ledgerName, string company = null, string fromDate = null, string toDate = null, string format = "XML")
 		{
-			Ledger ledger = (await GetObjFromTally<LedgerEnvelope>(ledgerName, "Group", Company, FromDate, ToDate, Format)).Body.Data.Message.Ledger;
+			//If parameter is null Get value from instance
+			company ??= Company;
+			fromDate ??= FromDate;
+			toDate ??= ToDate;
+
+			Ledger ledger = (await GetObjFromTally<LedgerEnvelope>(ledgerName, "Ledger", company, fromDate, toDate, format)).Body.Data.Message.Ledger;
 
 			return ledger;
 		}
 
 		//Gets any Tally Object
 		public async Task<T> GetObjFromTally<T>(string ObjName, string ObjType,
-			string Company = null, string FromDate = null, string ToDate = null, string Format = "XML")
+			string company = null, string fromDate = null, string toDate = null, string format = "XML")
         {
+			//If parameter is null Get value from instance
+			company ??= Company;
+			fromDate ??= FromDate;
+			toDate ??= ToDate;
 			T Obj;
             try
             {
-				string ReqXml = GetObjXML(ObjType, ObjName,Company,FromDate,ToDate,Format);
+				string ReqXml = GetObjXML(ObjType, ObjName,company,fromDate,toDate,format);
 				string ResXml = await SendRequest(ReqXml);
 				Obj = GetObjfromXml<T>(ResXml);
 			}
@@ -251,18 +272,24 @@ namespace TallyConnector
 			return Obj;
 		}
 
-        private string GetObjXML(string objType, string ObjName, string Company = null,
-			string FromDate = null, string ToDate = null, string Format = "XML")
+		//Generates XML to get Objects from tally
+        private string GetObjXML(string objType, string ObjName, string company = null,
+			string fromDate = null, string toDate = null, string format = "XML")
         {
+			//If parameter is null Get value from instance
+			company ??= Company;
+			fromDate ??= FromDate;
+			toDate ??= ToDate;
+
 			ObjEnvelope Obj = new();
 			string Name = ReplaceXML(ObjName);
 			Obj.Header = new(objType, Name);
 			StaticVariables staticVariables = new()
             {
-				SVCompany= Company,
-				SVFromDate= FromDate,
-				SVToDate= ToDate,
-				SVExportFormat= Format
+				SVCompany= company,
+				SVFromDate= fromDate,
+				SVToDate= toDate,
+				SVExportFormat= format
 			};
 			Obj.Body.Desc.StaticVariables = staticVariables;
 

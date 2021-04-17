@@ -94,7 +94,7 @@ namespace TallyConnector.Models
     [XmlRoot(ElementName = "TALLYMESSAGE")]
     public class GroupMessage
     {
-        [XmlElement(ElementName = "LEDGER")]
+        [XmlElement(ElementName = "GROUP")]
         public Group Group { get; set; }
     }
 }

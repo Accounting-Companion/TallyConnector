@@ -28,6 +28,7 @@ namespace Tests
             Assert.IsNotNull(TTally.CompaniesInfo);
             
         }
+        
 
         [Test]
         public async Task TallyGetData()
@@ -36,11 +37,19 @@ namespace Tests
             await TTally.FetchAllTallyData();
             Assert.IsNotNull(TTally.Ledgers);
         }
+
         [Test]
         public async Task GetGroup()
         {
-            await TTally.GetObjFromTally<LedgerEnvelope>("Cash", "Ledger");
-            Assert.IsNotNull(TTally.Ledgers);
+            Group group = await TTally.GetGroup("Sundry Debtors");
+            Assert.NotNull(group);
+        }
+
+        [Test]
+        public async Task GetLedger()
+        {
+            Ledger ledger = await TTally.GetLedger("Cash");
+            Assert.NotNull(ledger);
         }
 
     }
