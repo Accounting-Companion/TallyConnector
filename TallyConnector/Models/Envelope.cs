@@ -16,8 +16,17 @@ namespace TallyConnector.Models
 		public Body Body { get; set; }
 	}
 
+	[XmlRoot(ElementName = "BODY")]
+	public class Body
+	{
+		[XmlElement(ElementName = "DESC")]
+		public Description Desc { get; set; }
 
-				
+		[XmlElement(ElementName = "DATA")]
+		public Data Data { get; set; }
+	}
+
+
 	[XmlRoot(ElementName = "HEADER")]
 	public class Header
 	{
@@ -45,13 +54,32 @@ namespace TallyConnector.Models
 		public string ID { get { return _Id; } set { _Id = value; } }
 	}
 
+
 	[XmlRoot(ElementName = "DESC")]
 	public class Description
 	{
 		[XmlElement(ElementName = "STATICVARIABLES")]
-		public StaticVariables StaticVariables { get; set; } = new StaticVariables();
+		public StaticVariables StaticVariables { get; set; } = new();
+
 	}
 
+	[XmlRoot(ElementName = "STATICVARIABLES")]
+	public class StaticVariables
+	{
+		private string _ExportFormat;
+
+		[XmlElement(ElementName = "SVEXPORTFORMAT")]
+		public string SVExportFormat { get { return _ExportFormat; } set { _ExportFormat = $"$$SysName:{value}"; } }
+
+		[XmlElement(ElementName = "SVCURRENTCOMPANY")]
+		public string SVCompany { get; set; }
+
+		[XmlElement(ElementName = "SVFROMDATE")]
+		public string SVFromDate { get; set; }
+
+		[XmlElement(ElementName = "SVTODATE")]
+		public string SVToDate { get; set; }
+	}
 
 
 

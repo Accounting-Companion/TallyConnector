@@ -215,37 +215,61 @@ namespace TallyConnector
 
 		}
 
-		//Gets Group By Name
-		public async Task<T> GetObjFromTally<T>(string ObjName,string ObjType)
+
+
+		//Gets Group From Tally by Name
+		public async Task<Group> GetGroup(String GroupName,string Company = null, string FromDate = null, string ToDate = null, string Format=null)
+        {
+			Group group = (await GetObjFromTally<GroupEnvelope>(GroupName, "Group", Company, FromDate, ToDate, Format)).Body.Data.Message.Group;
+
+			return group;
+        }
+
+		//Gets Ledger from Tally by Name
+		public async Task<Ledger> GetLedger(String ledgerName, string Company = null, string FromDate = null, string ToDate = null, string Format = null)
+		{
+			Ledger ledger = (await GetObjFromTally<LedgerEnvelope>(ledgerName, "Group", Company, FromDate, ToDate, Format)).Body.Data.Message.Ledger;
+
+			return ledger;
+		}
+
+		//Gets any Tally Object
+		public async Task<T> GetObjFromTally<T>(string ObjName, string ObjType,
+			string Company = null, string FromDate = null, string ToDate = null, string Format = "XML")
         {
 			T Obj;
-			string Name = ReplaceXML(ObjName);
             try
             {
-				string ReqXml = GetObjXML(Name, ObjType);
+				string ReqXml = GetObjXML(ObjType, ObjName,Company,FromDate,ToDate,Format);
 				string ResXml = await SendRequest(ReqXml);
+				Obj = GetObjfromXml<T>(ResXml);
 			}
             catch (Exception e)
             {
-
                 throw;
             }
-			
-
-			return group;
+			return Obj;
 		}
 
-        private string GetObjXML(string name, string objType)
+        private string GetObjXML(string objType, string ObjName, string Company = null,
+			string FromDate = null, string ToDate = null, string Format = "XML")
         {
-            throw new NotImplementedException();
-        }
+			ObjEnvelope Obj = new();
+			string Name = ReplaceXML(ObjName);
+			Obj.Header = new(objType, Name);
+			StaticVariables staticVariables = new()
+            {
+				SVCompany= Company,
+				SVFromDate= FromDate,
+				SVToDate= ToDate,
+				SVExportFormat= Format
+			};
+			Obj.Body.Desc.StaticVariables = staticVariables;
 
-
-
-
-
-
-
+			Obj.Body.Desc.FetchList = new();
+			string ObjXML = Obj.GetXML();
+			return ObjXML;
+		}
 
 
 
@@ -345,6 +369,7 @@ namespace TallyConnector
 					HttpResponseMessage Res = await client.PostAsync(FullURL, TXML);
 					Res.EnsureSuccessStatusCode();
 					Resxml = await Res.Content.ReadAsStringAsync();
+					Resxml = ReplaceXMLText(Resxml);
 					return Resxml;
 				}
 				catch (Exception e)
@@ -353,7 +378,7 @@ namespace TallyConnector
 					return ReqStatus;
 				}
 			}
-			return ReplaceXMLText(Resxml);
+			return Resxml;
 		}
 
 		//Helper method to escape text for xml

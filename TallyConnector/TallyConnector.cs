@@ -832,30 +832,7 @@ namespace TallyConnector
 				}
 			}
 	}
-	[XmlRoot(ElementName = "STATICVARIABLES")]
-	public class StaticVariables
-	{
-		[XmlElement(ElementName = "SVCURRENTCOMPANY")]
-		public string SVCompany
-			{
-				get;
-				set;
-			}
-
-		[XmlElement(ElementName = "SVFROMDATE")]
-		public string SVFromDate
-			{
-				get;
-				set;
-			}
-
-		[XmlElement(ElementName = "SVTODATE")]
-		public string SVToDate
-			{
-				get;
-				set;
-			}
-	}
+	
 	[XmlRoot(ElementName = "HEADER")]
 	public class Header
 	{

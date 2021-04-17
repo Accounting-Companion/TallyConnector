@@ -1,5 +1,6 @@
 using NUnit.Framework;
 using System.Threading.Tasks;
+using TallyConnector.Models;
 
 namespace Tests
 {
@@ -36,10 +37,9 @@ namespace Tests
             Assert.IsNotNull(TTally.Ledgers);
         }
         [Test]
-        public async Task VerifyData()
+        public async Task GetGroup()
         {
-
-            await TTally.GetStats();
+            await TTally.GetObjFromTally<LedgerEnvelope>("Cash", "Ledger");
             Assert.IsNotNull(TTally.Ledgers);
         }
 

@@ -62,4 +62,39 @@ namespace TallyConnector.Models
         public LanguageNameList LanguageNameList { get; set; }
 
     }
+
+    [XmlRoot(ElementName = "ENVELOPE")]
+    public class GroupEnvelope : TallyXmlJson
+    {
+
+        [XmlElement(ElementName = "HEADER")]
+        public Header Header { get; set; }
+
+        [XmlElement(ElementName = "BODY")]
+        public GBody Body { get; set; } = new();
+    }
+
+    [XmlRoot(ElementName = "BODY")]
+    public class GBody
+    {
+        [XmlElement(ElementName = "DESC")]
+        public Description Desc { get; set; } = new();
+
+        [XmlElement(ElementName = "DATA")]
+        public GData Data { get; set; } = new();
+    }
+
+    [XmlRoot(ElementName = "DATA")]
+    public class GData
+    {
+        [XmlElement(ElementName = "TALLYMESSAGE")]
+        public GroupMessage Message { get; set; } = new();
+    }
+
+    [XmlRoot(ElementName = "TALLYMESSAGE")]
+    public class GroupMessage
+    {
+        [XmlElement(ElementName = "LEDGER")]
+        public Group Group { get; set; }
+    }
 }
