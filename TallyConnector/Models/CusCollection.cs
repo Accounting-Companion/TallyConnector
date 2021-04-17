@@ -75,7 +75,16 @@ namespace TallyConnector.Models
                 Field field = new(Fld.Key, Fld.Value);
                 Field.Add(field);
             }
-            Collection = new(colName,colType, filters, SysFormulae);
+            Collection = new(colName,colType, filters);
+            if (filters != null && SysFormulae != null)
+            {
+                for (int i = 0; i < SysFormulae.Count; i++)
+                {
+                    System NSystem = new(filters[i], SysFormulae[i]);
+                    System.Add(NSystem);
+                }
+            }
+
         }
 
         public ColTDLMessage()
@@ -101,7 +110,8 @@ namespace TallyConnector.Models
         [XmlElement(ElementName = "COLLECTION")]
         public Collection Collection { get; set; }
 
-
+        [XmlElement(ElementName = "SYSTEM")]
+        public List<System> System { get; set; } = new();
 
     }
 
@@ -236,11 +246,16 @@ namespace TallyConnector.Models
     [XmlRoot(ElementName = "COLLECTION")]
     public class Collection : DCollection
     {
-        public Collection(string colName, string colType,List<string> filters = null, List<string> SysFormulae = null)
+        public Collection(string colName, string colType,
+            List<string> filters = null)
         {
             Name = colName;
             Type = colType;
-
+            if (filters!=null)
+            {
+                Filters = filters;
+            }
+            
         }
         public Collection()
         {
@@ -256,16 +271,20 @@ namespace TallyConnector.Models
         [XmlAttribute(AttributeName = "NAME")]
         public string Name { get; set; }
 
-        [XmlElement(ElementName = "SYSTEM")]
-        public List<System> SYSTEM { get; set; }
+        
     }
 
     [XmlRoot(ElementName = "SYSTEM")]
     public class System
     {
-
+        public System() { }
+        public System(string name,string text) 
+        { 
+            Name =name;
+            Text = text;
+        }
         [XmlAttribute(AttributeName = "TYPE")]
-        public string Type { get; set; }
+        public string Type { get { return "Formulae"; } set { } }
 
         [XmlAttribute(AttributeName = "NAME")]
         public string Name { get; set; }  //Name must match with Collection Filter

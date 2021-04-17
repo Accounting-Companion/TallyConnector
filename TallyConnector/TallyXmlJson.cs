@@ -35,12 +35,5 @@ namespace TallyConnector
             return textWriter.ToString(); ;
         }
 
-        public object GetObj(string Xml)
-        {
-            XmlSerializer xmlSerializer = new XmlSerializer(this.GetType());
-            StringReader XmlStream = new StringReader(Xml);
-            var obj =  xmlSerializer.Deserialize(XmlStream);
-            return obj;
-        }
     }
 }
