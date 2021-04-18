@@ -14,10 +14,8 @@ namespace TallyConnector.Models
         [XmlAttribute(AttributeName = "ID")]
         public int TallyId { get; set; }
 
-       
         [XmlAttribute(AttributeName = "NAME")]
         public string Name { get; set; }
-
 
         [XmlElement(ElementName = "CATEGORY")]
         public string Category { get; set; }
@@ -59,7 +57,7 @@ namespace TallyConnector.Models
     [XmlRoot(ElementName = "TALLYMESSAGE")]
     public class CCentMessage
     {
-        [XmlElement(ElementName = "COSTCENTER")]
+        [XmlElement(ElementName = "COSTCENTRE")]
         public CostCenter CostCenter { get; set; }
     }
 }

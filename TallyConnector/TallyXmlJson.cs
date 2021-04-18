@@ -1,10 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Text;
+﻿using System.IO;
 using System.Text.Json;
-using System.Text.Json.Serialization;
-using System.Threading.Tasks;
 using System.Xml;
 using System.Xml.Serialization;
 
@@ -14,22 +9,22 @@ namespace TallyConnector
     {
         public string GetJson()
         {
-            string Json = JsonSerializer.Serialize(this,this.GetType());
+            string Json = JsonSerializer.Serialize(this, this.GetType());
             return Json;
         }
 
-        public string GetXML(bool indent=false)
+        public string GetXML(bool indent = false)
         {
             TextWriter textWriter = new StringWriter();
-            XmlWriterSettings settings = new XmlWriterSettings
+            XmlWriterSettings settings = new()
             {
                 OmitXmlDeclaration = true,
-                Indent= indent,
-                
+                Indent = indent,
+
             };
-            XmlSerializerNamespaces ns = new XmlSerializerNamespaces(
+            XmlSerializerNamespaces ns = new(
                          new[] { XmlQualifiedName.Empty });
-            XmlSerializer xmlSerializer = new XmlSerializer(this.GetType());
+            XmlSerializer xmlSerializer = new(this.GetType());
             var writer = XmlWriter.Create(textWriter, settings);
             xmlSerializer.Serialize(writer, this, ns);
             return textWriter.ToString(); ;

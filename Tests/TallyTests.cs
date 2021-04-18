@@ -31,7 +31,7 @@ namespace Tests
         
 
         [Test]
-        public async Task TallyGetData()
+        public async Task CheckGetData()
         {
 
             await TTally.FetchAllTallyData();
@@ -39,18 +39,82 @@ namespace Tests
         }
 
         [Test]
-        public async Task GetGroup()
+        public async Task CheckGetGroup()
         {
             Group group = await TTally.GetGroup("Sundry Debtors");
             Assert.NotNull(group);
         }
 
         [Test]
-        public async Task GetLedger()
+        public async Task CheckGetLedger()
         {
             Ledger ledger = await TTally.GetLedger("Cash");
             Assert.NotNull(ledger);
         }
+
+        [Test]
+        public async Task CheckGetCostCategory()
+        {
+            CostCategory costCategory = await TTally.GetCostCategory("Primary Cost Category");
+            Assert.NotNull(costCategory);
+        }
+
+        [Test]
+        public async Task CheckGetCostCenter()
+        {
+            CostCenter costCenter = await TTally.GetCostCenter("Deepak");
+            Assert.NotNull(costCenter);
+        }
+
+        [Test]
+        public async Task CheckGetStockGroup()
+        {
+            StockGroup stockGroup = await TTally.GetStockGroup("Accessories");
+            Assert.NotNull(stockGroup);
+        }
+        
+        [Test]
+        public async Task CheckGetStockCategory()
+        {
+            StockCategory stockCategory = await TTally.GetStockCategory("Accessories");
+            Assert.NotNull(stockCategory);
+        }
+
+        [Test]
+        public async Task CheckGetStockItem()
+        {
+            StockItem stockItem = await TTally.GetStockItem("CDROM Disks 100s");
+            Assert.NotNull(stockItem);
+        }
+
+        [Test]
+        public async Task CheckGetGodown()
+        {
+            Godown godown = await TTally.GetGodown("Assembly Floor");
+            Assert.NotNull(godown);
+        }
+
+        [Test]
+        public async Task CheckGetVoucherType()
+        {
+            VoucherType voucherType = await TTally.GetVoucherType("Attendance");
+            Assert.NotNull(voucherType);
+        }
+
+        [Test]
+        public async Task CheckGetUnits()
+        {
+            Unit unit = await TTally.GetUnit("Box");
+            Assert.NotNull(unit);
+        }
+
+        [Test]
+        public async Task CheckGetCurrency()
+        {
+            Currencies Currency = await TTally.GetCurrency("$");
+            Assert.NotNull(Currency);
+        }
+
 
     }
 }

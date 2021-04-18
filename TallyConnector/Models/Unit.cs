@@ -7,56 +7,64 @@ using System.Xml.Serialization;
 
 namespace TallyConnector.Models
 {
-    [XmlRoot(ElementName = "STOCKITEM")]
-    public class StockItem:TallyXmlJson
+    [XmlRoot(ElementName = "UNIT")]
+    public class Unit:TallyXmlJson
     {
+
         [XmlAttribute(AttributeName = "ID")]
         public int TallyId { get; set; }
 
         [XmlAttribute(AttributeName = "NAME")]
         public string Name { get; set; }
 
-        [XmlElement(ElementName = "PARENT")]
-        public string Parent { get; set; }
-
-        [XmlElement(ElementName = "CATEGORY")]
-        public string Category { get; set; }
+        [XmlElement(ElementName = "ORIGINALNAME")]
+        public string OriginalName { get; set; }
 
         [XmlElement(ElementName = "BASEUNITS")]
         public string BaseUnit { get; set; }
+
+        [XmlElement(ElementName = "ADDITIONALUNITS")]
+        public string AdditionalUnits { get; set; }
+
+
+        [XmlElement(ElementName = "DECIMALPLACES")]
+        public int DecimalPlaces { get; set; }
+
+        [XmlElement(ElementName = "CANDELETE")]
+        public string CanDelete { get; set; }
     }
     [XmlRoot(ElementName = "ENVELOPE")]
-    public class StockItemEnvelope : TallyXmlJson
+    public class UnitEnvelope : TallyXmlJson
     {
 
         [XmlElement(ElementName = "HEADER")]
         public Header Header { get; set; }
 
         [XmlElement(ElementName = "BODY")]
-        public SIBody Body { get; set; } = new();
+        public UnitBody Body { get; set; } = new();
     }
 
     [XmlRoot(ElementName = "BODY")]
-    public class SIBody
+    public class UnitBody
     {
         [XmlElement(ElementName = "DESC")]
         public Description Desc { get; set; } = new();
 
         [XmlElement(ElementName = "DATA")]
-        public SIData Data { get; set; } = new();
+        public UnitData Data { get; set; } = new();
     }
 
     [XmlRoot(ElementName = "DATA")]
-    public class SIData
+    public class UnitData
     {
         [XmlElement(ElementName = "TALLYMESSAGE")]
-        public SIMessage Message { get; set; } = new();
+        public UnitMessage Message { get; set; } = new();
     }
 
     [XmlRoot(ElementName = "TALLYMESSAGE")]
-    public class SIMessage
+    public class UnitMessage
     {
-        [XmlElement(ElementName = "STOCKITEM")]
-        public StockItem StockItem { get; set; }
+        [XmlElement(ElementName = "UNIT")]
+        public Unit Unit { get; set; }
     }
 }
