@@ -36,7 +36,6 @@ namespace TallyConnector.Models
         private int _version = 1;
         private string _request;
         private string _type;
-        private string _Id;
         [XmlElement(ElementName = "VERSION")]
         public int Version { get { return _version; } set { _version = value; } }
 

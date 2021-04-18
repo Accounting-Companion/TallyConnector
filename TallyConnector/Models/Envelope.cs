@@ -79,6 +79,10 @@ namespace TallyConnector.Models
 
 		[XmlElement(ElementName = "SVTODATE")]
 		public string SVToDate { get; set; }
+
+		[XmlElement(ElementName = "SVViewName")]
+		public string ViewName { get; set; }
+		
 	}
 
 

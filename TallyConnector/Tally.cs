@@ -151,71 +151,71 @@ namespace TallyConnector
 
             //Gets Groups from Tally
             Dictionary<string, string> fields = new() { { "$NAME", "NAME" } };
-            string GrpXml = await GetReportXML("List Of Groups", fields, "Group", staticVariables);
+            string GrpXml = await GetCustomCollectionXML("List Of Groups", fields, "Group", staticVariables);
             Groups = GetObjfromXml<GroupsList>(GrpXml).GroupNames;
 
             //Gets Ledger from Tally
-            string LedXml = await GetReportXML("List Of Ledgers", fields, "Ledger", staticVariables);
+            string LedXml = await GetCustomCollectionXML("List Of Ledgers", fields, "Ledger", staticVariables);
             Ledgers = GetObjfromXml<LedgersList>(LedXml).LedgerNames;
 
             //Gets Cost Categories from Tally
-            string CostCategoryXml = await GetReportXML("List Of CostCategories", fields, "CostCategory", staticVariables);
+            string CostCategoryXml = await GetCustomCollectionXML("List Of CostCategories", fields, "CostCategory", staticVariables);
             CostCategories = GetObjfromXml<CostCategoriesList>(CostCategoryXml).CostCategories;
 
             //Gets Cost Centers from Tally
             List<string> Filters = new() { "IsEmployeeGroup", "Payroll" };
             List<string> SystemFilters = new() { "Not $ISEMPLOYEEGROUP", "Not $FORPAYROLL" };
-            string CostCenetrXml = await GetReportXML("List Of CostCenters", fields, "CostCenter",
+            string CostCenetrXml = await GetCustomCollectionXML("List Of CostCenters", fields, "CostCenter",
                 staticVariables, Filters, SystemFilters);
             CostCenters = GetObjfromXml<CostCentersList>(CostCenetrXml).CostCenters;
 
             //Gets Stock Groups from Tally
-            string StockGroupXml = await GetReportXML("List Of StockGroups", fields, "StockGroups", staticVariables);
+            string StockGroupXml = await GetCustomCollectionXML("List Of StockGroups", fields, "StockGroups", staticVariables);
             StockGroups = GetObjfromXml<StockGroupsList>(StockGroupXml).StockGroups;
 
             //Gets Stock Categories from Tally
-            string StockCategoryXml = await GetReportXML("List Of StockCategories", fields, "StockCategory", staticVariables);
+            string StockCategoryXml = await GetCustomCollectionXML("List Of StockCategories", fields, "StockCategory", staticVariables);
             StockCategories = GetObjfromXml<StockCategoriesList>(StockCategoryXml).StockCategories;
 
             //Gets Stock Items from Tally
-            string StockItemsXml = await GetReportXML("List Of StockItems", fields, "StockItems", staticVariables);
+            string StockItemsXml = await GetCustomCollectionXML("List Of StockItems", fields, "StockItems", staticVariables);
             StockItems = GetObjfromXml<StockItemsList>(StockItemsXml).StockItems;
 
             //Gets Godowns from Tally
-            string GodownsXml = await GetReportXML("List Of Godowns", fields, "Godown", staticVariables);
+            string GodownsXml = await GetCustomCollectionXML("List Of Godowns", fields, "Godown", staticVariables);
             Godowns = GetObjfromXml<GodownsList>(GodownsXml).Godowns;
 
 
             //Gets Voucher Types from Tally
-            string VoucherTypesXml = await GetReportXML("List Of VoucherTypes", fields, "VoucherTypes", staticVariables);
+            string VoucherTypesXml = await GetCustomCollectionXML("List Of VoucherTypes", fields, "VoucherTypes", staticVariables);
             VoucherTypes = GetObjfromXml<VoucherTypesList>(VoucherTypesXml).VoucherTypes;
 
             //Gets Voucher Types from Tally
-            string UnitsXml = await GetReportXML("List Of Units", fields, "Units", staticVariables);
+            string UnitsXml = await GetCustomCollectionXML("List Of Units", fields, "Units", staticVariables);
             Units = GetObjfromXml<UnitsList>(UnitsXml).Units;
 
             //Gets Currencies from Tally
             Dictionary<string, string> Currenciesfields = new() { { "NAME", "NAME" } };
-            string CurrenciesXml = await GetReportXML("List Of Currencies", Currenciesfields, "Currencies", staticVariables);
+            string CurrenciesXml = await GetCustomCollectionXML("List Of Currencies", Currenciesfields, "Currencies", staticVariables);
             Currencies = GetObjfromXml<CurrenciesList>(CurrenciesXml).Currencies;
 
 
 
             //Gets AttendanceType from Tally
-            string AttendanceTypesXml = await GetReportXML("List Of AttendanceTypes", fields, "AttendanceType", staticVariables);
+            string AttendanceTypesXml = await GetCustomCollectionXML("List Of AttendanceTypes", fields, "AttendanceType", staticVariables);
             AttendanceTypes = GetObjfromXml<AttendanceTypesList>(AttendanceTypesXml).AttendanceTypes;
 
             //Gets EmployeeGroups from Tally
             List<string> EmployeeGroupFilters = new() { "IsEmployeeGroup" };
             List<string> EmployeeGroupSystemFilters = new() { "$ISEMPLOYEEGROUP" };
-            string EmployeeGroupsXml = await GetReportXML("List Of EmployeeGroups", fields, "CostCenter", staticVariables,
+            string EmployeeGroupsXml = await GetCustomCollectionXML("List Of EmployeeGroups", fields, "CostCenter", staticVariables,
                 EmployeeGroupFilters, EmployeeGroupSystemFilters);
             EmployeeGroups = GetObjfromXml<EmployeeGroupList>(EmployeeGroupsXml).EmployeeGroups;
 
             //Gets Employeees from Tally
             List<string> EmployeeFilters = new() { "IsEmployeeGroup", "Payroll" };
             List<string> EmployeeSystemFilters = new() { "Not $ISEMPLOYEEGROUP", "$FORPAYROLL" };
-            string EmployeeesXml = await GetReportXML("List Of Employees", fields, "CostCenter", staticVariables,
+            string EmployeeesXml = await GetCustomCollectionXML("List Of Employees", fields, "CostCenter", staticVariables,
                 EmployeeFilters, EmployeeSystemFilters);
             Employees = GetObjfromXml<EmployeesList>(EmployeeesXml).Employees;
 
@@ -368,6 +368,24 @@ namespace TallyConnector
         }
 
 
+
+
+
+
+        //Gets voucher by MasterID  from Tally
+        public async Task<Models.Voucher> GetVoucherByMasterID(String VoucherMasterID, string company = null, string fromDate = null, string toDate = null, string format = "XML")
+        {
+            //If parameter is null Get value from instance
+            company ??= Company;
+            fromDate ??= FromDate;
+            toDate ??= ToDate;
+
+            Models.Voucher voucher = (await GetObjFromTally<VoucherEnvelope>($"ID: {VoucherMasterID}", "Voucher", company, fromDate, toDate, "Accounting Voucher View", format)).Body.Data.Message.Voucher;
+
+            return voucher;
+        }
+
+
         ////Gets Currency from Tally uisng Name
         //public async Task<VoucherType> GetCurrency(String CurrencyName, string company = null, string fromDate = null, string toDate = null, string format = "XML")
         //{
@@ -385,7 +403,7 @@ namespace TallyConnector
 
         //Gets any Tally Object
         public async Task<T> GetObjFromTally<T>(string ObjName, string ObjType,
-            string company = null, string fromDate = null, string toDate = null, string format = "XML")
+            string company = null, string fromDate = null, string toDate = null, string viewname =null,string format = "XML")
         {
             //If parameter is null Get value from instance
             company ??= Company;
@@ -394,7 +412,7 @@ namespace TallyConnector
             T Obj;
             try
             {
-                string ReqXml = GetObjXML(ObjType, ObjName, company, fromDate, toDate, format);
+                string ReqXml = GetObjXML(ObjType, ObjName, company, fromDate, toDate,viewname, format);
                 string ResXml = await SendRequest(ReqXml);
                 Obj = GetObjfromXml<T>(ResXml);
             }
@@ -407,7 +425,7 @@ namespace TallyConnector
 
         //Generates XML to get Objects from tally
         private string GetObjXML(string objType, string ObjName, string company = null,
-            string fromDate = null, string toDate = null, string format = "XML")
+            string fromDate = null, string toDate = null,string viewname=null, string format = "XML")
         {
             //If parameter is null Get value from instance
             company ??= Company;
@@ -422,7 +440,9 @@ namespace TallyConnector
                 SVCompany = company,
                 SVFromDate = fromDate,
                 SVToDate = toDate,
-                SVExportFormat = format
+                SVExportFormat = format,
+                ViewName = viewname
+
             };
             Obj.Body.Desc.StaticVariables = staticVariables;
 
@@ -442,7 +462,7 @@ namespace TallyConnector
 
 
         //Helper function to Geberate Report XML
-        public async Task<string> GetReportXML(string rName, Dictionary<string, string> Fields, string colType,
+        public async Task<string> GetCustomCollectionXML(string rName, Dictionary<string, string> Fields, string colType,
             StaticVariables Sv = null, List<string> Filters = null, List<string> SystemFilters = null)
         {
             //LedgersList LedgList = new();

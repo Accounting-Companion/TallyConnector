@@ -116,5 +116,14 @@ namespace Tests
         }
 
 
+
+
+        [Test]
+        public async Task CheckGetVoucher()
+        {
+            Voucher voucher = await TTally.GetVoucherByMasterID("5036");
+            Assert.NotNull(voucher);
+        }
+
     }
 }

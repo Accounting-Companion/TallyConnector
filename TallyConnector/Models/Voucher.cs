@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
-using System.Text.Json.Serialization;
 using System.Xml.Serialization;
 
 namespace TallyConnector.Models
@@ -9,7 +7,7 @@ namespace TallyConnector.Models
     [Serializable]
     public class Voucher
     {
-       
+
         [XmlAttribute(AttributeName = "ID")]
         public int TallyId { get; set; }
 
@@ -29,9 +27,10 @@ namespace TallyConnector.Models
 
         [XmlElement(ElementName = "EFFECTIVEDATE")]
         public string EffectiveDate { get; set; }
-        
+
+        [XmlElement(ElementName = "LEDGERENTRIES.LIST", Type = typeof(EVoucherLedger))]
         [XmlElement(ElementName = "ALLLEDGERENTRIES.LIST")]
-        public virtual List<IVoucherLedger> Ledgers { get; set; }
+        public List<IVoucherLedger> Ledgers { get; set; }
 
         [XmlAttribute(AttributeName = "DATE")]
         public string Dt
@@ -90,13 +89,13 @@ namespace TallyConnector.Models
 
     }
 
-    [XmlRoot(ElementName = "ALLLEDGERENTRIES.LIST")]
+    [XmlRoot(ElementName = "LEDGERENTRIES.LIST")]
     public class EVoucherLedger : IVoucherLedger
     {
 
     }
     [XmlInclude(typeof(EVoucherLedger))]
-    [XmlRoot(ElementName = "LEDGERENTRIES.LIST")]
+    [XmlRoot(ElementName = "ALLLEDGERENTRIES.LIST")]
     public class IVoucherLedger
     {
 
@@ -111,23 +110,91 @@ namespace TallyConnector.Models
         public double Amount { get; set; }
 
 
-
         [XmlElement(ElementName = "BILLALLOCATIONS.LIST")]
-        public virtual List<BillAllocations> BillAllocations { get; set; }
+        public List<BillAllocations> BillAllocations { get; set; }
+
+        [XmlElement(ElementName = "INVENTORYALLOCATIONS.LIST")]
+        public List<InventoryAllocations> InventoryAllocations { get; set; }
+
+
 
     }
 
+    [XmlRoot(ElementName = "BILLALLOCATIONS.LIST")]
     public class BillAllocations
     {
-
         [XmlElement(ElementName = "BILLTYPE")]
         public string BillType { get; set; }
 
         [XmlElement(ElementName = "NAME")]
         public string Name { get; set; }
 
+
         [XmlElement(ElementName = "AMOUNT")]
         public string Amount { get; set; }
+    }
+
+    [XmlRoot(ElementName = "INVENTORYALLOCATIONS.LIST")]
+    public class InventoryAllocations 
+    {
+        [XmlElement(ElementName = "STOCKITEMNAME")]
+        public string StockItemName { get; set; }
+
+        [XmlElement(ElementName = "ISDEEMEDPOSITIVE")]
+        public string DeemedPositive { get; set; }
+
+        [XmlElement(ElementName = "RATE")]
+        public string Rate { get; set; }
+
+        [XmlElement(ElementName = "ACTUALQTY")]
+        public string Quantity { get; set; }
+
+        [XmlElement(ElementName = "AMOUNT")]
+        public double Amount { get; set; }
+
+
+        [XmlElement(ElementName = "BATCHALLOCATIONS.LIST")]
+        public List<BatchAllocations> BacthAllocations { get; set; }
+
+        [XmlElement(ElementName = "CATEGORYALLOCATIONS.LIST")]
+        public List<CostCategoryAllocations> CostCategoryAllocations { get; set; }
+
+    }
+
+    [XmlRoot(ElementName = "BATCHALLOCATIONS.LIST")]
+    public class BatchAllocations //Godown Allocations
+    {
+        [XmlElement(ElementName = "GODOWNNAME")]
+        public string GodownName { get; set; }
+
+        [XmlElement(ElementName = "ACTUALQTY")]
+        public string Quantity { get; set; }
+
+        [XmlElement(ElementName = "AMOUNT")]
+        public double Amount { get; set; }
+
+
+    }
+
+    [XmlRoot(ElementName = "CATEGORYALLOCATIONS.LIST")]
+    public class CostCategoryAllocations
+    {
+        [XmlElement(ElementName = "STOCKITEMNAME")]
+        public string CostCategoryName { get; set; }
+
+        [XmlElement(ElementName = "COSTCENTREALLOCATIONS.LIST")]
+        public List<CostCenterAllocations> CostCenterAllocations { get; set; }
+
+    }
+    [XmlRoot(ElementName = "COSTCENTREALLOCATIONS.LIST")]
+    
+    public class CostCenterAllocations
+    {
+        [XmlElement(ElementName = "NAME")]
+        public string Name { get; set; }
+
+        [XmlElement(ElementName = "AMOUNT")]
+        public double Amount { get; set; }
     }
 
 
@@ -135,14 +202,14 @@ namespace TallyConnector.Models
 
 
 
-    /// <summary>
-    /// Voucher Message
-    /// </summary>
+        /// <summary>
+        /// Voucher Message
+        /// </summary>
 
 
 
 
-    [XmlRoot(ElementName = "ENVELOPE")]
+        [XmlRoot(ElementName = "ENVELOPE")]
     public class VoucherEnvelope
     {
 
