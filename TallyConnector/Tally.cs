@@ -10,7 +10,7 @@ using TallyConnector.Models;
 
 namespace TallyConnector
 {
-    public class Tally:IDisposable
+    public class Tally : IDisposable
     {
         static readonly HttpClient client = new();
         private int Port;
@@ -150,7 +150,7 @@ namespace TallyConnector
             StaticVariables staticVariables = new()
             {
                 SVCompany = company,
-                SVExportFormat="XML",
+                SVExportFormat = "XML",
             };
 
             //Gets Groups from Tally
@@ -230,144 +230,276 @@ namespace TallyConnector
 
 
         //Gets Group From Tally using Name
-        public async Task<Group> GetGroup(String GroupName, string company = null, string fromDate = null, string toDate = null, string format = "XML")
+        public async Task<Group> GetGroup(String GroupName,
+                                          string company = null,
+                                          string fromDate = null,
+                                          string toDate = null,
+                                          List<string> fetchList = null,
+                                          string format = "XML")
         {
             //If parameter is null Get value from instance
             company ??= Company;
             fromDate ??= FromDate;
             toDate ??= ToDate;
 
-            Group group = (await GetObjFromTally<GroupEnvelope>(GroupName, "Group", company, fromDate, toDate, format)).Body.Data.Message.Group;
+            Group group = (await GetObjFromTally<GroupEnvelope>(ObjName: GroupName,
+                                                                ObjType: "Group",
+                                                                company: company,
+                                                                fromDate: fromDate,
+                                                                toDate: toDate,
+                                                                fetchList: fetchList,
+                                                                viewname: null,
+                                                                format: format)).Body.Data.Message.Group;
 
             return group;
         }
 
         //Gets Ledger from Tally using Name
-        public async Task<Ledger> GetLedger(String ledgerName, string company = null, string fromDate = null, string toDate = null, string format = "XML")
+        public async Task<Ledger> GetLedger(String ledgerName,
+                                            string company = null,
+                                            string fromDate = null,
+                                            string toDate = null,
+                                            List<string> fetchList = null,
+                                            string format = "XML")
         {
             //If parameter is null Get value from instance
             company ??= Company;
             fromDate ??= FromDate;
             toDate ??= ToDate;
 
-            Ledger ledger = (await GetObjFromTally<LedgerEnvelope>(ledgerName, "Ledger", company, fromDate, toDate, format)).Body.Data.Message.Ledger;
+            Ledger ledger = (await GetObjFromTally<LedgerEnvelope>(ObjName: ledgerName,
+                                                                   ObjType: "Ledger",
+                                                                   company: company,
+                                                                   fromDate: fromDate,
+                                                                   toDate: toDate,
+                                                                   fetchList: fetchList,
+                                                                   viewname: null,
+                                                                   format: format)).Body.Data.Message.Ledger;
 
             return ledger;
         }
 
         //Gets CostCategory from Tally uisng Name
-        public async Task<CostCategory> GetCostCategory(String CostCategoryName, string company = null, string fromDate = null, string toDate = null, string format = "XML")
+        public async Task<CostCategory> GetCostCategory(String CostCategoryName,
+                                                        string company = null,
+                                                        string fromDate = null,
+                                                        string toDate = null,
+                                                        List<string> fetchList = null,
+                                                        string format = "XML")
         {
             //If parameter is null Get value from instance
             company ??= Company;
             fromDate ??= FromDate;
             toDate ??= ToDate;
 
-            CostCategory costCategory = (await GetObjFromTally<CostCatEnvelope>(CostCategoryName, "CostCategory", company, fromDate, toDate, format)).Body.Data.Message.CostCategory;
+            CostCategory costCategory = (await GetObjFromTally<CostCatEnvelope>(ObjName: CostCategoryName,
+                                                                                ObjType: "CostCategory",
+                                                                                company: company,
+                                                                                fromDate: fromDate,
+                                                                                toDate: toDate,
+                                                                                fetchList: fetchList,
+                                                                                viewname: null,
+                                                                                format: format)).Body.Data.Message.CostCategory;
 
             return costCategory;
         }
 
         //Gets CostCenter from Tally uisng Name
-        public async Task<CostCenter> GetCostCenter(String CostCenterName, string company = null, string fromDate = null, string toDate = null, string format = "XML")
+        public async Task<CostCenter> GetCostCenter(String CostCenterName,
+                                                    string company = null,
+                                                    string fromDate = null,
+                                                    string toDate = null,
+                                                    List<string> fetchList = null,
+                                                    string format = "XML")
         {
             //If parameter is null Get value from instance
             company ??= Company;
             fromDate ??= FromDate;
             toDate ??= ToDate;
 
-            CostCenter costCenter = (await GetObjFromTally<CostCentEnvelope>(CostCenterName, "CostCenter", company, fromDate, toDate, format)).Body.Data.Message.CostCenter;
+            CostCenter costCenter = (await GetObjFromTally<CostCentEnvelope>(ObjName: CostCenterName,
+                                                                             ObjType: "CostCenter",
+                                                                             company: company,
+                                                                             fromDate: fromDate,
+                                                                             toDate: toDate,
+                                                                             fetchList: fetchList,
+                                                                             viewname: null,
+                                                                             format: format)).Body.Data.Message.CostCenter;
 
             return costCenter;
         }
 
         //Gets StockGroup from Tally uisng Name
-        public async Task<StockGroup> GetStockGroup(String StockGroupName, string company = null, string fromDate = null, string toDate = null, string format = "XML")
+        public async Task<StockGroup> GetStockGroup(String StockGroupName,
+                                                    string company = null,
+                                                    string fromDate = null,
+                                                    string toDate = null,
+                                                    List<string> fetchList = null,
+                                                    string format = "XML")
         {
             //If parameter is null Get value from instance
             company ??= Company;
             fromDate ??= FromDate;
             toDate ??= ToDate;
 
-            StockGroup stockGroup = (await GetObjFromTally<StockGrpEnvelope>(StockGroupName, "StockGroup", company, fromDate, toDate, format)).Body.Data.Message.StockGroup;
+            StockGroup stockGroup = (await GetObjFromTally<StockGrpEnvelope>(ObjName: StockGroupName,
+                                                                             ObjType: "StockGroup",
+                                                                             company: company,
+                                                                             fromDate: fromDate,
+                                                                             toDate: toDate,
+                                                                             fetchList: fetchList,
+                                                                             viewname: null,
+                                                                             format: format)).Body.Data.Message.StockGroup;
 
             return stockGroup;
         }
 
         //Gets StockCategory from Tally uisng Name
-        public async Task<StockCategory> GetStockCategory(String StockCategoryName, string company = null, string fromDate = null, string toDate = null, string format = "XML")
+        public async Task<StockCategory> GetStockCategory(String StockCategoryName,
+                                                          string company = null,
+                                                          string fromDate = null,
+                                                          string toDate = null,
+                                                          List<string> fetchList = null,
+                                                          string format = "XML")
         {
             //If parameter is null Get value from instance
             company ??= Company;
             fromDate ??= FromDate;
             toDate ??= ToDate;
 
-            StockCategory stockCategory = (await GetObjFromTally<StockCatEnvelope>(StockCategoryName, "StockCategory", company, fromDate, toDate, format)).Body.Data.Message.StockCategory;
+            StockCategory stockCategory = (await GetObjFromTally<StockCatEnvelope>(ObjName: StockCategoryName,
+                                                                                   ObjType: "StockCategory",
+                                                                                   company: company,
+                                                                                   fromDate: fromDate,
+                                                                                   toDate: toDate,
+                                                                                   fetchList: fetchList,
+                                                                                   viewname: null,
+                                                                                   format: format)).Body.Data.Message.StockCategory;
 
             return stockCategory;
         }
 
         //Gets StockItem from Tally uisng Name
-        public async Task<StockItem> GetStockItem(String StockItemName, string company = null, string fromDate = null, string toDate = null, string format = "XML")
+        public async Task<StockItem> GetStockItem(String StockItemName,
+                                                  string company = null,
+                                                  string fromDate = null,
+                                                  string toDate = null,
+                                                  List<string> fetchList = null,
+                                                  string format = "XML")
         {
             //If parameter is null Get value from instance
             company ??= Company;
             fromDate ??= FromDate;
             toDate ??= ToDate;
 
-            StockItem stockItem = (await GetObjFromTally<StockItemEnvelope>(StockItemName, "StockItem", company, fromDate, toDate, format)).Body.Data.Message.StockItem;
+            StockItem stockItem = (await GetObjFromTally<StockItemEnvelope>(ObjName: StockItemName,
+                                                                            ObjType: "StockItem",
+                                                                            company: company,
+                                                                            fromDate: fromDate,
+                                                                            toDate: toDate,
+                                                                            fetchList: fetchList,
+                                                                            viewname: null,
+                                                                            format: format)).Body.Data.Message.StockItem;
 
             return stockItem;
         }
 
         //Gets Unit from Tally uisng Name
-        public async Task<Unit> GetUnit(String UnitName, string company = null, string fromDate = null, string toDate = null, string format = "XML")
+        public async Task<Unit> GetUnit(String UnitName,
+                                        string company = null,
+                                        string fromDate = null,
+                                        string toDate = null,
+                                        List<string> fetchList = null,
+                                        string format = "XML")
         {
             //If parameter is null Get value from instance
             company ??= Company;
             fromDate ??= FromDate;
             toDate ??= ToDate;
 
-            Unit unit = (await GetObjFromTally<UnitEnvelope>(UnitName, "Unit", company, fromDate, toDate, format)).Body.Data.Message.Unit;
+            Unit unit = (await GetObjFromTally<UnitEnvelope>(ObjName: UnitName,
+                                                             ObjType: "Unit",
+                                                             company: company,
+                                                             fromDate: fromDate,
+                                                             toDate: toDate,
+                                                             fetchList: fetchList,
+                                                             viewname: null,
+                                                             format: format)).Body.Data.Message.Unit;
 
             return unit;
         }
 
         //Gets Godown from Tally uisng Name
-        public async Task<Godown> GetGodown(String GodownName, string company = null, string fromDate = null, string toDate = null, string format = "XML")
+        public async Task<Godown> GetGodown(String GodownName,
+                                            string company = null,
+                                            string fromDate = null,
+                                            string toDate = null,
+                                            List<string> fetchList = null,
+                                            string format = "XML")
         {
             //If parameter is null Get value from instance
             company ??= Company;
             fromDate ??= FromDate;
             toDate ??= ToDate;
 
-            Godown godown = (await GetObjFromTally<GodownEnvelope>(GodownName, "Godown", company, fromDate, toDate, format)).Body.Data.Message.Godown;
+            Godown godown = (await GetObjFromTally<GodownEnvelope>(ObjName: GodownName,
+                                                                   ObjType: "Godown",
+                                                                   company: company,
+                                                                   fromDate: fromDate,
+                                                                   toDate: toDate,
+                                                                   fetchList: fetchList,
+                                                                   viewname: null,
+                                                                   format: format)).Body.Data.Message.Godown;
 
             return godown;
         }
 
         //Gets VoucherType from Tally uisng Name
-        public async Task<VoucherType> GetVoucherType(String VoucherTypeName, string company = null, string fromDate = null, string toDate = null, string format = "XML")
+        public async Task<VoucherType> GetVoucherType(String VoucherTypeName,
+                                                      string company = null,
+                                                      string fromDate = null,
+                                                      string toDate = null,
+                                                      List<string> fetchList = null,
+                                                      string format = "XML")
         {
             //If parameter is null Get value from instance
             company ??= Company;
             fromDate ??= FromDate;
             toDate ??= ToDate;
 
-            VoucherType voucherType = (await GetObjFromTally<VoucherTypeEnvelope>(VoucherTypeName, "VoucherType", company, fromDate, toDate, format)).Body.Data.Message.VoucherType;
+            VoucherType voucherType = (await GetObjFromTally<VoucherTypeEnvelope>(ObjName: VoucherTypeName,
+                                                                                  ObjType: "VoucherType",
+                                                                                  company: company,
+                                                                                  fromDate: fromDate,
+                                                                                  toDate: toDate,
+                                                                                  fetchList: fetchList,
+                                                                                  viewname: null,
+                                                                                  format: format)).Body.Data.Message.VoucherType;
 
             return voucherType;
         }
 
         //Gets Currency from Tally uisng Name
-        public async Task<Currencies> GetCurrency(String CurrencyName, string company = null, string fromDate = null, string toDate = null, string format = "XML")
+        public async Task<Currencies> GetCurrency(String CurrencyName,
+                                                  string company = null,
+                                                  string fromDate = null,
+                                                  string toDate = null,
+                                                  List<string> fetchList = null,
+                                                  string format = "XML")
         {
             //If parameter is null Get value from instance
             company ??= Company;
             fromDate ??= FromDate;
             toDate ??= ToDate;
 
-            Currencies currency = (await GetObjFromTally<CurrencyEnvelope>(CurrencyName, "Currencies", company, fromDate, toDate, format)).Body.Data.Message.Currency;
+            Currencies currency = (await GetObjFromTally<CurrencyEnvelope>(ObjName: CurrencyName,
+                                                                           ObjType: "Currencies",
+                                                                           company: company,
+                                                                           fromDate: fromDate,
+                                                                           toDate: toDate,
+                                                                           fetchList: fetchList,
+                                                                           viewname: null,
+                                                                           format: format)).Body.Data.Message.Currency;
 
             return currency;
         }
@@ -375,12 +507,16 @@ namespace TallyConnector
 
 
         //Get VoucherMasterIDs list by VoucherType
-        public async Task<VouchersList> GetVouchersListByVoucherType(string VoucherType, string company = null, string fromDate = null, string toDate = null, string format = "XML")
+        public async Task<VouchersList> GetVouchersListByVoucherType(string VoucherType,
+                                                                     string company = null,
+                                                                     string fromDate = null,
+                                                                     string toDate = null,
+                                                                     string format = "XML")
         {
             company ??= Company;
 
             Dictionary<string, string> fields = new() { { "$MASTERID", "MASTERID" }, { "$VoucherNumber", "VoucherNumber" } };
-            StaticVariables staticVariables = new() { SVCompany=company,SVExportFormat=format,SVFromDate=fromDate,SVToDate=toDate};
+            StaticVariables staticVariables = new() { SVCompany = company, SVExportFormat = format, SVFromDate = fromDate, SVToDate = toDate };
             List<string> VoucherFilters = new() { "VoucherType" };
             List<string> VoucherSystemFilters = new() { $"$VoucherTypeName = \"{VoucherType}\"" };
             string EmployeeGroupsXml = await GetCustomCollectionXML("List Of Vouchers", fields, "Voucher", staticVariables,
@@ -391,14 +527,26 @@ namespace TallyConnector
 
 
         //Gets voucher by MasterID  from Tally
-        public async Task<Models.Voucher> GetVoucherByMasterID(String VoucherMasterID, string company = null, string fromDate = null, string toDate = null, string format = "XML")
+        public async Task<Models.Voucher> GetVoucherByMasterID(String VoucherMasterID,
+                                                               string company = null,
+                                                               string fromDate = null,
+                                                               string toDate = null,
+                                                               List<string> fetchList = null,
+                                                               string format = "XML")
         {
             //If parameter is null Get value from instance
             company ??= Company;
             fromDate ??= FromDate;
             toDate ??= ToDate;
 
-            Models.Voucher voucher = (await GetObjFromTally<VoucherEnvelope>($"ID: {VoucherMasterID}", "Voucher", company, fromDate, toDate, "Accounting Voucher View", format)).Body.Data.Message.Voucher;
+            Models.Voucher voucher = (await GetObjFromTally<VoucherEnvelope>($"ID: {VoucherMasterID}",
+                                                                             "Voucher",
+                                                                             company,
+                                                                             fromDate,
+                                                                             toDate,
+                                                                             fetchList,
+                                                                             "Accounting Voucher View",
+                                                                             format)).Body.Data.Message.Voucher;
 
             return voucher;
         }
@@ -420,8 +568,14 @@ namespace TallyConnector
 
 
         //Gets any Tally Object
-        public async Task<T> GetObjFromTally<T>(string ObjName, string ObjType,
-            string company = null, string fromDate = null, string toDate = null, string viewname =null,string format = "XML")
+        public async Task<T> GetObjFromTally<T>(string ObjName,
+                                                string ObjType,
+                                                string company = null,
+                                                string fromDate = null,
+                                                string toDate = null,
+                                                List<string> fetchList = null,
+                                                string viewname = null,
+                                                string format = "XML")
         {
             //If parameter is null Get value from instance
             company ??= Company;
@@ -430,7 +584,14 @@ namespace TallyConnector
             T Obj;
             try
             {
-                string ReqXml = GetObjXML(ObjType, ObjName, company, fromDate, toDate,viewname, format);
+                string ReqXml = GetObjXML(objType: ObjType,
+                                          ObjName: ObjName,
+                                          company: company,
+                                          fromDate: fromDate,
+                                          toDate: toDate,
+                                          fetchList: fetchList,
+                                          viewname: viewname,
+                                          format: format);
                 string ResXml = await SendRequest(ReqXml);
                 Obj = GetObjfromXml<T>(ResXml);
             }
@@ -442,8 +603,14 @@ namespace TallyConnector
         }
 
         //Generates XML to get Objects from tally
-        private string GetObjXML(string objType, string ObjName, string company = null,
-            string fromDate = null, string toDate = null,string viewname=null, string format = "XML")
+        private string GetObjXML(string objType,
+                                 string ObjName,
+                                 string company = null,
+                                 string fromDate = null,
+                                 string toDate = null,
+                                 List<string> fetchList = null,
+                                 string viewname = null,
+                                 string format = "XML")
         {
             //If parameter is null Get value from instance
             company ??= Company;
@@ -451,8 +618,7 @@ namespace TallyConnector
             toDate ??= ToDate;
 
             ObjEnvelope Obj = new();
-            string Name = ObjName;
-            Obj.Header = new(objType, Name);
+            Obj.Header = new(objType, ObjName);
             StaticVariables staticVariables = new()
             {
                 SVCompany = company,
@@ -464,7 +630,7 @@ namespace TallyConnector
             };
             Obj.Body.Desc.StaticVariables = staticVariables;
 
-            Obj.Body.Desc.FetchList = new();
+            Obj.Body.Desc.FetchList = fetchList != null ? new(fetchList) : new();
             string ObjXML = Obj.GetXML();
             return ObjXML;
         }
@@ -480,8 +646,12 @@ namespace TallyConnector
 
 
         //Helper function to Geberate Report XML
-        public async Task<string> GetCustomCollectionXML(string rName, Dictionary<string, string> Fields, string colType,
-            StaticVariables Sv = null, List<string> Filters = null, List<string> SystemFilters = null)
+        public async Task<string> GetCustomCollectionXML(string rName,
+                                                         Dictionary<string, string> Fields,
+                                                         string colType,
+                                                         StaticVariables Sv = null,
+                                                         List<string> Filters = null,
+                                                         List<string> SystemFilters = null)
         {
             //LedgersList LedgList = new();
             string Resxml = null;
@@ -635,7 +805,7 @@ namespace TallyConnector
 
                 throw;
             }
-            
+
         }
 
         protected virtual void Dispose(bool disposing)

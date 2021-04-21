@@ -20,7 +20,7 @@ namespace TallyConnector.Models
         [XmlElement(ElementName = "PARENT")]
         public string Parent { get; set; }
 
-        [JsonIgnore]
+        
         [XmlIgnore]
         public string Alias
         {
@@ -40,8 +40,8 @@ namespace TallyConnector.Models
             set
             {
                 this.LanguageNameList = new();
-                this.LanguageNameList.NameList.NAMES[0] = this.Name;
-                this.LanguageNameList.NameList.NAMES[1]=(value);
+                this.LanguageNameList.NameList.NAMES.Add(this.Name);
+                this.LanguageNameList.NameList.NAMES.Add(value);
             }
         }
 
@@ -57,7 +57,7 @@ namespace TallyConnector.Models
 
         [XmlElement(ElementName = "CANDELETE")]
         public string CanDelete { get; set; }
-
+        [JsonIgnore]
         [XmlElement(ElementName = "LANGUAGENAME.LIST")]
         public LanguageNameList LanguageNameList { get; set; }
 

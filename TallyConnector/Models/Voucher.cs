@@ -6,8 +6,9 @@ namespace TallyConnector.Models
 {
     [Serializable]
     [XmlRoot(ElementName = "VOUCHER")]
-    public class Voucher:TallyXmlJson
+    public class Voucher : TallyXmlJson
     {
+
 
         [XmlAttribute(AttributeName = "ID")]
         public int TallyId { get; set; }
@@ -29,7 +30,7 @@ namespace TallyConnector.Models
         [XmlElement(ElementName = "EFFECTIVEDATE")]
         public string EffectiveDate { get; set; }
 
-        
+
         [XmlElement(ElementName = "ALLLEDGERENTRIES.LIST")]
         public List<IVoucherLedger> Ledgers { get; set; }
 
@@ -88,9 +89,60 @@ namespace TallyConnector.Models
             }
         }
 
-      
+
+        public void OrderLedgers()
+        {
+            if (VCHTYPE != "Contra" | VCHTYPE != "Purchase" | VCHTYPE != "Receipt")
+            {
+
+                Ledgers.Sort((x, y) => x.LedgerName.CompareTo(y.LedgerName));//First Sort Ledger list Using Ledger Names
+                Ledgers.Sort((x, y) => x.Amount.CompareTo(y.Amount)); //Next sort Ledger List Using Ledger Amounts
+
+                //Looop Through all Ledgers
+                Ledgers.ForEach(c =>
+                {
+                    //Sort Bill Allocations
+                    c.BillAllocations.Sort((x, y) => x.Name.CompareTo(y.Name)); //First Sort BillAllocations Using Bill Numbers
+                    c.BillAllocations.Sort((x, y) => x.Amount.CompareTo(y.Amount));//Next sort BillAllocationst Using  Amounts
 
 
+                    //sort Inventory Allocations
+                    c.InventoryAllocations.Sort((x, y) => x.Quantity.CompareTo(y.Quantity));
+                    c.InventoryAllocations.Sort((x, y) => x.Amount.CompareTo(y.Amount));
+
+                    c.InventoryAllocations.ForEach(inv => 
+                    {
+                        inv.BacthAllocations.Sort((x, y) => x.GodownName.CompareTo(y.GodownName));
+                        inv.BacthAllocations.Sort((x, y) => x.Amount.CompareTo(y.Amount));
+
+                        inv.CostCategoryAllocations.Sort((x, y) => x.CostCategoryName.CompareTo(y.CostCategoryName));
+
+                        inv.CostCategoryAllocations.ForEach(cc => 
+                        {
+                            cc.CostCenterAllocations.Sort((x, y) => x.Name.CompareTo(y.Name));
+                            cc.CostCenterAllocations.Sort((x, y) => x.Amount.CompareTo(y.Amount));
+                        });
+                    });
+
+                });
+
+            }
+
+        }
+
+        public new string GetJson()
+        {
+            OrderLedgers();
+
+            return base.GetJson();
+        }
+
+        public new string GetXML(bool indent = false)
+        {
+            OrderLedgers();
+
+            return base.GetXML();
+        }
     }
 
     [XmlRoot(ElementName = "LEDGERENTRIES.LIST")]
@@ -98,7 +150,7 @@ namespace TallyConnector.Models
     {
 
     }
-   
+
     [XmlRoot(ElementName = "ALLLEDGERENTRIES.LIST")]
     public class IVoucherLedger
     {
@@ -139,7 +191,7 @@ namespace TallyConnector.Models
     }
 
     [XmlRoot(ElementName = "INVENTORYALLOCATIONS.LIST")]
-    public class InventoryAllocations 
+    public class InventoryAllocations
     {
         [XmlElement(ElementName = "STOCKITEMNAME")]
         public string StockItemName { get; set; }
@@ -183,7 +235,7 @@ namespace TallyConnector.Models
     [XmlRoot(ElementName = "CATEGORYALLOCATIONS.LIST")]
     public class CostCategoryAllocations
     {
-        [XmlElement(ElementName = "STOCKITEMNAME")]
+        [XmlElement(ElementName = "CATEGORY")]
         public string CostCategoryName { get; set; }
 
         [XmlElement(ElementName = "COSTCENTREALLOCATIONS.LIST")]
@@ -191,7 +243,7 @@ namespace TallyConnector.Models
 
     }
     [XmlRoot(ElementName = "COSTCENTREALLOCATIONS.LIST")]
-    
+
     public class CostCenterAllocations
     {
         [XmlElement(ElementName = "NAME")]
@@ -206,15 +258,15 @@ namespace TallyConnector.Models
 
 
 
-        /// <summary>
-        /// Voucher Message
-        /// </summary>
+    /// <summary>
+    /// Voucher Message
+    /// </summary>
 
 
 
 
-        [XmlRoot(ElementName = "ENVELOPE")]
-    public class VoucherEnvelope:TallyXmlJson
+    [XmlRoot(ElementName = "ENVELOPE")]
+    public class VoucherEnvelope : TallyXmlJson
     {
 
         [XmlElement(ElementName = "HEADER")]

@@ -41,6 +41,18 @@ namespace TallyConnector.Models
 
         }
 
+        [XmlElement(ElementName = "PINCODE")]
+        public string PinCode { get; set; }
+
+        [XmlElement(ElementName = "PHONENUMBER")]
+        public string PhoneNumber { get; set; }
+
+        [XmlElement(ElementName = "ISEXTERNAL")]
+        public string IsExternal { get; set; } // ThirdParty Stock with Us
+
+        [XmlElement(ElementName = "ISINTERNAL")]
+        public string IsInternal { get; set; } // Our Stock With Third Party
+
         [XmlElement(ElementName = "CANDELETE")]
         public string CanDelete { get; set; }
     }
