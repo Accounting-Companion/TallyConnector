@@ -26,6 +26,8 @@ namespace TallyConnector.Models
         [XmlElement(ElementName = "GSTAPPLICABLE")]
         public string GSTApplicability { get; set; }
     }
+    
+    
     [XmlRoot(ElementName = "ENVELOPE")]
     public class StockGrpEnvelope : TallyXmlJson
     {

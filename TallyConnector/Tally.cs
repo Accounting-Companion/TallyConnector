@@ -10,15 +10,16 @@ using TallyConnector.Models;
 
 namespace TallyConnector
 {
-    public class Tally
+    public class Tally:IDisposable
     {
         static readonly HttpClient client = new();
-        XmlDocument xmldoc = new();
         private int Port;
         private string BaseURL;
 
         public string Status;
         public string ReqStatus;
+
+        private bool disposedValue;
 
         //Gets Full Url from Baseurl and Port
         private string FullURL { get { return BaseURL + ":" + Port; } }
@@ -74,7 +75,7 @@ namespace TallyConnector
 
 
         //Check whether Tally is running in given Port
-        public async Task Check()
+        public async Task<bool> Check()
         {
             try
             {
@@ -83,6 +84,7 @@ namespace TallyConnector
                 string res = await response.Content.ReadAsStringAsync();
 
                 Status = "Running";
+                return true;
             }
             catch (HttpRequestException ex)
             {
@@ -90,6 +92,7 @@ namespace TallyConnector
                 Status = $"Tally is not opened \n or Tally is not running in given port - { Port} )\n or Given URL - {BaseURL} \n" +
                     e.Message;
             }
+            return false;
         }
 
 
@@ -147,6 +150,7 @@ namespace TallyConnector
             StaticVariables staticVariables = new()
             {
                 SVCompany = company,
+                SVExportFormat="XML",
             };
 
             //Gets Groups from Tally
@@ -221,6 +225,7 @@ namespace TallyConnector
 
 
         }
+
 
 
 
@@ -369,7 +374,20 @@ namespace TallyConnector
 
 
 
+        //Get VoucherMasterIDs list by VoucherType
+        public async Task<VouchersList> GetVouchersListByVoucherType(string VoucherType, string company = null, string fromDate = null, string toDate = null, string format = "XML")
+        {
+            company ??= Company;
 
+            Dictionary<string, string> fields = new() { { "$MASTERID", "MASTERID" }, { "$VoucherNumber", "VoucherNumber" } };
+            StaticVariables staticVariables = new() { SVCompany=company,SVExportFormat=format,SVFromDate=fromDate,SVToDate=toDate};
+            List<string> VoucherFilters = new() { "VoucherType" };
+            List<string> VoucherSystemFilters = new() { $"$VoucherTypeName = \"{VoucherType}\"" };
+            string EmployeeGroupsXml = await GetCustomCollectionXML("List Of Vouchers", fields, "Voucher", staticVariables,
+                VoucherFilters, VoucherSystemFilters);
+            VouchersList vl = GetObjfromXml<VouchersList>(EmployeeGroupsXml);
+            return vl;
+        }
 
 
         //Gets voucher by MasterID  from Tally
@@ -433,7 +451,7 @@ namespace TallyConnector
             toDate ??= ToDate;
 
             ObjEnvelope Obj = new();
-            string Name = ReplaceXML(ObjName);
+            string Name = ObjName;
             Obj.Header = new(objType, Name);
             StaticVariables staticVariables = new()
             {
@@ -467,6 +485,7 @@ namespace TallyConnector
         {
             //LedgersList LedgList = new();
             string Resxml = null;
+            await Check();
             if (Status == "Running")
             {
                 Models.CusColEnvelope ColEnvelope = new(); //Collection Envelope
@@ -596,9 +615,68 @@ namespace TallyConnector
         public static T GetObjfromXml<T>(string Xml)
         {
             XmlSerializer XMLSer = new XmlSerializer(typeof(T));
-            StringReader XmlStream = new StringReader(Xml);
-            T obj = (T)XMLSer.Deserialize(XmlStream);
-            return obj;
+
+            NameTable nt = new NameTable();
+            XmlNamespaceManager nsmgr = new XmlNamespaceManager(nt);
+            nsmgr.AddNamespace("UDF", "TallyUDF");
+            XmlParserContext context = new XmlParserContext(null, nsmgr, null, XmlSpace.None);
+
+            XmlReaderSettings xset = new XmlReaderSettings();
+            xset.ConformanceLevel = ConformanceLevel.Fragment;
+            XmlReader rd = XmlReader.Create(new StringReader(Xml), xset, context);
+            //StringReader XmlStream = new StringReader(Xml);
+            try
+            {
+                T obj = (T)XMLSer.Deserialize(rd);
+                return obj;
+            }
+            catch (Exception e)
+            {
+
+                throw;
+            }
+            
+        }
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (!disposedValue)
+            {
+                if (disposing)
+                {
+                    // TODO: dispose managed state (managed objects)
+                }
+                //client.Dispose();
+                Groups = null;
+                Ledgers = null;
+                CostCategories = null;
+                CostCenters = null;
+                StockCategories = null;
+                StockGroups = null;
+                StockItems = null;
+                Units = null;
+                Currencies = null;
+                VoucherTypes = null;
+                Employees = null;
+                EmployeeGroups = null;
+                AttendanceTypes = null;
+
+                disposedValue = true;
+            }
+        }
+
+        // // TODO: override finalizer only if 'Dispose(bool disposing)' has code to free unmanaged resources
+        // ~Tally()
+        // {
+        //     // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
+        //     Dispose(disposing: false);
+        // }
+
+        public void Dispose()
+        {
+            // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
+            Dispose(disposing: true);
+            GC.SuppressFinalize(this);
         }
     }
 }

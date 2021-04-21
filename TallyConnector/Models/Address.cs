@@ -14,7 +14,7 @@ namespace TallyConnector.Models
     [XmlRoot(ElementName = "ADDRESS.LIST")]
     public class HAddress
     {
-        private List<string> _Address;
+        private List<string> _Address = new();
 
         [NotMapped]
         [XmlElement(ElementName = "ADDRESS")]

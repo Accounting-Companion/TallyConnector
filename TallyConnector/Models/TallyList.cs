@@ -151,10 +151,14 @@ namespace TallyConnector.Models
     public class VouchersList
     {
 
-        [XmlElement(ElementName = "NUMBER")]
-        public List<string> VoucherId { get; set; }
+        [XmlElement(ElementName = "VoucherNumber")]
+        public List<string> VoucherIds { get; set; }
 
         [XmlElement(ElementName = "MASTERID")]
-        public List<string> MasterID { get; set; }
+        public List<int> MasterIDs { get; set; }
+        
+        [XmlElement(ElementName = "DATE")]
+        public List<string> VoucherDates { get; set; }
+
     }
 }

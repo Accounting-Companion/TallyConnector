@@ -59,6 +59,7 @@ namespace TallyConnector.Models
         [XmlElement(ElementName = "CANDELETE")]
         public string CanDelete { get; set; }
     }
+    
     [XmlRoot(ElementName = "ENVELOPE")]
     public class VoucherTypeEnvelope:TallyXmlJson
     {

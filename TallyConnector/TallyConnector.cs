@@ -551,7 +551,7 @@ namespace TallyConnector
 
 		public Task<string> GetVchXml(string _Action, string VCHTYPE, string Date, List<VLedgers> LedgersList, string VoucherID, string Narration = null, string EffectiveDate = null, string PartyName = null, string PartyMailingName = null, List<string> Address = null, string State = null, string Country = null, string GSTIN = null, string POS = null)
 			{
-				Voucher voucher = new Voucher();
+				CVoucher voucher = new CVoucher();
 				Header header2 = (voucher.Header = new Header
 				{
 					Version = 1,
@@ -599,7 +599,7 @@ namespace TallyConnector
 					Data = data,
 					Desc = desc
 				});
-				XmlSerializer xmlSerializer = new XmlSerializer(typeof(Voucher));
+				XmlSerializer xmlSerializer = new XmlSerializer(typeof(CVoucher));
 				TextWriter textWriter = new StringWriter();
 				xmlSerializer.Serialize(textWriter, voucher);
 				return Task.FromResult(textWriter.ToString());
@@ -663,7 +663,7 @@ namespace TallyConnector
 			}
 	}
 	[XmlRoot(ElementName = "ENVELOPE")]
-	public class Voucher
+	public class CVoucher
 	{
 		[XmlElement(ElementName = "HEADER")]
 		public Header Header

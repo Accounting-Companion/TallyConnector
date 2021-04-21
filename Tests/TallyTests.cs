@@ -122,6 +122,10 @@ namespace Tests
         public async Task CheckGetVoucher()
         {
             Voucher voucher = await TTally.GetVoucherByMasterID("5036");
+            VoucherEnvelope voucherEnvelope = new();
+            voucherEnvelope.Header = new();
+            voucherEnvelope.Body.Data.Message.Voucher = voucher;
+            string xml = voucherEnvelope.GetXML();
             Assert.NotNull(voucher);
         }
 

@@ -5,7 +5,8 @@ using System.Xml.Serialization;
 namespace TallyConnector.Models
 {
     [Serializable]
-    public class Voucher
+    [XmlRoot(ElementName = "VOUCHER")]
+    public class Voucher:TallyXmlJson
     {
 
         [XmlAttribute(AttributeName = "ID")]
@@ -28,7 +29,7 @@ namespace TallyConnector.Models
         [XmlElement(ElementName = "EFFECTIVEDATE")]
         public string EffectiveDate { get; set; }
 
-        [XmlElement(ElementName = "LEDGERENTRIES.LIST", Type = typeof(EVoucherLedger))]
+        
         [XmlElement(ElementName = "ALLLEDGERENTRIES.LIST")]
         public List<IVoucherLedger> Ledgers { get; set; }
 
@@ -87,6 +88,9 @@ namespace TallyConnector.Models
             }
         }
 
+      
+
+
     }
 
     [XmlRoot(ElementName = "LEDGERENTRIES.LIST")]
@@ -94,7 +98,7 @@ namespace TallyConnector.Models
     {
 
     }
-    [XmlInclude(typeof(EVoucherLedger))]
+   
     [XmlRoot(ElementName = "ALLLEDGERENTRIES.LIST")]
     public class IVoucherLedger
     {
@@ -171,7 +175,7 @@ namespace TallyConnector.Models
         public string Quantity { get; set; }
 
         [XmlElement(ElementName = "AMOUNT")]
-        public double Amount { get; set; }
+        public string Amount { get; set; }
 
 
     }
@@ -210,7 +214,7 @@ namespace TallyConnector.Models
 
 
         [XmlRoot(ElementName = "ENVELOPE")]
-    public class VoucherEnvelope
+    public class VoucherEnvelope:TallyXmlJson
     {
 
         [XmlElement(ElementName = "HEADER")]
@@ -246,3 +250,5 @@ namespace TallyConnector.Models
 
 
 }
+
+
