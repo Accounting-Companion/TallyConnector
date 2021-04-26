@@ -10,32 +10,7 @@ namespace TallyConnector.Models
 
     }
 
-    [XmlRoot(ElementName = "LISTOFCOMPANIES")]
-    public class CompaniesList
-    {
-        private Dictionary<string, string> _Dic = new();
-
-        [XmlElement(ElementName = "NAME")]
-        public List<string> Name { get; set; } = new();
-
-        [XmlElement(ElementName = "STARDATE")]
-        public List<string> StartDate { get; set; } = new();
-        [XmlIgnore]
-        public Dictionary<string, string> Dic 
-        {
-            get 
-            {
-                for (int i = 0; i < Name.Count; i++)
-                {
-                    _Dic.Add(Name[i], StartDate[i]);
-                }
-                return _Dic;
-            }  
-        }
-
-
-
-    }
+   
     [XmlRoot(ElementName = "LISTOFGROUPS")]
     public class GroupsList
     {
@@ -151,7 +126,7 @@ namespace TallyConnector.Models
     public class VouchersList
     {
 
-        [XmlElement(ElementName = "VoucherNumber")]
+        [XmlElement(ElementName = "VOUCHERNUMBER")]
         public List<string> VoucherIds { get; set; }
 
         [XmlElement(ElementName = "MASTERID")]
@@ -161,4 +136,43 @@ namespace TallyConnector.Models
         public List<string> VoucherDates { get; set; }
 
     }
+
+    [XmlRoot(ElementName = "ENVELOPE")]
+    public class ComListEnvelope : TallyXmlJson
+    {
+
+        [XmlElement(ElementName = "HEADER")]
+        public Header Header { get; set; }
+
+        [XmlElement(ElementName = "BODY")]
+        public ComListBody Body { get; set; } = new();
+    }
+
+    [XmlRoot(ElementName = "BODY")]
+    public class ComListBody
+    {
+        [XmlElement(ElementName = "DESC")]
+        public Description Desc { get; set; } = new();
+
+        [XmlElement(ElementName = "DATA")]
+        public ComListData Data { get; set; } = new();
+    }
+
+    [XmlRoot(ElementName = "DATA")]
+    public class ComListData
+    {
+        [XmlElement(ElementName = "COLLECTION")]
+        public ComListColl Collection { get; set; } = new();
+    }
+
+    [XmlRoot(ElementName = "COLLECTION")]
+    public class ComListColl
+    {
+        [XmlElement(ElementName = "COMPANY")]
+        public List<Company> CompaniesList { get; set; }
+    }
+
+
+
+
 }

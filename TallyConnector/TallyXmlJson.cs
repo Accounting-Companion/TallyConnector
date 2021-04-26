@@ -1,4 +1,5 @@
 ﻿using System.IO;
+using System.Text;
 using System.Text.Json;
 using System.Xml;
 using System.Xml.Serialization;
@@ -13,13 +14,17 @@ namespace TallyConnector
             return Json;
         }
 
-        public string GetXML(bool indent = false)
+        public string GetXML()
         {
             TextWriter textWriter = new StringWriter();
             XmlWriterSettings settings = new()
             {
                 OmitXmlDeclaration = true,
-                Indent = indent,
+                NewLineChars= "&#13;&#10;", //If /r/n in Xml replace
+                //NewLineHandling = NewLineHandling.Entitize,
+                
+                Encoding = Encoding.UTF8,
+                CheckCharacters = false,
 
             };
             XmlSerializerNamespaces ns = new(

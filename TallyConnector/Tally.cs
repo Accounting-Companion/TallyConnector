@@ -42,7 +42,7 @@ namespace TallyConnector
         public List<string> EmployeeGroups { get; private set; }
         public List<string> Employees { get; private set; }
 
-        public Dictionary<string, string> CompaniesInfo { get; private set; }
+        public List<Company> CompaniesList { get; private set; }
 
         private string Company { get; set; }
         private string FromDate { get; set; }
@@ -97,36 +97,26 @@ namespace TallyConnector
 
 
         //Gets List of Companies opened in tally and saves in CompaniesInfo Dic
-        public async Task<CompaniesList> GetCompaniesList()
+        public async Task<List<Company>> GetCompaniesList()
         {
-            CompaniesList CompList = new();
+            
             await Check();
             if (Status == "Running")
             {
                 Models.CusColEnvelope ColEnvelope = new(); //Collection Envelope
                 string RName = "List of Companies";
 
-                ColEnvelope.Header = new("Export", "Data", RName);  //Configuring Header To get Export data
+                ColEnvelope.Header = new("Export", "Collection", RName);  //Configuring Header To get Export data
 
-                Dictionary<string, string> LeftFields = new() //Left Fields
-                {
-                    { "$NAME", "NAME" }
 
-                };
-                Dictionary<string, string> RightFields = new() //Right Fields
-                {
-                    { "$STARTINGFROM", "STARDATE" }
-                };
-
-                ColEnvelope.Body.Desc.TDL.TDLMessage = new(rName: RName, fName: RName, topPartName: RName,
-                    rootXML: "LISTOFCOMPANIES", colName: $"Form{RName}", lineName: RName, leftFields: LeftFields,
-                    rightFields: RightFields, colType: "Company");
-
-                string Reqxml = ColEnvelope.GetXML(true); //Gets XML from Object
+                List<string> NativeFields = new() {"Name","StartingFrom","GUID" };
+                ColEnvelope.Body.Desc.TDL.TDLMessage = new(colName: RName, colType: "Company", nativeFields: NativeFields);
+                ColEnvelope.Body.Desc.TDL.TDLMessage.Collection.SetAttributes(isInitialize: "Yes");
+                string Reqxml = ColEnvelope.GetXML(); //Gets XML from Object
                 string Resxml = await SendRequest(Reqxml);
                 try
                 {
-                    CompList = Tally.GetObjfromXml<CompaniesList>(Resxml);
+                    CompaniesList = Tally.GetObjfromXml<ComListEnvelope>(Resxml).Body.Data.Collection.CompaniesList;
 
                 }
                 catch (Exception e)
@@ -137,8 +127,8 @@ namespace TallyConnector
                 }
 
             }
-            CompaniesInfo = CompList.Dic;
-            return CompList;
+            
+            return CompaniesList;
         }
 
         //Gets all Masters like,Ledgers,Groups  ...etc
@@ -515,13 +505,13 @@ namespace TallyConnector
         {
             company ??= Company;
 
-            Dictionary<string, string> fields = new() { { "$MASTERID", "MASTERID" }, { "$VoucherNumber", "VoucherNumber" } };
+            Dictionary<string, string> fields = new() { { "$MASTERID", "MASTERID" }, { "$VoucherNumber", "VoucherNumber" } ,{ "$Date", "Date" } };
             StaticVariables staticVariables = new() { SVCompany = company, SVExportFormat = format, SVFromDate = fromDate, SVToDate = toDate };
             List<string> VoucherFilters = new() { "VoucherType" };
             List<string> VoucherSystemFilters = new() { $"$VoucherTypeName = \"{VoucherType}\"" };
-            string EmployeeGroupsXml = await GetCustomCollectionXML("List Of Vouchers", fields, "Voucher", staticVariables,
+            string VouchersXml = await GetCustomCollectionXML("List Of Vouchers", fields, "Voucher", staticVariables,
                 VoucherFilters, VoucherSystemFilters);
-            VouchersList vl = GetObjfromXml<VouchersList>(EmployeeGroupsXml);
+            VouchersList vl = GetObjfromXml<VouchersList>(VouchersXml);
             return vl;
         }
 
@@ -616,7 +606,7 @@ namespace TallyConnector
             company ??= Company;
             fromDate ??= FromDate;
             toDate ??= ToDate;
-
+            
             ObjEnvelope Obj = new();
             Obj.Header = new(objType, ObjName);
             StaticVariables staticVariables = new()
@@ -672,9 +662,9 @@ namespace TallyConnector
 
                 ColEnvelope.Body.Desc.TDL.TDLMessage = new(rName: RName, fName: RName, topPartName: RName,
                     rootXML: rName.Replace(" ", ""), colName: $"Form{RName}", lineName: RName, leftFields: LeftFields,
-                    rightFields: RightFields, colType: colType, Filters, SystemFilters);
+                    rightFields: RightFields, colType: colType, filters: Filters,SysFormulae: SystemFilters);
 
-                string Reqxml = ColEnvelope.GetXML(true); //Gets XML from Object
+                string Reqxml = ColEnvelope.GetXML(); //Gets XML from Object
                 Resxml = await SendRequest(Reqxml);
             }
             return Resxml;
@@ -706,7 +696,7 @@ namespace TallyConnector
                     rootXML: "LISTOFLEDGERS", colName: $"Form{RName}", lineName: RName, leftFields: LeftFields,
                     rightFields: RightFields, colType: "Ledger");
 
-                string Reqxml = ColEnvelope.GetXML(true); //Gets XML from Object
+                string Reqxml = ColEnvelope.GetXML(); //Gets XML from Object
                 string Resxml = await SendRequest(Reqxml);
 
                 try
@@ -729,7 +719,7 @@ namespace TallyConnector
         public async Task<string> SendRequest(string SXml)
         {
             string Resxml = "";
-            await Check();
+            //await Check();
             if (Status == "Running")
             {
                 try
@@ -756,11 +746,9 @@ namespace TallyConnector
             string result = null;
             if (strText != null)
             {
-                result = strText.Replace("&", "&amp;");
-                result = result.Replace("'", "&apos;");
-                result = result.Replace("\"\"", "&quot;");
-                result = result.Replace(">", "&gt;");
-                result = result.Replace("<", "&lt;");
+                result = strText.Replace("\r", "&#13;");
+                result = result.Replace("\n", "&#10;");
+                
             }
             return result;
         }

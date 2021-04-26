@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Text.Json.Serialization;
 using System.Xml.Serialization;
 
 namespace TallyConnector.Models
@@ -30,10 +31,13 @@ namespace TallyConnector.Models
         [XmlElement(ElementName = "EFFECTIVEDATE")]
         public string EffectiveDate { get; set; }
 
+        [XmlElement(ElementName = "ISCANCELLED")]
+        public string IsCancelled { get; set; }
 
         [XmlElement(ElementName = "ALLLEDGERENTRIES.LIST")]
         public List<IVoucherLedger> Ledgers { get; set; }
 
+        [JsonIgnore]
         [XmlAttribute(AttributeName = "DATE")]
         public string Dt
         {
@@ -46,20 +50,22 @@ namespace TallyConnector.Models
                 VchDate = value;
             }
         }
-
+        
+        [JsonIgnore]
         [XmlAttribute(AttributeName = "TAGNAME")]
         public string TAGNAME
         {
             get
             {
+
                 return "Voucher Number";
             }
             set
             {
-                value = "Voucher Number";
             }
         }
 
+        [JsonIgnore]
         [XmlAttribute(AttributeName = "TAGVALUE")]
         public string TAGVALUE
         {
@@ -73,9 +79,11 @@ namespace TallyConnector.Models
             }
         }
 
+        [JsonIgnore]
         [XmlAttribute(AttributeName = "Action")]
         public string Action { get; set; }
 
+        [JsonIgnore]
         [XmlAttribute(AttributeName = "VCHTYPE")]
         public string VCHTYPE
         {
@@ -92,7 +100,7 @@ namespace TallyConnector.Models
 
         public void OrderLedgers()
         {
-            if (VCHTYPE != "Contra" | VCHTYPE != "Purchase" | VCHTYPE != "Receipt")
+            if (VCHTYPE != "Contra" && VCHTYPE != "Purchase" && VCHTYPE != "Receipt" && VCHTYPE != "Credit Note" )
             {
 
                 Ledgers.Sort((x, y) => x.LedgerName.CompareTo(y.LedgerName));//First Sort Ledger list Using Ledger Names
@@ -107,7 +115,7 @@ namespace TallyConnector.Models
 
 
                     //sort Inventory Allocations
-                    c.InventoryAllocations.Sort((x, y) => x.Quantity.CompareTo(y.Quantity));
+                    c.InventoryAllocations.Sort((x, y) => x.ActualQuantity.CompareTo(y.ActualQuantity));
                     c.InventoryAllocations.Sort((x, y) => x.Amount.CompareTo(y.Amount));
 
                     c.InventoryAllocations.ForEach(inv => 
@@ -127,6 +135,12 @@ namespace TallyConnector.Models
                 });
 
             }
+            else
+            {
+                Ledgers.Sort((x, y) => y.LedgerName.CompareTo(x.LedgerName));//First Sort Ledger list Using Ledger Names
+                Ledgers.Sort((x, y) => y.Amount.CompareTo(x.Amount)); //Next sort Ledger List Using Ledger Amounts
+
+            }
 
         }
 
@@ -137,7 +151,7 @@ namespace TallyConnector.Models
             return base.GetJson();
         }
 
-        public new string GetXML(bool indent = false)
+        public new string GetXML()
         {
             OrderLedgers();
 
@@ -203,7 +217,10 @@ namespace TallyConnector.Models
         public string Rate { get; set; }
 
         [XmlElement(ElementName = "ACTUALQTY")]
-        public string Quantity { get; set; }
+        public string ActualQuantity { get; set; }
+
+        [XmlElement(ElementName = "BILLEDQTY")]
+        public string BilledQuantity { get; set; }
 
         [XmlElement(ElementName = "AMOUNT")]
         public double Amount { get; set; }
@@ -220,6 +237,13 @@ namespace TallyConnector.Models
     [XmlRoot(ElementName = "BATCHALLOCATIONS.LIST")]
     public class BatchAllocations //Godown Allocations
     {
+
+        [XmlElement(ElementName = "TRACKINGNUMBER")]
+        public string TrackingNo { get; set; }
+
+        [XmlElement(ElementName = "ORDERNO")]
+        public string OrderNo { get; set; }
+
         [XmlElement(ElementName = "GODOWNNAME")]
         public string GodownName { get; set; }
 
