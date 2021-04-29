@@ -55,6 +55,12 @@ namespace TallyConnector.Models
 
         [XmlElement(ElementName = "CANDELETE")]
         public string CanDelete { get; set; }
+
+        /// <summary>
+        /// Accepted Values //Create, Alter, Delete
+        /// </summary>
+        [XmlAttribute(AttributeName = "Action")]
+        public String Action { get; set; }
     }
 
     [XmlRoot(ElementName = "ENVELOPE")]

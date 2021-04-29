@@ -79,9 +79,13 @@ namespace TallyConnector.Models
             }
         }
 
+
+        /// <summary>
+        /// Accepted Values //Create, Alter, Delete
+        /// </summary>
         [JsonIgnore]
         [XmlAttribute(AttributeName = "Action")]
-        public string Action { get; set; }
+        public String Action { get; set; }
 
         [JsonIgnore]
         [XmlAttribute(AttributeName = "VCHTYPE")]

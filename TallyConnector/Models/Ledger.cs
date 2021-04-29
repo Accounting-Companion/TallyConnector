@@ -165,6 +165,12 @@ namespace TallyConnector.Models
 
         [XmlElement(ElementName = "LANGUAGENAME.LIST")]
         public LanguageNameList LanguageNameList { get; set; }
+
+        /// <summary>
+        /// Accepted Values //Create, Alter, Delete
+        /// </summary>
+        [XmlAttribute(AttributeName = "Action")]
+        public String Action { get; set; }
     }
 
 

@@ -25,6 +25,12 @@ namespace TallyConnector.Models
 
         [XmlElement(ElementName = "GSTAPPLICABLE")]
         public string GSTApplicability { get; set; }
+
+        /// <summary>
+        /// Accepted Values //Create, Alter, Delete
+        /// </summary>
+        [XmlAttribute(AttributeName = "Action")]
+        public string Action { get; set; }
     }
     
     

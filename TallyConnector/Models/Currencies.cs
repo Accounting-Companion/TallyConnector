@@ -36,6 +36,13 @@ namespace TallyConnector.Models
         [XmlElement(ElementName = "DECIMALPLACESFORPRINTING")]
         public int DecimalPlaces_Print { get; set; }
 
+
+        /// <summary>
+        /// Accepted Values //Create, Alter, Delete
+        /// </summary>
+        [XmlAttribute(AttributeName = "Action")]
+        public string Action { get; set; }
+
         //[XmlElement(ElementName = "DAILYSTDRATES.LIST")]
         //public List<DailystdRate> DailystdRateList { get; set; }
 

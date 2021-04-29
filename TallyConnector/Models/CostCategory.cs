@@ -21,6 +21,12 @@ namespace TallyConnector.Models
 
         [XmlElement(ElementName = "ALLOCATENONREVENUE")]
         public string AllocateNonRevenue { get; set; }
+
+        /// <summary>
+        /// Accepted Values //Create, Alter, Delete
+        /// </summary>
+        [XmlAttribute(AttributeName = "Action")]
+        public String Action { get; set; }
     }
     [XmlRoot(ElementName = "ENVELOPE")]
     public class CostCatEnvelope : TallyXmlJson

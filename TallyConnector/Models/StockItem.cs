@@ -24,6 +24,12 @@ namespace TallyConnector.Models
 
         [XmlElement(ElementName = "BASEUNITS")]
         public string BaseUnit { get; set; }
+
+        /// <summary>
+        /// Accepted Values //Create, Alter, Delete
+        /// </summary>
+        [XmlAttribute(AttributeName = "Action")]
+        public string Action { get; set; }
     }
     [XmlRoot(ElementName = "ENVELOPE")]
     public class StockItemEnvelope : TallyXmlJson

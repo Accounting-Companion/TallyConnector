@@ -25,7 +25,7 @@ namespace Tests
         public async Task TallyCheckCopanies()
         {
             await TTally.GetCompaniesList();
-            Assert.IsNotNull(TTally.CompaniesInfo);
+            Assert.IsNotNull(TTally.CompaniesList);
             
         }
         

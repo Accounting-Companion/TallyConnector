@@ -55,11 +55,19 @@ namespace TallyConnector.Models
         [XmlElement(ElementName = "ISSUBLEDGER")]
         public string IsSubledger { get; set; }
 
+
         [XmlElement(ElementName = "CANDELETE")]
-        public string CanDelete { get; set; }
+        public string CanDelete { get; set; } //Ignore This While Creating or Altering
+
         [JsonIgnore]
         [XmlElement(ElementName = "LANGUAGENAME.LIST")]
         public LanguageNameList LanguageNameList { get; set; }
+
+        /// <summary>
+        /// Accepted Values //Create, Alter, Delete
+        /// </summary>
+        [XmlAttribute(AttributeName = "Action")]
+        public String Action { get; set; } 
 
     }
 
