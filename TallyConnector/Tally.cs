@@ -270,8 +270,7 @@ namespace TallyConnector
                                                                 fromDate: fromDate,
                                                                 toDate: toDate,
                                                                 fetchList: fetchList,
-                                                                viewname: null,
-                                                                format: "XML")).Body.Data.Message.Group;
+                                                                viewname: null)).Body.Data.Message.Group;
 
             return group;
         }
@@ -337,8 +336,7 @@ namespace TallyConnector
                                                                    fromDate: fromDate,
                                                                    toDate: toDate,
                                                                    fetchList: fetchList,
-                                                                   viewname: null,
-                                                                   format: "XML")).Body.Data.Message.Ledger;
+                                                                   viewname: null)).Body.Data.Message.Ledger;
 
             return ledger;
         }
@@ -390,8 +388,7 @@ namespace TallyConnector
                                                         string company = null,
                                                         string fromDate = null,
                                                         string toDate = null,
-                                                        List<string> fetchList = null,
-                                                        string format = "XML")
+                                                        List<string> fetchList = null)
         {
             //If parameter is null Get value from instance
             company ??= Company;
@@ -404,8 +401,7 @@ namespace TallyConnector
                                                                                 fromDate: fromDate,
                                                                                 toDate: toDate,
                                                                                 fetchList: fetchList,
-                                                                                viewname: null,
-                                                                                format: format)).Body.Data.Message.CostCategory;
+                                                                                viewname: null)).Body.Data.Message.CostCategory;
 
             return costCategory;
         }
@@ -472,8 +468,7 @@ namespace TallyConnector
                                                                              fromDate: fromDate,
                                                                              toDate: toDate,
                                                                              fetchList: fetchList,
-                                                                             viewname: null,
-                                                                             format: format)).Body.Data.Message.CostCenter;
+                                                                             viewname: null)).Body.Data.Message.CostCenter;
 
             return costCenter;
         }
@@ -539,8 +534,7 @@ namespace TallyConnector
                                                                              fromDate: fromDate,
                                                                              toDate: toDate,
                                                                              fetchList: fetchList,
-                                                                             viewname: null,
-                                                                             format: "XML")).Body.Data.Message.StockGroup;
+                                                                             viewname: null)).Body.Data.Message.StockGroup;
 
             return stockGroup;
         }
@@ -606,8 +600,7 @@ namespace TallyConnector
                                                                                    fromDate: fromDate,
                                                                                    toDate: toDate,
                                                                                    fetchList: fetchList,
-                                                                                   viewname: null,
-                                                                                   format: "XML")).Body.Data.Message.StockCategory;
+                                                                                   viewname: null)).Body.Data.Message.StockCategory;
 
             return stockCategory;
         }
@@ -672,8 +665,7 @@ namespace TallyConnector
                                                                             fromDate: fromDate,
                                                                             toDate: toDate,
                                                                             fetchList: fetchList,
-                                                                            viewname: null,
-                                                                            format: "XML")).Body.Data.Message.StockItem;
+                                                                            viewname: null)).Body.Data.Message.StockItem;
 
             return stockItem;
         }
@@ -739,8 +731,7 @@ namespace TallyConnector
                                                              fromDate: fromDate,
                                                              toDate: toDate,
                                                              fetchList: fetchList,
-                                                             viewname: null,
-                                                             format: "XML")).Body.Data.Message.Unit;
+                                                             viewname: null)).Body.Data.Message.Unit;
 
             return unit;
         }
@@ -805,8 +796,7 @@ namespace TallyConnector
                                                                    fromDate: fromDate,
                                                                    toDate: toDate,
                                                                    fetchList: fetchList,
-                                                                   viewname: null,
-                                                                   format: "XML")).Body.Data.Message.Godown;
+                                                                   viewname: null)).Body.Data.Message.Godown;
 
             return godown;
         }
@@ -872,8 +862,7 @@ namespace TallyConnector
                                                                                   fromDate: fromDate,
                                                                                   toDate: toDate,
                                                                                   fetchList: fetchList,
-                                                                                  viewname: null,
-                                                                                  format: "XML")).Body.Data.Message.VoucherType;
+                                                                                  viewname: null)).Body.Data.Message.VoucherType;
 
             return voucherType;
         }
@@ -938,8 +927,7 @@ namespace TallyConnector
                                                                            fromDate: fromDate,
                                                                            toDate: toDate,
                                                                            fetchList: fetchList,
-                                                                           viewname: null,
-                                                                           format: "XML")).Body.Data.Message.Currency;
+                                                                           viewname: null)).Body.Data.Message.Currency;
 
             return currency;
         }
@@ -1022,8 +1010,7 @@ namespace TallyConnector
                                                                              ObjType: "Voucher",
                                                                              company: company,
                                                                              fetchList: fetchList,
-                                                                             viewname: "Accounting Voucher View",
-                                                                             format: "XML")).Body.Data.Message.Voucher;
+                                                                             viewname: "Accounting Voucher View")).Body.Data.Message.Voucher;
 
             return voucher;
         }
@@ -1045,12 +1032,11 @@ namespace TallyConnector
             //If parameter is null Get value from instance
             company ??= Company;
 
-            Models.Voucher voucher = (await GetObjFromTally<VoucherEnvelope>(ObjName: $"Date: {Date} : VoucherNumber: {VoucherMasterID}",
+            Models.Voucher voucher = (await GetObjFromTally<VoucherEnvelope>(ObjName: $"Date: {Date} : VoucherNumber: {VoucherNumber}",
                                                                              ObjType: "Voucher",
                                                                              company: company,
                                                                              fetchList: fetchList,
-                                                                             viewname: "Accounting Voucher View",
-                                                                             format: format)).Body.Data.Message.Voucher;
+                                                                             viewname: "Accounting Voucher View")).Body.Data.Message.Voucher;
 
             return voucher;
         }
@@ -1122,8 +1108,7 @@ namespace TallyConnector
                                           fromDate: fromDate,
                                           toDate: toDate,
                                           fetchList: fetchList,
-                                          viewname: viewname,
-                                          format: "XML");
+                                          viewname: viewname);
                 string ResXml = await SendRequest(ReqXml);
                 Obj = GetObjfromXml<T>(ResXml);
             }
