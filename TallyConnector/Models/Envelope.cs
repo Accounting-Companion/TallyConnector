@@ -5,26 +5,26 @@ using System.Xml.Serialization;
 
 namespace TallyConnector.Models
 {
-	[XmlRoot(ElementName = "ENVELOPE")]
-	public class Envelope
-	{
+	//[XmlRoot(ElementName = "ENVELOPE")]
+	//public class Envelope
+	//{
 
-		[XmlElement(ElementName = "HEADER")]
-		public Header Header { get; set; }
+	//	[XmlElement(ElementName = "HEADER")]
+	//	public Header Header { get; set; }
 
-		[XmlElement(ElementName = "BODY")]
-		public Body Body { get; set; }
-	}
+	//	[XmlElement(ElementName = "BODY")]
+	//	public Body Body { get; set; }
+	//}
 
-	[XmlRoot(ElementName = "BODY")]
-	public class Body
-	{
-		[XmlElement(ElementName = "DESC")]
-		public Description Desc { get; set; }
+	//[XmlRoot(ElementName = "BODY")]
+	//public class Body
+	//{
+	//	[XmlElement(ElementName = "DESC")]
+	//	public Description Desc { get; set; }
 
-		[XmlElement(ElementName = "DATA")]
-		public Data Data { get; set; }
-	}
+	//	[XmlElement(ElementName = "DATA")]
+	//	public Data Data { get; set; }
+	//}
 
 
 	[XmlRoot(ElementName = "HEADER")]

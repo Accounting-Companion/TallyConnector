@@ -46,9 +46,21 @@ namespace TallyConnector.Models
         }
 
 
+        /// <summary>
+        /// Tally Field - Used for Calculation
+        /// </summary>
         [XmlElement(ElementName = "BASICGROUPISCALCULABLE")]
         public string IsCalculable { get; set; }
 
+        /// <summary>
+        /// Tally Field - Net Debit/Credit Balances for Reporting 
+        /// </summary>
+        [XmlElement(ElementName = "ISADDABLE")]
+        public string IsAddable { get; set; }
+
+        /// <summary>
+        /// Tally Field - Method to Allocate when used in purchase invoice
+        /// </summary>
         [XmlElement(ElementName = "ADDLALLOCTYPE")]
         public string AddLAllocType { get; set; }
 
@@ -67,7 +79,7 @@ namespace TallyConnector.Models
         /// Accepted Values //Create, Alter, Delete
         /// </summary>
         [XmlAttribute(AttributeName = "Action")]
-        public String Action { get; set; } 
+        public string Action { get; set; } 
 
     }
 

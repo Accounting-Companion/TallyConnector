@@ -214,7 +214,7 @@ namespace TallyConnector
             Units = GetObjfromXml<UnitsList>(UnitsXml).Units;
 
             //Gets Currencies from Tally
-            Dictionary<string, string> Currenciesfields = new() { { "NAME", "NAME" } };
+            Dictionary<string, string> Currenciesfields = new() { { "$EXPANDEDSYMBOL", "NAME" } };
             string CurrenciesXml = await GetCustomCollectionXML("List Of Currencies", Currenciesfields, "Currencies", staticVariables);
             Currencies = GetObjfromXml<CurrenciesList>(CurrenciesXml).Currencies;
 

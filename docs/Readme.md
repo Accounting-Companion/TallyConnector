@@ -7,6 +7,12 @@ You can use **[Tally Connector](https://github.com/saivineeth100/TallyConnector/
 1. Tally Prime
 2. Tally ERP9
 
+## Supported Environments
+
+1. .Net Core 5.0 Applications
+2. .Net Framework Applications
+3. Visual Basic/VBA
+
 This Library acts as complete abstraction for Tally XML API,
 You don't need to known or understand tally XML to interact with Tally.
 
@@ -22,7 +28,7 @@ ___
 Add reference to Tallyconnector.dll in Your Project  
 Intiatate Tally in your Project
 
-### For C#
+### For C #
 
 ```C#
 Using TallyConnector //Importing TallyConnector Library
