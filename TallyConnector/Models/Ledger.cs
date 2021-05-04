@@ -13,6 +13,7 @@ namespace TallyConnector.Models
         {
             FAddress = new HAddress();
         }
+
         [XmlAttribute(AttributeName = "ID")]
         public int TallyId { get; set; }
 
@@ -48,39 +49,36 @@ namespace TallyConnector.Models
             }
         }
 
-        [XmlElement(ElementName = "TAXTYPE")]
-        public string TaxType { get; set; }
-
-        [XmlElement(ElementName = "ISBILLWISEON")]
-        public string IsBillwise { get; set; }
-
-        [XmlElement(ElementName = "ISCOSTCENTRESON")]
-        public string IsCostcenter { get; set; }
-
-        [XmlElement(ElementName = "ISREVENUE")]
-        public string Isrevenue { get; set; }
-
         [XmlElement(ElementName = "ISDEEMEDPOSITIVE")]
         public string DeemedPositive { get; set; }
 
         [XmlElement(ElementName = "OPENINGBALANCE")]
         public string OpeningBal { get; set; }
 
-        [XmlElement(ElementName = "AFFECTSSTOCK")]
-        public string AffectStock { get; set; }
+        [XmlElement(ElementName = "CURRENCYNAME")]
+        public string Currency { get; set; }
 
-        [XmlElement(ElementName = "CANDELETE")]
-        public string CanDelete { get; set; }
 
-        [XmlElement(ElementName = "FORPAYROLL")]
-        public string Forpayroll { get; set; }
+        [XmlElement(ElementName = "TAXTYPE")]
+        public string TaxType { get; set; }
+
+        [XmlElement(ElementName = "ISBILLWISEON")]
+        public string IsBillwise { get; set; }
+
+        [XmlElement(ElementName = "BILLCREDITPERIOD")]
+        public string CreditPeriod { get; set; }
+
+        [XmlElement(ElementName = "ISCREDITDAYSCHKON")]
+        public string IsCreditCheck { get; set; }
 
 
         [XmlElement(ElementName = "CREDITLIMIT")]
         public string CreditLimit { get; set; }
 
-        [XmlElement(ElementName = "ADDRESS.LIST")]
-        public HAddress FAddress { get; set; }
+
+        [XmlElement(ElementName = "MAILINGNAME")]
+        public string MailingName { get; set; }
+
 
         [JsonIgnore]
         [XmlIgnore]
@@ -157,20 +155,43 @@ namespace TallyConnector.Models
         [XmlElement(ElementName = "TRANSPORTERID")]
         public string TransporterID { get; set; }
 
+
+        [XmlElement(ElementName = "AFFECTSSTOCK")]
+        public string AffectStock { get; set; }
+
+        [XmlElement(ElementName = "ISCOSTCENTRESON")]
+        public string IsCostcenter { get; set; }
+
+        [XmlElement(ElementName = "ISREVENUE")]
+        public string Isrevenue { get; set; }
+
+
+        [XmlElement(ElementName = "FORPAYROLL")]
+        public string Forpayroll { get; set; }
+        
+        
         [XmlElement(ElementName = "DESCRIPTION")]
         public string Description { get; set; }
 
         [XmlElement(ElementName = "NARRATION")]
         public string Notes { get; set; }
 
+        [XmlElement(ElementName = "ADDRESS.LIST")]
+        public HAddress FAddress { get; set; }
+
+        
+
         [XmlElement(ElementName = "LANGUAGENAME.LIST")]
         public LanguageNameList LanguageNameList { get; set; }
+
+        [XmlElement(ElementName = "CANDELETE")]
+        public string CanDelete { get; set; }
 
         /// <summary>
         /// Accepted Values //Create, Alter, Delete
         /// </summary>
         [XmlAttribute(AttributeName = "Action")]
-        public String Action { get; set; }
+        public string Action { get; set; }
     }
 
 
