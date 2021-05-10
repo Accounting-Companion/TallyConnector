@@ -329,7 +329,7 @@ namespace TallyConnector
             company ??= Company;
             fromDate ??= FromDate;
             toDate ??= ToDate;
-
+            fetchList = new() {"*","Address"};
             Ledger ledger = (await GetObjFromTally<LedgerEnvelope>(ObjName: ledgerName,
                                                                    ObjType: "Ledger",
                                                                    company: company,

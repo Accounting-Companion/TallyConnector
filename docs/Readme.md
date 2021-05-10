@@ -28,7 +28,7 @@ ___
 Add reference to Tallyconnector.dll in Your Project  
 Intiatate Tally in your Project
 
-### For C #
+### For C#
 
 ```C#
 Using TallyConnector //Importing TallyConnector Library
