@@ -101,7 +101,7 @@ namespace TallyConnector.Models
         [XmlElement(ElementName = "COUNTRYNAME")]
         public string Country { get; set; }
 
-        [XmlElement(ElementName = "STATENAME")]
+        [XmlElement(ElementName = "LEDSTATENAME")]
         public string State { get; set; }
 
         [XmlElement(ElementName = "PINCODE")]
