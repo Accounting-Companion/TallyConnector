@@ -31,6 +31,10 @@ namespace TallyConnector.Models
         [XmlElement(ElementName = "EFFECTIVEDATE")]
         public string EffectiveDate { get; set; }
 
+        [XmlElement(ElementName = "NARRATION")]
+        public string Narration { get; set; }
+
+
         [XmlElement(ElementName = "ISCANCELLED")]
         public string IsCancelled { get; set; }
 
@@ -190,8 +194,8 @@ namespace TallyConnector.Models
         [XmlElement(ElementName = "INVENTORYALLOCATIONS.LIST")]
         public List<InventoryAllocations> InventoryAllocations { get; set; }
 
-
-
+        [XmlElement(ElementName = "CATEGORYALLOCATIONS.LIST")]
+        public List<CostCategoryAllocations> CostCategoryAllocations { get; set; }
     }
 
     [XmlRoot(ElementName = "BILLALLOCATIONS.LIST")]
@@ -227,7 +231,7 @@ namespace TallyConnector.Models
         public string BilledQuantity { get; set; }
 
         [XmlElement(ElementName = "AMOUNT")]
-        public double Amount { get; set; }
+        public string Amount { get; set; }
 
 
         [XmlElement(ElementName = "BATCHALLOCATIONS.LIST")]
