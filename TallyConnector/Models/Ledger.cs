@@ -52,12 +52,52 @@ namespace TallyConnector.Models
         [XmlElement(ElementName = "ISDEEMEDPOSITIVE")]
         public string DeemedPositive { get; set; }
 
+        public string ForexAmount { get; set; }
+
+        public string RateofExchange { get; set; }
+
+        private string _OpeningBal;
+
         [XmlElement(ElementName = "OPENINGBALANCE")]
-        public string OpeningBal { get; set; }
+        public string OpeningBal
+        {
+            get { return _OpeningBal; }
+            set
+            {
+                if (value.ToString().Contains("="))
+                {
+                    var s = value.ToString().Split('=');
+                    var k = s[0].Split('@');
+                    ForexAmount = k[0];
+                    RateofExchange = k[1].Split()[2];
+                    _OpeningBal = s[1].Split()[2];
+                }
+                else
+                {
+                    _OpeningBal = value;
+                }
 
+            }
+        }
+
+        
+        private string _Currency;
         [XmlElement(ElementName = "CURRENCYNAME")]
-        public string Currency { get; set; }
-
+        public string Currency
+        {
+            get { return _Currency; }
+            set
+            {
+                if (value=="?")
+                {
+                    _Currency = null;
+                }
+                else
+                {
+                    _Currency = value;
+                }
+                 }
+        }
 
         [XmlElement(ElementName = "TAXTYPE")]
         public string TaxType { get; set; }

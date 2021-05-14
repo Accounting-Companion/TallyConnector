@@ -114,33 +114,7 @@ namespace TallyConnector.Models
                 Ledgers.Sort((x, y) => x.LedgerName.CompareTo(y.LedgerName));//First Sort Ledger list Using Ledger Names
                 Ledgers.Sort((x, y) => x.Amount.CompareTo(y.Amount)); //Next sort Ledger List Using Ledger Amounts
 
-                //Looop Through all Ledgers
-                Ledgers.ForEach(c =>
-                {
-                    //Sort Bill Allocations
-                    c.BillAllocations.Sort((x, y) => x.Name.CompareTo(y.Name)); //First Sort BillAllocations Using Bill Numbers
-                    c.BillAllocations.Sort((x, y) => x.Amount.CompareTo(y.Amount));//Next sort BillAllocationst Using  Amounts
 
-
-                    //sort Inventory Allocations
-                    c.InventoryAllocations.Sort((x, y) => x.ActualQuantity.CompareTo(y.ActualQuantity));
-                    c.InventoryAllocations.Sort((x, y) => x.Amount.CompareTo(y.Amount));
-
-                    c.InventoryAllocations.ForEach(inv => 
-                    {
-                        inv.BacthAllocations.Sort((x, y) => x.GodownName.CompareTo(y.GodownName));
-                        inv.BacthAllocations.Sort((x, y) => x.Amount.CompareTo(y.Amount));
-
-                        inv.CostCategoryAllocations.Sort((x, y) => x.CostCategoryName.CompareTo(y.CostCategoryName));
-
-                        inv.CostCategoryAllocations.ForEach(cc => 
-                        {
-                            cc.CostCenterAllocations.Sort((x, y) => x.Name.CompareTo(y.Name));
-                            cc.CostCenterAllocations.Sort((x, y) => x.Amount.CompareTo(y.Amount));
-                        });
-                    });
-
-                });
 
             }
             else
@@ -150,6 +124,39 @@ namespace TallyConnector.Models
 
             }
 
+            //Looop Through all Ledgers
+            Ledgers.ForEach(c =>
+            {
+                //Sort Bill Allocations
+                c.BillAllocations.Sort((x, y) => x.Name.CompareTo(y.Name)); //First Sort BillAllocations Using Bill Numbers
+                c.BillAllocations.Sort((x, y) => x.Amount.CompareTo(y.Amount));//Next sort BillAllocationst Using  Amounts
+
+                c.CostCategoryAllocations.Sort((x, y) => x.CostCategoryName.CompareTo(y.CostCategoryName));
+
+                c.CostCategoryAllocations.ForEach(cc =>
+                {
+                    cc.CostCenterAllocations.Sort((x, y) => x.Name.CompareTo(y.Name));
+                    cc.CostCenterAllocations.Sort((x, y) => x.Amount.CompareTo(y.Amount));
+                });
+                //sort Inventory Allocations
+                c.InventoryAllocations.Sort((x, y) => x.ActualQuantity.CompareTo(y.ActualQuantity));
+                c.InventoryAllocations.Sort((x, y) => x.Amount.CompareTo(y.Amount));
+
+                c.InventoryAllocations.ForEach(inv =>
+                {
+                    inv.BacthAllocations.Sort((x, y) => x.GodownName.CompareTo(y.GodownName));
+                    inv.BacthAllocations.Sort((x, y) => x.Amount.CompareTo(y.Amount));
+
+                    inv.CostCategoryAllocations.Sort((x, y) => x.CostCategoryName.CompareTo(y.CostCategoryName));
+
+                    inv.CostCategoryAllocations.ForEach(cc =>
+                    {
+                        cc.CostCenterAllocations.Sort((x, y) => x.Name.CompareTo(y.Name));
+                        cc.CostCenterAllocations.Sort((x, y) => x.Amount.CompareTo(y.Amount));
+                    });
+                });
+
+            });
         }
 
         public new string GetJson()
@@ -184,8 +191,35 @@ namespace TallyConnector.Models
         [XmlElement(ElementName = "ISDEEMEDPOSITIVE")]
         public string IsDeemedPositive { get; set; }
 
+        
+        private string _Amount;
+
+        public string ForexAmount { get;  set; }
+
+        public string RateofExchange { get;  set; }
+
         [XmlElement(ElementName = "AMOUNT")]
-        public double Amount { get; set; }
+        public string Amount
+        {
+            get { return _Amount; }
+            set
+            {
+                if (value.ToString().Contains("="))
+                {
+                    var s = value.ToString().Split('=');
+                    var k = s[0].Split('@');
+                    ForexAmount = k[0];
+                    RateofExchange = k[1].Split()[2];
+                    _Amount = s[1].Split()[2];
+                }
+                else
+                {
+                    _Amount = value;
+                }
+
+            }
+        }
+
 
 
         [XmlElement(ElementName = "BILLALLOCATIONS.LIST")]
@@ -196,6 +230,7 @@ namespace TallyConnector.Models
 
         [XmlElement(ElementName = "CATEGORYALLOCATIONS.LIST")]
         public List<CostCategoryAllocations> CostCategoryAllocations { get; set; }
+        
     }
 
     [XmlRoot(ElementName = "BILLALLOCATIONS.LIST")]
@@ -208,8 +243,32 @@ namespace TallyConnector.Models
         public string Name { get; set; }
 
 
+        private string _Amount;
+        public string ForexAmount { get; set; }
+        public string RateofExchange { get; set; }
         [XmlElement(ElementName = "AMOUNT")]
-        public string Amount { get; set; }
+        public string Amount
+        {
+            get { return _Amount; }
+            set
+            {
+                if (value.ToString().Contains("="))
+                {
+                    var s = value.ToString().Split('=');
+                    var k = s[0].Split('@');
+                    ForexAmount = k[0];
+                    RateofExchange = k[1].Split()[2];
+                    _Amount = s[1].Split()[2];
+                }
+                else
+                {
+                    _Amount = value;
+                }
+
+            }
+        }
+
+
     }
 
     [XmlRoot(ElementName = "INVENTORYALLOCATIONS.LIST")]
@@ -230,8 +289,32 @@ namespace TallyConnector.Models
         [XmlElement(ElementName = "BILLEDQTY")]
         public string BilledQuantity { get; set; }
 
+        private string _Amount;
+        public string ForexAmount { get; set; }
+        public string RateofExchange { get; set; }
         [XmlElement(ElementName = "AMOUNT")]
-        public string Amount { get; set; }
+        public string Amount
+        {
+            get { return _Amount; }
+            set
+            {
+                if (value.ToString().Contains("="))
+                {
+                    var s = value.ToString().Split('=');
+                    var k = s[0].Split('@');
+                    ForexAmount = k[0];
+                    RateofExchange = k[1].Split()[2];
+                    _Amount = s[1].Split()[2];
+                }
+                else
+                {
+                    _Amount = value;
+                }
+
+            }
+        }
+
+
 
 
         [XmlElement(ElementName = "BATCHALLOCATIONS.LIST")]
@@ -258,8 +341,31 @@ namespace TallyConnector.Models
         [XmlElement(ElementName = "ACTUALQTY")]
         public string Quantity { get; set; }
 
+        private string _Amount;
+        public string ForexAmount { get; set; }
+        public string RateofExchange { get; set; }
         [XmlElement(ElementName = "AMOUNT")]
-        public string Amount { get; set; }
+        public string Amount
+        {
+            get { return _Amount; }
+            set
+            {
+                if (value.ToString().Contains("="))
+                {
+                    var s = value.ToString().Split('=');
+                    var k = s[0].Split('@');
+                    ForexAmount = k[0];
+                    RateofExchange = k[1].Split()[2];
+                    _Amount = s[1].Split()[2];
+                }
+                else
+                {
+                    _Amount = value;
+                }
+
+            }
+        }
+
 
 
     }
@@ -281,8 +387,32 @@ namespace TallyConnector.Models
         [XmlElement(ElementName = "NAME")]
         public string Name { get; set; }
 
+        private string _Amount;
+        public string ForexAmount { get; set; }
+        public string RateofExchange { get; set; }
         [XmlElement(ElementName = "AMOUNT")]
-        public double Amount { get; set; }
+        public string Amount
+        {
+            get { return _Amount; }
+            set
+            {
+                if (value.ToString().Contains("="))
+                {
+                    var s = value.ToString().Split('=');
+                    var k = s[0].Split('@');
+                    ForexAmount = k[0];
+                    RateofExchange = k[1].Split()[2];
+                    _Amount = s[1].Split()[2];
+                }
+                else
+                {
+                    _Amount = value;
+                }
+
+            }
+        }
+
+
     }
 
 
