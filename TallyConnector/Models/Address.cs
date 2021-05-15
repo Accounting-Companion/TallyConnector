@@ -9,14 +9,14 @@ using System.Xml.Serialization;
 namespace TallyConnector.Models
 {
 
-    [NotMapped]
+    
     [Serializable]
     [XmlRoot(ElementName = "ADDRESS.LIST")]
     public class HAddress
     {
         private List<string> _Address = new();
 
-        [NotMapped]
+        
         [XmlElement(ElementName = "ADDRESS")]
         public List<string> Address
         {
@@ -27,8 +27,8 @@ namespace TallyConnector.Models
         [XmlIgnore]
         public string FullAddress
         {
-            get { return String.Join(',', _Address); }
-            set { _Address = value.Split(',').ToList(); }
+            get { return string.Join('\n', _Address); }
+            set { _Address = value.Split('\n').ToList(); }
         }
 
     }

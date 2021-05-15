@@ -220,8 +220,6 @@ namespace TallyConnector.Models
             }
         }
 
-
-
         [XmlElement(ElementName = "BILLALLOCATIONS.LIST")]
         public List<BillAllocations> BillAllocations { get; set; }
 

@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.Linq;
 using System.Text.Json.Serialization;
 using System.Xml.Serialization;
 
@@ -17,6 +19,8 @@ namespace TallyConnector.Models
         [XmlAttribute(AttributeName = "ID")]
         public int TallyId { get; set; }
 
+
+
         [XmlAttribute(AttributeName = "NAME")]
         [Required]
         public string Name { get; set; }
@@ -30,22 +34,36 @@ namespace TallyConnector.Models
         {
             get
             {
-                if (this.LanguageNameList.NameList.NAMES.Count > 1)
+                if (this.LanguageNameList.NameList.NAMES.Count > 0)
                 {
                     this.LanguageNameList.NameList.NAMES[0] = this.Name;
-                    return this.LanguageNameList.NameList.NAMES[1];
+                    return string.Join("\n", this.LanguageNameList.NameList.NAMES.GetRange(1, this.LanguageNameList.NameList.NAMES.Count - 1));
                 }
                 else
                 {
-                    return null;
+                   this.LanguageNameList.NameList.NAMES.Add(this.Name);
+                   return null;
                 }
 
             }
             set
             {
                 this.LanguageNameList = new();
-                this.LanguageNameList.NameList.NAMES.Add(Name);
-                this.LanguageNameList.NameList.NAMES.Add(value);
+                
+                if (value!=null)
+                {
+                    LanguageNameList.NameList.NAMES.Add(Name);
+                    if (value != "")
+                    {
+                        LanguageNameList.NameList.NAMES.AddRange(value.Split('\n').ToList());
+                    }
+                    
+                }
+                else
+                {
+                    LanguageNameList.NameList.NAMES.Add(Name);
+                }
+                
             }
         }
 
