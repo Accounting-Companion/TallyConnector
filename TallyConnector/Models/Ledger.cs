@@ -69,9 +69,9 @@ namespace TallyConnector.Models
 
         [XmlElement(ElementName = "ISDEEMEDPOSITIVE")]
         public string DeemedPositive { get; set; }
-
+        [XmlIgnore]
         public string ForexAmount { get; set; }
-
+        [XmlIgnore]
         public string RateofExchange { get; set; }
 
         private string _OpeningBal;
@@ -79,7 +79,18 @@ namespace TallyConnector.Models
         [XmlElement(ElementName = "OPENINGBALANCE")]
         public string OpeningBal
         {
-            get { return _OpeningBal; }
+            get 
+            {
+                if (ForexAmount != null && RateofExchange!=null)
+                {
+                    _OpeningBal = $"{ForexAmount} @ {RateofExchange}";
+                }
+                else if (ForexAmount !=null )
+                {
+                    _OpeningBal = ForexAmount;
+                }
+                return _OpeningBal; 
+            }
             set
             {
                 if (value.ToString().Contains("="))
