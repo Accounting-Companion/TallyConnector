@@ -17,6 +17,9 @@ namespace TallyConnector.Models
         [XmlAttribute(AttributeName = "NAME")]
         public string Name { get; set; }
 
+        [XmlAttribute(AttributeName = "REQNAME")]
+        public string VName { get; set; }
+
         [XmlElement(ElementName = "ALLOCATEREVENUE")]
         public string AllocateRevenue { get; set; }
 

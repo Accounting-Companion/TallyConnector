@@ -24,6 +24,9 @@ namespace TallyConnector.Models
         [Required]
         public string Name { get; set; }
 
+        [XmlAttribute(AttributeName = "REQNAME")]
+        public string VName { get; set; }
+
         [XmlElement(ElementName = "PARENT")]
         [Required]
         public string Parent { get; set; }
