@@ -78,8 +78,9 @@ namespace TallyConnector.Models
         /// <summary>
         /// Accepted Values //Create, Alter, Delete
         /// </summary>
+        [JsonIgnore]
         [XmlAttribute(AttributeName = "Action")]
-        public string Action { get; set; } 
+        public string Action { get; set; }
 
     }
 

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 using System.Xml.Serialization;
 
@@ -25,8 +26,9 @@ namespace TallyConnector.Models
         /// <summary>
         /// Accepted Values //Create, Alter, Delete
         /// </summary>
+        [JsonIgnore]
         [XmlAttribute(AttributeName = "Action")]
-        public String Action { get; set; }
+        public string Action { get; set; }
     }
     [XmlRoot(ElementName = "ENVELOPE")]
     public class CostCatEnvelope : TallyXmlJson

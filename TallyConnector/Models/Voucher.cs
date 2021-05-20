@@ -89,7 +89,7 @@ namespace TallyConnector.Models
         /// </summary>
         [JsonIgnore]
         [XmlAttribute(AttributeName = "Action")]
-        public String Action { get; set; }
+        public string Action { get; set; }
 
         [JsonIgnore]
         [XmlAttribute(AttributeName = "VCHTYPE")]
