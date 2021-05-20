@@ -14,12 +14,11 @@ namespace TallyConnector.Models
         public Ledger()
         {
             FAddress = new HAddress();
+            InterestList = new();
         }
 
         [XmlAttribute(AttributeName = "ID")]
         public int TallyId { get; set; }
-
-
 
         [XmlAttribute(AttributeName = "NAME")]
         [Required]
@@ -131,6 +130,12 @@ namespace TallyConnector.Models
         [XmlElement(ElementName = "TAXTYPE")]
         public string TaxType { get; set; }
 
+        [XmlElement(ElementName = "GSTDUTYHEAD")]
+        public string GSTTaxType { get; set; }
+
+        [XmlElement(ElementName = "RATEOFTAXCALCULATION")]
+        public string RateofTax { get; set; }
+
         [XmlElement(ElementName = "ISBILLWISEON")]
         public string IsBillwise { get; set; }
 
@@ -234,6 +239,39 @@ namespace TallyConnector.Models
         [XmlElement(ElementName = "ISREVENUE")]
         public string Isrevenue { get; set; }
 
+        [XmlElement(ElementName = "ISINTERESTON")]
+        public string Isintereston { get; set; }
+
+
+        private InterestList _InterestList;
+
+        
+        [JsonIgnore]
+        [XmlElement(ElementName = "INTERESTCOLLECTION.LIST")]
+        public InterestList InterestList { get 
+            {
+                _InterestList.InterestBalancetype = InterestBalancetype;
+                _InterestList.InterestRate = InterestRate;
+                _InterestList.InterestStyle = InterestStyle;
+
+                return _InterestList; 
+            } 
+            set 
+            {
+                InterestBalancetype = value.InterestBalancetype;
+                InterestRate = value.InterestRate;
+                InterestStyle = value.InterestStyle;
+                _InterestList = value;
+            } }
+
+        [XmlIgnore]
+        public string InterestStyle { get; set; }
+
+        [XmlIgnore]
+        public string InterestBalancetype { get; set; }
+
+        [XmlIgnore]
+        public string InterestRate { get; set; }
 
         [XmlElement(ElementName = "FORPAYROLL")]
         public string Forpayroll { get; set; }
@@ -264,6 +302,40 @@ namespace TallyConnector.Models
         public string Action { get; set; }
     }
 
+    [XmlRoot(ElementName = "INTERESTCOLLECTION.LIST")]
+    public class InterestList
+    {
+        [XmlElement(ElementName = "INTERESTFROMDATE")]
+        public string Interestfromdate { get; set; }
+
+        [XmlElement(ElementName = "INTERESTTODATE")]
+        public string Interesttodate { get; set; }
+
+        [XmlElement(ElementName = "INTERESTSTYLE")]
+        public string InterestStyle { get; set; }
+
+        [XmlElement(ElementName = "INTERESTBALANCETYPE")]
+        public string InterestBalancetype { get; set; }
+
+        [XmlElement(ElementName = "INTERESTAPPLON")]
+        public string Interestappliedon { get; set; }
+
+        [XmlElement(ElementName = "INTERESTFROMTYPE")]
+        public string Interestfromtype { get; set; }
+
+        [XmlElement(ElementName = "ROUNDTYPE")]
+        public string RoundType { get; set; }
+
+        [XmlElement(ElementName = "INTERESTRATE")]
+        public string InterestRate { get; set; }
+
+        [XmlElement(ElementName = "INTERESTAPPLFROM")]
+        public string Interestappliedfrom { get; set; }
+
+        [XmlElement(ElementName = "ROUNDLIMIT")]
+        public string RoundLimit { get; set; }
+
+    }
 
     [XmlRoot(ElementName = "ENVELOPE")]
     public class LedgerEnvelope: TallyXmlJson
