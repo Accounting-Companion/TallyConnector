@@ -81,32 +81,40 @@ namespace TallyConnector.Models
         [XmlElement(ElementName = "OPENINGBALANCE")]
         public string OpeningBal
         {
-            get 
+            get
             {
-                if (ForexAmount != null && RateofExchange!=null)
+                if (ForexAmount != null && RateofExchange != null)
                 {
                     _OpeningBal = $"{ForexAmount} @ {RateofExchange}";
                 }
-                else if (ForexAmount !=null )
+                else if (ForexAmount != null)
                 {
                     _OpeningBal = ForexAmount;
                 }
-                return _OpeningBal; 
+                return _OpeningBal;
             }
             set
             {
-                if (value.ToString().Contains("="))
+                if (value!=null)
                 {
-                    var s = value.ToString().Split('=');
-                    var k = s[0].Split('@');
-                    ForexAmount = k[0];
-                    RateofExchange = k[1].Split()[2];
-                    _OpeningBal = s[1].Split()[2];
+                    if (value.ToString().Contains("="))
+                    {
+                        var s = value.ToString().Split('=');
+                        var k = s[0].Split('@');
+                        ForexAmount = k[0];
+                        RateofExchange = k[1].Split()[2].Split('/')[0];
+                        _OpeningBal = s[1].Split()[2];
+                    }
+                    else
+                    {
+                        _OpeningBal = value;
+                    }
                 }
                 else
                 {
                     _OpeningBal = value;
                 }
+                
 
             }
         }

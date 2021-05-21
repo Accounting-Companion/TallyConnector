@@ -9,8 +9,6 @@ namespace TallyConnector.Models
     [XmlRoot(ElementName = "VOUCHER")]
     public class Voucher : TallyXmlJson
     {
-
-
         [XmlAttribute(AttributeName = "ID")]
         public int TallyId { get; set; }
 
@@ -191,7 +189,6 @@ namespace TallyConnector.Models
         [XmlElement(ElementName = "ISDEEMEDPOSITIVE")]
         public string IsDeemedPositive { get; set; }
 
-        
         private string _Amount;
 
         public string ForexAmount { get;  set; }
@@ -201,16 +198,34 @@ namespace TallyConnector.Models
         [XmlElement(ElementName = "AMOUNT")]
         public string Amount
         {
-            get { return _Amount; }
+            get
+            {
+                if (ForexAmount != null && RateofExchange != null)
+                {
+                    _Amount = $"{ForexAmount} @ {RateofExchange}";
+                }
+                else if (ForexAmount != null)
+                {
+                    _Amount = ForexAmount;
+                }
+                return _Amount;
+            }
             set
             {
-                if (value.ToString().Contains("="))
+                if (value != null)
                 {
-                    var s = value.ToString().Split('=');
-                    var k = s[0].Split('@');
-                    ForexAmount = k[0];
-                    RateofExchange = k[1].Split()[2];
-                    _Amount = s[1].Split()[2];
+                    if (value.ToString().Contains("="))
+                    {
+                        var s = value.ToString().Split('=');
+                        var k = s[0].Split('@');
+                        ForexAmount = k[0];
+                        RateofExchange = k[1].Split()[2].Split('/')[0];
+                        _Amount = s[1].Split()[2];
+                    }
+                    else
+                    {
+                        _Amount = value;
+                    }
                 }
                 else
                 {
@@ -240,23 +255,43 @@ namespace TallyConnector.Models
         [XmlElement(ElementName = "NAME")]
         public string Name { get; set; }
 
-
         private string _Amount;
+
         public string ForexAmount { get; set; }
+
         public string RateofExchange { get; set; }
+
         [XmlElement(ElementName = "AMOUNT")]
         public string Amount
         {
-            get { return _Amount; }
+            get
+            {
+                if (ForexAmount != null && RateofExchange != null)
+                {
+                    _Amount = $"{ForexAmount} @ {RateofExchange}";
+                }
+                else if (ForexAmount != null)
+                {
+                    _Amount = ForexAmount;
+                }
+                return _Amount;
+            }
             set
             {
-                if (value.ToString().Contains("="))
+                if (value != null)
                 {
-                    var s = value.ToString().Split('=');
-                    var k = s[0].Split('@');
-                    ForexAmount = k[0];
-                    RateofExchange = k[1].Split()[2];
-                    _Amount = s[1].Split()[2];
+                    if (value.ToString().Contains("="))
+                    {
+                        var s = value.ToString().Split('=');
+                        var k = s[0].Split('@');
+                        ForexAmount = k[0];
+                        RateofExchange = k[1].Split()[2].Split('/')[0];
+                        _Amount = s[1].Split()[2];
+                    }
+                    else
+                    {
+                        _Amount = value;
+                    }
                 }
                 else
                 {
@@ -288,21 +323,42 @@ namespace TallyConnector.Models
         public string BilledQuantity { get; set; }
 
         private string _Amount;
+
         public string ForexAmount { get; set; }
+
         public string RateofExchange { get; set; }
+
         [XmlElement(ElementName = "AMOUNT")]
         public string Amount
         {
-            get { return _Amount; }
+            get
+            {
+                if (ForexAmount != null && RateofExchange != null)
+                {
+                    _Amount = $"{ForexAmount} @ {RateofExchange}";
+                }
+                else if (ForexAmount != null)
+                {
+                    _Amount = ForexAmount;
+                }
+                return _Amount;
+            }
             set
             {
-                if (value.ToString().Contains("="))
+                if (value != null)
                 {
-                    var s = value.ToString().Split('=');
-                    var k = s[0].Split('@');
-                    ForexAmount = k[0];
-                    RateofExchange = k[1].Split()[2];
-                    _Amount = s[1].Split()[2];
+                    if (value.ToString().Contains("="))
+                    {
+                        var s = value.ToString().Split('=');
+                        var k = s[0].Split('@');
+                        ForexAmount = k[0];
+                        RateofExchange = k[1].Split()[2].Split('/')[0];
+                        _Amount = s[1].Split()[2];
+                    }
+                    else
+                    {
+                        _Amount = value;
+                    }
                 }
                 else
                 {
@@ -311,9 +367,6 @@ namespace TallyConnector.Models
 
             }
         }
-
-
-
 
         [XmlElement(ElementName = "BATCHALLOCATIONS.LIST")]
         public List<BatchAllocations> BacthAllocations { get; set; }
@@ -340,21 +393,42 @@ namespace TallyConnector.Models
         public string Quantity { get; set; }
 
         private string _Amount;
+
         public string ForexAmount { get; set; }
+
         public string RateofExchange { get; set; }
+
         [XmlElement(ElementName = "AMOUNT")]
         public string Amount
         {
-            get { return _Amount; }
+            get
+            {
+                if (ForexAmount != null && RateofExchange != null)
+                {
+                    _Amount = $"{ForexAmount} @ {RateofExchange}";
+                }
+                else if (ForexAmount != null)
+                {
+                    _Amount = ForexAmount;
+                }
+                return _Amount;
+            }
             set
             {
-                if (value.ToString().Contains("="))
+                if (value != null)
                 {
-                    var s = value.ToString().Split('=');
-                    var k = s[0].Split('@');
-                    ForexAmount = k[0];
-                    RateofExchange = k[1].Split()[2];
-                    _Amount = s[1].Split()[2];
+                    if (value.ToString().Contains("="))
+                    {
+                        var s = value.ToString().Split('=');
+                        var k = s[0].Split('@');
+                        ForexAmount = k[0];
+                        RateofExchange = k[1].Split()[2].Split('/')[0];
+                        _Amount = s[1].Split()[2];
+                    }
+                    else
+                    {
+                        _Amount = value;
+                    }
                 }
                 else
                 {
@@ -386,21 +460,42 @@ namespace TallyConnector.Models
         public string Name { get; set; }
 
         private string _Amount;
+
         public string ForexAmount { get; set; }
+
         public string RateofExchange { get; set; }
+
         [XmlElement(ElementName = "AMOUNT")]
         public string Amount
         {
-            get { return _Amount; }
+            get
+            {
+                if (ForexAmount != null && RateofExchange != null)
+                {
+                    _Amount = $"{ForexAmount} @ {RateofExchange}";
+                }
+                else if (ForexAmount != null)
+                {
+                    _Amount = ForexAmount;
+                }
+                return _Amount;
+            }
             set
             {
-                if (value.ToString().Contains("="))
+                if (value != null)
                 {
-                    var s = value.ToString().Split('=');
-                    var k = s[0].Split('@');
-                    ForexAmount = k[0];
-                    RateofExchange = k[1].Split()[2];
-                    _Amount = s[1].Split()[2];
+                    if (value.ToString().Contains("="))
+                    {
+                        var s = value.ToString().Split('=');
+                        var k = s[0].Split('@');
+                        ForexAmount = k[0];
+                        RateofExchange = k[1].Split()[2].Split('/')[0];
+                        _Amount = s[1].Split()[2];
+                    }
+                    else
+                    {
+                        _Amount = value;
+                    }
                 }
                 else
                 {
@@ -412,10 +507,6 @@ namespace TallyConnector.Models
 
 
     }
-
-
-
-
 
 
     /// <summary>
