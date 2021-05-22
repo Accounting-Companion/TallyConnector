@@ -165,7 +165,7 @@ namespace TallyConnector.Models
         public string MailingName { get; set; }
 
 
-        [JsonIgnore]
+        
         [XmlIgnore]
         public string Address
         {
@@ -294,11 +294,12 @@ namespace TallyConnector.Models
         [XmlElement(ElementName = "NARRATION")]
         public string Notes { get; set; }
 
+        [JsonIgnore]
         [XmlElement(ElementName = "ADDRESS.LIST")]
         public HAddress FAddress { get; set; }
 
-        
 
+        [JsonIgnore]
         [XmlElement(ElementName = "LANGUAGENAME.LIST")]
         public LanguageNameList LanguageNameList { get; set; }
 

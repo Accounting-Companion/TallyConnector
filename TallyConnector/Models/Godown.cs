@@ -22,11 +22,11 @@ namespace TallyConnector.Models
 
         [XmlElement(ElementName = "PARENT")]
         public string Parent { get; set; }
-
+        [JsonIgnore]
         [XmlElement(ElementName = "ADDRESS.LIST")]
         public HAddress FAddress { get; set; }
 
-        [JsonIgnore]
+        
         [XmlIgnore]
         public string Address
         {

@@ -7,7 +7,6 @@ using System.Threading.Tasks;
 using System.Xml;
 using System.Xml.Serialization;
 using TallyConnector.Models;
-
 namespace TallyConnector
 {
     public class Tally : IDisposable
