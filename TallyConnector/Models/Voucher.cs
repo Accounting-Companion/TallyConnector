@@ -32,6 +32,94 @@ namespace TallyConnector.Models
         [XmlElement(ElementName = "NARRATION")]
         public string Narration { get; set; }
 
+        //Dispatch Details
+        [XmlIgnore]
+        public string DeliveryNoteNo { get; set; }
+
+        [XmlIgnore]
+        public string ShippingDate { get; set; }
+
+        private DeliveryNotes _DeliveryNotes;
+
+        [JsonIgnore]
+        [XmlElement(ElementName = "BASICSHIPDELIVERYNOTE")]
+        public DeliveryNotes DeliveryNotes
+        {
+            get 
+            {
+                DeliveryNoteNo = _DeliveryNotes.DeliveryNote;
+                ShippingDate = _DeliveryNotes.ShippingDate;
+                return _DeliveryNotes; 
+            }
+            set 
+            {
+                _DeliveryNotes.ShippingDate = value.ShippingDate;
+                _DeliveryNotes.DeliveryNote = value.DeliveryNote;
+                _DeliveryNotes = value; 
+            }
+        }
+
+        [XmlElement(ElementName = "BASICSHIPDOCUMENTNO")]
+        public string DispatchDocNo { get; set; }
+        
+        [XmlElement(ElementName = "BASICSHIPPEDBY")]
+        public string BasicShippedBy { get; set; }
+
+        [XmlElement(ElementName = "BASICFINALDESTINATION")]
+        public string Destination { get; set; }
+        
+        [XmlElement(ElementName = "EICHECKPOST")]
+        public string CarrierName { get; set; }
+
+        [XmlElement(ElementName = "BILLOFLADINGNO")]
+        public string BillofLandingNo { get; set; }
+        
+        [XmlElement(ElementName = "BILLOFLADINGDATE")]
+        public string BillofLandingDate { get; set; }
+
+        [XmlElement(ElementName = "BASICSHIPVESSELNO")]
+        public string VehicleNo { get; set; }
+
+
+
+        //Party Details
+        [XmlElement(ElementName = "PARTYNAME")]
+        public string PartyName { get; set; }
+
+        [XmlElement(ElementName = "STATENAME")]
+        public string State { get; set; }
+
+        [XmlElement(ElementName = "COUNTRYOFRESIDENCE")]
+        public string Country { get; set; }
+
+        [XmlElement(ElementName = "GSTREGISTRATIONTYPE")]
+        public string RegistrationType { get; set; }
+
+        [XmlElement(ElementName = "PARTYGSTIN")]
+        public string PartyGSTIN { get; set; }
+
+        [XmlElement(ElementName = "PLACEOFSUPPLY")]
+        public string PlaceOfSupply { get; set; }
+
+        //Consignee Details
+
+        [XmlElement(ElementName = "BASICBUYERNAME")]
+        public string ConsigneeName { get; set; }
+
+        [XmlElement(ElementName = "CONSIGNEEMAILINGNAME")]
+        public string ConsigneeMailingName { get; set; }
+
+        [XmlElement(ElementName = "CONSIGNEESTATENAME")]
+        public string ConsigneeState { get; set; }
+
+        [XmlElement(ElementName = "CONSIGNEECOUNTRYNAME")]
+        public string ConsigneeCountry { get; set; }
+
+        [XmlElement(ElementName = "CONSIGNEEGSTIN")]
+        public string ConsigneeGSTIN { get; set; }
+
+
+
 
         [XmlElement(ElementName = "ISCANCELLED")]
         public string IsCancelled { get; set; }
@@ -52,7 +140,7 @@ namespace TallyConnector.Models
                 VchDate = value;
             }
         }
-        
+
         [JsonIgnore]
         [XmlAttribute(AttributeName = "TAGNAME")]
         public string TAGNAME
@@ -106,7 +194,7 @@ namespace TallyConnector.Models
 
         public void OrderLedgers()
         {
-            if (VCHTYPE != "Contra" && VCHTYPE != "Purchase" && VCHTYPE != "Receipt" && VCHTYPE != "Credit Note" )
+            if (VCHTYPE != "Contra" && VCHTYPE != "Purchase" && VCHTYPE != "Receipt" && VCHTYPE != "Credit Note")
             {
 
                 Ledgers.Sort((x, y) => x.LedgerName.CompareTo(y.LedgerName));//First Sort Ledger list Using Ledger Names
@@ -191,9 +279,9 @@ namespace TallyConnector.Models
 
         private string _Amount;
 
-        public string ForexAmount { get;  set; }
+        public string ForexAmount { get; set; }
 
-        public string RateofExchange { get;  set; }
+        public string RateofExchange { get; set; }
 
         [XmlElement(ElementName = "AMOUNT")]
         public string Amount
@@ -243,7 +331,7 @@ namespace TallyConnector.Models
 
         [XmlElement(ElementName = "CATEGORYALLOCATIONS.LIST")]
         public List<CostCategoryAllocations> CostCategoryAllocations { get; set; }
-        
+
     }
 
     [XmlRoot(ElementName = "BILLALLOCATIONS.LIST")]
@@ -258,6 +346,20 @@ namespace TallyConnector.Models
         private string _Amount;
 
         public string ForexAmount { get; set; }
+
+        private BillCP _BillCP;
+
+        
+
+        [JsonIgnore]
+        [XmlElement(ElementName = "BILLCREDITPERIOD")]
+        public BillCP BillCP 
+        {
+            get { BillCreditPeriod = _BillCP.Days; return _BillCP; } set { _BillCP.Days = BillCreditPeriod; _BillCP = value; } }
+
+        [XmlIgnore]
+        public string BillCreditPeriod
+        { get; set; }
 
         public string RateofExchange { get; set; }
 
@@ -301,6 +403,27 @@ namespace TallyConnector.Models
             }
         }
 
+    }
+    [XmlRoot(ElementName = "BILLCREDITPERIOD")]
+    public class BillCP
+    {
+        [XmlAttribute(AttributeName = "JD")]
+        public string JD { get; set; }
+
+        private string _days;
+        [XmlAttribute(AttributeName = "JD")]
+        public string Days
+        {
+            get { return _days; }
+            set { _days = value; }
+        }
+
+        [XmlText]
+        public string TextValue
+        {
+            get { return _days; }
+            set { _days = value; }
+        }
 
     }
 
@@ -438,8 +561,6 @@ namespace TallyConnector.Models
             }
         }
 
-
-
     }
 
     [XmlRoot(ElementName = "CATEGORYALLOCATIONS.LIST")]
@@ -453,7 +574,6 @@ namespace TallyConnector.Models
 
     }
     [XmlRoot(ElementName = "COSTCENTREALLOCATIONS.LIST")]
-
     public class CostCenterAllocations
     {
         [XmlElement(ElementName = "NAME")]
@@ -507,6 +627,18 @@ namespace TallyConnector.Models
 
 
     }
+
+    [XmlRoot(ElementName = "INVOICEDELNOTES.LIST")]
+    public class DeliveryNotes
+    {
+        [XmlElement(ElementName = "BASICSHIPPINGDATE")]
+        public string ShippingDate { get; set; }
+
+        [XmlElement(ElementName = "BASICSHIPDELIVERYNOTE")]
+        public string DeliveryNote { get; set; }
+    }
+
+
 
 
     /// <summary>
