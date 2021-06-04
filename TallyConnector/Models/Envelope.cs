@@ -30,19 +30,19 @@ namespace TallyConnector.Models
 	[XmlRoot(ElementName = "HEADER")]
 	public class Header
 	{
-		public Header(string Request,string Type,string ID)
-        {
+		public Header(string Request, string Type, string ID)
+		{
 			this._request = Request;
 			this._type = Type;
 			this._Id = ID;
-        }
+		}
 		public Header() { }
 		private int _version = 1;
 		private string _request;
 		private string _type;
 		private string _Id;
 		[XmlElement(ElementName = "VERSION")]
-		public int Version { get { return _version; } set {_version = value; } }
+		public int Version { get { return _version; } set { _version = value; } }
 
 		[XmlElement(ElementName = "TALLYREQUEST")]
 		public string Request { get { return _request; } set { _request = value; } }
@@ -68,21 +68,50 @@ namespace TallyConnector.Models
 	{
 		private string _ExportFormat;
 
-		[XmlElement(ElementName = "SVEXPORTFORMAT")]
+        public StaticVariables()
+        {
+			
+        }
+
+        [XmlElement(ElementName = "SVEXPORTFORMAT")]
 		public string SVExportFormat { get { return _ExportFormat; } set { _ExportFormat = $"$$SysName:{value}"; } }
 
 		[XmlElement(ElementName = "SVCURRENTCOMPANY")]
 		public string SVCompany { get; set; }
 
+		[XmlIgnore]
+		public string SVFromDate { get { return SVFrom.Text; } set {SVFrom = new(); SVFrom.Text = value; } }
+
 		[XmlElement(ElementName = "SVFROMDATE")]
-		public string SVFromDate { get; set; }
+		public SVFrom SVFrom { get; set; }
+
+		[XmlIgnore]
+		public string SVToDate { get { return SVTo.Text; } set { SVTo = new(); SVTo.Text = value; } }
 
 		[XmlElement(ElementName = "SVTODATE")]
-		public string SVToDate { get; set; }
+		public SVTo SVTo { get; set; }
 
 		[XmlElement(ElementName = "SVViewName")]
 		public string ViewName { get; set; }
-		
+
+	}
+	[XmlRoot(ElementName = "SVFROMDATE")]
+	public class SVFrom
+	{
+		[XmlAttribute(AttributeName = "TYPE")]
+		public string Type { get; set; } = "Date";
+
+		[XmlText]
+		public string Text { get; set; }
+	}
+	[XmlRoot(ElementName = "SVTODATE")]
+	public class SVTo
+	{
+		[XmlAttribute(AttributeName = "TYPE")]
+		public string Type { get; set; } = "Date";
+
+		[XmlText]
+		public string Text { get; set; }
 	}
 
 

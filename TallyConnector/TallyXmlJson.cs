@@ -22,7 +22,6 @@ namespace TallyConnector
                 OmitXmlDeclaration = true,
                 NewLineChars= "&#13;&#10;", //If /r/n in Xml replace
                 //NewLineHandling = NewLineHandling.Entitize,
-                
                 Encoding = Encoding.UTF8,
                 CheckCharacters = false,
 

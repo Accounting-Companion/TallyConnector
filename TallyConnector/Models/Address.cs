@@ -15,8 +15,8 @@ namespace TallyConnector.Models
     public class HAddress
     {
         private List<string> _Address = new();
+      
 
-        
         [XmlElement(ElementName = "ADDRESS")]
         public List<string> Address
         {
@@ -27,8 +27,8 @@ namespace TallyConnector.Models
         [XmlIgnore]
         public string FullAddress
         {
-            get { return string.Join('\n', _Address); }
-            set { _Address = value.Split('\n').ToList(); }
+            get { return _Address.Count>0?string.Join(" ..\n", _Address):null; }
+            set { _Address = value!=null? value.Split(" ..\n").ToList():new (); }
         }
 
     }

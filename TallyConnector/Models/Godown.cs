@@ -59,6 +59,48 @@ namespace TallyConnector.Models
         [XmlElement(ElementName = "CANDELETE")]
         public string CanDelete { get; set; }
 
+
+        [XmlIgnore]
+        public string Alias
+        {
+            get
+            {
+                if (this.LanguageNameList.NameList.NAMES.Count > 0)
+                {
+                    this.LanguageNameList.NameList.NAMES[0] = this.Name;
+                    return string.Join("\n", this.LanguageNameList.NameList.NAMES.GetRange(1, this.LanguageNameList.NameList.NAMES.Count - 1));
+                }
+                else
+                {
+                    this.LanguageNameList.NameList.NAMES.Add(this.Name);
+                    return null;
+                }
+
+            }
+            set
+            {
+                this.LanguageNameList = new();
+
+                if (value != null)
+                {
+                    LanguageNameList.NameList.NAMES.Add(Name);
+                    if (value != "")
+                    {
+                        LanguageNameList.NameList.NAMES.AddRange(value.Split('\n').ToList());
+                    }
+
+                }
+                else
+                {
+                    LanguageNameList.NameList.NAMES.Add(Name);
+                }
+
+            }
+        }
+
+        [JsonIgnore]
+        [XmlElement(ElementName = "LANGUAGENAME.LIST")]
+        public LanguageNameList LanguageNameList { get; set; }
         /// <summary>
         /// Accepted Values //Create, Alter, Delete
         /// </summary>

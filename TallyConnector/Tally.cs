@@ -12,6 +12,7 @@ namespace TallyConnector
     public class Tally : IDisposable
     {
         static readonly HttpClient client = new();
+
         private int Port;
         private string BaseURL;
 
@@ -43,9 +44,9 @@ namespace TallyConnector
 
         public List<Company> CompaniesList { get; private set; }
 
-        private string Company { get; set; }
-        private string FromDate { get; set; }
-        private string ToDate { get; set; }
+        public string Company { get; private set; }
+        public string FromDate { get; private set; }
+        public string ToDate { get; private set; }
 
         /// <summary>
         /// Intiate Tally with <strong>baseURL</strong> and <strong>port</strong>
@@ -56,6 +57,7 @@ namespace TallyConnector
         {
             Port = port;
             BaseURL = baseURL;
+            client.Timeout = TimeSpan.FromSeconds(30);
         }
 
 
@@ -64,6 +66,7 @@ namespace TallyConnector
         /// </summary>
         public Tally()
         {
+            client.Timeout = TimeSpan.FromSeconds(30);
             Setup("http://localhost", 9000);
         }
 
@@ -83,7 +86,7 @@ namespace TallyConnector
             Company = company;
             FromDate = fromDate;
             ToDate = toDate;
-
+            
         }
 
         
@@ -140,7 +143,6 @@ namespace TallyConnector
                 }
                 catch (Exception e)
                 {
-
                     //throw;
                     //return CompList;
                 }
@@ -1104,8 +1106,8 @@ namespace TallyConnector
                 string ReqXml = GetObjXML(objType: ObjType,
                                           ObjName: ObjName,
                                           company: company,
-                                          fromDate: fromDate,
-                                          toDate: toDate,
+                                          fromDate:fromDate,
+                                          toDate:toDate,
                                           fetchList: fetchList,
                                           viewname: viewname);
                 string ResXml = await SendRequest(ReqXml);
@@ -1208,6 +1210,48 @@ namespace TallyConnector
             }
             return Resxml;
         }
+
+
+        /// <summary>
+        /// Generates XML for custom collection using TDL report
+        /// </summary>
+        /// <param name="rName">Custom Report Name to be used</param>
+        /// <param name="colType">Specify Name of collection as per Tally</param>
+        /// <param name="Sv">instance of Static vairiables</param>
+        /// <param name="NativeFields">Filters if any</param>
+        /// <param name="Filters">Filters if any</param>
+        /// <param name="SystemFilters">Definition for filter</param>
+        /// <returns>returns xml as string</returns>
+        public async Task<string> GetNativeCollectionXML(string rName,
+                                                         string colType,
+                                                         StaticVariables Sv = null,
+                                                         List<string> NativeFields = null,
+                                                         List<string> Filters = null,
+                                                         List<string> SystemFilters = null)
+        {
+            //LedgersList LedgList = new();
+            string Resxml = null;
+            await Check();
+            if (Status == "Running")
+            {
+                Models.CusColEnvelope ColEnvelope = new(); //Collection Envelope
+                string RName = rName;
+
+                ColEnvelope.Header = new("Export", "Collection", RName);  //Configuring Header To get Export data
+                if (Sv != null)
+                {
+                    ColEnvelope.Body.Desc.StaticVariables = Sv;
+                }
+
+                ColEnvelope.Body.Desc.TDL.TDLMessage = new(colName: RName, colType: colType, nativeFields: NativeFields, Filters, SystemFilters);
+                //ColEnvelope.Body.Desc.TDL.TDLMessage.Collection.SetAttributes(isInitialize: "Yes");
+
+                string Reqxml = ColEnvelope.GetXML(); //Gets XML from Object
+                Resxml = await SendRequest(Reqxml);
+            }
+            return Resxml;
+        }
+
 
 
         public async Task<LedgersList> GetLedgersList()

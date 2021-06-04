@@ -24,7 +24,7 @@ namespace TallyConnector.Models
         [Required]
         public string Name { get; set; }
 
-        [XmlAttribute(AttributeName = "REQNAME")]
+        [XmlIgnore]
         public string VName { get; set; }
 
         [XmlElement(ElementName = "PARENT")]
@@ -38,26 +38,42 @@ namespace TallyConnector.Models
             {
                 if (this.LanguageNameList.NameList.NAMES.Count > 0)
                 {
-                    this.LanguageNameList.NameList.NAMES[0] = this.Name;
-                    return string.Join("\n", this.LanguageNameList.NameList.NAMES.GetRange(1, this.LanguageNameList.NameList.NAMES.Count - 1));
+                    if (VName ==null)
+                    {
+                        VName = this.LanguageNameList.NameList.NAMES[0];
+                    }
+                    if (Name == VName)
+                    {
+                        this.LanguageNameList.NameList.NAMES[0] = this.Name;
+                        return string.Join("\n", this.LanguageNameList.NameList.NAMES.GetRange(1, this.LanguageNameList.NameList.NAMES.Count - 1));
+
+                    }
+                    else
+                    {
+                        //Name = this.LanguageNameList.NameList.NAMES[0];
+                        return string.Join("\n", this.LanguageNameList.NameList.NAMES);
+
+                    }
                 }
                 else
                 {
                    this.LanguageNameList.NameList.NAMES.Add(this.Name);
                    return null;
                 }
+                
 
             }
             set
             {
                 this.LanguageNameList = new();
+                List<string> lis = value.Split('\n').ToList();
                 
                 if (value!=null)
                 {
                     LanguageNameList.NameList.NAMES.Add(Name);
                     if (value != "")
                     {
-                        LanguageNameList.NameList.NAMES.AddRange(value.Split('\n').ToList());
+                        LanguageNameList.NameList.NAMES.AddRange(lis);
                     }
                     
                 }
@@ -65,6 +81,7 @@ namespace TallyConnector.Models
                 {
                     LanguageNameList.NameList.NAMES.Add(Name);
                 }
+                
                 
             }
         }
@@ -176,8 +193,12 @@ namespace TallyConnector.Models
 
             set
             {
-                this.FAddress = new();
-                this.FAddress.FullAddress = value;
+                if (value !="")
+                {
+                    
+                    this.FAddress.FullAddress = value;
+                }
+                
 
             }
 
@@ -259,21 +280,47 @@ namespace TallyConnector.Models
         
         [JsonIgnore]
         [XmlElement(ElementName = "INTERESTCOLLECTION.LIST")]
-        public InterestList InterestList { get 
+        public InterestList InterestList { 
+            get 
             {
-                _InterestList.InterestBalancetype = InterestBalancetype;
-                _InterestList.InterestRate = InterestRate;
+                _InterestList.FromDate = Interestfromdate;
+                _InterestList.ToDate = Interesttodate;
                 _InterestList.InterestStyle = InterestStyle;
+                _InterestList.InterestBalancetype = InterestBalancetype;
+                _InterestList.Interestappliedon = Interestappliedon;
+                _InterestList.Interestfromtype = Interestfromtype;
+                _InterestList.RoundType = InterestRoundType;
+                _InterestList.InterestRate = InterestRate;
+                _InterestList.Interestappliedfrom = Interestappliedfrom;
+                _InterestList.RoundLimit = InterestRoundLimit;
+
+                
+                
 
                 return _InterestList; 
             } 
             set 
             {
-                InterestBalancetype = value.InterestBalancetype;
-                InterestRate = value.InterestRate;
+                Interestfromdate = value.FromDate;
+                Interesttodate = value.ToDate;
                 InterestStyle = value.InterestStyle;
+                InterestBalancetype = value.InterestBalancetype;
+                Interestappliedon = value.Interestappliedon;
+                Interestfromtype = value.Interestfromtype;
+                InterestRoundType = value.RoundType;
+                InterestRate = value.InterestRate;
+                Interestappliedfrom = value.Interestappliedfrom;
+                InterestRoundLimit = value.RoundLimit;
+
+
                 _InterestList = value;
             } }
+
+        [XmlIgnore]
+        public string Interestfromdate { get; set; }
+
+        [XmlIgnore]
+        public string Interesttodate { get; set; }
 
         [XmlIgnore]
         public string InterestStyle { get; set; }
@@ -282,7 +329,24 @@ namespace TallyConnector.Models
         public string InterestBalancetype { get; set; }
 
         [XmlIgnore]
+        public string Interestappliedon { get; set; }
+
+        [XmlIgnore]
+        public string Interestfromtype { get; set; }
+
+        [XmlIgnore]
+        public string InterestRoundType { get; set; }
+
+        [XmlIgnore]
         public string InterestRate { get; set; }
+
+        [XmlIgnore]
+        public string Interestappliedfrom { get; set; }
+
+        [XmlIgnore]
+        public string InterestRoundLimit { get; set; }
+
+
 
         [XmlElement(ElementName = "FORPAYROLL")]
         public string Forpayroll { get; set; }
@@ -318,10 +382,10 @@ namespace TallyConnector.Models
     public class InterestList
     {
         [XmlElement(ElementName = "INTERESTFROMDATE")]
-        public string Interestfromdate { get; set; }
+        public string FromDate { get; set; }
 
         [XmlElement(ElementName = "INTERESTTODATE")]
-        public string Interesttodate { get; set; }
+        public string ToDate { get; set; }
 
         [XmlElement(ElementName = "INTERESTSTYLE")]
         public string InterestStyle { get; set; }

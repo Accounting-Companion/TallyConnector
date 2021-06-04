@@ -9,6 +9,11 @@ namespace TallyConnector.Models
     [XmlRoot(ElementName = "VOUCHER")]
     public class Voucher : TallyXmlJson
     {
+        public Voucher()
+        {
+            _DeliveryNotes = new();
+        }
+
         [XmlAttribute(AttributeName = "ID")]
         public int TallyId { get; set; }
 
@@ -40,6 +45,8 @@ namespace TallyConnector.Models
         public string ShippingDate { get; set; }
 
         private DeliveryNotes _DeliveryNotes;
+
+        
 
         [JsonIgnore]
         [XmlElement(ElementName = "BASICSHIPDELIVERYNOTE")]
@@ -143,7 +150,7 @@ namespace TallyConnector.Models
 
         [JsonIgnore]
         [XmlAttribute(AttributeName = "TAGNAME")]
-        public string TAGNAME
+        public string TagName
         {
             get
             {
@@ -157,7 +164,7 @@ namespace TallyConnector.Models
 
         [JsonIgnore]
         [XmlAttribute(AttributeName = "TAGVALUE")]
-        public string TAGVALUE
+        public string TagValue
         {
             get
             {
@@ -179,7 +186,7 @@ namespace TallyConnector.Models
 
         [JsonIgnore]
         [XmlAttribute(AttributeName = "VCHTYPE")]
-        public string VCHTYPE
+        public string VchType
         {
             get
             {
@@ -194,7 +201,7 @@ namespace TallyConnector.Models
 
         public void OrderLedgers()
         {
-            if (VCHTYPE != "Contra" && VCHTYPE != "Purchase" && VCHTYPE != "Receipt" && VCHTYPE != "Credit Note")
+            if (VchType != "Contra" && VchType != "Purchase" && VchType != "Receipt" && VchType != "Credit Note")
             {
 
                 Ledgers.Sort((x, y) => x.LedgerName.CompareTo(y.LedgerName));//First Sort Ledger list Using Ledger Names
@@ -230,8 +237,8 @@ namespace TallyConnector.Models
 
                 c.InventoryAllocations.ForEach(inv =>
                 {
-                    inv.BacthAllocations.Sort((x, y) => x.GodownName.CompareTo(y.GodownName));
-                    inv.BacthAllocations.Sort((x, y) => x.Amount.CompareTo(y.Amount));
+                    inv.BatchAllocations.Sort((x, y) => x.GodownName.CompareTo(y.GodownName));
+                    inv.BatchAllocations.Sort((x, y) => x.Amount.CompareTo(y.Amount));
 
                     inv.CostCategoryAllocations.Sort((x, y) => x.CostCategoryName.CompareTo(y.CostCategoryName));
 
@@ -255,8 +262,14 @@ namespace TallyConnector.Models
         public new string GetXML()
         {
             OrderLedgers();
-
+            BillAllocComputeJD();
             return base.GetXML();
+        }
+        public void BillAllocComputeJD()
+        {
+            DateTime Vchdate = DateTime.Parse(VchDate);
+            double JDval = Vchdate.ToOADate();
+            this.Ledgers.ForEach(Ledg => Ledg.BillAllocations.ForEach(BillAlloc => BillAlloc.BillCP.JD = $"{JDval}"));
         }
     }
 
@@ -337,6 +350,11 @@ namespace TallyConnector.Models
     [XmlRoot(ElementName = "BILLALLOCATIONS.LIST")]
     public class BillAllocations
     {
+        public BillAllocations()
+        {
+            _BillCP = new();
+        }
+
         [XmlElement(ElementName = "BILLTYPE")]
         public string BillType { get; set; }
 
@@ -492,7 +510,7 @@ namespace TallyConnector.Models
         }
 
         [XmlElement(ElementName = "BATCHALLOCATIONS.LIST")]
-        public List<BatchAllocations> BacthAllocations { get; set; }
+        public List<BatchAllocations> BatchAllocations { get; set; }
 
         [XmlElement(ElementName = "CATEGORYALLOCATIONS.LIST")]
         public List<CostCategoryAllocations> CostCategoryAllocations { get; set; }
