@@ -8,31 +8,23 @@ using System.Xml.Serialization;
 
 namespace TallyConnector.Models
 {
-    [XmlRoot(ElementName = "COSTCENTRE")]
-    public class CostCenter:TallyXmlJson
+    [XmlRoot(ElementName = "ATTENDANCETYPE")]
+    public class Attendance: TallyXmlJson
     {
-        
-        [XmlAttribute(AttributeName = "ID")]
-        public int TallyId { get; set; }
-
         [XmlAttribute(AttributeName = "NAME")]
         public string Name { get; set; }
 
-        [XmlAttribute(AttributeName = "REQNAME")]
-        public string VName { get; set; }
+        [XmlElement(ElementName = "ATTENDANCEPRODUCTIONTYPE")]
+        public string ProductionType { get; set; }
 
-        [XmlElement(ElementName = "CATEGORY")]
-        public string Category { get; set; }
+        [XmlElement(ElementName = "ATTENDANCEPERIOD")]
+        public string Period { get; set; }
 
         [XmlElement(ElementName = "PARENT")]
         public string Parent { get; set; }
 
-        [XmlElement(ElementName = "EMAILID")]
-        public string Emailid { get; set; }
-
-        [XmlElement(ElementName = "REVENUELEDFOROPBAL")]
-        public string ShowOpeningBal { get; set; }
-
+        [XmlIgnore]
+        public string VName { get; set; }
 
         [XmlIgnore]
         public string Alias
@@ -89,49 +81,56 @@ namespace TallyConnector.Models
             }
         }
 
+        [XmlElement(ElementName = "CANDELETE")]
+        public string CanDelete { get; set; } //Ignore This While Creating or Altering
+
         [JsonIgnore]
         [XmlElement(ElementName = "LANGUAGENAME.LIST")]
         public LanguageNameList LanguageNameList { get; set; }
+
         /// <summary>
         /// Accepted Values //Create, Alter, Delete
         /// </summary>
         [JsonIgnore]
         [XmlAttribute(AttributeName = "Action")]
         public string Action { get; set; }
+
     }
 
+
+
     [XmlRoot(ElementName = "ENVELOPE")]
-    public class CostCentEnvelope : TallyXmlJson
+    public class AttendanceEnvelope : TallyXmlJson
     {
 
         [XmlElement(ElementName = "HEADER")]
         public Header Header { get; set; }
 
         [XmlElement(ElementName = "BODY")]
-        public CCentBody Body { get; set; } = new();
+        public AttendanceBody Body { get; set; } = new();
     }
 
     [XmlRoot(ElementName = "BODY")]
-    public class CCentBody
+    public class AttendanceBody
     {
         [XmlElement(ElementName = "DESC")]
         public Description Desc { get; set; } = new();
 
         [XmlElement(ElementName = "DATA")]
-        public CCentData Data { get; set; } = new();
+        public AttendanceData Data { get; set; } = new();
     }
 
     [XmlRoot(ElementName = "DATA")]
-    public class CCentData
+    public class AttendanceData
     {
         [XmlElement(ElementName = "TALLYMESSAGE")]
-        public CCentMessage Message { get; set; } = new();
+        public AttendanceMessage Message { get; set; } = new();
     }
 
     [XmlRoot(ElementName = "TALLYMESSAGE")]
-    public class CCentMessage
+    public class AttendanceMessage
     {
-        [XmlElement(ElementName = "COSTCENTRE")]
-        public CostCenter CostCenter { get; set; }
+        [XmlElement(ElementName = "ATTENDANCETYPE")]
+        public Attendance Attendance { get; set; }
     }
 }

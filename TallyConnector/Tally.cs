@@ -967,6 +967,139 @@ namespace TallyConnector
 
 
         /// <summary>
+        /// Gets CostCenter from Tally based on CostCenter name
+        /// </summary>
+        /// <param name="EmployeeGroupName">Specify the name of EmployeeGroupName to be fetched from Tally</param>
+        /// <param name="company">Specify Company if not specified in Setup</param>
+        /// <param name="fromDate">Specify fromDate if not specified in Setup</param>
+        /// <param name="toDate">Specify toDate if not specified in Setup</param>
+        /// <param name="fetchList">You can select the list of fields to be fetched from tally if nothing specified it pulls all fields availaible in Tally
+        /// </param>
+        /// <returns>Returns instance of Models.CostCenter instance with data from tally</returns>
+        public async Task<EmployeeGroup> GetEmployeeGroup(String EmployeeGroupName,
+                                                    string company = null,
+                                                    string fromDate = null,
+                                                    string toDate = null,
+                                                    List<string> fetchList = null,
+                                                    string format = "XML")
+        {
+            //If parameter is null Get value from instance
+            company ??= Company;
+            fromDate ??= FromDate;
+            toDate ??= ToDate;
+
+            EmployeeGroup EmpGrp = (await GetObjFromTally<EmployeeGroupEnvelope>(ObjName: EmployeeGroupName,
+                                                                             ObjType: "CostCenter",
+                                                                             company: company,
+                                                                             fromDate: fromDate,
+                                                                             toDate: toDate,
+                                                                             fetchList: fetchList,
+                                                                             viewname: null)).Body.Data.Message.EmployeeGroup;
+
+            return EmpGrp;
+        }
+
+        ///// <summary>
+        ///// Create/Alter/Delete EmployeeGroup in Tally
+        ///// To Alter/Delete existing EmployeeGroup set EmployeeGroup.Action to Alter/Delete
+        ///// </summary>
+        ///// <param name="EmployeeGroup">Send Models.EmployeeGroup</param>
+        ///// <param name="company">if not specified company is taken from instance</param>
+        ///// <returns> Models.PResult if Presult.Status can be sucess or failure,
+        ///// Presult.result will have failure message incase of failure,
+        /////  Presult.result will be empty if sucess 
+        ///// </returns>
+        public async Task<PResult> PostEmployeeGroup(EmployeeGroup EmployeeGroup,
+                                      string company = null)
+        {
+            //If parameter is null Get value from instance
+            company ??= Company;
+
+            EmployeeGroupEnvelope EmployeeGroupEnvelope = new();
+            EmployeeGroupEnvelope.Header = new(Request: "Import", Type: "Data", ID: "All Masters");
+            EmployeeGroupEnvelope.Body.Desc.StaticVariables = new() { SVCompany = company };
+
+            EmployeeGroupEnvelope.Body.Data.Message.EmployeeGroup = EmployeeGroup;
+
+            string CostCenterXML = EmployeeGroupEnvelope.GetXML();
+
+            string RespXml = await SendRequest(CostCenterXML);
+
+            PResult result = ParseResponse(RespXml);
+
+            return result;
+        }
+
+       
+        /// <summary>
+        /// Gets CostCenter from Tally based on CostCenter name
+        /// </summary>
+        /// <param name="EmployeeGroupName">Specify the name of EmployeeGroupName to be fetched from Tally</param>
+        /// <param name="company">Specify Company if not specified in Setup</param>
+        /// <param name="fromDate">Specify fromDate if not specified in Setup</param>
+        /// <param name="toDate">Specify toDate if not specified in Setup</param>
+        /// <param name="fetchList">You can select the list of fields to be fetched from tally if nothing specified it pulls all fields availaible in Tally
+        /// </param>
+        /// <returns>Returns instance of Models.CostCenter instance with data from tally</returns>
+        public async Task<Employee> GetEmployee(String EmployeeName,
+                                                    string company = null,
+                                                    string fromDate = null,
+                                                    string toDate = null,
+                                                    List<string> fetchList = null,
+                                                    string format = "XML")
+        {
+            //If parameter is null Get value from instance
+            company ??= Company;
+            fromDate ??= FromDate;
+            toDate ??= ToDate;
+            fetchList = new() { "TaxRegimeDetails","*" };
+            Employee Employee = (await GetObjFromTally<EmployeeEnvelope>(ObjName: EmployeeName,
+                                                                             ObjType: "CostCenter",
+                                                                             company: company,
+                                                                             fromDate: fromDate,
+                                                                             toDate: toDate,
+                                                                             fetchList: fetchList,
+                                                                             viewname: null)).Body.Data.Message.Employee;
+
+            return Employee;
+        }
+
+        ///// <summary>
+        ///// Create/Alter/Delete Employee in Tally
+        ///// To Alter/Delete existing Employee set Employee.Action to Alter/Delete
+        ///// </summary>
+        ///// <param name="Employee">Send Models.Employee</param>
+        ///// <param name="company">if not specified company is taken from instance</param>
+        ///// <returns> Models.PResult if Presult.Status can be sucess or failure,
+        ///// Presult.result will have failure message incase of failure,
+        /////  Presult.result will be empty if sucess 
+        ///// </returns>
+        public async Task<PResult> PostEmployee(Employee Employee,
+                                      string company = null)
+        {
+            //If parameter is null Get value from instance
+            company ??= Company;
+
+            EmployeeEnvelope EmployeeEnvelope = new();
+            EmployeeEnvelope.Header = new(Request: "Import", Type: "Data", ID: "All Masters");
+            EmployeeEnvelope.Body.Desc.StaticVariables = new() { SVCompany = company };
+
+            EmployeeEnvelope.Body.Data.Message.Employee = Employee;
+
+            string CostCenterXML = EmployeeEnvelope.GetXML();
+
+            string RespXml = await SendRequest(CostCenterXML);
+
+            PResult result = ParseResponse(RespXml);
+
+            return result;
+        }
+
+
+
+
+
+        /// <summary>
         /// Gets List of Vouchers  based on <strong>Voucher Type</strong>
         /// </summary>
         /// <param name="VoucherType">Specify the name of VoucherType based on which vouchers to be fetched</param>
