@@ -37,8 +37,22 @@ namespace TallyConnector.Models
             {
                 if (this.LanguageNameList.NameList.NAMES.Count > 0)
                 {
-                    this.LanguageNameList.NameList.NAMES[0] = this.Name;
-                    return string.Join("\n", this.LanguageNameList.NameList.NAMES.GetRange(1, this.LanguageNameList.NameList.NAMES.Count - 1));
+                    if (VName == null)
+                    {
+                        VName = this.LanguageNameList.NameList.NAMES[0];
+                    }
+                    if (Name == VName)
+                    {
+                        this.LanguageNameList.NameList.NAMES[0] = this.Name;
+                        return string.Join("\n", this.LanguageNameList.NameList.NAMES.GetRange(1, this.LanguageNameList.NameList.NAMES.Count - 1));
+
+                    }
+                    else
+                    {
+                        //Name = this.LanguageNameList.NameList.NAMES[0];
+                        return string.Join("\n", this.LanguageNameList.NameList.NAMES);
+
+                    }
                 }
                 else
                 {
@@ -46,17 +60,19 @@ namespace TallyConnector.Models
                     return null;
                 }
 
+
             }
             set
             {
                 this.LanguageNameList = new();
+                List<string> lis = value.Split('\n').ToList();
 
                 if (value != null)
                 {
                     LanguageNameList.NameList.NAMES.Add(Name);
                     if (value != "")
                     {
-                        LanguageNameList.NameList.NAMES.AddRange(value.Split('\n').ToList());
+                        LanguageNameList.NameList.NAMES.AddRange(lis);
                     }
 
                 }
@@ -64,6 +80,7 @@ namespace TallyConnector.Models
                 {
                     LanguageNameList.NameList.NAMES.Add(Name);
                 }
+
 
             }
         }
