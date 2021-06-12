@@ -111,7 +111,7 @@ namespace Tests
         [Test]
         public async Task CheckGetCurrency()
         {
-            Currencies Currency = await TTally.GetCurrency("$");
+            Currency Currency = await TTally.GetCurrency("$");
             Assert.NotNull(Currency);
         }
 

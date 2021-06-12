@@ -5,7 +5,7 @@ using System.Xml.Serialization;
 namespace TallyConnector.Models
 {
     [XmlRoot(ElementName = "CURRENCY")]
-    public class Currencies : TallyXmlJson
+    public class Currency : TallyXmlJson
     {
         [XmlAttribute(AttributeName = "ID")]
         public int TallyId { get; set; }
@@ -107,7 +107,7 @@ namespace TallyConnector.Models
     public class CrncyMessage
     {
         [XmlElement(ElementName = "CURRENCY")]
-        public Currencies Currency { get; set; }
+        public Currency Currency { get; set; }
     }
 
 

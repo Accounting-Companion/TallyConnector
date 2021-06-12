@@ -141,7 +141,7 @@ namespace TallyConnector
                     CompaniesList = Tally.GetObjfromXml<ComListEnvelope>(Resxml).Body.Data.Collection.CompaniesList;
 
                 }
-                catch (Exception e)
+                catch (Exception e) 
                 {
                     //throw;
                     //return CompList;
@@ -911,7 +911,7 @@ namespace TallyConnector
         /// <param name="fetchList">You can select the list of fields to be fetched from tally if nothing specified it pulls all fields availaible in Tally
         /// </param>
         /// <returns>Returns instance of Models.Currency  with data from tally</returns>
-        public async Task<Currencies> GetCurrency(String CurrencyName,
+        public async Task<Currency> GetCurrency(String CurrencyName,
                                                   string company = null,
                                                   string fromDate = null,
                                                   string toDate = null,
@@ -922,7 +922,7 @@ namespace TallyConnector
             fromDate ??= FromDate;
             toDate ??= ToDate;
 
-            Currencies currency = (await GetObjFromTally<CurrencyEnvelope>(ObjName: CurrencyName,
+            Currency currency = (await GetObjFromTally<CurrencyEnvelope>(ObjName: CurrencyName,
                                                                            ObjType: "Currencies",
                                                                            company: company,
                                                                            fromDate: fromDate,
@@ -944,7 +944,7 @@ namespace TallyConnector
         /// Presult.result will have failure message incase of failure,
         ///  Presult.result will be empty if sucess 
         /// </returns>
-        public async Task<PResult> PostCurrency(Currencies currency,
+        public async Task<PResult> PostCurrency(Currency currency,
                                       string company = null)
         {
             //If parameter is null Get value from instance
