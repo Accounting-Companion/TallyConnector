@@ -429,7 +429,7 @@ namespace TallyConnector.Models
         public string JD { get; set; }
 
         private string _days;
-        [XmlAttribute(AttributeName = "JD")]
+        [XmlAttribute(AttributeName = "Days")]
         public string Days
         {
             get { return _days; }
