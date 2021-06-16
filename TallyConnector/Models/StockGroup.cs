@@ -11,6 +11,11 @@ namespace TallyConnector.Models
     [XmlRoot(ElementName = "STOCKGROUP")]
     public class StockGroup:TallyXmlJson
     {
+        public StockGroup()
+        {
+            BaseUnit = "";
+        }
+
         [XmlAttribute(AttributeName = "ID")]
         public int TallyId { get; set; }
 
@@ -29,6 +34,10 @@ namespace TallyConnector.Models
 
         [XmlElement(ElementName = "GSTAPPLICABLE")]
         public string GSTApplicability { get; set; }
+        
+        [XmlElement(ElementName = "BASEUNITS")]
+        public string BaseUnit { get; set; }
+
 
         [XmlIgnore]
         public string Alias
