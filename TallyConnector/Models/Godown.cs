@@ -95,10 +95,11 @@ namespace TallyConnector.Models
             set
             {
                 this.LanguageNameList = new();
-                List<string> lis = value.Split('\n').ToList();
-
+               
                 if (value != null)
                 {
+                    List<string> lis = value.Split('\n').ToList();
+
                     LanguageNameList.NameList.NAMES.Add(Name);
                     if (value != "")
                     {

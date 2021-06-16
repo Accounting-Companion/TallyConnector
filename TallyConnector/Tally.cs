@@ -1492,6 +1492,8 @@ namespace TallyConnector
         //Converts to given object from Xml
         public static T GetObjfromXml<T>(string Xml)
         {
+            string re = @"[^\x09\x0A\x0D\x20-\xD7FF\xE000-\xFFFD\x10000-x10FFFF]";
+            Xml = System.Text.RegularExpressions.Regex.Replace(Xml, re, "");
             XmlSerializer XMLSer = new(typeof(T));
 
             NameTable nt = new();
@@ -1501,6 +1503,7 @@ namespace TallyConnector
 
             XmlReaderSettings xset = new()
             {
+                CheckCharacters = false,
                 ConformanceLevel = ConformanceLevel.Fragment
             };
             XmlReader rd = XmlReader.Create(new StringReader(Xml), xset, context);
@@ -1509,6 +1512,8 @@ namespace TallyConnector
             try
             {
                 T obj = (T)XMLSer.Deserialize(rd);
+
+
                 return obj;
             }
             catch (Exception e)

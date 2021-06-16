@@ -1,6 +1,7 @@
 ﻿using System.IO;
 using System.Text;
 using System.Text.Json;
+using System.Text.Json.Serialization;
 using System.Xml;
 using System.Xml.Serialization;
 
@@ -33,6 +34,13 @@ namespace TallyConnector
             xmlSerializer.Serialize(writer, this, ns);
             return textWriter.ToString(); ;
         }
+
+        [JsonIgnore]
+        [XmlAnyElement(Namespace = "UDF")]
+        public XmlElement[] OtherFields { get; set; }
+        [JsonIgnore]
+        [XmlAnyAttribute]
+        public XmlAttribute[] OtherAttributes { get; set; }
 
     }
 }

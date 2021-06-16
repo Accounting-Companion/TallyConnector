@@ -1,12 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text.Json.Serialization;
+using System.Xml;
 using System.Xml.Serialization;
 
 namespace TallyConnector.Models
 {
     [Serializable]
-    [XmlRoot(ElementName = "VOUCHER")]
+    [XmlRoot(ElementName = "VOUCHER",Namespace ="")]
     public class Voucher : TallyXmlJson
     {
         public Voucher()
@@ -198,6 +199,7 @@ namespace TallyConnector.Models
             }
         }
 
+        
 
         public void OrderLedgers()
         {
@@ -267,9 +269,9 @@ namespace TallyConnector.Models
         }
         public void BillAllocComputeJD()
         {
-            DateTime Vchdate = DateTime.Parse(VchDate);
-            double JDval = Vchdate.ToOADate();
-            this.Ledgers.ForEach(Ledg => Ledg.BillAllocations.ForEach(BillAlloc => BillAlloc.BillCP.JD = $"{JDval}"));
+            //DateTime Vchdate = DateTime.TryParseExact(VchDate, "yyyyddMM",);
+            //double JDval = Vchdate.ToOADate();
+            //this.Ledgers.ForEach(Ledg => Ledg.BillAllocations.ForEach(BillAlloc => BillAlloc.BillCP.JD = $"{JDval}"));
         }
     }
 
