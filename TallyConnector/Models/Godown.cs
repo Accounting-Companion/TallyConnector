@@ -11,6 +11,12 @@ namespace TallyConnector.Models
     [XmlRoot(ElementName = "GODOWN")]
     public class Godown:TallyXmlJson
     {
+
+        public Godown()
+        {
+            FAddress = new();
+        }
+
         [XmlAttribute(AttributeName = "ID")]
         public int TallyId { get; set; }
 
