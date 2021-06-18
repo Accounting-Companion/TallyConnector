@@ -1444,6 +1444,7 @@ namespace TallyConnector
             {
                 try
                 {
+                    SXml = SXml.Replace("\t", "&#09;");
                     StringContent TXML = new(SXml, Encoding.UTF8, "application/xml");
                     HttpResponseMessage Res = await client.PostAsync(FullURL, TXML);
                     Res.EnsureSuccessStatusCode();
