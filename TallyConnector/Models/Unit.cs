@@ -31,6 +31,9 @@ namespace TallyConnector.Models
         public string AdditionalUnits { get; set; }
 
 
+        [XmlElement(ElementName = "GSTREPUOM")]
+        public string UQC { get; set; }
+
         [XmlElement(ElementName = "DECIMALPLACES")]
         public int DecimalPlaces { get; set; }
 

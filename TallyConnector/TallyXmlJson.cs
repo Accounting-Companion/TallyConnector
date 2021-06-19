@@ -36,7 +36,7 @@ namespace TallyConnector
         }
 
         [JsonIgnore]
-        [XmlAnyElement(Namespace = "UDF")]
+        [XmlAnyElement]
         public XmlElement[] OtherFields { get; set; }
         [JsonIgnore]
         [XmlAnyAttribute]
