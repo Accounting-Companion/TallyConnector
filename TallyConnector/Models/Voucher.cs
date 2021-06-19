@@ -13,6 +13,7 @@ namespace TallyConnector.Models
         public Voucher()
         {
             _DeliveryNotes = new();
+            Ledgers = new();
         }
 
         [XmlAttribute(AttributeName = "ID")]
@@ -285,6 +286,14 @@ namespace TallyConnector.Models
     public class IVoucherLedger
     {
 
+        public IVoucherLedger()
+        {
+            BillAllocations = new();
+            InventoryAllocations = new();
+            CostCategoryAllocations = new();
+        }
+
+
         [XmlElement(ElementName = "LEDGERNAME")]
         public string LedgerName { get; set; }
 
@@ -450,6 +459,13 @@ namespace TallyConnector.Models
     [XmlRoot(ElementName = "INVENTORYALLOCATIONS.LIST")]
     public class InventoryAllocations
     {
+        public InventoryAllocations()
+        {
+            BatchAllocations = new();
+            CostCategoryAllocations = new();
+        }
+
+
         [XmlElement(ElementName = "STOCKITEMNAME")]
         public string StockItemName { get; set; }
 
@@ -467,6 +483,7 @@ namespace TallyConnector.Models
 
         private string _Amount;
 
+        
         public string ForexAmount { get; set; }
 
         public string RateofExchange { get; set; }
@@ -586,6 +603,11 @@ namespace TallyConnector.Models
     [XmlRoot(ElementName = "CATEGORYALLOCATIONS.LIST")]
     public class CostCategoryAllocations
     {
+        public CostCategoryAllocations()
+        {
+            CostCenterAllocations = new();
+        }
+
         [XmlElement(ElementName = "CATEGORY")]
         public string CostCategoryName { get; set; }
 
