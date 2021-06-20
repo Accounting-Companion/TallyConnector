@@ -16,8 +16,8 @@ namespace TallyConnector.Models
             Ledgers = new();
         }
 
-        [XmlAttribute(AttributeName = "ID")]
-        public int TallyId { get; set; }
+        [XmlElement(ElementName = "MASTERID")]
+        public int? TallyId { get; set; }
 
         [XmlElement(ElementName = "DATE")]
         public string VchDate { get; set; }
