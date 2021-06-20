@@ -295,7 +295,25 @@ namespace TallyConnector.Models
 
 
         [XmlElement(ElementName = "ISDEEMEDPOSITIVE")]
-        public string IsDeemedPositive { get; set; }
+        public string IsDeemedPositive {
+            get 
+            {
+                if (_Amount != null)
+                {
+                    if (int.Parse(_Amount) > 0)
+                    {
+                        return "No";
+                    }
+                    else
+                    {
+                        return "Yes";
+                    }
+                }
+                return null;
+                
+            }
+            set { }
+        }
 
         private string _Amount;
 
