@@ -1195,7 +1195,7 @@ namespace TallyConnector
             VoucherEnvelope voucherEnvelope = new();
             voucherEnvelope.Header = new(Request: "Import", Type: "Data", ID: "All Masters");
             voucherEnvelope.Body.Desc.StaticVariables = new() { SVCompany = company };
-
+            voucher.OrderLedgers(); //Ensures ledgers are ordered in correct way
             voucherEnvelope.Body.Data.Message.Voucher = voucher;
 
             string GdwnXML = voucherEnvelope.GetXML();
