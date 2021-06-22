@@ -54,7 +54,13 @@ namespace Tests
             Ledger ledger = await TTally.GetLedger("Cash");
             Assert.NotNull(ledger);
         }
-
+        [Test]
+        public async Task CheckGetLedgerSt()
+        {
+            await TTally.Check();
+            Ledger ledger = await TTally.GetLedgerStatic("Cash");
+            Assert.NotNull(ledger);
+        }
         [Test]
         public async Task CheckGetCostCategory()
         {

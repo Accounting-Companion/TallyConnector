@@ -342,7 +342,33 @@ namespace TallyConnector
             return ledger;
         }
 
+        /// <summary>
+        /// Gets Existing Ledger from Tally based on Ledger name Opening balance is Static as per Master
+        /// </summary>
+        /// <param name="ledgerName">Specify the name of Ledger to be fetched from Tally</param>
+        /// <param name="company">Specify Company if not specified in Setup</param>
+       
+        /// <param name="fetchList">You can select the list of fields to be fetched from tally if nothing specified it pulls all fields availaible in Tally
+        /// </param>
+        /// <returns>Returns instance of Models.Ledger instance with data from tally</returns>
+        public async Task<Ledger> GetLedgerStatic(String ledgerName,
+                                            string company = null,
+                                            List<string> Nativelist = null)
+        {
+            //If parameter is null Get value from instance
+            company ??= Company;
+            Nativelist = new() { "Address", "InterestCollection", "*" };
+            StaticVariables sv = new() { SVCompany = company };
+            List<string> Filters = new() { "Ledgerfilter" };
+            List<string> SystemFilter = new() { $"$Name = {ledgerName}" };
 
+            string xml = await GetNativeCollectionXML("Ledgers", "Masters",sv, Nativelist,Filters, SystemFilter);
+
+            Ledger ledger = GetObjfromXml<LedgerEnvelope>(xml).Body.Data.Collection.Ledger;
+            return ledger;
+        }
+
+        
         /// <summary>
         /// Create/Alter/Delete Ledger in Tally by Ledger name - Set Ledger.Action if you want to Alter/Delete existing Ledger
         /// </summary>

@@ -300,7 +300,7 @@ namespace TallyConnector.Models
             {
                 if (_Amount != null)
                 {
-                    if (int.Parse(_Amount) > 0)
+                    if (double.Parse(_Amount) > 0)
                     {
                         return "No";
                     }

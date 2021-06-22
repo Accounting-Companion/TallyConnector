@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System.ComponentModel.DataAnnotations.Schema;
+using System.IO;
 using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
@@ -34,10 +35,11 @@ namespace TallyConnector
             xmlSerializer.Serialize(writer, this, ns);
             return textWriter.ToString(); ;
         }
-
+        [NotMapped]
         [JsonIgnore]
         [XmlAnyElement]
         public XmlElement[] OtherFields { get; set; }
+        [NotMapped]
         [JsonIgnore]
         [XmlAnyAttribute]
         public XmlAttribute[] OtherAttributes { get; set; }

@@ -440,8 +440,19 @@ namespace TallyConnector.Models
     {
         [XmlElement(ElementName = "TALLYMESSAGE")]
         public LedgerMessage Message { get; set; } = new LedgerMessage();
+        
+        [XmlElement(ElementName = "COLLECTION")]
+        public LedgColl Collection { get; set; } = new LedgColl();
+        
+
     }
 
+    [XmlRoot(ElementName = "COLLECTION")]
+    public class LedgColl
+    {
+        [XmlElement(ElementName = "LEDGER")]
+        public Ledger Ledger { get; set; }
+    }
     [XmlRoot(ElementName = "TALLYMESSAGE")]
     public class LedgerMessage
     {
