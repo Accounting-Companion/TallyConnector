@@ -33,8 +33,8 @@ Intiatate Tally in your Project
 ```C#
 Using TallyConnector //Importing TallyConnector Library
 
-//public Tally = new Tally("http://localhost",9000); --You can Specify url and port on which tally is running
-public Ctally = new Tally(); //If Nothing is specified default url is localhost running on port 9000
+//public Tally Tally = new Tally("http://localhost",9000); --You can Specify url and port on which tally is running
+public Tally Ctally = new Tally(); //If Nothing is specified default url is localhost running on port 9000
 
 //We can also Setup default Configuration using Setup method - Once setup you no need to explicitly send these through each methods
 Ctally.Setup(URL,Port,CompName,fromDate,toDate); //URL and port are mandatory Fields 
@@ -51,11 +51,11 @@ await Ctally.FetchAllTallyData(CompName);
 
 //To Get Full Object from Tally use Specific methods like GetGroup, GetLedger, GetCostCategory,GetCostCenter ..etc.,
 //For Ex. For getting Group by name
-Group TGrp = await GetGroup(GroupName);
+Group TGrp = await Ctally.GetGroup(GroupName);
 
 //To Create/Alter/Delete/Cancel Group,Ledger,Voucher from Tally use Specific methods like PostGroup, PostLedger, PostCostCategory,PostCostCenter ..etc.,
 //For Ex. To create group
-await PostGroup(Group);
+await Ctally.PostGroup(Group);
 //For Ex. To Delete group we need to Set Group.Action to Delete and use the same method
-await PostGroup(Group); 
+await Ctally.PostGroup(Group); 
 ```
