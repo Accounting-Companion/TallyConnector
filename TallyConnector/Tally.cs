@@ -1192,7 +1192,7 @@ namespace TallyConnector
             //If parameter is null Get value from instance
             company ??= Company;
 
-            Models.Voucher voucher = (await GetObjFromTally<VoucherEnvelope>(ObjName: $"Date: {Date} : VoucherNumber: {VoucherNumber}",
+            Models.Voucher voucher = (await GetObjFromTally<VoucherEnvelope>(ObjName: $"Date: \'{Date}\' : VoucherNumber: \'{VoucherNumber}\'",
                                                                              ObjType: "Voucher",
                                                                              company: company,
                                                                              fetchList: fetchList,
