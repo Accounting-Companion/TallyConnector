@@ -360,7 +360,7 @@ namespace TallyConnector
             Nativelist = new() { "Address", "InterestCollection", "*" };
             StaticVariables sv = new() { SVCompany = company };
             List<string> Filters = new() { "Ledgerfilter" };
-            List<string> SystemFilter = new() { $"$Name = {ledgerName}" };
+            List<string> SystemFilter = new() { $"$Name = \"{ledgerName}\"" };
 
             string xml = await GetNativeCollectionXML("Ledgers", "Masters",sv, Nativelist,Filters, SystemFilter);
 
