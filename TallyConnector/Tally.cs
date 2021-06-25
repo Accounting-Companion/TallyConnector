@@ -347,7 +347,6 @@ namespace TallyConnector
         /// </summary>
         /// <param name="ledgerName">Specify the name of Ledger to be fetched from Tally</param>
         /// <param name="company">Specify Company if not specified in Setup</param>
-       
         /// <param name="fetchList">You can select the list of fields to be fetched from tally if nothing specified it pulls all fields availaible in Tally
         /// </param>
         /// <returns>Returns instance of Models.Ledger instance with data from tally</returns>
@@ -362,9 +361,14 @@ namespace TallyConnector
             List<string> Filters = new() { "Ledgerfilter" };
             List<string> SystemFilter = new() { $"$Name = \"{ledgerName}\"" };
 
-            string xml = await GetNativeCollectionXML("Ledgers", "Masters",sv, Nativelist,Filters, SystemFilter);
+            string xml = await GetNativeCollectionXML(rName: "Ledgers",
+                                                      colType: "Masters",
+                                                      Sv: sv,
+                                                      NativeFields: Nativelist,
+                                                      Filters: Filters,
+                                                      SystemFilters: SystemFilter);
 
-            Ledger ledger = GetObjfromXml<LedgerEnvelope>(xml).Body.Data.Collection.Ledger;
+            Ledger ledger = GetObjfromXml<LedgerEnvelope>(xml).Body.Data.Collection.Ledgers[0];
             return ledger;
         }
 
@@ -1125,32 +1129,7 @@ namespace TallyConnector
 
 
 
-        /// <summary>
-        /// Gets List of Vouchers  based on <strong>Voucher Type</strong>
-        /// </summary>
-        /// <param name="VoucherType">Specify the name of VoucherType based on which vouchers to be fetched</param>
-        /// <param name="company">Specify Company if not specified in Setup</param>
-        /// <param name="fromDate">Specify fromDate if not specified in Setup</param>
-        /// <param name="toDate">Specify toDate if not specified in Setup</param>
-        /// <returns>Returns instance of Models.VouchersList with data from tally</returns>
-        public async Task<VouchersList> GetVouchersListByVoucherType(string VoucherType,
-                                                                     string company = null,
-                                                                     string fromDate = null,
-                                                                     string toDate = null)
-        {
-            company ??= Company;
-
-            Dictionary<string, string> fields = new() { { "$MASTERID", "MASTERID" }, { "$VoucherNumber", "VoucherNumber" }, { "$Date", "Date" } };
-            StaticVariables staticVariables = new() { SVCompany = company, SVExportFormat = "XML", SVFromDate = fromDate, SVToDate = toDate };
-            List<string> VoucherFilters = new() { "VoucherType" };
-            List<string> VoucherSystemFilters = new() { $"$VoucherTypeName = \"{VoucherType}\"" };
-            string VouchersXml = await GetCustomCollectionXML(rName: "List Of Vouchers", Fields: fields, colType: "Voucher", Sv: staticVariables,
-                Filters: VoucherFilters, SystemFilters: VoucherSystemFilters);
-            VouchersList vl = GetObjfromXml<VouchersList>(Xml: VouchersXml);
-            return vl;
-        }
-
-
+        
         /// <summary>
         /// Gets Voucher based on <strong>Voucher MasterID</strong>
         /// </summary>
@@ -1232,6 +1211,107 @@ namespace TallyConnector
 
             return result;
         }
+
+
+
+
+
+
+
+        #region Reports
+
+        /// <summary>
+        /// Gets List of Vouchers  based on <strong>Voucher Type</strong>
+        /// </summary>
+        /// <param name="VoucherType">Specify the name of VoucherType based on which vouchers to be fetched</param>
+        /// <param name="company">Specify Company if not specified in Setup</param>
+        /// <param name="fromDate">Specify fromDate if not specified in Setup</param>
+        /// <param name="toDate">Specify toDate if not specified in Setup</param>
+        /// <returns>Returns instance of Models.VouchersList with data from tally</returns>
+        public async Task<VouchersList> GetVouchersListByVoucherType(string VoucherType,
+                                                                     string company = null,
+                                                                     string fromDate = null,
+                                                                     string toDate = null)
+        {
+            company ??= Company;
+
+            Dictionary<string, string> fields = new() { { "$MASTERID", "MASTERID" }, { "$VoucherNumber", "VoucherNumber" }, { "$Date", "Date" } };
+            StaticVariables staticVariables = new() { SVCompany = company, SVExportFormat = "XML", SVFromDate = fromDate, SVToDate = toDate };
+            List<string> VoucherFilters = new() { "VoucherType" };
+            List<string> VoucherSystemFilters = new() { $"$VoucherTypeName = \"{VoucherType}\"" };
+            string VouchersXml = await GetCustomCollectionXML(rName: "List Of Vouchers", Fields: fields, colType: "Voucher", Sv: staticVariables,
+                Filters: VoucherFilters, SystemFilters: VoucherSystemFilters);
+            VouchersList vl = GetObjfromXml<VouchersList>(Xml: VouchersXml);
+            return vl;
+        }
+
+
+
+        /// <summary>
+        /// Get Vouchers of ledger
+        /// </summary>
+        /// <param name="ledgerName">Specify the name of Ledger from which vouchers to be fetched from Tally</param>
+        /// <param name="company">Specify Company if not specified in Setup</param>
+        /// <param name="fetchList">You can select the list of fields to be fetched from tally if nothing specified it pulls all fields availaible in Tally
+        /// </param>
+        /// <returns>Returns instance of Models.Ledger instance with data from tally</returns>
+        public async Task<List<Voucher>> GetLedgerVouchers(string ledgerName,
+                                            string company = null,
+                                            string fromDate = null,
+                                            string toDate = null,
+                                            List<string> Nativelist = null)
+        {
+            //If parameter is null Get value from instance
+            company ??= Company;
+            fromDate ??= FromDate;
+            toDate ??= ToDate;
+            Nativelist = Nativelist == null?new() { "*" }: Nativelist;
+            StaticVariables sv = new() { SVCompany = company,SVFromDate=fromDate,SVToDate=toDate };
+
+            string xml = await GetNativeCollectionXML(rName: "Vouchers", colType: "Vouchers : Ledger", Sv: sv,childof:ledgerName,
+                                                      NativeFields: Nativelist);
+
+            List<Voucher> Vouchers = GetObjfromXml<VoucherEnvelope>(xml).Body.Data.Collection.Vouchers;
+            return Vouchers;
+        }
+
+
+
+
+        /// <summary>
+        /// Get Group Vouchers
+        /// </summary>
+        /// <param name="ledgerName">Specify the name of Group from which vouchers to be fetched from Tally</param>
+        /// <param name="company">Specify Company if not specified in Setup</param>
+        /// <param name="fetchList">You can select the list of fields to be fetched from tally if nothing specified it pulls all fields availaible in Tally
+        /// </param>
+        /// <returns>Returns instance of Models.Ledger instance with data from tally</returns>
+        public async Task<List<Voucher>> GetGroupVouchers(string GroupName,
+                                            string company = null,
+                                            string fromDate = null,
+                                            string toDate = null,
+                                            List<string> Nativelist = null)
+        {
+            //If parameter is null Get value from instance
+            company ??= Company;
+            fromDate ??= FromDate;
+            toDate ??= ToDate;
+            Nativelist = Nativelist == null?new() { "*" }: Nativelist;
+            StaticVariables sv = new() { SVCompany = company,SVFromDate=fromDate,SVToDate=toDate };
+
+            string xml = await GetNativeCollectionXML(rName: "Vouchers", colType: "Vouchers : Group", Sv: sv,childof: GroupName,
+                                                      NativeFields: Nativelist);
+
+            List<Voucher> Vouchers = GetObjfromXml<VoucherEnvelope>(xml).Body.Data.Collection.Vouchers;
+            return Vouchers;
+        }
+
+
+
+
+
+        #endregion
+
 
 
         /// <summary>
@@ -1384,6 +1464,7 @@ namespace TallyConnector
         public async Task<string> GetNativeCollectionXML(string rName,
                                                          string colType,
                                                          StaticVariables Sv = null,
+                                                         string childof = null,
                                                          List<string> NativeFields = null,
                                                          List<string> Filters = null,
                                                          List<string> SystemFilters = null)
@@ -1403,6 +1484,7 @@ namespace TallyConnector
                 }
 
                 ColEnvelope.Body.Desc.TDL.TDLMessage = new(colName: RName, colType: colType, nativeFields: NativeFields, Filters, SystemFilters);
+                ColEnvelope.Body.Desc.TDL.TDLMessage.Collection.Childof = childof;
                 //ColEnvelope.Body.Desc.TDL.TDLMessage.Collection.SetAttributes(isInitialize: "Yes");
 
                 string Reqxml = ColEnvelope.GetXML(); //Gets XML from Object

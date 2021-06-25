@@ -730,6 +730,16 @@ namespace TallyConnector.Models
     {
         [XmlElement(ElementName = "TALLYMESSAGE")]
         public VoucherMessage Message { get; set; } = new VoucherMessage();
+        
+        [XmlElement(ElementName = "COLLECTION")]
+        public VouchColl Collection { get; set; } = new VouchColl();
+    }
+
+    [XmlRoot(ElementName = "COLLECTION")]
+    public class VouchColl
+    {
+        [XmlElement(ElementName = "VOUCHER")]
+        public List<Voucher> Vouchers { get; set; }
     }
 
     [XmlRoot(ElementName = "TALLYMESSAGE")]

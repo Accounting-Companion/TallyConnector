@@ -289,6 +289,8 @@ namespace TallyConnector.Models
         [XmlElement(ElementName = "TYPE")]
         public string Type { get; set; }    //Tally Table Name like - Company,Ledger ..etc;
 
+        [XmlElement(ElementName = "CHILDOF")]
+        public string Childof { get; set; }
 
         [XmlElement(ElementName = "NATIVEMETHOD")]
         public List<string> NativeFields { get; set; }

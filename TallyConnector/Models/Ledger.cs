@@ -451,7 +451,7 @@ namespace TallyConnector.Models
     public class LedgColl
     {
         [XmlElement(ElementName = "LEDGER")]
-        public Ledger Ledger { get; set; }
+        public List<Ledger> Ledgers { get; set; }
     }
     [XmlRoot(ElementName = "TALLYMESSAGE")]
     public class LedgerMessage

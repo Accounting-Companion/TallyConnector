@@ -1,4 +1,5 @@
 using NUnit.Framework;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using TallyConnector.Models;
 
@@ -157,11 +158,29 @@ namespace Tests
         {
             await TTally.Check();
             Voucher voucher = await TTally.GetVoucherByMasterID("5036");
+            //System.Xml.XmlDocument xmldoc = new System.Xml.XmlDocument();
+            //System.Xml.XmlAttribute fg = xmldoc.CreateAttribute("REMOTEID");
+            //voucher.OtherAttributes.AppendChild(fg);
             VoucherEnvelope voucherEnvelope = new();
             voucherEnvelope.Header = new();
             voucherEnvelope.Body.Data.Message.Voucher = voucher;
             string xml = voucherEnvelope.GetXML();
             Assert.NotNull(voucher);
+        }
+
+        [Test]
+        public async Task CheckGetLedgerVouchers()
+        {
+            await TTally.Check();
+            List<Voucher> Vouchers = await TTally.GetLedgerVouchers("Sales - Exports", null, "01-Mar-2010");
+            Assert.NotNull(Vouchers);
+        }
+        [Test]
+        public async Task CheckGetGroupVouchers()
+        {
+            await TTally.Check();
+            List<Voucher> Vouchers = await TTally.GetGroupVouchers("Local Sales", null, "01-oct-2016");
+            Assert.NotNull(Vouchers);
         }
 
     }
