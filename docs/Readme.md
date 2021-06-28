@@ -11,7 +11,7 @@ You can use **[Tally Connector](https://github.com/saivineeth100/TallyConnector/
 
 1. .Net Core 5.0 Applications
 2. .Net Framework Applications
-3. Visual Basic/VBA
+3. Visual Basic
 
 This Library acts as complete abstraction for Tally XML API,
 You don't need to known or understand tally XML to interact with Tally.
