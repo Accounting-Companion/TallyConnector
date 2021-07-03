@@ -112,6 +112,10 @@ namespace TallyConnector
                 Status = $"Tally is not opened \n or Tally is not running in given port - { Port} )\n or Given URL - {BaseURL} \n" +
                     e.Message;
             }
+            catch (Exception e)
+            {
+
+            }
             return false;
         }
 
