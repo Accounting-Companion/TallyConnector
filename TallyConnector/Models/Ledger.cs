@@ -137,6 +137,31 @@ namespace TallyConnector.Models
             }
         }
 
+
+        private string _ClosingBal;
+         
+        [XmlElement(ElementName = "CLOSINGBALANCE")]
+        public string ClosingBal
+        {
+            get
+            {
+                if (ForexAmount != null && RateofExchange != null)
+                {
+                    _OpeningBal = $"{ForexAmount} @ {RateofExchange}";
+                }
+                else if (ForexAmount != null)
+                {
+                    _ClosingBal = ForexAmount;
+                }
+                return _ClosingBal;
+            }
+            set
+            {
+                _ClosingBal = value;
+            }
+            
+        }
+
         
         private string _Currency;
         [XmlElement(ElementName = "CURRENCYNAME")]
