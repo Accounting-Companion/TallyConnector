@@ -56,12 +56,14 @@ namespace Tests
             Assert.NotNull(ledger);
         }
         [Test]
-        public async Task CheckGetLedgerSt()
+        public async Task CheckGetLedgerDynamic()
         {
             await TTally.Check();
-            Ledger ledger = await TTally.GetLedgerStatic("Cash");
+            List<string> fields = new List<string>() { "Name", "Parent", "OpeningBalance", "Closing Balance" };
+            Ledger ledger = await TTally.GetLedgerDynamic("Cash",fromDate:"01032021",toDate: "31032021", Nativelist: fields);
             Assert.NotNull(ledger);
         }
+       
         [Test]
         public async Task CheckGetCostCategory()
         {
