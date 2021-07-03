@@ -324,25 +324,27 @@ namespace TallyConnector
         /// <param name="fetchList">You can select the list of fields to be fetched from tally if nothing specified it pulls all fields availaible in Tally
         /// </param>
         /// <returns>Returns instance of Models.Ledger instance with data from tally</returns>
-        public async Task<Ledger> GetLedger(String ledgerName,
+        public async Task<Ledger> GetLedgerDynamic(string ledgerName,
                                             string company = null,
                                             string fromDate = null,
                                             string toDate = null,
-                                            List<string> fetchList = null)
+                                            List<string> Nativelist = null)
         {
             //If parameter is null Get value from instance
             company ??= Company;
-            fromDate ??= FromDate;
-            toDate ??= ToDate;
-            fetchList = new() { "Address", "InterestCollection", "*" };
-            Ledger ledger = (await GetObjFromTally<LedgerEnvelope>(ObjName: ledgerName,
-                                                                   ObjType: "Ledger",
-                                                                   company: company,
-                                                                   fromDate: fromDate,
-                                                                   toDate: toDate,
-                                                                   fetchList: fetchList,
-                                                                   viewname: null)).Body.Data.Message.Ledger;
+            Nativelist ??= new() { "Address", "InterestCollection", "*" };
+            StaticVariables sv = new() { SVCompany = company,SVFromDate=fromDate,SVToDate=toDate };
+            List<string> Filters = new() { "Ledgerfilter" };
+            List<string> SystemFilter = new() { $"$Name = \"{ledgerName}\"" };
 
+            string xml = await GetNativeCollectionXML(rName: "Ledgers",
+                                                      colType: "Ledger",
+                                                      Sv: sv,
+                                                      NativeFields: Nativelist,
+                                                      Filters: Filters,
+                                                      SystemFilters: SystemFilter);
+
+            Ledger ledger = GetObjfromXml<LedgerEnvelope>(xml).Body.Data.Collection.Ledgers[0];
             return ledger;
         }
 
@@ -354,13 +356,13 @@ namespace TallyConnector
         /// <param name="fetchList">You can select the list of fields to be fetched from tally if nothing specified it pulls all fields availaible in Tally
         /// </param>
         /// <returns>Returns instance of Models.Ledger instance with data from tally</returns>
-        public async Task<Ledger> GetLedgerStatic(String ledgerName,
+        public async Task<Ledger> GetLedger(string ledgerName,
                                             string company = null,
                                             List<string> Nativelist = null)
         {
             //If parameter is null Get value from instance
             company ??= Company;
-            Nativelist = new() { "Address", "InterestCollection", "*" };
+            Nativelist ??= new() { "Address", "InterestCollection", "*" };
             StaticVariables sv = new() { SVCompany = company };
             List<string> Filters = new() { "Ledgerfilter" };
             List<string> SystemFilter = new() { $"$Name = \"{ledgerName}\"" };
