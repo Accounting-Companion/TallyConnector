@@ -172,7 +172,40 @@ namespace TallyConnector.Models
         public List<Company> CompaniesList { get; set; }
     }
 
+    [XmlRoot(ElementName = "ENVELOPE")]
+    public class ComListinpathEnvelope : TallyXmlJson
+    {
 
+        [XmlElement(ElementName = "HEADER")]
+        public Header Header { get; set; }
+
+        [XmlElement(ElementName = "BODY")]
+        public ComListinpathBody Body { get; set; } = new();
+    }
+
+    [XmlRoot(ElementName = "BODY")]
+    public class ComListinpathBody
+    {
+        [XmlElement(ElementName = "DESC")]
+        public Description Desc { get; set; } = new();
+
+        [XmlElement(ElementName = "DATA")]
+        public ComListinpathData Data { get; set; } = new();
+    }
+
+    [XmlRoot(ElementName = "DATA")]
+    public class ComListinpathData
+    {
+        [XmlElement(ElementName = "COLLECTION")]
+        public ComListinpathColl Collection { get; set; } = new();
+    }
+
+    [XmlRoot(ElementName = "COLLECTION")]
+    public class ComListinpathColl
+    {
+        [XmlElement(ElementName = "COMPANYONDISK")]
+        public List<CompanyOnDisk> CompaniesList { get; set; }
+    }
 
 
 }

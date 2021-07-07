@@ -30,6 +30,15 @@ namespace Tests
             Assert.IsNotNull(TTally.CompaniesList);
             
         }
+
+        [Test]
+        public async Task TallyCheckCopaniesondisk()
+        {
+            await TTally.Check();
+            List<CompanyOnDisk> companies= await TTally.GetCompaniesListinPath();
+            Assert.IsNotNull(companies);
+            
+        }
         
 
         [Test]

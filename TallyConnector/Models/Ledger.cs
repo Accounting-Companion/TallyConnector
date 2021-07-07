@@ -17,7 +17,7 @@ namespace TallyConnector.Models
             InterestList = new();
         }
 
-        [XmlAttribute(AttributeName = "ID")]
+        [XmlElement(ElementName = "MASTERID")]
         public int TallyId { get; set; }
 
         [XmlAttribute(AttributeName = "NAME")]

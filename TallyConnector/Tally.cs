@@ -130,19 +130,12 @@ namespace TallyConnector
             await Check(); //Checks Whether Tally is running
             if (Status == "Running")
             {
-                CusColEnvelope ColEnvelope = new(); //Collection Envelope
-                string RName = "List of Companies";
-
-                ColEnvelope.Header = new("Export", "Collection", RName);  //Configuring Header To get Export data
-
-                List<string> NativeFields = new() { "Name", "StartingFrom", "GUID" };
-                ColEnvelope.Body.Desc.TDL.TDLMessage = new(colName: RName, colType: "Company", nativeFields: NativeFields);
-                ColEnvelope.Body.Desc.TDL.TDLMessage.Collection.SetAttributes(isInitialize: "Yes");
-                string Reqxml = ColEnvelope.GetXML(); //Gets Custom Collection XML from Object
-                string Resxml = await SendRequest(Reqxml); //Sends Collection XML to Tally
+                List<string> NativeFields = new() { "Name", "StartingFrom", "GUID" ,"*"};
+                string xml = await GetNativeCollectionXML(rName: "ListofCompanies",
+                                                      colType: "Company",NativeFields: NativeFields,isInitialize:true);
                 try
                 {
-                    CompaniesList = Tally.GetObjfromXml<ComListEnvelope>(Resxml).Body.Data.Collection.CompaniesList;
+                    CompaniesList = Tally.GetObjfromXml<ComListEnvelope>(xml).Body.Data.Collection.CompaniesList;
 
                 }
                 catch (Exception e) 
@@ -154,6 +147,31 @@ namespace TallyConnector
             }
 
             return CompaniesList;
+        }
+        /// <summary>
+        /// Gets List of Companies in tally default Tally path
+        /// </summary>
+        /// <returns>return list of Model.Company List</returns>
+        public async Task<List<CompanyOnDisk>> GetCompaniesListinPath()
+        {
+            List<CompanyOnDisk> Companies = new List<CompanyOnDisk>();
+            await Check(); //Checks Whether Tally is running
+            if (Status == "Running")
+            {
+                List<string> NativeFields = new() { "*" };
+                List<string> Filters = new() { "NonGroupFilter" };
+                List<string> SystemFilter = new() { $"$ISAGGREGATE = \"No\"" };
+                string xml = await GetNativeCollectionXML(rName: "ListofCompaniesOpened",
+                                                      colType: "Company On Disk", NativeFields: NativeFields,Filters:Filters,SystemFilters:SystemFilter);
+                try
+                {
+                    Companies = Tally.GetObjfromXml<ComListinpathEnvelope>(xml).Body.Data.Collection.CompaniesList;
+
+                }
+                catch{}
+
+            }
+            return Companies;
         }
 
 
@@ -1473,7 +1491,8 @@ namespace TallyConnector
                                                          string childof = null,
                                                          List<string> NativeFields = null,
                                                          List<string> Filters = null,
-                                                         List<string> SystemFilters = null)
+                                                         List<string> SystemFilters = null,
+                                                         bool isInitialize = false)
         {
             //LedgersList LedgList = new();
             string Resxml = null;
@@ -1491,7 +1510,11 @@ namespace TallyConnector
 
                 ColEnvelope.Body.Desc.TDL.TDLMessage = new(colName: RName, colType: colType, nativeFields: NativeFields, Filters, SystemFilters);
                 ColEnvelope.Body.Desc.TDL.TDLMessage.Collection.Childof = childof;
-                //ColEnvelope.Body.Desc.TDL.TDLMessage.Collection.SetAttributes(isInitialize: "Yes");
+                if (isInitialize)
+                {
+                    ColEnvelope.Body.Desc.TDL.TDLMessage.Collection.SetAttributes(isInitialize: "Yes");
+                }
+
 
                 string Reqxml = ColEnvelope.GetXML(); //Gets XML from Object
                 Resxml = await SendRequest(Reqxml);
