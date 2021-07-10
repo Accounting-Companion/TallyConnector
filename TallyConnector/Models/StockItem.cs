@@ -29,6 +29,17 @@ namespace TallyConnector.Models
         [XmlElement(ElementName = "BASEUNITS")]
         public string BaseUnit { get; set; }
 
+        [XmlElement(ElementName = "OPENINGBALANCE")]
+        public string OpeningBal { get; set; }
+
+        [XmlElement(ElementName = "OPENINGVALUE")]
+        public string OpeningValue { get; set; }
+
+        [XmlElement(ElementName = "OPENINGRATE")]
+        public string OpeningRate { get; set; }
+
+
+
         [XmlIgnore]
         public string Alias
         {
