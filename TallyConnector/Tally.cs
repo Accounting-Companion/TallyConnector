@@ -1285,7 +1285,9 @@ namespace TallyConnector
                                             string company = null,
                                             string fromDate = null,
                                             string toDate = null,
-                                            List<string> Nativelist = null)
+                                            List<string> Nativelist = null,
+                                            List<string> Filters = null,
+                                            List<string> SystemFilter = null)
         {
             //If parameter is null Get value from instance
             company ??= Company;
@@ -1295,7 +1297,7 @@ namespace TallyConnector
             StaticVariables sv = new() { SVCompany = company,SVFromDate=fromDate,SVToDate=toDate };
 
             string xml = await GetNativeCollectionXML(rName: "Vouchers", colType: "Vouchers : Ledger", Sv: sv,childof:ledgerName,
-                                                      NativeFields: Nativelist);
+                                                      NativeFields: Nativelist,Filters:Filters,SystemFilters:SystemFilter);
 
             List<Voucher> Vouchers = GetObjfromXml<VoucherEnvelope>(xml).Body.Data.Collection.Vouchers;
             return Vouchers;
@@ -1317,7 +1319,9 @@ namespace TallyConnector
                                             string company = null,
                                             string fromDate = null,
                                             string toDate = null,
-                                            List<string> Nativelist = null)
+                                            List<string> Nativelist = null,
+                                            List<string> Filters = null,
+                                            List<string> SystemFilter = null)
         {
             //If parameter is null Get value from instance
             company ??= Company;
@@ -1327,7 +1331,7 @@ namespace TallyConnector
             StaticVariables sv = new() { SVCompany = company,SVFromDate=fromDate,SVToDate=toDate };
 
             string xml = await GetNativeCollectionXML(rName: "Vouchers", colType: "Vouchers : Group", Sv: sv,childof: GroupName,
-                                                      NativeFields: Nativelist);
+                                                      NativeFields: Nativelist, Filters: Filters, SystemFilters: SystemFilter);
 
             List<Voucher> Vouchers = GetObjfromXml<VoucherEnvelope>(xml).Body.Data.Collection.Vouchers;
             return Vouchers;
@@ -1349,7 +1353,9 @@ namespace TallyConnector
                                             string company = null,
                                             string fromDate = null,
                                             string toDate = null,
-                                            List<string> Nativelist = null)
+                                            List<string> Nativelist = null,
+                                            List<string> Filters = null,
+                                            List<string> SystemFilter = null)
         {
             //If parameter is null Get value from instance
             company ??= Company;
@@ -1359,7 +1365,7 @@ namespace TallyConnector
             StaticVariables sv = new() { SVCompany = company,SVFromDate=fromDate,SVToDate=toDate };
 
             string xml = await GetNativeCollectionXML(rName: "Vouchers", colType: "Vouchers : Stockitem", Sv: sv,childof: ItemName,
-                                                      NativeFields: Nativelist);
+                                                      NativeFields: Nativelist, Filters: Filters, SystemFilters: SystemFilter);
 
             List<Voucher> Vouchers = GetObjfromXml<VoucherEnvelope>(xml).Body.Data.Collection.Vouchers;
             return Vouchers;
