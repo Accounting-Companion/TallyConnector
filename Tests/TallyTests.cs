@@ -194,5 +194,13 @@ namespace Tests
             Assert.NotNull(Vouchers);
         }
 
+        [Test]
+        public async Task CheckGetInventoryVouchers()
+        {
+            await TTally.Check();
+            List<Voucher> Vouchers = await TTally.GetInventoryVouchers("Mouse Pad", null, "01-Nov-2016");
+            Assert.NotNull(Vouchers);
+        }
+
     }
 }
