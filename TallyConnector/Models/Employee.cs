@@ -11,6 +11,11 @@ namespace TallyConnector.Models
     [XmlRoot(ElementName = "COSTCENTRE")]
     public class Employee:CostCenter
     {
+        public Employee()
+        {
+            FAddress = new HAddress();
+        }
+
         [XmlElement(ElementName = "FORPAYROLL")]
         public string ForPayroll { get; set; }
 

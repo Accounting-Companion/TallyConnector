@@ -21,7 +21,7 @@ namespace TallyConnector.Models
         public string VName { get; set; }
 
         [XmlElement(ElementName = "PARENT")]
-        public string Parent { get; set; }
+        public string StockGroup { get; set; }
 
         [XmlElement(ElementName = "CATEGORY")]
         public string Category { get; set; }

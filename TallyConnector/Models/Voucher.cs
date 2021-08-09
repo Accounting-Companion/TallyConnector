@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Text.Json.Serialization;
 using System.Xml;
 using System.Xml.Serialization;
@@ -261,14 +262,23 @@ namespace TallyConnector.Models
         public new string GetXML()
         {
             OrderLedgers();
-            BillAllocComputeJD();
+            GetJulianday();
             return base.GetXML();
         }
-        public void BillAllocComputeJD()
+        private void GetJulianday()
         {
-            //DateTime Vchdate = DateTime.TryParseExact(VchDate, "yyyyddMM",);
-            //double JDval = Vchdate.ToOADate();
-            //this.Ledgers.ForEach(Ledg => Ledg.BillAllocations.ForEach(BillAlloc => BillAlloc.BillCP.JD = $"{JDval}"));
+            Ledgers.ForEach(ledg =>
+            {
+                ledg.BillAllocations.ForEach(billalloc =>
+                {
+                    if (billalloc.BillCreditPeriod != null)
+                    {
+                        DateTime dateTime = DateTime.ParseExact(EffectiveDate, "yyyyMMdd", CultureInfo.InvariantCulture);
+                        double days = dateTime.Subtract(new DateTime(1900, 1, 1)).TotalDays + 1;
+                        billalloc.BillCP.JD = days.ToString();
+                    }
+                });
+            });
         }
     }
 
@@ -392,17 +402,28 @@ namespace TallyConnector.Models
 
         private BillCP _BillCP;
 
-        
+
 
         [JsonIgnore]
         [XmlElement(ElementName = "BILLCREDITPERIOD")]
-        public BillCP BillCP 
+        public BillCP BillCP
         {
-            get { BillCreditPeriod = _BillCP.Days; return _BillCP; } set { _BillCP.Days = BillCreditPeriod; _BillCP = value; } }
+            get { _BillCP.Days = BillCreditPeriod; return _BillCP; }
+            set
+            {
+                _BillCP = value;
+                BillCreditPeriod = value.Days;
+            }
+        }
+
+        private string _billCreditPeriod;
 
         [XmlIgnore]
         public string BillCreditPeriod
-        { get; set; }
+        {
+            get { return _billCreditPeriod; }
+            set { _billCreditPeriod = value; }
+        }
 
         public string RateofExchange { get; set; }
 

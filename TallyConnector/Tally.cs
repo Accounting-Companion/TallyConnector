@@ -1021,6 +1021,73 @@ namespace TallyConnector
 
 
         /// <summary>
+        /// Gets AttendanceType from Tally based on <strong>AttendanceType name</strong>
+        /// </summary>
+        /// <param name="AttendanceType">Specify the name of AttendanceType to be fetched from Tally</param>
+        /// <param name="company">Specify Company if not specified in Setup</param>
+        /// <param name="fromDate">Specify fromDate if not specified in Setup</param>
+        /// <param name="toDate">Specify toDate if not specified in Setup</param>
+        /// <param name="fetchList">You can select the list of fields to be fetched from tally if nothing specified it pulls all fields availaible in Tally
+        /// </param>
+        /// <returns>Returns instance of Models.AttendanceType  with data from tally</returns>
+        public async Task<AttendanceType> GetAttendanceType(string AttendanceType,
+                                                  string company = null,
+                                                  string fromDate = null,
+                                                  string toDate = null,
+                                                  List<string> fetchList = null)
+        {
+            //If parameter is null Get value from instance
+            company ??= Company;
+            fromDate ??= FromDate;
+            toDate ??= ToDate;
+
+            AttendanceType AttndType = (await GetObjFromTally<AttendanceEnvelope>(ObjName: AttendanceType,
+                                                                           ObjType: "AttendanceType",
+                                                                           company: company,
+                                                                           fromDate: fromDate,
+                                                                           toDate: toDate,
+                                                                           fetchList: fetchList,
+                                                                           viewname: null)).Body.Data.Message.AttendanceType;
+
+            return AttndType;
+        }
+
+
+        /// <summary>
+        /// Create/Alter/Delete AttendanceType in Tally,
+        /// To Alter/Delete existing AttendanceType set AttendanceType.Action to Alter/Delete
+        /// </summary>
+        /// <param name="AttendanceType">Send Models.AttendanceType</param>
+        /// <param name="company">if not specified company is taken from instance</param>
+        /// <returns> Models.PResult if Presult.Status can be sucess or failure,
+        /// Presult.result will have failure message incase of failure,
+        ///  Presult.result will be empty if sucess 
+        /// </returns>
+        public async Task<PResult> PostAttendanceType(AttendanceType AttendanceType,
+                                      string company = null)
+        {
+            //If parameter is null Get value from instance
+            company ??= Company;
+
+            AttendanceEnvelope AttndTypeEnvelope = new();
+            AttndTypeEnvelope.Header = new(Request: "Import", Type: "Data", ID: "All Masters");
+            AttndTypeEnvelope.Body.Desc.StaticVariables = new() { SVCompany = company };
+
+            AttndTypeEnvelope.Body.Data.Message.AttendanceType = AttendanceType;
+
+            string AttndTypeXML = AttndTypeEnvelope.GetXML();
+
+            string RespXml = await SendRequest(AttndTypeXML);
+
+            PResult result = ParseResponse(RespXml);
+
+            return result;
+        }
+
+
+
+
+        /// <summary>
         /// Gets CostCenter from Tally based on CostCenter name
         /// </summary>
         /// <param name="EmployeeGroupName">Specify the name of EmployeeGroupName to be fetched from Tally</param>

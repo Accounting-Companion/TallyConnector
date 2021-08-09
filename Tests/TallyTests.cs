@@ -110,6 +110,9 @@ namespace Tests
         {
             await TTally.Check();
             StockItem stockItem = await TTally.GetStockItem("CDROM Disks 100s");
+            stockItem.OtherFields = null;
+            stockItem.OtherAttributes = null;
+            await TTally.PostStockItem(stockItem);
             Assert.NotNull(stockItem);
         }
 
@@ -168,14 +171,15 @@ namespace Tests
         public async Task CheckGetVoucher()
         {
             await TTally.Check();
-            Voucher voucher = await TTally.GetVoucherByMasterID("5036");
+            Voucher voucher = await TTally.GetVoucherByMasterID("1299");
             //System.Xml.XmlDocument xmldoc = new System.Xml.XmlDocument();
             //System.Xml.XmlAttribute fg = xmldoc.CreateAttribute("REMOTEID");
             //voucher.OtherAttributes.AppendChild(fg);
             VoucherEnvelope voucherEnvelope = new();
             voucherEnvelope.Header = new();
             voucherEnvelope.Body.Data.Message.Voucher = voucher;
-            string xml = voucherEnvelope.GetXML();
+            string xml = voucher.GetXML();
+            string json = voucher.GetJson();
             Assert.NotNull(voucher);
         }
 
@@ -199,6 +203,7 @@ namespace Tests
         {
             await TTally.Check();
             List<Voucher> Vouchers = await TTally.GetInventoryVouchers("Mouse Pad", null, "01-Nov-2016");
+
             Assert.NotNull(Vouchers);
         }
 

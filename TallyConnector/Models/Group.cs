@@ -14,7 +14,6 @@ namespace TallyConnector.Models
         [XmlAttribute(AttributeName = "ID")]
         public int TallyID { get; set; }
         
-
         [XmlAttribute(AttributeName = "NAME")]
         public string Name { get; set; }
 

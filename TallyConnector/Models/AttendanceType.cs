@@ -9,7 +9,7 @@ using System.Xml.Serialization;
 namespace TallyConnector.Models
 {
     [XmlRoot(ElementName = "ATTENDANCETYPE")]
-    public class Attendance: TallyXmlJson
+    public class AttendanceType: TallyXmlJson
     {
         [XmlAttribute(AttributeName = "NAME")]
         public string Name { get; set; }
@@ -22,6 +22,11 @@ namespace TallyConnector.Models
 
         [XmlElement(ElementName = "PARENT")]
         public string Parent { get; set; }
+
+        [XmlElement(ElementName = "BASEUNITS")]
+        public string BaseUnit { get; set; }
+
+
 
         [XmlIgnore]
         public string VName { get; set; }
@@ -132,6 +137,6 @@ namespace TallyConnector.Models
     public class AttendanceMessage
     {
         [XmlElement(ElementName = "ATTENDANCETYPE")]
-        public Attendance Attendance { get; set; }
+        public AttendanceType AttendanceType { get; set; }
     }
 }

@@ -29,7 +29,7 @@ namespace TallyConnector.Models
 
         [XmlElement(ElementName = "PARENT")]
         [Required]
-        public string Parent { get; set; }
+        public string Group { get; set; }
 
         [XmlIgnore]
         public string Alias

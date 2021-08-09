@@ -15,8 +15,49 @@ namespace TallyConnector.Models
         [XmlElement(ElementName = "NAME")]
         public string Name { get; set; }
 
+        [XmlElement(ElementName = "BASICCOMPANYFORMALNAME")]
+        public string MailingName { get; set; }
+
+        [XmlElement(ElementName = "STATENAME")]
+        public string State { get; set; }
+
+        [XmlElement(ElementName = "COUNTRYNAME")]
+        public string Country { get; set; }
+
+        [XmlElement(ElementName = "PINCODE")]
+        public string PinCode { get; set; }
+
+        [XmlElement(ElementName = "PHONENUMBER")]
+        public string PhoneNumber { get; set; }
+
+        [XmlElement(ElementName = "FAXNUMBER")]
+        public string FaxNumber { get; set; }
+
+        [XmlElement(ElementName = "EMAIL")]
+        public string Email { get; set; }
+
+
+        [XmlElement(ElementName = "WEBSITE")]
+        public string Website { get; set; }
+
+        [XmlElement(ElementName = "TANUMBER")]
+        public string TANNumber { get; set; }
+
+        [XmlElement(ElementName = "TANREGNO")]
+        public string TANRegNumber { get; set; }
+
+        [XmlElement(ElementName = "TDSDEDUCTORTYPE")]
+        public string TDSDeductorType { get; set; }
+
+        [XmlElement(ElementName = "DEDUCTORBRANCH")]
+        public string TDSDeductorBranch { get; set; }
+
+
+        [XmlElement(ElementName = "BOOKSFROM")]
+        public string StartingFrom { get; set; }
+
         [XmlElement(ElementName = "STARTINGFROM")]
-        public string StartDate { get; set; }
+        public string BooksFrom { get; set; }
 
         [XmlElement(ElementName = "ENDINGAT")]
         public string EndDate { get; set; }
@@ -41,6 +82,17 @@ namespace TallyConnector.Models
 
         [XmlElement(ElementName = "ISCOSTCENTRESON")]
         public string IsCostCentersOn { get; set; }
+
+        [XmlElement(ElementName = "ISTDSON")]
+        public string IsTDSon { get; set; }
+
+
+        [XmlElement(ElementName = "ISTCSON")]
+        public string IsTCSon { get; set; }
+
+        [XmlElement(ElementName = "ISGSTON")]
+        public string IsGSTon { get; set; }
+
 
         [XmlElement(ElementName = "ISPAYROLLON")]
         public string IsPayrollOn { get; set; }
