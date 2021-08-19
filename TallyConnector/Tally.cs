@@ -424,7 +424,7 @@ namespace TallyConnector
             toDate ??= ToDate;
             Nativelist ??= new() { "Address","MasterId", "InterestCollection", "*" };
             StaticVariables sv = new() { SVCompany = company,SVFromDate=fromDate,SVToDate=toDate };
-            List<string> Filters = new() { "Ledgerfilter" };
+            List<string> Filters = new() { "LedgerFilter" };
             List<string> SystemFilter = new() { $"${LookupField} = \"{LookupValue}\"" };
 
             string xml = await GetNativeCollectionXML(rName: "CusLedgObj",
@@ -454,7 +454,7 @@ namespace TallyConnector
             company ??= Company;
             Nativelist ??= new() { "Address", "InterestCollection", "*" };
             StaticVariables sv = new() { SVCompany = company };
-            List<string> Filters = new() { "Ledgerfilter" };
+            List<string> Filters = new() { "Cusfilter" };
             List<string> SystemFilter = new() { $"$Name = \"{ledgerName}\"" };
 
             string xml = await GetNativeCollectionXML(rName: "Ledgers",
@@ -523,7 +523,7 @@ namespace TallyConnector
             toDate ??= ToDate;
             fetchList ??= new() { "MasterId","*" };
             StaticVariables sv = new() { SVCompany = company, SVFromDate = fromDate, SVToDate = toDate };
-            List<string> Filters = new() { "Ledgerfilter" };
+            List<string> Filters = new() { "Cusfilter" };
             List<string> SystemFilter = new() { $"${LookupField} = \"{LookupValue}\"" };
 
             string xml = await GetNativeCollectionXML(rName: "CusLedgObj",
@@ -594,7 +594,7 @@ namespace TallyConnector
             toDate ??= ToDate;
             fetchList ??= new() { "MasterId", "*" };
             StaticVariables sv = new() { SVCompany = company, SVFromDate = fromDate, SVToDate = toDate };
-            List<string> Filters = new() { "Ledgerfilter" };
+            List<string> Filters = new() { "Cusfilter" };
             List<string> SystemFilter = new() { $"${LookupField} = \"{LookupValue}\"" };
 
             string xml = await GetNativeCollectionXML(rName: "CusCostCentObj",
@@ -663,7 +663,7 @@ namespace TallyConnector
             toDate ??= ToDate;
             fetchList ??= new() { "MasterId", "*" };
             StaticVariables sv = new() { SVCompany = company, SVFromDate = fromDate, SVToDate = toDate };
-            List<string> Filters = new() { "Ledgerfilter" };
+            List<string> Filters = new() { "Cusfilter" };
             List<string> SystemFilter = new() { $"${LookupField} = \"{LookupValue}\"" };
 
             string xml = await GetNativeCollectionXML(rName: "CusStckGrpObj",
@@ -732,7 +732,7 @@ namespace TallyConnector
             toDate ??= ToDate;
             fetchList ??= new() { "MasterId", "*" };
             StaticVariables sv = new() { SVCompany = company, SVFromDate = fromDate, SVToDate = toDate };
-            List<string> Filters = new() { "Ledgerfilter" };
+            List<string> Filters = new() { "Cusfilter" };
             List<string> SystemFilter = new() { $"${LookupField} = \"{LookupValue}\"" };
 
             string xml = await GetNativeCollectionXML(rName: "CusStockCatObj",
@@ -800,7 +800,7 @@ namespace TallyConnector
             toDate ??= ToDate;
             fetchList ??= new() { "MasterId", "*" };
             StaticVariables sv = new() { SVCompany = company, SVFromDate = fromDate, SVToDate = toDate };
-            List<string> Filters = new() { "Ledgerfilter" };
+            List<string> Filters = new() { "Cusfilter" };
             List<string> SystemFilter = new() { $"${LookupField} = \"{LookupValue}\"" };
 
             string xml = await GetNativeCollectionXML(rName: "CusStckItmObj",
@@ -869,7 +869,7 @@ namespace TallyConnector
             toDate ??= ToDate;
             fetchList ??= new() { "MasterId", "*" };
             StaticVariables sv = new() { SVCompany = company, SVFromDate = fromDate, SVToDate = toDate };
-            List<string> Filters = new() { "Ledgerfilter" };
+            List<string> Filters = new() { "Cusfilter" };
             List<string> SystemFilter = new() { $"${LookupField} = \"{LookupValue}\"" };
 
             string xml = await GetNativeCollectionXML(rName: "CusUnitObj",
@@ -1337,7 +1337,7 @@ namespace TallyConnector
         /// <param name="fetchList">You can select the list of fields to be fetched from tally if nothing specified it pulls all fields availaible in Tally
         /// </param>
         /// <returns>Returns instance of Models.CostCenter instance with data from tally</returns>
-        public async Task<Employee> GetVoucher(string LookupValue, string LookupField = "Name",
+        public async Task<Voucher> GetVoucher(string LookupValue, string LookupField = "VoucherNumber",
                                                     string company = null,
                                                     string fromDate = null,
                                                     string toDate = null,
@@ -1359,8 +1359,8 @@ namespace TallyConnector
                                                       NativeFields: fetchList,
                                                       Filters: Filters,
                                                       SystemFilters: SystemFilter);
-            Employee Employee = GetObjfromXml<EmployeeEnvelope>(xml).Body.Data.Collection.Employees[0];
-            return Employee;
+            Voucher Vch = GetObjfromXml<VoucherEnvelope>(xml).Body.Data.Collection.Vouchers[0];
+            return Vch;
         }
 
 

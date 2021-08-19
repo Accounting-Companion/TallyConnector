@@ -168,7 +168,7 @@ namespace Tests
 
 
         [Test]
-        public async Task CheckGetVoucher()
+        public async Task CheckGetVoucherbyMasterid()
         {
             await TTally.Check();
             Voucher voucher = await TTally.GetVoucherByMasterID("1299");
@@ -178,11 +178,19 @@ namespace Tests
             VoucherEnvelope voucherEnvelope = new();
             voucherEnvelope.Header = new();
             voucherEnvelope.Body.Data.Message.Voucher = voucher;
-            string xml = voucher.GetXML();
-            string json = voucher.GetJson();
+            //string xml = voucher.GetXML();
+            //string json = voucher.GetJson();
             Assert.NotNull(voucher);
         }
 
+
+        [Test]
+        public async Task CheckGetVoucher()
+        {
+            await TTally.Check();
+            Voucher voucher = await TTally.GetVoucher("dfghj");
+            Assert.NotNull(voucher);
+        }
         [Test]
         public async Task CheckGetLedgerVouchers()
         {
