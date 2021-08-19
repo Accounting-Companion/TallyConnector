@@ -17,13 +17,13 @@ namespace TallyConnector.Models
             FAddress = new();
         }
 
-        [XmlAttribute(AttributeName = "ID")]
+        [XmlElement(ElementName = "MASTERID")]
         public int TallyId { get; set; }
 
         [XmlAttribute(AttributeName = "NAME")]
         public string Name { get; set; }
 
-        [XmlAttribute(AttributeName = "REQNAME")]
+        [XmlIgnore]
         public string VName { get; set; }
 
         [XmlElement(ElementName = "PARENT")]
@@ -80,13 +80,13 @@ namespace TallyConnector.Models
                     if (Name == VName)
                     {
                         this.LanguageNameList.NameList.NAMES[0] = this.Name;
-                        return string.Join("\n", this.LanguageNameList.NameList.NAMES.GetRange(1, this.LanguageNameList.NameList.NAMES.Count - 1));
+                        return string.Join("..\n", this.LanguageNameList.NameList.NAMES.GetRange(1, this.LanguageNameList.NameList.NAMES.Count - 1));
 
                     }
                     else
                     {
                         //Name = this.LanguageNameList.NameList.NAMES[0];
-                        return string.Join("\n", this.LanguageNameList.NameList.NAMES);
+                        return string.Join("..\n", this.LanguageNameList.NameList.NAMES);
 
                     }
                 }
@@ -131,6 +131,9 @@ namespace TallyConnector.Models
         [JsonIgnore]
         [XmlAttribute(AttributeName = "Action")]
         public string Action { get; set; }
+
+        [XmlElement(ElementName = "GUID")]
+        public string GUID { get; set; }
     }
 
     [XmlRoot(ElementName = "ENVELOPE")]
@@ -159,6 +162,18 @@ namespace TallyConnector.Models
     {
         [XmlElement(ElementName = "TALLYMESSAGE")]
         public GdwnMessage Message { get; set; } = new();
+
+        [XmlElement(ElementName = "COLLECTION")]
+        public GodownColl Collection { get; set; } = new GodownColl();
+
+
+    }
+
+    [XmlRoot(ElementName = "COLLECTION")]
+    public class GodownColl
+    {
+        [XmlElement(ElementName = "GODOWN")]
+        public List<Godown> Godowns { get; set; }
     }
 
     [XmlRoot(ElementName = "TALLYMESSAGE")]

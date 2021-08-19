@@ -187,6 +187,9 @@ namespace TallyConnector.Models
         [XmlAttribute(AttributeName = "Action")]
         public string Action { get; set; }
 
+        [XmlElement(ElementName = "GUID")]
+        public string GUID { get; set; }
+
         [JsonIgnore]
         [XmlAttribute(AttributeName = "VCHTYPE")]
         public string VchType

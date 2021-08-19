@@ -45,13 +45,13 @@ namespace TallyConnector.Models
                     if (Name == VName)
                     {
                         this.LanguageNameList.NameList.NAMES[0] = this.Name;
-                        return string.Join("\n", this.LanguageNameList.NameList.NAMES.GetRange(1, this.LanguageNameList.NameList.NAMES.Count - 1));
+                        return string.Join("..\n", this.LanguageNameList.NameList.NAMES.GetRange(1, this.LanguageNameList.NameList.NAMES.Count - 1));
 
                     }
                     else
                     {
                         //Name = this.LanguageNameList.NameList.NAMES[0];
-                        return string.Join("\n", this.LanguageNameList.NameList.NAMES);
+                        return string.Join("..\n", this.LanguageNameList.NameList.NAMES);
 
                     }
                 }
@@ -69,7 +69,7 @@ namespace TallyConnector.Models
                 
                 if (value != null)
                 {
-                    List<string> lis = value.Split('\n').ToList();
+                    List<string> lis = value.Split("..\n").ToList();
 
                     LanguageNameList.NameList.NAMES.Add(Name);
                     if (value != "")
@@ -131,7 +131,21 @@ namespace TallyConnector.Models
     {
         [XmlElement(ElementName = "TALLYMESSAGE")]
         public AttendanceMessage Message { get; set; } = new();
+
+
+        [XmlElement(ElementName = "COLLECTION")]
+        public AttendanceTypeColl Collection { get; set; } = new AttendanceTypeColl();
+
+
     }
+
+    [XmlRoot(ElementName = "COLLECTION")]
+    public class AttendanceTypeColl
+    {
+        [XmlElement(ElementName = "ATTENDANCETYPE")]
+        public List<AttendanceType> AttendanceTypes { get; set; }
+    }
+
 
     [XmlRoot(ElementName = "TALLYMESSAGE")]
     public class AttendanceMessage

@@ -12,17 +12,22 @@ namespace TallyConnector.Models
 
    
     [XmlRoot(ElementName = "LISTOFGROUPS")]
-    public class GroupsList
+    public class MGroups
     {
-        [XmlElement(ElementName = "NAME")]
-        public List<string> GroupNames { get; set; } = new();
+        [XmlAttribute(AttributeName = "ID")]
+        public int TallyID { get; set; }
+
+        [XmlAttribute(AttributeName = "NAME")]
+        public string Name { get; set; }
 
     }
     [XmlRoot(ElementName = "LISTOFLEDGERS")]
     public class LedgersList
     {
-        [XmlElement(ElementName = "NAME")]
-        public List<string> LedgerNames { get; set; } = new();
+        public int TallyId { get; set; }
+
+        [XmlAttribute(AttributeName = "NAME")]
+        public string Name { get; set; }
 
     }
 

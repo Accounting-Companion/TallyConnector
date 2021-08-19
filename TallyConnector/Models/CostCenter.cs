@@ -11,14 +11,14 @@ namespace TallyConnector.Models
     [XmlRoot(ElementName = "COSTCENTRE")]
     public class CostCenter:TallyXmlJson
     {
-        
-        [XmlAttribute(AttributeName = "ID")]
+
+        [XmlElement(ElementName = "MASTERID")]
         public int TallyId { get; set; }
 
         [XmlAttribute(AttributeName = "NAME")]
         public string Name { get; set; }
 
-        [XmlAttribute(AttributeName = "REQNAME")]
+        [XmlIgnore]
         public string VName { get; set; }
 
         [XmlElement(ElementName = "CATEGORY")]
@@ -48,13 +48,13 @@ namespace TallyConnector.Models
                     if (Name == VName)
                     {
                         this.LanguageNameList.NameList.NAMES[0] = this.Name;
-                        return string.Join("\n", this.LanguageNameList.NameList.NAMES.GetRange(1, this.LanguageNameList.NameList.NAMES.Count - 1));
+                        return string.Join("..\n", this.LanguageNameList.NameList.NAMES.GetRange(1, this.LanguageNameList.NameList.NAMES.Count - 1));
 
                     }
                     else
                     {
                         //Name = this.LanguageNameList.NameList.NAMES[0];
-                        return string.Join("\n", this.LanguageNameList.NameList.NAMES);
+                        return string.Join("..\n", this.LanguageNameList.NameList.NAMES);
 
                     }
                 }
@@ -72,7 +72,7 @@ namespace TallyConnector.Models
                 
                 if (value != null)
                 {
-                    List<string> lis = value.Split('\n').ToList();
+                    List<string> lis = value.Split("..\n").ToList();
 
                     LanguageNameList.NameList.NAMES.Add(Name);
                     if (value != "")
@@ -99,6 +99,9 @@ namespace TallyConnector.Models
         [JsonIgnore]
         [XmlAttribute(AttributeName = "Action")]
         public string Action { get; set; }
+
+        [XmlElement(ElementName = "GUID")]
+        public string GUID { get; set; }
     }
 
     [XmlRoot(ElementName = "ENVELOPE")]
@@ -127,6 +130,18 @@ namespace TallyConnector.Models
     {
         [XmlElement(ElementName = "TALLYMESSAGE")]
         public CCentMessage Message { get; set; } = new();
+
+        [XmlElement(ElementName = "COLLECTION")]
+        public CostCentColl Collection { get; set; } = new CostCentColl();
+
+
+    }
+
+    [XmlRoot(ElementName = "COLLECTION")]
+    public class CostCentColl
+    {
+        [XmlElement(ElementName = "COSTCENTRE")]
+        public List<CostCenter> CostCenters { get; set; }
     }
 
     [XmlRoot(ElementName = "TALLYMESSAGE")]

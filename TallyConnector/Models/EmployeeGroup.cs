@@ -45,6 +45,19 @@ namespace TallyConnector.Models
     {
         [XmlElement(ElementName = "TALLYMESSAGE")]
         public EmployeeGroupMessage Message { get; set; } = new();
+
+
+        [XmlElement(ElementName = "COLLECTION")]
+        public EmployeeGroupColl Collection { get; set; } = new EmployeeGroupColl();
+
+
+    }
+
+    [XmlRoot(ElementName = "COLLECTION")]
+    public class EmployeeGroupColl
+    {
+        [XmlElement(ElementName = "COSTCENTRE")]
+        public List<EmployeeGroup> EmployeeGroups { get; set; }
     }
 
     [XmlRoot(ElementName = "TALLYMESSAGE")]

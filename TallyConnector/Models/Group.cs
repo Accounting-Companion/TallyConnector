@@ -11,13 +11,13 @@ namespace TallyConnector.Models
     public class Group:TallyXmlJson
     {
 
-        [XmlAttribute(AttributeName = "ID")]
-        public int TallyID { get; set; }
+        [XmlElement(ElementName = "MASTERID")]
+        public int? TallyID { get; set; }
         
         [XmlAttribute(AttributeName = "NAME")]
         public string Name { get; set; }
 
-        [XmlAttribute(AttributeName = "REQNAME")]
+        [XmlIgnore]
         public string VName { get; set; }
 
         [XmlElement(ElementName = "PARENT")]
@@ -38,13 +38,13 @@ namespace TallyConnector.Models
                     if (Name == VName)
                     {
                         this.LanguageNameList.NameList.NAMES[0] = this.Name;
-                        return string.Join("\n", this.LanguageNameList.NameList.NAMES.GetRange(1, this.LanguageNameList.NameList.NAMES.Count - 1));
+                        return string.Join("..\n", this.LanguageNameList.NameList.NAMES.GetRange(1, this.LanguageNameList.NameList.NAMES.Count - 1));
 
                     }
                     else
                     {
                         //Name = this.LanguageNameList.NameList.NAMES[0];
-                        return string.Join("\n", this.LanguageNameList.NameList.NAMES);
+                        return string.Join("..\n", this.LanguageNameList.NameList.NAMES);
 
                     }
                 }
@@ -62,7 +62,7 @@ namespace TallyConnector.Models
                 
                 if (value != null)
                 {
-                    List<string> lis = value.Split('\n').ToList();
+                    List<string> lis = value.Split("..\n").ToList();
 
                     LanguageNameList.NameList.NAMES.Add(Name);
                     if (value != "")
@@ -80,7 +80,8 @@ namespace TallyConnector.Models
             }
         }
 
-
+        [XmlElement(ElementName = "GUID")]
+        public string GUID { get; set; }
         /// <summary>
         /// Tally Field - Used for Calculation
         /// </summary>
@@ -145,6 +146,18 @@ namespace TallyConnector.Models
     {
         [XmlElement(ElementName = "TALLYMESSAGE")]
         public GroupMessage Message { get; set; } = new();
+
+        [XmlElement(ElementName = "COLLECTION")]
+        public GroupColl Collection { get; set; } = new GroupColl();
+
+
+    }
+
+    [XmlRoot(ElementName = "COLLECTION")]
+    public class GroupColl
+    {
+        [XmlElement(ElementName = "GROUP")]
+        public List<Group> Groups { get; set; }
     }
 
     [XmlRoot(ElementName = "TALLYMESSAGE")]

@@ -203,6 +203,19 @@ namespace TallyConnector.Models
     {
         [XmlElement(ElementName = "TALLYMESSAGE")]
         public EmployeeMessage Message { get; set; } = new();
+
+
+        [XmlElement(ElementName = "COLLECTION")]
+        public EmployeeColl Collection { get; set; } = new EmployeeColl();
+
+
+    }
+
+    [XmlRoot(ElementName = "COLLECTION")]
+    public class EmployeeColl
+    {
+        [XmlElement(ElementName = "COSTCENTRE")]
+        public List<Employee> Employees { get; set; }
     }
 
     [XmlRoot(ElementName = "TALLYMESSAGE")]

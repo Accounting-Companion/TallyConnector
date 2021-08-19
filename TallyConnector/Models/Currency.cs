@@ -45,6 +45,9 @@ namespace TallyConnector.Models
         [XmlAttribute(AttributeName = "Action")]
         public string Action { get; set; }
 
+        [XmlElement(ElementName = "GUID")]
+        public string GUID { get; set; }
+
         //[XmlElement(ElementName = "DAILYSTDRATES.LIST")]
         //public List<DailystdRate> DailystdRateList { get; set; }
 
@@ -101,8 +104,19 @@ namespace TallyConnector.Models
     {
         [XmlElement(ElementName = "TALLYMESSAGE")]
         public CrncyMessage Message { get; set; } = new();
+
+
+        [XmlElement(ElementName = "COLLECTION")]
+        public CurrencyColl Collection { get; set; } = new CurrencyColl();
+
     }
 
+    [XmlRoot(ElementName = "COLLECTION")]
+    public class CurrencyColl
+    {
+        [XmlElement(ElementName = "CURRENCY")]
+        public List<Currency> Currencies { get; set; }
+    }
     [XmlRoot(ElementName = "TALLYMESSAGE")]
     public class CrncyMessage
     {

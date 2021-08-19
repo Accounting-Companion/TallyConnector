@@ -12,13 +12,13 @@ namespace TallyConnector.Models
     public class VoucherType:TallyXmlJson
     {
 
-        [XmlAttribute(AttributeName = "ID")]
+        [XmlElement(ElementName = "MASTERID")]
         public int TallyId { get; set; }
 
         [XmlAttribute(AttributeName = "NAME")]
         public string Name { get; set; }
 
-        [XmlAttribute(AttributeName = "REQNAME")]
+        [XmlIgnore]
         public string VName { get; set; }
 
         [XmlElement(ElementName = "PARENT")]
@@ -60,8 +60,22 @@ namespace TallyConnector.Models
         [XmlElement(ElementName = "ISDEFAULTALLOCENABLED")]
         public string IsDefaultAllocationEnabled { get; set; }
 
+        [XmlElement(ElementName = "AFFECTSSTOCK")]
+        public string EffectStock { get; set; }
+
+        [XmlElement(ElementName = "ASMFGJRNL")]
+        public string AsMfgJrnl { get; set; }
+
+        [XmlElement(ElementName = "USEFORJOBWORK")]
+        public string UseforJobwork { get; set; }
+
+        [XmlElement(ElementName = "ISFORJOBWORKIN")]
+        public string IsforJobworkIn { get; set; }
+
+
         [XmlElement(ElementName = "CANDELETE")]
         public string CanDelete { get; set; }
+
 
         /// <summary>
         /// Accepted Values //Create, Alter, Delete
@@ -69,6 +83,9 @@ namespace TallyConnector.Models
         [JsonIgnore]
         [XmlAttribute(AttributeName = "Action")]
         public string Action { get; set; }
+
+        [XmlElement(ElementName = "GUID")]
+        public string GUID { get; set; }
     }
     
     [XmlRoot(ElementName = "ENVELOPE")]
@@ -97,7 +114,20 @@ namespace TallyConnector.Models
     {
         [XmlElement(ElementName = "TALLYMESSAGE")]
         public VoucherTypeMessage Message { get; set; } = new ();
+
+        [XmlElement(ElementName = "COLLECTION")]
+        public VoucherTypeColl Collection { get; set; } = new VoucherTypeColl();
+
+
     }
+
+    [XmlRoot(ElementName = "COLLECTION")]
+    public class VoucherTypeColl
+    {
+        [XmlElement(ElementName = "VOUCHERTYPE")]
+        public List<VoucherType> VoucherTypes { get; set; }
+    }
+
 
     [XmlRoot(ElementName = "TALLYMESSAGE")]
     public class VoucherTypeMessage

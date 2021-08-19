@@ -12,13 +12,13 @@ namespace TallyConnector.Models
     public class Unit:TallyXmlJson
     {
 
-        [XmlAttribute(AttributeName = "ID")]
+        [XmlElement(ElementName = "MASTERID")]
         public int TallyId { get; set; }
 
         [XmlAttribute(AttributeName = "NAME")]
         public string Name { get; set; }
 
-        [XmlAttribute(AttributeName = "REQNAME")]
+        [XmlIgnore]
         public string VName { get; set; }
 
         [XmlElement(ElementName = "ORIGINALNAME")]
@@ -46,6 +46,9 @@ namespace TallyConnector.Models
         [JsonIgnore]
         [XmlAttribute(AttributeName = "Action")]
         public string Action { get; set; }
+
+        [XmlElement(ElementName = "GUID")]
+        public string GUID { get; set; }
     }
     [XmlRoot(ElementName = "ENVELOPE")]
     public class UnitEnvelope : TallyXmlJson
@@ -73,8 +76,20 @@ namespace TallyConnector.Models
     {
         [XmlElement(ElementName = "TALLYMESSAGE")]
         public UnitMessage Message { get; set; } = new();
+
+
+        [XmlElement(ElementName = "COLLECTION")]
+        public UnitColl Collection { get; set; } = new UnitColl();
+
+
     }
 
+    [XmlRoot(ElementName = "COLLECTION")]
+    public class UnitColl
+    {
+        [XmlElement(ElementName = "UNIT")]
+        public List<Unit> Units { get; set; }
+    }
     [XmlRoot(ElementName = "TALLYMESSAGE")]
     public class UnitMessage
     {
