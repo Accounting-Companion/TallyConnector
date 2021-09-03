@@ -8,12 +8,13 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Xml;
 using System.Xml.Serialization;
+using System.Xml.Xsl;
 using TallyConnector.Models;
 namespace TallyConnector
 {
     public class Tally : IDisposable
     {
-        static readonly HttpClient client = new();
+        readonly HttpClient client = new();
 
         private int Port;
         private string BaseURL;
@@ -57,24 +58,24 @@ namespace TallyConnector
         /// </summary>
         /// <param name="baseURL">Url on which Tally is Running</param>
         /// <param name="port">Port on which Tally is Running</param>
-        public Tally(string baseURL, int port,ILogger<Tally> Logger=null)
+        public Tally(string baseURL, int port, ILogger<Tally> Logger = null, int Timeoutseconds = 30)
         {
             this.Logger = Logger ?? NullLogger<Tally>.Instance;
             CLogger = new CLogger(Logger);
             Port = port;
             BaseURL = baseURL;
-            client.Timeout = TimeSpan.FromSeconds(30);
+            client.Timeout = TimeSpan.FromSeconds(Timeoutseconds);
         }
 
 
         /// <summary>
         /// If nothing Specified during Intialisation default Url will be <strong>http://localhost</strong> running on port <strong>9000</strong>
         /// </summary>
-        public Tally(ILogger<Tally> logger =null)
+        public Tally(ILogger<Tally> logger =null, int Timeoutseconds = 30)
         {
             Logger = logger;
             CLogger = new CLogger(Logger);
-            client.Timeout = TimeSpan.FromSeconds(30);
+            client.Timeout = TimeSpan.FromSeconds(Timeoutseconds);
             Setup("http://localhost", 9000);
             
         }
@@ -333,7 +334,8 @@ namespace TallyConnector
         /// <summary>
         /// Gets Existing Group from Tally based on group name
         /// </summary>
-        /// <param name="GroupName">Specify the name of group to be fetched from Tally</param>
+        /// <param name="LookupValue">Specify the name of group/unique value of group to be fetched from Tally</param>
+        /// <param name="LookupField">Specify the lookup field based on which to be fetched from Tally</param>
         /// <param name="company">Specify Company if not specified in Setup</param>
         /// <param name="fromDate">Specify fromDate if not specified in Setup</param>
         /// <param name="toDate">Specify toDate if not specified in Setup</param>
@@ -422,7 +424,7 @@ namespace TallyConnector
             company ??= Company;
             fromDate ??= FromDate;
             toDate ??= ToDate;
-            Nativelist ??= new() { "Address","MasterId", "InterestCollection", "*" };
+            Nativelist ??= new() { "Address","MasterId", "InterestCollection", "REMOTEGUID", "*" };
             StaticVariables sv = new() { SVCompany = company,SVFromDate=fromDate,SVToDate=toDate };
             List<string> Filters = new() { "LedgerFilter" };
             List<string> SystemFilter = new() { $"${LookupField} = \"{LookupValue}\"" };
@@ -1270,17 +1272,13 @@ namespace TallyConnector
         /// <returns>Returns instance of Models.CostCenter instance with data from tally</returns>
         public async Task<Employee> GetEmployee(string LookupValue, string LookupField = "Name",
                                                     string company = null,
-                                                    string fromDate = null,
-                                                    string toDate = null,
                                                     List<string> fetchList = null,
                                                     string format = "XML")
         {
             //If parameter is null Get value from instance
             company ??= Company;
-            fromDate ??= FromDate;
-            toDate ??= ToDate;
             fetchList ??= new() { "*" };
-            StaticVariables sv = new() { SVCompany = company, SVFromDate = fromDate, SVToDate = toDate };
+            StaticVariables sv = new() { SVCompany = company };
             List<string> Filters = new() { "filter" };
             List<string> SystemFilter = new() { $"${LookupField} = \"{LookupValue}\"" };
 
@@ -1339,17 +1337,13 @@ namespace TallyConnector
         /// <returns>Returns instance of Models.CostCenter instance with data from tally</returns>
         public async Task<Voucher> GetVoucher(string LookupValue, string LookupField = "VoucherNumber",
                                                     string company = null,
-                                                    string fromDate = null,
-                                                    string toDate = null,
                                                     List<string> fetchList = null,
                                                     string format = "XML")
         {
             //If parameter is null Get value from instance
             company ??= Company;
-            fromDate ??= FromDate;
-            toDate ??= ToDate;
             fetchList ??= new() { "MasterId", "*" };
-            StaticVariables sv = new() { SVCompany = company, SVFromDate = fromDate, SVToDate = toDate };
+            StaticVariables sv = new() { SVCompany = company};
             List<string> Filters = new() { "filter" };
             List<string> SystemFilter = new() { $"${LookupField} = \"{LookupValue}\"" };
 
@@ -1766,7 +1760,6 @@ namespace TallyConnector
                     ColEnvelope.Body.Desc.TDL.TDLMessage.Collection.SetAttributes(isInitialize: "Yes");
                 }
 
-
                 string Reqxml = ColEnvelope.GetXML(); //Gets XML from Object
                 Resxml = await SendRequest(Reqxml);
             }
@@ -1900,7 +1893,16 @@ namespace TallyConnector
             };
             XmlReader rd = XmlReader.Create(new StringReader(Xml), xset, context);
             //StringReader XmlStream = new StringReader(Xml);
-
+            if (typeof(T).Name.Contains("VoucherEnvelope"))
+            {
+                XmlReader xslreader = XmlReader.Create(new StringReader("<xsl:stylesheet version=\"1.0\" xmlns:xsl=\"http://www.w3.org/1999/XSL/Transform\"><xsl:template match=\"@*|node()\">    <xsl:copy>        <xsl:apply-templates select=\"@*|node()\" />    </xsl:copy></xsl:template><xsl:template match=\"/ENVELOPE/BODY/DATA/TALLYMESSAGE/VOUCHER/LEDGERENTRIES.LIST\">		<ALLLEDGERENTRIES.LIST><xsl:apply-templates select=\"@*|node()\" /></ALLLEDGERENTRIES.LIST></xsl:template>   <xsl:template match=\"/ENVELOPE/BODY/DATA/TALLYMESSAGE/VOUCHER/INVENTORYENTRIES.LIST\">		   <ALLINVENTORYENTRIES.LIST><xsl:apply-templates select=\"@*|node()\" /></ALLINVENTORYENTRIES.LIST>	   </xsl:template></xsl:stylesheet>"));
+                XslCompiledTransform xslTransform = new();
+                xslTransform.Load(xslreader);
+                StringWriter textWriter = new StringWriter();
+                XmlWriter xmlwriter = XmlWriter.Create(textWriter, new XmlWriterSettings() { OmitXmlDeclaration = true });
+                xslTransform.Transform(rd, null, xmlwriter);
+                rd = XmlReader.Create(new StringReader(textWriter.ToString()), xset, context);
+            }
             try
             {
                 T obj = (T)XMLSer.Deserialize(rd);

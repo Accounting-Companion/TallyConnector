@@ -9,7 +9,7 @@ namespace TallyConnector.Models
 {
     
     [XmlRoot(ElementName = "COMPANY")]
-    public class Company
+    public class Company:TallyXmlJson
     {
 
         [XmlElement(ElementName = "NAME")]
