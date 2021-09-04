@@ -12,7 +12,7 @@ namespace TallyConnector.Models
     {
 
         [XmlElement(ElementName = "MASTERID")]
-        public int? TallyID { get; set; }
+        public int? TallyId { get; set; }
         
         [XmlAttribute(AttributeName = "NAME")]
         public string Name { get; set; }

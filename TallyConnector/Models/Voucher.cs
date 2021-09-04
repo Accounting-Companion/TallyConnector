@@ -134,8 +134,20 @@ namespace TallyConnector.Models
         [XmlElement(ElementName = "ISCANCELLED")]
         public string IsCancelled { get; set; }
 
-        [XmlElement(ElementName = "ALLLEDGERENTRIES.LIST")]
+        [XmlElement(ElementName = "ALLLEDGERENTRIES.LIST",Type =typeof(IVoucherLedger))]
+        [XmlElement(ElementName = "LEDGERENTRIES.LIST", Type = typeof(EVoucherLedger))]
         public List<IVoucherLedger> Ledgers { get; set; }
+            
+
+        [XmlElement(ElementName = "ALLINVENTORYENTRIES.LIST",Type =typeof(AllInventoryAllocations))]
+        [XmlElement(ElementName = "INVENTORYENTRIES.LIST", Type = typeof(InventoryEntries))]
+        public List<AllInventoryAllocations> InventoryAllocations { get; set; }
+
+        [XmlElement(ElementName = "INVENTORYENTRIESOUT.LIST")]
+        public List<InventoryoutAllocations> InventoriesOut { get; set; }
+
+        [XmlElement(ElementName = "INVENTORYENTRIESIN.LIST")]
+        public List<InventoryinAllocations> Inventoriesin { get; set; }
 
         [JsonIgnore]
         [XmlAttribute(AttributeName = "DATE")]
