@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Net.Http;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using System.Xml;
@@ -14,22 +15,28 @@ namespace TallyConnector
 {
     public class Tally : IDisposable
     {
-        readonly HttpClient client = new();
+        private readonly HttpClient client = new();
+
+        private ILogger Logger { get; }
+        private CLogger CLogger { get; }
 
         private int Port;
         private string BaseURL;
 
-        public string Status;
-        public string ReqStatus;
+        public string Status { get; private set; }
+        public string ReqStatus { get; private set; }
+
+        public string Company { get; private set; }
+        public string FromDate { get; private set; }
+        public string ToDate { get; private set; }
 
         private bool disposedValue;
 
         //Gets Full Url from Baseurl and Port
-        private string FullURL { get { return BaseURL + ":" + Port; } }
+        private string FullURL => BaseURL + ":" + Port;
 
         public List<Group> Groups { get; private set; }
         public List<Ledger> Ledgers { get; private set; }
-        public List<string> Parents { get; private set; }
         public List<CostCategory> CostCategories { get; private set; }
         public List<CostCenter> CostCenters { get; private set; }
         public List<StockGroup> StockGroups { get; private set; }
@@ -47,18 +54,16 @@ namespace TallyConnector
 
         public List<Company> CompaniesList { get; private set; }
 
-        public string Company { get; private set; }
-        public string FromDate { get; private set; }
-        public string ToDate { get; private set; }
-        private ILogger Logger { get; }
-        private CLogger CLogger { get; }
 
         /// <summary>
         /// Intiate Tally with <strong>baseURL</strong> and <strong>port</strong>
         /// </summary>
         /// <param name="baseURL">Url on which Tally is Running</param>
         /// <param name="port">Port on which Tally is Running</param>
-        public Tally(string baseURL, int port, ILogger<Tally> Logger = null, int Timeoutseconds = 30)
+        public Tally(string baseURL,
+                     int port,
+                     ILogger<Tally> Logger = null,
+                     int Timeoutseconds = 30)
         {
             this.Logger = Logger ?? NullLogger<Tally>.Instance;
             CLogger = new CLogger(Logger);
@@ -71,7 +76,8 @@ namespace TallyConnector
         /// <summary>
         /// If nothing Specified during Intialisation default Url will be <strong>http://localhost</strong> running on port <strong>9000</strong>
         /// </summary>
-        public Tally(ILogger<Tally> logger =null, int Timeoutseconds = 30)
+        public Tally(ILogger<Tally> logger = null,
+                     int Timeoutseconds = 30)
         {
             Logger = logger;
             CLogger = new CLogger(Logger);
@@ -89,7 +95,11 @@ namespace TallyConnector
         /// <param name="company">Specify Company name - If multiple companies are opened in tally set this param to get from spcific ompany</param>
         /// <param name="fromDate">Default from date from to use for fetching info</param>
         /// <param name="toDate">Default from date from to use for fetching info<</param>
-        public void Setup(string baseURL, int port, string company = null, string fromDate = null, string toDate = null)
+        public void Setup(string baseURL,
+                          int port,
+                          string company = null,
+                          string fromDate = null,
+                          string toDate = null)
         {
             BaseURL = baseURL;
             Port = port;
@@ -163,6 +173,7 @@ namespace TallyConnector
             }
             return CompaniesList;
         }
+       
         /// <summary>
         /// Gets List of Companies in tally default Tally path
         /// </summary>
@@ -202,134 +213,355 @@ namespace TallyConnector
         /// <returns></returns>
         public async Task FetchAllTallyData(string company = null)
         {
-            company ??= Company;
-            //If Company Name is provided, fetch information related to particular company
-            //- Useful when multiple companies are opened in Tally
-            StaticVariables staticVariables = new()
+            string ReqType = "Masters from Tally";
+            CLogger.TallyReqStart(ReqType);
+            //Gets Groups from Tally
+            Groups = await GetGroupsList();
+
+            //Gets Ledgers from Tally
+            Ledgers = await GetLedgersList();
+
+            //Gets Cost Categories from Tally
+            CostCategories = await GetCostCategoriesList();
+
+            //Gets Cost Centers from Tally
+            CostCenters = await GetCostCentersList();
+
+            //Gets Stock Groups from Tally
+            StockGroups =  await GetStockGroupsList();
+
+            //Gets Stock Categories from Tally
+            StockCategories = await GetStockCategories();
+
+            //Gets Stock Items from Tally
+            StockItems = await GetStockItemsList();
+
+            //Gets Godowns from Tally
+            Godowns = await GetGodownsList();
+
+            //Gets Voucher Types from Tally
+            VoucherTypes = await GetVoucherTypesList();
+
+            //Gets Units from Tally
+            Units = await GetUnitsList();
+
+            //Gets Currencies from Tally
+            Currencies = await GetCurrenciesList();
+
+            //Gets AttendanceType from Tally
+            AttendanceTypes = await GetAttendanceTypesList();
+
+            //Gets EmployeeGroups from Tally
+            EmployeeGroups = await GetEmployeeGroups();
+
+            //Gets Employeees from Tally
+            Employees = await GetEmployeesList();
+
+            CLogger.TallyReqCompleted(ReqType);
+        }
+
+        /// <summary>
+        /// By default Gets List of Group objects from Tally with basic data like MasterId,Name and GUID
+        /// </summary>
+        /// <param name="staticVariables">Static variables to be used in xml request</param>
+        /// <param name="Nativelist">List of fields to be fetched from tally</param>
+        /// <param name="Filters">If you want to get groups based on any filter use filter</param>
+        /// <param name="SystemFilters">Based on which filter needs to be applied.If you specify filter you need to specify this </param>
+        /// <returns>List of groups with basic data</returns>
+        public async Task<List<Group>> GetGroupsList(StaticVariables staticVariables = null,
+                                                     List<string> Nativelist = null,
+                                                     List<string> Filters = null,
+                                                     List<string> SystemFilters = null)
+        {
+            string ReqType = "List of companies in Default Tally path";
+            CLogger.TallyReqStart(ReqType);
+            staticVariables ??= new()
             {
-                SVCompany = company,
+                SVCompany = Company,
                 SVExportFormat = "XML",
             };
-
-            //Gets Groups from Tally
-            //Dictionary<string, string> fields = new() { { "$NAME", "NAME" } };
-            List<string> Nativelist = new() { "Name", "GUID","Masterid"};
+            Nativelist ??= new() { "Name", "GUID", "Masterid" };
             string GrpXml = await GetNativeCollectionXML(rName: "NativeGrpColl",
                                                          colType: "Group",
                                                          Sv: staticVariables,
-                                                         NativeFields: Nativelist);
-            Groups = GetObjfromXml<GroupEnvelope>(GrpXml).Body.Data.Collection.Groups;
+                                                         NativeFields: Nativelist,
+                                                         Filters: Filters,
+                                                         SystemFilters: SystemFilters);
+            GroupColl  GroupsColl = GetObjfromXml<GroupEnvelope>(GrpXml).Body.Data.Collection;
+            List<Group> TGroups = GroupsColl.Groups ?? new();
+            CLogger.TallyReqCompleted(ReqType);
+            return TGroups;
+        }
 
-            //Gets Ledger from Tally
+        public async Task<List<Ledger>> GetLedgersList(StaticVariables staticVariables = null,
+                                                       List<string> Nativelist = null,
+                                                       List<string> Filters = null,
+                                                       List<string> SystemFilters = null)
+        {
+            staticVariables ??= new()
+            {
+                SVCompany = Company,
+                SVExportFormat = "XML",
+            };
+            Nativelist ??= new() { "Name", "GUID", "Masterid" };
+
             string LedXml = await GetNativeCollectionXML(rName: "NativeLedgColl",
                                                          colType: "Ledger",
                                                          Sv: staticVariables,
-                                                         NativeFields: Nativelist);
-            Ledgers = GetObjfromXml<LedgerEnvelope>(LedXml).Body.Data.Collection.Ledgers;
+                                                         NativeFields: Nativelist,
+                                                         Filters: Filters,
+                                                         SystemFilters: SystemFilters);
+            List<Ledger>  TLedgers = GetObjfromXml<LedgerEnvelope>(LedXml).Body.Data.Collection.Ledgers;
+            return TLedgers;
+        }
 
-            //Gets Cost Categories from Tally
+        public async Task<List<CostCategory>> GetCostCategoriesList(StaticVariables staticVariables = null,
+                                                                    List<string> Nativelist = null,
+                                                                    List<string> Filters = null,
+                                                                    List<string> SystemFilters = null)
+        {
+            staticVariables ??= new()
+            {
+                SVCompany = Company,
+                SVExportFormat = "XML",
+            };
+            Nativelist ??= new() { "Name", "GUID", "Masterid" };
+
             string CostCategoryXml = await GetNativeCollectionXML(rName: "NativeCostCatColl",
-                                                                  colType: "Costcategory",
-                                                                  Sv: staticVariables,
-                                                                  NativeFields: Nativelist);
-            CostCategories = GetObjfromXml<CostCatEnvelope>(CostCategoryXml).Body.Data.Collection.CostCategories;
+                                                                              colType: "Costcategory",
+                                                                              Sv: staticVariables,
+                                                                              NativeFields: Nativelist);
+            List<CostCategory> TCostCategories = GetObjfromXml<CostCatEnvelope>(CostCategoryXml).Body.Data.Collection.CostCategories;
+            return TCostCategories;
+        }
 
-            //Gets Cost Centers from Tally
-            List<string> Filters = new() { "IsEmployeeGroup", "Payroll" };
-            List<string> SystemFilters = new() { "Not $ISEMPLOYEEGROUP", "Not $FORPAYROLL" };
+        public async Task<List<CostCenter>> GetCostCentersList(StaticVariables staticVariables = null,
+                                                               List<string> Nativelist = null,
+                                                               List<string> Filters = null,
+                                                               List<string> SystemFilters = null)
+        {
+            staticVariables ??= new()
+            {
+                SVCompany = Company,
+                SVExportFormat = "XML",
+            };
+
+            Nativelist ??= new() { "Name", "GUID", "Masterid" };
+            Filters ??= new() { "IsEmployeeGroup", "Payroll" };
+            SystemFilters ??= new() { "Not $ISEMPLOYEEGROUP", "Not $FORPAYROLL" };
+
             string CostCenetrXml = await GetNativeCollectionXML(rName: "NativeCostCentColl",
-                                                                colType: "CostCenter",
-                                                                Sv: staticVariables,
-                                                                NativeFields: Nativelist,
-                                                                Filters: Filters,
-                                                                SystemFilters: SystemFilters);
-            CostCenters = GetObjfromXml<CostCentEnvelope>(CostCenetrXml).Body.Data.Collection.CostCenters;
+                                                                            colType: "CostCenter",
+                                                                            Sv: staticVariables,
+                                                                            NativeFields: Nativelist,
+                                                                            Filters: Filters,
+                                                                            SystemFilters: SystemFilters);
+            List<CostCenter> TCostCenters = GetObjfromXml<CostCentEnvelope>(CostCenetrXml).Body.Data.Collection.CostCenters;
+            return TCostCenters;
+        }
 
-            //Gets Stock Groups from Tally
+
+        private async Task<List<StockGroup>> GetStockGroupsList(StaticVariables staticVariables = null,
+                                                                List<string> Nativelist = null,
+                                                                List<string> Filters = null,
+                                                                List<string> SystemFilters = null)
+        {
+            staticVariables ??= new()
+            {
+                SVCompany = Company,
+                SVExportFormat = "XML",
+            };
+            Nativelist ??= new() { "Name", "GUID", "Masterid" };
             string StockGroupXml = await GetNativeCollectionXML(rName: "NativeStckGrpColl",
                                                                 colType: "StockGroup",
                                                                 Sv: staticVariables,
                                                                 NativeFields: Nativelist);
-            StockGroups = GetObjfromXml<StockGrpEnvelope>(StockGroupXml).Body.Data.Collection.StockGroups;
+            List<StockGroup> TStockGroups = GetObjfromXml<StockGrpEnvelope>(StockGroupXml).Body.Data.Collection.StockGroups;
+            return TStockGroups;
 
-            //Gets Stock Categories from Tally
+        }
+
+        private async Task<List<StockCategory>> GetStockCategories(StaticVariables staticVariables = null,
+                                                                   List<string> Nativelist = null,
+                                                                   List<string> Filters = null,
+                                                                   List<string> SystemFilters = null)
+        {
+            staticVariables ??= new()
+            {
+                SVCompany = Company,
+                SVExportFormat = "XML",
+            };
+            Nativelist ??= new() { "Name", "GUID", "Masterid" };
             string StockCategoryXml = await GetNativeCollectionXML(rName: "NativeStckCatColl",
                                                                    colType: "StockCategory",
                                                                    Sv: staticVariables,
                                                                    NativeFields: Nativelist);
-            StockCategories = GetObjfromXml<StockCatEnvelope>(StockCategoryXml).Body.Data.Collection.StockCategories;
+            List<StockCategory> TStockCategories = GetObjfromXml<StockCatEnvelope>(StockCategoryXml).Body.Data.Collection.StockCategories;
+            return TStockCategories;
+        }
 
-            //Gets Stock Items from Tally
+        private async Task<List<StockItem>> GetStockItemsList(StaticVariables staticVariables = null,
+                                                              List<string> Nativelist = null,
+                                                              List<string> Filters = null,
+                                                              List<string> SystemFilters = null)
+        {
+            staticVariables ??= new()
+            {
+                SVCompany = Company,
+                SVExportFormat = "XML",
+            };
+            Nativelist ??= new() { "Name", "GUID", "Masterid" };
             string StockItemsXml = await GetNativeCollectionXML(rName: "NativeStckItmColl",
                                                                    colType: "StockItem",
                                                                    Sv: staticVariables,
                                                                    NativeFields: Nativelist);
-            StockItems = GetObjfromXml<StockItemEnvelope>(StockItemsXml).Body.Data.Collection.StockItems;
+            List<StockItem> TStockItems = GetObjfromXml<StockItemEnvelope>(StockItemsXml).Body.Data.Collection.StockItems;
+            return TStockItems;
+        }
 
-            //Gets Godowns from Tally
+        private async Task<List<Godown>> GetGodownsList(StaticVariables staticVariables = null,
+                                                        List<string> Nativelist = null,
+                                                        List<string> Filters = null,
+                                                        List<string> SystemFilters = null)
+        {
+            staticVariables ??= new()
+            {
+                SVCompany = Company,
+                SVExportFormat = "XML",
+            };
+            Nativelist ??= new() { "Name", "GUID", "Masterid" };
             string GodownsXml = await GetNativeCollectionXML(rName: "NativeGdwnColl",
                                                                    colType: "Godown",
                                                                    Sv: staticVariables,
                                                                    NativeFields: Nativelist);
-            Godowns = GetObjfromXml<GodownEnvelope>(GodownsXml).Body.Data.Collection.Godowns;
+            List<Godown> TGodowns = GetObjfromXml<GodownEnvelope>(GodownsXml).Body.Data.Collection.Godowns;
+            return TGodowns;
+        }
 
-
-            //Gets Voucher Types from Tally
+        private async Task<List<VoucherType>> GetVoucherTypesList(StaticVariables staticVariables = null,
+                                                                  List<string> Nativelist = null,
+                                                                  List<string> Filters = null,
+                                                                  List<string> SystemFilters = null)
+        {
+            staticVariables ??= new()
+            {
+                SVCompany = Company,
+                SVExportFormat = "XML",
+            };
+            Nativelist ??= new() { "Name", "GUID", "Masterid" };
             string VoucherTypesXml = await GetNativeCollectionXML(rName: "NativeVchTypeColl",
                                                                    colType: "VoucherType",
                                                                    Sv: staticVariables,
                                                                    NativeFields: Nativelist);
-            VoucherTypes = GetObjfromXml<VoucherTypeEnvelope>(VoucherTypesXml).Body.Data.Collection.VoucherTypes;
+            List<VoucherType> TVoucherTypes = GetObjfromXml<VoucherTypeEnvelope>(VoucherTypesXml).Body.Data.Collection.VoucherTypes;
+            return TVoucherTypes;
+        }
 
-            //Gets Units from Tally
+        private async Task<List<Unit>> GetUnitsList(StaticVariables staticVariables = null,
+                                                    List<string> Nativelist = null,
+                                                    List<string> Filters = null,
+                                                    List<string> SystemFilters = null)
+        {
+            staticVariables ??= new()
+            {
+                SVCompany = Company,
+                SVExportFormat = "XML",
+            };
+            Nativelist ??= new() { "Name", "GUID", "Masterid" };
             string UnitsXml = await GetNativeCollectionXML(rName: "NativeUnitColl",
                                                                    colType: "Unit",
                                                                    Sv: staticVariables,
                                                                    NativeFields: Nativelist);
-            Units = GetObjfromXml<UnitEnvelope>(UnitsXml).Body.Data.Collection.Units;
-
-            //Gets Currencies from Tally
-            //Dictionary<string, string> Currenciesfields = new() { { "$EXPANDEDSYMBOL", "NAME" } };
-            List<string> Currenciesfields = new() { "Name", "GUID", "Masterid" };
-            string CurrenciesXml = await GetNativeCollectionXML(rName: "NativeCurrColl",
-                                                                   colType: "Currency",
-                                                                   Sv: staticVariables,
-                                                                   NativeFields: Currenciesfields);
-            Currencies = GetObjfromXml<CurrencyEnvelope>(CurrenciesXml).Body.Data.Collection.Currencies;
-
-
-
-            //Gets AttendanceType from Tally
-            string AttendanceTypesXml = await GetNativeCollectionXML(rName: "NativeAtndTypeColl",
-                                                                   colType: "AttendanceType",
-                                                                   Sv: staticVariables,
-                                                                   NativeFields: Nativelist);
-            AttendanceTypes = GetObjfromXml<AttendanceEnvelope>(AttendanceTypesXml).Body.Data.Collection.AttendanceTypes;
-
-            //Gets EmployeeGroups from Tally
-            List<string> EmployeeGroupFilters = new() { "IsEmployeeGroup" };
-            List<string> EmployeeGroupSystemFilters = new() { "$ISEMPLOYEEGROUP" };
-            string EmployeeGroupsXml = await GetNativeCollectionXML(rName: "NativeEmployeeGrpColl",
-                                                                    colType: "CostCenter", Sv: staticVariables,
-                                                                    NativeFields: Nativelist,
-                                                                    Filters: EmployeeGroupFilters,
-                                                                    SystemFilters: EmployeeGroupSystemFilters);
-            EmployeeGroups = GetObjfromXml<EmployeeGroupEnvelope>(EmployeeGroupsXml).Body.Data.Collection.EmployeeGroups;
-
-            //Gets Employeees from Tally
-            List<string> EmployeeFilters = new() { "IsEmployeeGroup", "Payroll" };
-            List<string> EmployeeSystemFilters = new() { "Not $ISEMPLOYEEGROUP", "$FORPAYROLL" };
-            string EmployeeesXml = await GetNativeCollectionXML(rName: "NativeEmployeeColl",
-                                                                    colType: "CostCenter", Sv: staticVariables,
-                                                                    NativeFields: Nativelist,
-                                                                    Filters: EmployeeFilters,
-                                                                    SystemFilters: EmployeeSystemFilters);
-            Employees = GetObjfromXml<EmployeeEnvelope>(EmployeeGroupsXml).Body.Data.Collection.Employees;
-
-
+            List<Unit> TUnits = GetObjfromXml<UnitEnvelope>(UnitsXml).Body.Data.Collection.Units;
+            return TUnits;
         }
 
+        private async Task<List<Currency>> GetCurrenciesList(StaticVariables staticVariables = null,
+                                                             List<string> Nativelist = null,
+                                                             List<string> Filters = null,
+                                                             List<string> SystemFilters = null)
+        {
 
+            //Dictionary<string, string> Currenciesfields = new() { { "$EXPANDEDSYMBOL", "NAME" } };
+            staticVariables ??= new()
+            {
+                SVCompany = Company,
+                SVExportFormat = "XML",
+            };
+            Nativelist ??= new() { "Name", "GUID", "Masterid" };
+
+            string CurrenciesXml = await GetNativeCollectionXML(rName: "NativeCurrColl",
+                                                                               colType: "Currency",
+                                                                               Sv: staticVariables,
+                                                                               NativeFields: Nativelist);
+            List<Currency> TCurrencies = GetObjfromXml<CurrencyEnvelope>(CurrenciesXml).Body.Data.Collection.Currencies;
+            return TCurrencies;
+        }
+
+        private async Task<List<AttendanceType>> GetAttendanceTypesList(StaticVariables staticVariables = null,
+                                                                        List<string> Nativelist = null,
+                                                                        List<string> Filters = null,
+                                                                        List<string> SystemFilters = null)
+        {
+            staticVariables ??= new()
+            {
+                SVCompany = Company,
+                SVExportFormat = "XML",
+            };
+            Nativelist ??= new() { "Name", "GUID", "Masterid" };
+
+            string AttendanceTypesXml = await GetNativeCollectionXML(rName: "NativeAtndTypeColl",
+                                                                               colType: "AttendanceType",
+                                                                               Sv: staticVariables,
+                                                                               NativeFields: Nativelist);
+            List<AttendanceType> TAttendanceTypes = GetObjfromXml<AttendanceEnvelope>(AttendanceTypesXml).Body.Data.Collection.AttendanceTypes;
+            return TAttendanceTypes;
+        }
+
+        private async Task<List<EmployeeGroup>> GetEmployeeGroups(StaticVariables staticVariables = null,
+                                                                  List<string> Nativelist = null,
+                                                                  List<string> EmployeeGroupFilters = null,
+                                                                  List<string> EmployeeGroupSystemFilters = null)
+        {
+            staticVariables ??= new()
+            {
+                SVCompany = Company,
+                SVExportFormat = "XML",
+            };
+            Nativelist ??= new() { "Name", "GUID", "Masterid" };
+            EmployeeGroupFilters ??= new() { "IsEmployeeGroup" };
+            EmployeeGroupSystemFilters ??= new() { "$ISEMPLOYEEGROUP" };
+            string EmployeeGroupsXml = await GetNativeCollectionXML(rName: "NativeEmployeeGrpColl",
+                                                                                colType: "CostCenter", Sv: staticVariables,
+                                                                                NativeFields: Nativelist,
+                                                                                Filters: EmployeeGroupFilters,
+                                                                                SystemFilters: EmployeeGroupSystemFilters);
+            List<EmployeeGroup> TEmployeeGroups = GetObjfromXml<EmployeeGroupEnvelope>(EmployeeGroupsXml).Body.Data.Collection.EmployeeGroups;
+            return TEmployeeGroups;
+        }
+
+        private async Task<List<Employee>> GetEmployeesList(StaticVariables staticVariables = null,
+                                                            List<string> Nativelist = null,
+                                                            List<string> EmployeeFilters = null,
+                                                            List<string> EmployeeSystemFilters = null)
+        {
+            staticVariables ??= new()
+            {
+                SVCompany = Company,
+                SVExportFormat = "XML",
+            };
+            Nativelist ??= new() { "Name", "GUID", "Masterid" };
+            EmployeeFilters ??= new() { "IsEmployeeGroup", "Payroll" };
+            EmployeeSystemFilters ??= new() { "Not $ISEMPLOYEEGROUP", "$FORPAYROLL" };
+
+            string EmployeeesXml = await GetNativeCollectionXML(rName: "NativeEmployeeColl",
+                                                                                colType: "CostCenter", Sv: staticVariables,
+                                                                                NativeFields: Nativelist,
+                                                                                Filters: EmployeeFilters,
+                                                                                SystemFilters: EmployeeSystemFilters);
+            List<Employee> TEmployees = GetObjfromXml<EmployeeEnvelope>(EmployeeesXml).Body.Data.Collection.Employees;
+            return TEmployees;
+        }
 
         /// <summary>
         /// Gets Existing Group from Tally based on group name
@@ -381,7 +613,7 @@ namespace TallyConnector
         /// Presult.result will be empty if sucess
         ///  </returns>
         public async Task<PResult> PostGroup(Group group,
-                                      string company = null)
+                                             string company = null)
         {
 
             //If parameter is null Get value from instance
@@ -392,7 +624,10 @@ namespace TallyConnector
             groupEnvelope.Body.Desc.StaticVariables = new() { SVCompany = company };
 
             groupEnvelope.Body.Data.Message.Group = group;
-
+            if (group.Parent.Contains("Primary"))
+            {
+                group.Parent = null;
+            }
             string GroupXML = groupEnvelope.GetXML();
 
             string RespXml = await SendRequest(GroupXML);
@@ -414,11 +649,12 @@ namespace TallyConnector
         /// <param name="fetchList">You can select the list of fields to be fetched from tally if nothing specified it pulls all fields availaible in Tally
         /// </param>
         /// <returns>Returns instance of Models.Ledger instance with data from tally</returns>
-        public async Task<Ledger> GetLedgerDynamic(string LookupValue, string LookupField = "Name",
-                                            string company = null,
-                                            string fromDate = null,
-                                            string toDate = null,
-                                            List<string> Nativelist = null)
+        public async Task<Ledger> GetLedgerDynamic(string LookupValue,
+                                                   string LookupField = "Name",
+                                                   string company = null,
+                                                   string fromDate = null,
+                                                   string toDate = null,
+                                                   List<string> Nativelist = null)
         {
             //If parameter is null Get value from instance
             company ??= Company;
@@ -482,7 +718,7 @@ namespace TallyConnector
         /// Presult.result will be empty if sucess
         ///  </returns>
         public async Task<PResult> PostLedger(Ledger ledger,
-                                      string company = null)
+                                              string company = null)
         {
 
             //If parameter is null Get value from instance
@@ -493,7 +729,10 @@ namespace TallyConnector
             ledgerEnvelope.Body.Desc.StaticVariables = new() { SVCompany = company };
 
             ledgerEnvelope.Body.Data.Message.Ledger = ledger;
-
+            if (ledger.Group.Contains("Primary"))
+            {
+                ledger.Group = null;
+            }
             string LedgXML = ledgerEnvelope.GetXML();
 
             string RespXml = await SendRequest(LedgXML);
@@ -513,7 +752,8 @@ namespace TallyConnector
         /// <param name="fetchList">You can select the list of fields to be fetched from tally if nothing specified it pulls all fields availaible in Tally
         /// </param>
         /// <returns>Returns instance of Models.CostCategory instance with data from tally</returns>
-        public async Task<CostCategory> GetCostCategory(string LookupValue, string LookupField = "Name",
+        public async Task<CostCategory> GetCostCategory(string LookupValue,
+                                                        string LookupField = "Name",
                                                         string company = null,
                                                         string fromDate = null,
                                                         string toDate = null,
@@ -550,7 +790,7 @@ namespace TallyConnector
         ///  Presult.result will be empty if sucess 
         /// </returns>
         public async Task<PResult> PostCostCategory(CostCategory CostCategory,
-                                      string company = null)
+                                                    string company = null)
         {
             //If parameter is null Get value from instance
             company ??= Company;
@@ -583,7 +823,8 @@ namespace TallyConnector
         /// <param name="fetchList">You can select the list of fields to be fetched from tally if nothing specified it pulls all fields availaible in Tally
         /// </param>
         /// <returns>Returns instance of Models.CostCenter instance with data from tally</returns>
-        public async Task<CostCenter> GetCostCenter(string LookupValue, string LookupField = "Name",
+        public async Task<CostCenter> GetCostCenter(string LookupValue,
+                                                    string LookupField = "Name",
                                                     string company = null,
                                                     string fromDate = null,
                                                     string toDate = null,
@@ -621,7 +862,7 @@ namespace TallyConnector
         ///  Presult.result will be empty if sucess 
         /// </returns>
         public async Task<PResult> PostCostCenter(CostCenter costCenter,
-                                      string company = null)
+                                                  string company = null)
         {
             //If parameter is null Get value from instance
             company ??= Company;
@@ -631,7 +872,10 @@ namespace TallyConnector
             costCentEnvelope.Body.Desc.StaticVariables = new() { SVCompany = company };
 
             costCentEnvelope.Body.Data.Message.CostCenter = costCenter;
-
+            if (costCenter.Parent.Contains("Primary"))
+            {
+                costCenter.Parent = null;
+            }
             string CostCenterXML = costCentEnvelope.GetXML();
 
             string RespXml = await SendRequest(CostCenterXML);
@@ -653,7 +897,8 @@ namespace TallyConnector
         /// <param name="fetchList">You can select the list of fields to be fetched from tally if nothing specified it pulls all fields availaible in Tally
         /// </param>
         /// <returns>Returns instance of Models.StockGroup instance with data from tally</returns>
-        public async Task<StockGroup> GetStockGroup(string LookupValue, string LookupField = "Name",
+        public async Task<StockGroup> GetStockGroup(string LookupValue,
+                                                    string LookupField = "Name",
                                                     string company = null,
                                                     string fromDate = null,
                                                     string toDate = null,
@@ -690,7 +935,7 @@ namespace TallyConnector
         ///  Presult.result will be empty if sucess 
         /// </returns>
         public async Task<PResult> PostStockGroup(StockGroup stockGroup,
-                                      string company = null)
+                                                  string company = null)
         {
             //If parameter is null Get value from instance
             company ??= Company;
@@ -700,7 +945,10 @@ namespace TallyConnector
             StockGrpEnvelope.Body.Desc.StaticVariables = new() { SVCompany = company };
 
             StockGrpEnvelope.Body.Data.Message.StockGroup = stockGroup;
-
+            if (stockGroup.Parent.Contains("Primary"))
+            {
+                stockGroup.Parent = null;
+            }
             string StockGrpXML = StockGrpEnvelope.GetXML();
 
             string RespXml = await SendRequest(StockGrpXML);
@@ -722,7 +970,8 @@ namespace TallyConnector
         /// <param name="fetchList">You can select the list of fields to be fetched from tally if nothing specified it pulls all fields availaible in Tally
         /// </param>
         /// <returns>Returns instance of Models.StockCategory with data from tally</returns>
-        public async Task<StockCategory> GetStockCategory(string LookupValue, string LookupField = "Name",
+        public async Task<StockCategory> GetStockCategory(string LookupValue,
+                                                          string LookupField = "Name",
                                                           string company = null,
                                                           string fromDate = null,
                                                           string toDate = null,
@@ -759,7 +1008,7 @@ namespace TallyConnector
         ///  Presult.result will be empty if sucess 
         /// </returns>
         public async Task<PResult> PostStockCategory(StockCategory stockCategory,
-                                      string company = null)
+                                                     string company = null)
         {
             //If parameter is null Get value from instance
             company ??= Company;
@@ -769,7 +1018,10 @@ namespace TallyConnector
             StockCatEnvelope.Body.Desc.StaticVariables = new() { SVCompany = company };
 
             StockCatEnvelope.Body.Data.Message.StockCategory = stockCategory;
-
+            if (stockCategory.Parent.Contains("Primary"))
+            {
+                stockCategory.Parent = null;
+            }
             string StockCatXML = StockCatEnvelope.GetXML();
 
             string RespXml = await SendRequest(StockCatXML);
@@ -790,7 +1042,8 @@ namespace TallyConnector
         /// <param name="fetchList">You can select the list of fields to be fetched from tally if nothing specified it pulls all fields availaible in Tally
         /// </param>
         /// <returns>Returns instance of Models.StockItem  with data from tally</returns>
-        public async Task<StockItem> GetStockItem(string LookupValue, string LookupField = "Name",
+        public async Task<StockItem> GetStockItem(string LookupValue,
+                                                  string LookupField = "Name",
                                                   string company = null,
                                                   string fromDate = null,
                                                   string toDate = null,
@@ -827,7 +1080,7 @@ namespace TallyConnector
         ///  Presult.result will be empty if sucess 
         /// </returns>
         public async Task<PResult> PostStockItem(StockItem stockItem,
-                                      string company = null)
+                                                 string company = null)
         {
             //If parameter is null Get value from instance
             company ??= Company;
@@ -837,7 +1090,10 @@ namespace TallyConnector
             StockItmEnvelope.Body.Desc.StaticVariables = new() { SVCompany = company };
 
             StockItmEnvelope.Body.Data.Message.StockItem = stockItem;
-
+            if (stockItem.StockGroup.Contains("Primary"))
+            {
+                stockItem.StockGroup = null;
+            }
             string StockItmXML = StockItmEnvelope.GetXML();
 
             string RespXml = await SendRequest(StockItmXML);
@@ -859,7 +1115,8 @@ namespace TallyConnector
         /// <param name="fetchList">You can select the list of fields to be fetched from tally if nothing specified it pulls all fields availaible in Tally
         /// </param>
         /// <returns>Returns instance of Models.Unit  with data from tally</returns>
-        public async Task<Unit> GetUnit(string LookupValue, string LookupField = "Name",
+        public async Task<Unit> GetUnit(string LookupValue,
+                                        string LookupField = "Name",
                                         string company = null,
                                         string fromDate = null,
                                         string toDate = null,
@@ -896,7 +1153,7 @@ namespace TallyConnector
         ///  Presult.result will be empty if sucess 
         /// </returns>
         public async Task<PResult> PostUnit(Unit unit,
-                                      string company = null)
+                                            string company = null)
         {
             //If parameter is null Get value from instance
             company ??= Company;
@@ -927,7 +1184,8 @@ namespace TallyConnector
         /// <param name="fetchList">You can select the list of fields to be fetched from tally if nothing specified it pulls all fields availaible in Tally
         /// </param>
         /// <returns>Returns instance of Models.Godown  with data from tally</returns>
-        public async Task<Godown> GetGodown(string LookupValue, string LookupField = "Name",
+        public async Task<Godown> GetGodown(string LookupValue,
+                                            string LookupField = "Name",
                                             string company = null,
                                             string fromDate = null,
                                             string toDate = null,
@@ -964,7 +1222,7 @@ namespace TallyConnector
         ///  Presult.result will be empty if sucess 
         /// </returns>
         public async Task<PResult> PostGodown(Godown godown,
-                                      string company = null)
+                                              string company = null)
         {
             //If parameter is null Get value from instance
             company ??= Company;
@@ -974,7 +1232,10 @@ namespace TallyConnector
             GdwnEnvelope.Body.Desc.StaticVariables = new() { SVCompany = company };
 
             GdwnEnvelope.Body.Data.Message.Godown = godown;
-
+            if (godown.Parent.Contains("Primary"))
+            {
+                godown.Parent = null;
+            }
             string GdwnXML = GdwnEnvelope.GetXML();
 
             string RespXml = await SendRequest(GdwnXML);
@@ -996,7 +1257,8 @@ namespace TallyConnector
         /// <param name="fetchList">You can select the list of fields to be fetched from tally if nothing specified it pulls all fields availaible in Tally
         /// </param>
         /// <returns>Returns instance of Models.VoucherType  with data from tally</returns>
-        public async Task<VoucherType> GetVoucherType(string LookupValue, string LookupField = "Name",
+        public async Task<VoucherType> GetVoucherType(string LookupValue,
+                                                      string LookupField = "Name",
                                                       string company = null,
                                                       string fromDate = null,
                                                       string toDate = null,
@@ -1033,7 +1295,7 @@ namespace TallyConnector
         ///  Presult.result will be empty if sucess 
         /// </returns>
         public async Task<PResult> PostVoucherType(VoucherType voucherType,
-                                      string company = null)
+                                                   string company = null)
         {
             //If parameter is null Get value from instance
             company ??= Company;
@@ -1064,11 +1326,12 @@ namespace TallyConnector
         /// <param name="fetchList">You can select the list of fields to be fetched from tally if nothing specified it pulls all fields availaible in Tally
         /// </param>
         /// <returns>Returns instance of Models.Currency  with data from tally</returns>
-        public async Task<Currency> GetCurrency(string LookupValue, string LookupField = "Name",
-                                                  string company = null,
-                                                  string fromDate = null,
-                                                  string toDate = null,
-                                                  List<string> fetchList = null)
+        public async Task<Currency> GetCurrency(string LookupValue,
+                                                string LookupField = "Name",
+                                                string company = null,
+                                                string fromDate = null,
+                                                string toDate = null,
+                                                List<string> fetchList = null)
         {
             //If parameter is null Get value from instance
             company ??= Company;
@@ -1101,7 +1364,7 @@ namespace TallyConnector
         ///  Presult.result will be empty if sucess 
         /// </returns>
         public async Task<PResult> PostCurrency(Currency currency,
-                                      string company = null)
+                                                string company = null)
         {
             //If parameter is null Get value from instance
             company ??= Company;
@@ -1132,11 +1395,12 @@ namespace TallyConnector
         /// <param name="fetchList">You can select the list of fields to be fetched from tally if nothing specified it pulls all fields availaible in Tally
         /// </param>
         /// <returns>Returns instance of Models.AttendanceType  with data from tally</returns>
-        public async Task<AttendanceType> GetAttendanceType(string LookupValue, string LookupField = "Name",
-                                                  string company = null,
-                                                  string fromDate = null,
-                                                  string toDate = null,
-                                                  List<string> fetchList = null)
+        public async Task<AttendanceType> GetAttendanceType(string LookupValue,
+                                                            string LookupField = "Name",
+                                                            string company = null,
+                                                            string fromDate = null,
+                                                            string toDate = null,
+                                                            List<string> fetchList = null)
         {
             //If parameter is null Get value from instance
             company ??= Company;
@@ -1158,18 +1422,18 @@ namespace TallyConnector
         }
 
 
-            /// <summary>
-            /// Create/Alter/Delete AttendanceType in Tally,
-            /// To Alter/Delete existing AttendanceType set AttendanceType.Action to Alter/Delete
-            /// </summary>
-            /// <param name="AttendanceType">Send Models.AttendanceType</param>
-            /// <param name="company">if not specified company is taken from instance</param>
-            /// <returns> Models.PResult if Presult.Status can be sucess or failure,
-            /// Presult.result will have failure message incase of failure,
-            ///  Presult.result will be empty if sucess 
-            /// </returns>
-            public async Task<PResult> PostAttendanceType(AttendanceType AttendanceType,
-                                      string company = null)
+        /// <summary>
+        /// Create/Alter/Delete AttendanceType in Tally,
+        /// To Alter/Delete existing AttendanceType set AttendanceType.Action to Alter/Delete
+        /// </summary>
+        /// <param name="AttendanceType">Send Models.AttendanceType</param>
+        /// <param name="company">if not specified company is taken from instance</param>
+        /// <returns> Models.PResult if Presult.Status can be sucess or failure,
+        /// Presult.result will have failure message incase of failure,
+        ///  Presult.result will be empty if sucess 
+        /// </returns>
+        public async Task<PResult> PostAttendanceType(AttendanceType AttendanceType,
+                                                      string company = null)
         {
             //If parameter is null Get value from instance
             company ??= Company;
@@ -1202,12 +1466,13 @@ namespace TallyConnector
         /// <param name="fetchList">You can select the list of fields to be fetched from tally if nothing specified it pulls all fields availaible in Tally
         /// </param>
         /// <returns>Returns instance of Models.CostCenter instance with data from tally</returns>
-        public async Task<EmployeeGroup> GetEmployeeGroup(string LookupValue, string LookupField = "Name",
-                                                    string company = null,
-                                                    string fromDate = null,
-                                                    string toDate = null,
-                                                    List<string> fetchList = null,
-                                                    string format = "XML")
+        public async Task<EmployeeGroup> GetEmployeeGroup(string LookupValue,
+                                                          string LookupField = "Name",
+                                                          string company = null,
+                                                          string fromDate = null,
+                                                          string toDate = null,
+                                                          List<string> fetchList = null,
+                                                          string format = "XML")
         {
             //If parameter is null Get value from instance
             company ??= Company;
@@ -1239,7 +1504,7 @@ namespace TallyConnector
         /////  Presult.result will be empty if sucess 
         ///// </returns>
         public async Task<PResult> PostEmployeeGroup(EmployeeGroup EmployeeGroup,
-                                      string company = null)
+                                                     string company = null)
         {
             //If parameter is null Get value from instance
             company ??= Company;
@@ -1270,10 +1535,11 @@ namespace TallyConnector
         /// <param name="fetchList">You can select the list of fields to be fetched from tally if nothing specified it pulls all fields availaible in Tally
         /// </param>
         /// <returns>Returns instance of Models.CostCenter instance with data from tally</returns>
-        public async Task<Employee> GetEmployee(string LookupValue, string LookupField = "Name",
-                                                    string company = null,
-                                                    List<string> fetchList = null,
-                                                    string format = "XML")
+        public async Task<Employee> GetEmployee(string LookupValue,
+                                                string LookupField = "Name",
+                                                string company = null,
+                                                List<string> fetchList = null,
+                                                string format = "XML")
         {
             //If parameter is null Get value from instance
             company ??= Company;
@@ -1303,7 +1569,7 @@ namespace TallyConnector
         /////  Presult.result will be empty if sucess 
         ///// </returns>
         public async Task<PResult> PostEmployee(Employee Employee,
-                                      string company = null)
+                                                string company = null)
         {
             //If parameter is null Get value from instance
             company ??= Company;
@@ -1335,10 +1601,11 @@ namespace TallyConnector
         /// <param name="fetchList">You can select the list of fields to be fetched from tally if nothing specified it pulls all fields availaible in Tally
         /// </param>
         /// <returns>Returns instance of Models.CostCenter instance with data from tally</returns>
-        public async Task<Voucher> GetVoucher(string LookupValue, string LookupField = "VoucherNumber",
-                                                    string company = null,
-                                                    List<string> fetchList = null,
-                                                    string format = "XML")
+        public async Task<Voucher> GetVoucher(string LookupValue,
+                                              string LookupField = "VoucherNumber",
+                                              string company = null,
+                                              List<string> fetchList = null,
+                                              string format = "XML")
         {
             //If parameter is null Get value from instance
             company ??= Company;
@@ -1366,9 +1633,10 @@ namespace TallyConnector
         /// <param name="fetchList">You can select the list of fields to be fetched from tally if nothing specified it pulls all fields availaible in Tally
         /// </param>
         /// <returns>Returns instance of Models.Voucher with data from tally</returns>
-        public async Task<Voucher> GetVoucherByMasterID(string VoucherMasterID, bool isinventory = false,
-                                                               string company = null,
-                                                               List<string> fetchList = null)
+        public async Task<Voucher> GetVoucherByMasterID(string VoucherMasterID,
+                                                        bool isinventory = false,
+                                                        string company = null,
+                                                        List<string> fetchList = null)
         {
             //If parameter is null Get value from instance
             company ??= Company;
@@ -1391,10 +1659,11 @@ namespace TallyConnector
         /// <param name="fetchList">You can select the list of fields to be fetched from tally if nothing specified it pulls all fields availaible in Tally
         /// </param>
         /// <returns>Returns instance of Models.Voucher with data from tally</returns>
-        public async Task<Voucher> GetVoucherByVoucherNumber(string VoucherNumber, string Date,
-                                                               string company = null,
-                                                               List<string> fetchList = null,
-                                                               string format = "XML")
+        public async Task<Voucher> GetVoucherByVoucherNumber(string VoucherNumber,
+                                                             string Date,
+                                                             string company = null,
+                                                             List<string> fetchList = null,
+                                                             string format = "XML")
         {
             //If parameter is null Get value from instance
             company ??= Company;
@@ -1420,7 +1689,7 @@ namespace TallyConnector
         ///  Presult.result will be Voucher masterID if sucess 
         /// </returns>
         public async Task<PResult> PostVoucher(Voucher voucher,
-                                      string company = null)
+                                               string company = null)
         {
             //If parameter is null Get value from instance
             company ??= Company;
@@ -1442,12 +1711,7 @@ namespace TallyConnector
 
 
 
-
-
-
-
         #region Reports
-
         /// <summary>
         /// Gets List of Vouchers  based on <strong>Voucher Type</strong>
         /// </summary>
@@ -1486,12 +1750,12 @@ namespace TallyConnector
         /// </param>
         /// <returns>Returns instance of Models.Ledger instance with data from tally</returns>
         public async Task<List<Voucher>> GetLedgerVouchers(string ledgerName,
-                                            string company = null,
-                                            string fromDate = null,
-                                            string toDate = null,
-                                            List<string> Nativelist = null,
-                                            List<string> Filters = null,
-                                            List<string> SystemFilter = null)
+                                                           string company = null,
+                                                           string fromDate = null,
+                                                           string toDate = null,
+                                                           List<string> Nativelist = null,
+                                                           List<string> Filters = null,
+                                                           List<string> SystemFilter = null)
         {
             //If parameter is null Get value from instance
             company ??= Company;
@@ -1508,8 +1772,6 @@ namespace TallyConnector
         }
 
 
-
-
         /// <summary>
         /// Get Group Vouchers
         /// </summary>
@@ -1520,12 +1782,12 @@ namespace TallyConnector
         /// <param name="fetchList">You can select the list of fields to be fetched from tally if nothing specified it pulls all fields availaible in Tally
         /// <returns>Returns List of Models.Voucher  with data from tally</returns>
         public async Task<List<Voucher>> GetGroupVouchers(string GroupName,
-                                            string company = null,
-                                            string fromDate = null,
-                                            string toDate = null,
-                                            List<string> Nativelist = null,
-                                            List<string> Filters = null,
-                                            List<string> SystemFilter = null)
+                                                          string company = null,
+                                                          string fromDate = null,
+                                                          string toDate = null,
+                                                          List<string> Nativelist = null,
+                                                          List<string> Filters = null,
+                                                          List<string> SystemFilter = null)
         {
             //If parameter is null Get value from instance
             company ??= Company;
@@ -1554,12 +1816,12 @@ namespace TallyConnector
         /// <param name="fetchList">You can select the list of fields to be fetched from tally if nothing specified it pulls all fields availaible in Tally
         /// <returns>Returns List of Models.Voucher  with data from tally</returns>
         public async Task<List<Voucher>> GetInventoryVouchers(string ItemName,
-                                            string company = null,
-                                            string fromDate = null,
-                                            string toDate = null,
-                                            List<string> Nativelist = null,
-                                            List<string> Filters = null,
-                                            List<string> SystemFilter = null)
+                                                              string company = null,
+                                                              string fromDate = null,
+                                                              string toDate = null,
+                                                              List<string> Nativelist = null,
+                                                              List<string> Filters = null,
+                                                              List<string> SystemFilter = null)
         {
             //If parameter is null Get value from instance
             company ??= Company;
@@ -1576,13 +1838,7 @@ namespace TallyConnector
         }
 
 
-
-
-
         #endregion
-
-
-
         /// <summary>
         /// Retrives Data from Tally in Objects 
         /// </summary>
@@ -1767,50 +2023,26 @@ namespace TallyConnector
         }
 
 
+        public async Task<string> GetReportXML(string reportname, StaticVariables Sv = null)
+        {
+            string Resxml = null;
+            await Check();
+            if (Status == "Running")
+            {
+                CusColEnvelope ColEnvelope = new(); //Collection Envelope
+                string RName = reportname;
 
-        //public async Task<LedgersList> GetLedgersList()
-        //{
-        //    LedgersList LedgList = new();
+                ColEnvelope.Header = new("Export", "Data", RName);  //Configuring Header To get Export data
 
-        //    if (Status == "Running")
-        //    {
-        //        Models.CusColEnvelope ColEnvelope = new(); //Collection Envelope
-        //        string RName = "List of Ledgers";
-
-        //        ColEnvelope.Header = new("Export", "Data", RName);  //Configuring Header To get Export data
-
-        //        Dictionary<string, string> LeftFields = new() //Left Fields
-        //        {
-        //            { "$NAME", "NAME" }
-
-        //        };
-        //        Dictionary<string, string> RightFields = new() //Right Fields
-        //        {
-
-        //        };
-
-        //        ColEnvelope.Body.Desc.TDL.TDLMessage = new(rName: RName, fName: RName, topPartName: RName,
-        //            rootXML: "LISTOFLEDGERS", colName: $"Form{RName}", lineName: RName, leftFields: LeftFields,
-        //            rightFields: RightFields, colType: "Ledger");
-
-        //        string Reqxml = ColEnvelope.GetXML(); //Gets XML from Object
-        //        string Resxml = await SendRequest(Reqxml);
-
-        //        try
-        //        {
-        //            LedgList = Tally.GetObjfromXml<LedgersList>(Resxml);
-        //            Ledgers = LedgList.LedgerNames;
-
-        //        }
-        //        catch (Exception e)
-        //        {
-
-        //            //throw;
-        //        }
-        //    }
-        //    return LedgList;
-        //}
-
+                if (Sv != null)
+                {
+                    ColEnvelope.Body.Desc.StaticVariables = Sv;
+                }
+                string Reqxml = ColEnvelope.GetXML(); //Gets XML from Object
+                Resxml = await SendRequest(Reqxml);
+            }
+            return Resxml;
+        }
 
         /// <summary>
         /// Posts XML to tally
@@ -1918,6 +2150,26 @@ namespace TallyConnector
 
         }
 
+        /// <summary>
+        /// Helper Mehhod to convert base class to derieved class
+        /// </summary>
+        /// <param name="Derieved">Derieved Class instance</param>
+        /// <param name="Base">Baseclass Instance</param>
+        public static void Basetoderieved(object Derieved, object Base)
+        {
+            Type sourceType = Base.GetType();
+            Type destinationType = Derieved.GetType();
+
+            foreach (PropertyInfo sourceProperty in sourceType.GetProperties())
+            {
+                PropertyInfo destinationProperty = destinationType.GetProperty(sourceProperty.Name);
+                if (destinationProperty != null)
+                {
+                    destinationProperty.SetValue(Derieved, sourceProperty.GetValue(Base, null), null);
+                }
+            }
+
+        }
 
         public static PResult ParseResponse(string RespXml)
         {
@@ -1930,14 +2182,26 @@ namespace TallyConnector
                 if (Resp.Body.Data.LineError != null)
                 {
                     result.Status = RespStatus.Failure;
-
+                    result.Result = Resp.Body.Data.LineError;
 
                 }
-                if (Resp.Body.Data.ImportResult.LastVchId != null)
+                if (Resp.Body.Data.ImportResult !=null)
                 {
-                    result.Status = RespStatus.Sucess;
-                    result.Result = Resp.Body.Data.ImportResult.LastVchId.ToString(); //Returns VoucherMaster ID
+                    if (Resp.Body.Data.ImportResult.LastVchId != null && Resp.Body.Data.ImportResult.LastVchId != 0)
+                    {
+                        result.Status = RespStatus.Sucess;
+                        result.Result = Resp.Body.Data.ImportResult.LastVchId.ToString(); //Returns VoucherMaster ID
+                    }
+                    else
+                    {
+                        if (Resp.Body.Data.ImportResult.Created != 0)
+                        {
+                            result.Status = RespStatus.Sucess;
+                            result.Result = "Created";
+                        }
+                    }
                 }
+                
 
             }
             else

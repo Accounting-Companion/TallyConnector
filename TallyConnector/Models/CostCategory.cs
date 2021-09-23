@@ -12,7 +12,7 @@ namespace TallyConnector.Models
     public class CostCategory:TallyXmlJson
     {
         [XmlElement(ElementName = "MASTERID")]
-        public int TallyId { get; set; }
+        public int? TallyId { get; set; }
 
         [XmlAttribute(AttributeName = "NAME")]
         public string Name { get; set; }

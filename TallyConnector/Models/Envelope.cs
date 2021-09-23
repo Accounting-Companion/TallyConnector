@@ -94,6 +94,9 @@ namespace TallyConnector.Models
 		[XmlElement(ElementName = "SVViewName")]
 		public string ViewName { get; set; }
 
+		[XmlElement(ElementName = "EXPLODEFLAG")]
+		public string ExplodeFlag { get; set; }
+
 	}
 	[XmlRoot(ElementName = "SVFROMDATE")]
 	public class SVFrom

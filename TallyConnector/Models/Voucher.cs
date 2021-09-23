@@ -325,7 +325,7 @@ namespace TallyConnector.Models
             {
                 if (_Amount != null)
                 {
-                    if (double.Parse(_Amount) > 0)
+                    if (!_Amount.Contains("-"))
                     {
                         return "No";
                     }
@@ -504,6 +504,32 @@ namespace TallyConnector.Models
             set { _days = value; }
         }
 
+    }
+
+
+    [XmlRoot(ElementName = "INVENTORYENTRIESIN.LIST")]
+    public class InventoryinAllocations : InventoryAllocations
+    {
+        [XmlIgnore]
+        public string VoucherId { get; set; }
+    }
+
+    [XmlRoot(ElementName = "INVENTORYENTRIESOUT.LIST")]
+    public class InventoryoutAllocations : InventoryAllocations
+    {
+        [XmlIgnore]
+        public string VoucherId { get; set; }
+    }
+
+    [XmlRoot(ElementName = "ALLINVENTORYENTRIES.LIST")]
+    public class AllInventoryAllocations : InventoryAllocations
+    {
+        [XmlIgnore]
+        public string VoucherId { get; set; }
+    }
+    [XmlRoot(ElementName = "INVENTORYENTRIES.LIST")]
+    public class InventoryEntries : AllInventoryAllocations
+    {
     }
 
     [XmlRoot(ElementName = "INVENTORYALLOCATIONS.LIST")]
