@@ -54,10 +54,10 @@ namespace TallyConnector.Models
 
 
         [XmlElement(ElementName = "BOOKSFROM")]
-        public string StartingFrom { get; set; }
+        public string BooksFrom { get; set; }
 
         [XmlElement(ElementName = "STARTINGFROM")]
-        public string BooksFrom { get; set; }
+        public string StartingFrom { get; set; }
 
         [XmlElement(ElementName = "ENDINGAT")]
         public string EndDate { get; set; }
