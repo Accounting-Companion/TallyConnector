@@ -488,7 +488,7 @@ namespace TallyConnector
                 SVCompany = Company,
                 SVExportFormat = "XML",
             };
-            Nativelist ??= new() { "Name", "GUID", "Masterid" };
+            Nativelist ??= new() { "Name", "GUID", "EXPANDEDSYMBOL", "Masterid" };
 
             string CurrenciesXml = await GetNativeCollectionXML(rName: "NativeCurrColl",
                                                                                colType: "Currency",
