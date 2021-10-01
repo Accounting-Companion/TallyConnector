@@ -624,7 +624,7 @@ namespace TallyConnector
             groupEnvelope.Body.Desc.StaticVariables = new() { SVCompany = company };
 
             groupEnvelope.Body.Data.Message.Group = group;
-            if (group.Parent.Contains("Primary"))
+            if (group.Parent != null && group.Parent.Contains("Primary"))
             {
                 group.Parent = null;
             }
@@ -872,7 +872,7 @@ namespace TallyConnector
             costCentEnvelope.Body.Desc.StaticVariables = new() { SVCompany = company };
 
             costCentEnvelope.Body.Data.Message.CostCenter = costCenter;
-            if (costCenter.Parent.Contains("Primary"))
+            if (costCenter.Parent != null && costCenter.Parent.Contains("Primary"))
             {
                 costCenter.Parent = null;
             }
@@ -945,7 +945,7 @@ namespace TallyConnector
             StockGrpEnvelope.Body.Desc.StaticVariables = new() { SVCompany = company };
 
             StockGrpEnvelope.Body.Data.Message.StockGroup = stockGroup;
-            if (stockGroup.Parent.Contains("Primary"))
+            if (stockGroup.Parent !=null && stockGroup.Parent.Contains("Primary"))
             {
                 stockGroup.Parent = null;
             }
@@ -1018,7 +1018,7 @@ namespace TallyConnector
             StockCatEnvelope.Body.Desc.StaticVariables = new() { SVCompany = company };
 
             StockCatEnvelope.Body.Data.Message.StockCategory = stockCategory;
-            if (stockCategory.Parent.Contains("Primary"))
+            if (stockCategory.Parent !=null && stockCategory.Parent.Contains("Primary"))
             {
                 stockCategory.Parent = null;
             }
@@ -1090,7 +1090,7 @@ namespace TallyConnector
             StockItmEnvelope.Body.Desc.StaticVariables = new() { SVCompany = company };
 
             StockItmEnvelope.Body.Data.Message.StockItem = stockItem;
-            if (stockItem.StockGroup.Contains("Primary"))
+            if (stockItem.StockGroup != null && stockItem.StockGroup.Contains("Primary"))
             {
                 stockItem.StockGroup = null;
             }
@@ -1232,7 +1232,7 @@ namespace TallyConnector
             GdwnEnvelope.Body.Desc.StaticVariables = new() { SVCompany = company };
 
             GdwnEnvelope.Body.Data.Message.Godown = godown;
-            if (godown.Parent.Contains("Primary"))
+            if (godown.Parent != null && godown.Parent.Contains("Primary"))
             {
                 godown.Parent = null;
             }

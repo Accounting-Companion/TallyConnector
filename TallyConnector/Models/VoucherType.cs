@@ -21,6 +21,65 @@ namespace TallyConnector.Models
         [XmlIgnore]
         public string VName { get; set; }
 
+        public string Alias
+        {
+            get
+            {
+                if (this.LanguageNameList.NameList.NAMES.Count > 0)
+                {
+                    if (VName == null)
+                    {
+                        VName = this.LanguageNameList.NameList.NAMES[0];
+                    }
+                    if (Name == VName)
+                    {
+                        this.LanguageNameList.NameList.NAMES[0] = this.Name;
+                        return string.Join("..\n", this.LanguageNameList.NameList.NAMES.GetRange(1, this.LanguageNameList.NameList.NAMES.Count - 1));
+
+                    }
+                    else
+                    {
+                        //Name = this.LanguageNameList.NameList.NAMES[0];
+                        return string.Join("..\n", this.LanguageNameList.NameList.NAMES);
+
+                    }
+                }
+                else
+                {
+                    this.LanguageNameList.NameList.NAMES.Add(this.Name);
+                    return null;
+                }
+
+
+            }
+            set
+            {
+                this.LanguageNameList = new();
+
+                if (value != null)
+                {
+                    List<string> lis = value.Split("..\n").ToList();
+
+                    LanguageNameList.NameList.NAMES.Add(Name);
+                    if (value != "")
+                    {
+                        LanguageNameList.NameList.NAMES.AddRange(lis);
+                    }
+
+                }
+                else
+                {
+                    LanguageNameList.NameList.NAMES.Add(Name);
+                }
+
+
+            }
+        }
+
+        [JsonIgnore]
+        [XmlElement(ElementName = "LANGUAGENAME.LIST")]
+        public LanguageNameList LanguageNameList { get; set; }
+
         [XmlElement(ElementName = "PARENT")]
         public string Parent { get; set; }
 
