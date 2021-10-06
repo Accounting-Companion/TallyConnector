@@ -15,11 +15,9 @@ namespace TallyConnector.Models
         [XmlElement(ElementName = "MASTERID")]
         public int? TallyId { get; set; }
 
-        [XmlAttribute(AttributeName = "NAME")]
+        [XmlElement(ElementName = "NAME")]
         public string Name { get; set; }
 
-        [XmlIgnore]
-        public string VName { get; set; }
 
         [XmlElement(ElementName = "ORIGINALNAME")]
         public string OriginalName { get; set; }
@@ -49,6 +47,27 @@ namespace TallyConnector.Models
 
         [XmlElement(ElementName = "GUID")]
         public string GUID { get; set; }
+
+        private string _IsSimpleUnit;
+        [XmlElement(ElementName = "ISSIMPLEUNIT")]
+        public string IsSimpleUnit
+        {
+            get { return IssimpleUnit(); }
+            set { _IsSimpleUnit = value; }
+        }
+
+        [XmlElement(ElementName = "ISGSTEXCLUDED")]
+        public string IsGstExcluded { get; set; }
+
+        public string IssimpleUnit()
+        {
+            if (AdditionalUnits is null || BaseUnit is null ||AdditionalUnits == string.Empty || BaseUnit ==string.Empty)
+            {
+                return "YES";
+            }
+            return "NO";
+        }
+
     }
     [XmlRoot(ElementName = "ENVELOPE")]
     public class UnitEnvelope : TallyXmlJson
