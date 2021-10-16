@@ -54,6 +54,7 @@ namespace TallyConnector
 
         public List<Company> CompaniesList { get; private set; }
 
+        public LicenseInfo LicenseInfo { get; private set; }
 
         /// <summary>
         /// Intiate Tally with <strong>baseURL</strong> and <strong>port</strong>
@@ -143,7 +144,53 @@ namespace TallyConnector
             return false;
         }
 
+        public async Task<LicenseInfo> GetLicenseInfo()
+        {
+            string ReqType = "Tally Info";
+            CLogger.TallyReqStart(ReqType);
+            List<string> LicenseInfoFormulas = new()
+            {
+                "IsEducationalMode: $SV_LICENSE_TRIAL",
+                "IsSilver: $SV_LICENSE_SILVER",
+                "IsGold: $SV_LICENSE_GOLD",
+                "PlanName:" +
+                " If $SV_LICENSE_TRIAL Then $$LocaleString:\"Educational Version\"" +
+                "ELSE" +
+                "If $SV_LICENSE_SILVER Then $$LocaleString: \"Silver\"" +
+                "ELSE" +
+                "If $SV_LICENSE_GOLD Then $$LocaleString: \"Gold\"" +
+                "else \"\"",
+                "SerialNumber: $$LicenseInfo:SerialNumber",
+                "AccountId:$$LicenseInfo:AccountID",
+                "IsIndian: $$LicenseInfo:IsIndian",
+                "RemoteSerialNumber: $$LicenseInfo:RemoteSerialNumber",
+                "IsRemoteAccessMode: $$LicenseInfo:IsRemoteAccessMode",
+                "IsLicClientMode: $$LicenseInfo:IsLicClientMode",
+                "AdminMailId:$$LicenseInfo:AdminEmailID",
+                "IsAdmin:$$LicenseInfo:IsAdmin",
+                "ApplicationPath:$$SysInfo:ApplicationPath",
+                "DataPath:##SVCurrentPath",
+                "UserLevel:$$cmpusername",
+                "UserLevel:$$cmpuserlevel"
+            };
 
+            List<TallyCustomObject> tallyCustomObjects = new() {
+                new TallyCustomObject("LicenseInfo",LicenseInfoFormulas)
+             };
+
+            CusColEnvelope ColEnvelope = new(); //Collection Envelope
+            string CollectionName = "LicenseInfo";
+            ColEnvelope.Header = new("Export", "Collection", CollectionName);
+            ColEnvelope.Body.Desc.TDL.TDLMessage = new(tallyCustomObjects: tallyCustomObjects,
+                                                       objCollectionName: CollectionName,
+                                                       ObjNames: "LicenseInfo");
+            string Reqxml = ColEnvelope.GetXML();
+            String RespXml = await SendRequest(Reqxml);
+            LicenseInfo licenseInfo = GetObjfromXml<LicInfoEnvelope>(RespXml).Body.Data.Collection.LicenseInfo;
+            LicenseInfo = licenseInfo;
+            return licenseInfo;
+            //string xml = GetCustomCollectionXML("TallyInfo", tallyCustomObjects);
+        }
 
         /// <summary>
         /// Gets List of Companies opened in tally and saves in Model.Company List
@@ -1965,9 +2012,17 @@ namespace TallyConnector
                 Dictionary<string, string> LeftFields = Fields;
                 Dictionary<string, string> RightFields = new();
 
-                ColEnvelope.Body.Desc.TDL.TDLMessage = new(rName: RName, fName: RName, topPartName: RName,
-                    rootXML: rName.Replace(" ", ""), colName: $"Form{RName}", lineName: RName, leftFields: LeftFields,
-                    rightFields: RightFields, colType: colType, filters: Filters, SysFormulae: SystemFilters);
+                ColEnvelope.Body.Desc.TDL.TDLMessage = new(rName: RName,
+                                                           fName: RName,
+                                                           topPartName: RName,
+                                                           rootXML: rName.Replace(" ", ""),
+                                                           colName: $"Form{RName}",
+                                                           lineName: RName,
+                                                           leftFields: LeftFields,
+                                                           rightFields: RightFields,
+                                                           colType: colType,
+                                                           filters: Filters,
+                                                           SysFormulae: SystemFilters);
 
                 string Reqxml = ColEnvelope.GetXML(); //Gets XML from Object
                 Resxml = await SendRequest(Reqxml);
@@ -2009,7 +2064,11 @@ namespace TallyConnector
                     ColEnvelope.Body.Desc.StaticVariables = Sv;
                 }
 
-                ColEnvelope.Body.Desc.TDL.TDLMessage = new(colName: RName, colType: colType, nativeFields: NativeFields, Filters, SystemFilters);
+                ColEnvelope.Body.Desc.TDL.TDLMessage = new(colName: RName,
+                                                           colType: colType,
+                                                           nativeFields: NativeFields,
+                                                           Filters,
+                                                           SystemFilters);
                 ColEnvelope.Body.Desc.TDL.TDLMessage.Collection.Childof = childof;
                 if (isInitialize)
                 {

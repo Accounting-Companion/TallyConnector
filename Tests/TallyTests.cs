@@ -171,19 +171,19 @@ namespace Tests
         public async Task CheckGetVoucherbyMasterid()
         {
             await TTally.Check();
-            Voucher voucher = await TTally.GetVoucherByMasterID("1299");
+            Voucher voucher = await TTally.GetVoucherByMasterID("1300");
             //System.Xml.XmlDocument xmldoc = new System.Xml.XmlDocument();
             //System.Xml.XmlAttribute fg = xmldoc.CreateAttribute("REMOTEID");
             //voucher.OtherAttributes.AppendChild(fg);
-            voucher.OtherAttributes = null;
-            voucher.OtherFields = null;
-            voucher.VchDate = "20210131";
-            voucher.GUID = "tsv07fce-b577-4f86-9cee-bb46d1016cad-00000513";
-            voucher.TallyId = null;
-            var k = await TTally.PostVoucher(voucher);
-            VoucherEnvelope voucherEnvelope = new();
-            voucherEnvelope.Header = new();
-            voucherEnvelope.Body.Data.Message.Voucher = voucher;
+            //voucher.OtherAttributes = null;
+            //voucher.OtherFields = null;
+            //voucher.VchDate = "20210131";
+            //voucher.GUID = "tsv07fce-b577-4f86-9cee-bb46d1016cad-00000513";
+            //voucher.TallyId = null;
+            //var k = await TTally.PostVoucher(voucher);
+            //VoucherEnvelope voucherEnvelope = new();
+            //voucherEnvelope.Header = new();
+            //voucherEnvelope.Body.Data.Message.Voucher = voucher;
             //string xml = voucher.GetXML();
             //string json = voucher.GetJson();
             Assert.NotNull(voucher);
@@ -221,5 +221,11 @@ namespace Tests
             Assert.NotNull(Vouchers);
         }
 
+        [Test]
+        public async Task CheckGetLicenseInfo()
+        {
+            await TTally.Check();
+            await TTally.GetLicenseInfo();
+        }
     }
 }

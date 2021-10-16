@@ -384,6 +384,7 @@ namespace TallyConnector.Models
                 }
 
             }
+
         }
 
         [XmlElement(ElementName = "BILLALLOCATIONS.LIST")]
@@ -481,7 +482,10 @@ namespace TallyConnector.Models
 
             }
         }
-
+        [XmlIgnore]
+        public string LedgerId { get; set; }
+        [XmlIgnore]
+        public int VoucherLedgerId { get; set; }
     }
     [XmlRoot(ElementName = "BILLCREDITPERIOD")]
     public class BillCP

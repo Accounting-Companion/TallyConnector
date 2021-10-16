@@ -12,7 +12,7 @@ namespace TallyConnector.Models
     }
 
     [XmlRoot(ElementName = "ENVELOPE")]
-    public class CusColEnvelope:TallyXmlJson
+    public class CusColEnvelope : TallyXmlJson
     {
         [XmlElement(ElementName = "HEADER")]
         public Header Header { get; set; }
@@ -53,21 +53,28 @@ namespace TallyConnector.Models
     [XmlRoot(ElementName = "TDLMESSAGE")]
     public class ColTDLMessage
     {
-        public ColTDLMessage(string rName, string fName, string topPartName, string rootXML,
-            string colName, string lineName, Dictionary<string, string> leftFields,
-            Dictionary<string, string> rightFields, string colType,
-            List<string> filters = null, List<string> SysFormulae = null)
+        public ColTDLMessage(string rName,
+                             string fName,
+                             string topPartName,
+                             string rootXML,
+                             string colName,
+                             string lineName,
+                             Dictionary<string, string> leftFields,
+                             Dictionary<string, string> rightFields,
+                             string colType,
+                             List<string> filters = null,
+                             List<string> SysFormulae = null)
         {
             Report = new(rName, fName);
-            Form = new(fName,topPartName,rootXML);
-            Part = new(topPartName,colName, lineName);
+            Form = new(fName, topPartName, rootXML);
+            Part = new(topPartName, colName, lineName);
             List<string> LF = leftFields.Values.ToList();
             List<string> RF = rightFields.Values.ToList();
-            Line = new(lineName,LF,RF);
+            Line = new(lineName, LF, RF);
             Field = new();
             foreach (var Fld in leftFields)
             {
-                Field field = new(Fld.Key,Fld.Value);
+                Field field = new(Fld.Key, Fld.Value);
                 Field.Add(field);
             }
             foreach (var Fld in rightFields)
@@ -87,8 +94,11 @@ namespace TallyConnector.Models
 
         }
 
-        public ColTDLMessage(string colName, string colType, List<string> nativeFields,
-            List<string> filters = null, List<string> SysFormulae = null)
+        public ColTDLMessage(string colName,
+                             string colType,
+                             List<string> nativeFields,
+                             List<string> filters = null,
+                             List<string> SysFormulae = null)
         {
             Collection = new(colName: colName, colType: colType, nativeFields: nativeFields, filters: filters);
             if (filters != null && SysFormulae != null)
@@ -100,7 +110,15 @@ namespace TallyConnector.Models
                 }
             }
         }
-            public ColTDLMessage()
+        public ColTDLMessage(List<TallyCustomObject> tallyCustomObjects,
+                             string objCollectionName,
+                             string ObjNames)
+        {
+            Objects = tallyCustomObjects;
+            Collection = new(objcollectionName: objCollectionName,
+                             objects: ObjNames);
+        }
+        public ColTDLMessage()
         {
 
         }
@@ -109,7 +127,7 @@ namespace TallyConnector.Models
         public Report Report { get; set; }
 
         [XmlElement(ElementName = "FORM")]
-        public Form Form { get; set; } 
+        public Form Form { get; set; }
 
         [XmlElement(ElementName = "PART")]
         public Part Part { get; set; }
@@ -119,6 +137,9 @@ namespace TallyConnector.Models
 
         [XmlElement(ElementName = "FIELD")]
         public List<Field> Field { get; set; }
+
+        [XmlElement(ElementName = "OBJECT")]
+        public List<TallyCustomObject> Objects { get; set; }
 
         [XmlElement(ElementName = "COLLECTION")]
         public Collection Collection { get; set; }
@@ -141,7 +162,7 @@ namespace TallyConnector.Models
         public Report() { }
 
         [XmlElement(ElementName = "FORMS")]
-        public string FormName { get; set; }  
+        public string FormName { get; set; }
 
         [XmlAttribute(AttributeName = "NAME")]
         public string Name { get; set; }
@@ -151,11 +172,11 @@ namespace TallyConnector.Models
     }
 
     [XmlRoot(ElementName = "FORM")]
-    public class Form: DCollection
+    public class Form : DCollection
     {
         public Form() { }
 
-        public Form(string formName,string partName,string rootXML) 
+        public Form(string formName, string partName, string rootXML)
         {
             Caption = partName;
             ReportTag = rootXML;
@@ -176,10 +197,10 @@ namespace TallyConnector.Models
 
 
     [XmlRoot(ElementName = "PART")]
-    public class Part: DCollection
+    public class Part : DCollection
     {
         private string _Repeat;
-        public Part(string topPartName,string colName,string lineName)
+        public Part(string topPartName, string colName, string lineName)
         {
             Name = topPartName;
             TopLines = lineName;
@@ -195,10 +216,10 @@ namespace TallyConnector.Models
         public string TopLines { get; set; } //MustMatch with LineName
 
         [XmlElement(ElementName = "REPEAT")]
-        public string Repeat { get {return _Repeat; } set { } }
+        public string Repeat { get { return _Repeat; } set { } }
 
         [XmlElement(ElementName = "SCROLLED")]
-        public string Scrolled { get { return "Vertical"; }set { } }
+        public string Scrolled { get { return "Vertical"; } set { } }
 
         [XmlAttribute(AttributeName = "NAME")]
         public string Name { get; set; }
@@ -215,7 +236,7 @@ namespace TallyConnector.Models
             RightFields = rightFields;
             SetAttributes();
         }
-        
+
         public Line()
         {
         }
@@ -235,7 +256,7 @@ namespace TallyConnector.Models
     [XmlRoot(ElementName = "FIELD")]
     public class Field : DCollection
     {
-        public Field(string TallyField,String xMLTag )
+        public Field(string TallyField, String xMLTag)
         {
             XMLTag = xMLTag;
             Set = TallyField;
@@ -245,7 +266,7 @@ namespace TallyConnector.Models
 
         public Field()
         {
-          
+
         }
 
         [XmlElement(ElementName = "SET")]
@@ -257,23 +278,23 @@ namespace TallyConnector.Models
         [XmlAttribute(AttributeName = "NAME")]
         public string Name { get; set; }
 
-        
+
     }
 
 
     [XmlRoot(ElementName = "COLLECTION")]
     public class Collection : DCollection
     {
-        public Collection(string colName, string colType, List<string> nativeFields=null,
+        public Collection(string colName, string colType, List<string> nativeFields = null,
             List<string> filters = null)
         {
             Name = colName;
             Type = colType;
-            if (nativeFields!=null)
+            if (nativeFields != null)
             {
                 NativeFields = nativeFields;
             }
-            if (filters!=null)
+            if (filters != null)
             {
                 Filters = filters;
             }
@@ -284,6 +305,12 @@ namespace TallyConnector.Models
         public Collection()
         {
 
+        }
+
+        public Collection(string objcollectionName, string objects)
+        {
+            Name = objcollectionName;
+            this.Objects = objects;
         }
 
         [XmlElement(ElementName = "TYPE")]
@@ -297,22 +324,25 @@ namespace TallyConnector.Models
 
         [XmlElement(ElementName = "FILTERS")]
         public List<string> Filters { get; set; }
-
-        
+        /// <summary>
+        /// Name of Single or Multiple Custom objects Seperated by (,)
+        /// </summary>
+        [XmlElement(ElementName = "OBJECTS")]
+        public string Objects { get; set; }
 
         [XmlAttribute(AttributeName = "NAME")]
         public string Name { get; set; }
 
-        
+
     }
 
     [XmlRoot(ElementName = "SYSTEM")]
     public class System
     {
         public System() { }
-        public System(string name,string text) 
-        { 
-            Name =name;
+        public System(string name, string text)
+        {
+            Name = name;
             Text = text;
         }
         [XmlAttribute(AttributeName = "TYPE")]
@@ -327,7 +357,6 @@ namespace TallyConnector.Models
     public class DCollection
     {
 
-        
         [XmlAttribute(AttributeName = "ISMODIFY")]
         public string IsModify { get; set; }
 
@@ -343,8 +372,8 @@ namespace TallyConnector.Models
         [XmlAttribute(AttributeName = "ISINTERNAL")]
         public string IsInternal { get; set; }
 
-        public void SetAttributes(string ismodify = "No",string isFixed="No",string isInitialize="No",
-            string isOption="No",string isInternal="No")
+        public void SetAttributes(string ismodify = "No", string isFixed = "No", string isInitialize = "No",
+            string isOption = "No", string isInternal = "No")
         {
             IsModify = ismodify;
             IsFixed = isFixed;
@@ -355,6 +384,25 @@ namespace TallyConnector.Models
 
     }
 
+
+    [XmlRoot(ElementName = "OBJECT")]
+    public class TallyCustomObject : DCollection
+    {
+        public TallyCustomObject()
+        {
+            LocalFormulas = new();
+        }
+        public TallyCustomObject(string name, List<string> formulas)
+        {
+            Name = name;
+            LocalFormulas = formulas;
+        }
+        [XmlAttribute(AttributeName = "NAME")]
+        public string Name { get; set; }
+
+        [XmlElement(ElementName = "LOCALFORMULA")]
+        public List<string> LocalFormulas { get; set; }
+    }
 
     [XmlRoot(ElementName = "ENVELOPE")]
     public class ResponseEnvelope
@@ -398,11 +446,11 @@ namespace TallyConnector.Models
         [XmlElement(ElementName = "IMPORTRESULT")]
         public ImportResult ImportResult { get; set; }
     }
-    
+
     [XmlRoot(ElementName = "IMPORTRESULT")]
     public class ImportResult
     {
-        
+
 
         [XmlElement(ElementName = "CREATED")]
         public int? Created { get; set; }
@@ -437,7 +485,7 @@ namespace TallyConnector.Models
     {
 
     }
-    
+
     public class PResult
     {
         public RespStatus Status { get; set; }
