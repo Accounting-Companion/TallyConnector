@@ -150,16 +150,16 @@ namespace TallyConnector
             CLogger.TallyReqStart(ReqType);
             List<string> LicenseInfoFormulas = new()
             {
-                "IsEducationalMode: $SV_LICENSE_TRIAL",
-                "IsSilver: $SV_LICENSE_SILVER",
-                "IsGold: $SV_LICENSE_GOLD",
+                "IsEducationalMode: $$LicenseInfo:IsEducationalMode",
+                "IsSilver: $$LicenseInfo:IsSilver",
+                "IsGold: $$LicenseInfo:IsGold",
                 "PlanName:" +
-                " If $SV_LICENSE_TRIAL Then $$LocaleString:\"Educational Version\"" +
-                "ELSE" +
-                "If $SV_LICENSE_SILVER Then $$LocaleString: \"Silver\"" +
-                "ELSE" +
-                "If $SV_LICENSE_GOLD Then $$LocaleString: \"Gold\"" +
-                "else \"\"",
+                " If $$LicenseInfo:IsEducationalMode Then \"Educational Version\"" +
+                " ELSE " +
+                " If $$LicenseInfo:IsSilver Then \"Silver\"" +
+                " ELSE " +
+                " If $$LicenseInfo:IsGold Then \"Gold\"" +
+                " else \"\"",
                 "SerialNumber: $$LicenseInfo:SerialNumber",
                 "AccountId:$$LicenseInfo:AccountID",
                 "IsIndian: $$LicenseInfo:IsIndian",
@@ -170,7 +170,7 @@ namespace TallyConnector
                 "IsAdmin:$$LicenseInfo:IsAdmin",
                 "ApplicationPath:$$SysInfo:ApplicationPath",
                 "DataPath:##SVCurrentPath",
-                "UserLevel:$$cmpusername",
+                "UserName:$$cmpusername",
                 "UserLevel:$$cmpuserlevel"
             };
 
