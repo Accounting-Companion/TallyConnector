@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
 using System.Text.Json.Serialization;
@@ -9,14 +10,26 @@ using System.Xml.Serialization;
 namespace TallyConnector.Models
 {
     [XmlRoot(ElementName = "VOUCHERTYPE")]
-    public class VoucherType:TallyXmlJson
+    public class VoucherType : TallyXmlJson
     {
 
         [XmlElement(ElementName = "MASTERID")]
         public int? TallyId { get; set; }
 
+
         [XmlAttribute(AttributeName = "NAME")]
-        public string Name { get; set; }
+        [JsonIgnore]
+        public string OldName { get; set; }
+
+
+        private string name;
+        [XmlElement(ElementName = "NAME")]
+        [Required]
+        public string Name
+        {
+            get { return (name == null || name == string.Empty) ? OldName : name; }
+            set => name = value;
+        }
 
         [XmlIgnore]
         public string VName { get; set; }
@@ -146,9 +159,9 @@ namespace TallyConnector.Models
         [XmlElement(ElementName = "GUID")]
         public string GUID { get; set; }
     }
-    
+
     [XmlRoot(ElementName = "ENVELOPE")]
-    public class VoucherTypeEnvelope:TallyXmlJson
+    public class VoucherTypeEnvelope : TallyXmlJson
     {
 
         [XmlElement(ElementName = "HEADER")]
@@ -165,14 +178,14 @@ namespace TallyConnector.Models
         public Description Desc { get; set; } = new();
 
         [XmlElement(ElementName = "DATA")]
-        public VTData Data { get; set; } = new ();
+        public VTData Data { get; set; } = new();
     }
 
     [XmlRoot(ElementName = "DATA")]
     public class VTData
     {
         [XmlElement(ElementName = "TALLYMESSAGE")]
-        public VoucherTypeMessage Message { get; set; } = new ();
+        public VoucherTypeMessage Message { get; set; } = new();
 
         [XmlElement(ElementName = "COLLECTION")]
         public VoucherTypeColl Collection { get; set; } = new VoucherTypeColl();

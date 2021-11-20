@@ -17,7 +17,7 @@ namespace Tests
         [Test]
         public async Task TallyPortCheck()
         {
-            
+
             await TTally.Check();
             Assert.IsNotNull(TTally.Status);
             Assert.AreEqual("Running", TTally.Status);
@@ -28,18 +28,18 @@ namespace Tests
             await TTally.Check();
             await TTally.GetCompaniesList();
             Assert.IsNotNull(TTally.CompaniesList);
-            
+
         }
 
         [Test]
         public async Task TallyCheckCopaniesondisk()
         {
             await TTally.Check();
-            List<CompanyOnDisk> companies= await TTally.GetCompaniesListinPath();
+            List<CompanyOnDisk> companies = await TTally.GetCompaniesListinPath();
             Assert.IsNotNull(companies);
-            
+
         }
-        
+
 
         [Test]
         public async Task CheckGetData()
@@ -64,15 +64,37 @@ namespace Tests
             Ledger ledger = await TTally.GetLedger("Cash");
             Assert.NotNull(ledger);
         }
+
+        [Test]
+        public async Task CheckCreateLedger()
+        {
+            if (await TTally.Check())
+            {
+                Ledger nledger = new() { Name = "TestLedgerC", Group = "Sundry Debtors" };
+                PResult pResult = await TTally.PostLedger(nledger);
+                Assert.IsTrue(pResult.Status == RespStatus.Sucess);
+            }
+        }
+
+        [Test]
+        public async Task CheckAlterLedger()
+        {
+            if (await TTally.Check())
+            {
+                Ledger nledger = new() { OldName = "TestLedgerC", Name = "TestLedgerCEdited", Group = "Sundry Debtors" };
+                PResult pResult = await TTally.PostLedger(nledger);
+                Assert.IsTrue(pResult.Status == RespStatus.Sucess);
+            }
+        }
         [Test]
         public async Task CheckGetLedgerDynamic()
         {
             await TTally.Check();
             List<string> fields = new List<string>() { "Name", "Parent", "OpeningBalance", "Closing Balance" };
-            Ledger ledger = await TTally.GetLedgerDynamic("Cash",fromDate:"01032021",toDate: "31032021", Nativelist: fields);
+            Ledger ledger = await TTally.GetLedgerDynamic("Cash", fromDate: "01032021", toDate: "31032021", Nativelist: fields);
             Assert.NotNull(ledger);
         }
-       
+
         [Test]
         public async Task CheckGetCostCategory()
         {
@@ -96,7 +118,7 @@ namespace Tests
             StockGroup stockGroup = await TTally.GetStockGroup("Accessories");
             Assert.NotNull(stockGroup);
         }
-        
+
         [Test]
         public async Task CheckGetStockCategory()
         {

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
 using System.Text.Json.Serialization;
@@ -15,8 +16,20 @@ namespace TallyConnector.Models
         [XmlElement(ElementName = "MASTERID")]
         public int? TallyId { get; set; }
 
+
+        [XmlAttribute(AttributeName = "NAME")]
+        [JsonIgnore]
+        public string OldName { get; set; }
+
+
+        private string name;
         [XmlElement(ElementName = "NAME")]
-        public string Name { get; set; }
+        [Required]
+        public string Name
+        {
+            get { return (name == null || name == string.Empty) ? OldName : name; }
+            set => name = value;
+        }
 
 
         [XmlElement(ElementName = "ORIGINALNAME")]

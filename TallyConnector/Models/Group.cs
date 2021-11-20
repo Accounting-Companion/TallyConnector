@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
 using System.Text.Json.Serialization;
@@ -8,14 +9,25 @@ using System.Xml.Serialization;
 namespace TallyConnector.Models
 {
     [XmlRoot(ElementName = "GROUP")]
-    public class Group:TallyXmlJson
+    public class Group : TallyXmlJson
     {
+       
 
         [XmlElement(ElementName = "MASTERID")]
         public int? TallyId { get; set; }
-        
+
         [XmlAttribute(AttributeName = "NAME")]
-        public string Name { get; set; }
+        [JsonIgnore]
+        public string OldName { get; set; }
+
+        private string name;
+        [XmlElement(ElementName = "NAME")]
+        [Required]
+        public string Name 
+        { 
+            get { return (name == null || name == string.Empty) ? OldName : name; } 
+            set => name = value; 
+        }
 
         [XmlIgnore]
         public string VName { get; set; }
@@ -59,7 +71,7 @@ namespace TallyConnector.Models
             set
             {
                 this.LanguageNameList = new();
-                
+
                 if (value != null)
                 {
                     List<string> lis = value.Split("..\n").ToList();

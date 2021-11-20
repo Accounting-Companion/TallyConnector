@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
 using System.Text.Json.Serialization;
@@ -12,7 +13,17 @@ namespace TallyConnector.Models
     public class AttendanceType: TallyXmlJson
     {
         [XmlAttribute(AttributeName = "NAME")]
-        public string Name { get; set; }
+        [JsonIgnore]
+        public string OldName { get; set; }
+
+        private string name;
+        [XmlElement(ElementName = "NAME")]
+        [Required]
+        public string Name
+        {
+            get { return (name == null || name == string.Empty) ? OldName : name; }
+            set => name = value;
+        }
 
         [XmlElement(ElementName = "ATTENDANCEPRODUCTIONTYPE")]
         public string ProductionType { get; set; }

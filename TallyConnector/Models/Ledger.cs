@@ -21,8 +21,17 @@ namespace TallyConnector.Models
         public int? TallyId { get; set; }
 
         [XmlAttribute(AttributeName = "NAME")]
+        [JsonIgnore]
+        public string OldName { get; set; }
+
+        private string name;
+        [XmlElement(ElementName = "NAME")]
         [Required]
-        public string Name { get; set; }
+        public string Name
+        {
+            get { return (name == null || name == string.Empty) ? OldName : name; }
+            set => name = value;
+        }
 
         [XmlIgnore]
         public string VName { get; set; }
