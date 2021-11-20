@@ -84,7 +84,7 @@ namespace TallyConnector
             CLogger = new CLogger(Logger);
             client.Timeout = TimeSpan.FromSeconds(Timeoutseconds);
             Setup("http://localhost", 9000);
-            
+
         }
 
 
@@ -108,10 +108,10 @@ namespace TallyConnector
             FromDate = fromDate;
             ToDate = toDate;
 
-            CLogger?.SetupLog(baseURL,port,company,fromDate,  toDate);
+            CLogger?.SetupLog(baseURL, port, company, fromDate, toDate);
         }
 
-        
+
 
         /// <summary>
         /// Checks whether Tally is running in given URL and port
@@ -139,7 +139,7 @@ namespace TallyConnector
             }
             catch (Exception e)
             {
-                CLogger.TallyError(FullURL,e.Message);
+                CLogger.TallyError(FullURL, e.Message);
             }
             return false;
         }
@@ -174,9 +174,10 @@ namespace TallyConnector
                 "UserLevel:$$cmpuserlevel"
             };
 
-            List<TallyCustomObject> tallyCustomObjects = new() {
-                new TallyCustomObject("LicenseInfo",LicenseInfoFormulas)
-             };
+            List<TallyCustomObject> tallyCustomObjects = new()
+            {
+                new TallyCustomObject("LicenseInfo", LicenseInfoFormulas)
+            };
 
             CusColEnvelope ColEnvelope = new(); //Collection Envelope
             string CollectionName = "LicenseInfo";
@@ -211,7 +212,7 @@ namespace TallyConnector
                     CompaniesList = Tally.GetObjfromXml<ComListEnvelope>(xml).Body.Data.Collection.CompaniesList;
                     CLogger.TallyReqCompleted(ReqType);
                 }
-                catch (Exception e) 
+                catch (Exception e)
                 {
                     CLogger.RequestError(ReqType, e.Message);
                     //return CompList;
@@ -220,7 +221,7 @@ namespace TallyConnector
             }
             return CompaniesList;
         }
-       
+
         /// <summary>
         /// Gets List of Companies in tally default Tally path
         /// </summary>
@@ -237,13 +238,13 @@ namespace TallyConnector
                 List<string> Filters = new() { "NonGroupFilter" };
                 List<string> SystemFilter = new() { $"$ISAGGREGATE = \"No\"" };
                 string xml = await GetNativeCollectionXML(rName: "ListofCompaniesOpened",
-                                                      colType: "Company On Disk", NativeFields: NativeFields,Filters:Filters,SystemFilters:SystemFilter);
+                                                      colType: "Company On Disk", NativeFields: NativeFields, Filters: Filters, SystemFilters: SystemFilter);
                 try
                 {
                     Companies = Tally.GetObjfromXml<ComListinpathEnvelope>(xml).Body.Data.Collection.CompaniesList;
                     CLogger.TallyReqCompleted(ReqType);
                 }
-                catch(Exception e)
+                catch (Exception e)
                 {
                     CLogger.RequestError(ReqType, e.Message);
                 }
@@ -275,7 +276,7 @@ namespace TallyConnector
             CostCenters = await GetCostCentersList();
 
             //Gets Stock Groups from Tally
-            StockGroups =  await GetStockGroupsList();
+            StockGroups = await GetStockGroupsList();
 
             //Gets Stock Categories from Tally
             StockCategories = await GetStockCategories();
@@ -334,7 +335,7 @@ namespace TallyConnector
                                                          NativeFields: Nativelist,
                                                          Filters: Filters,
                                                          SystemFilters: SystemFilters);
-            GroupColl  GroupsColl = GetObjfromXml<GroupEnvelope>(GrpXml).Body.Data.Collection;
+            GroupColl GroupsColl = GetObjfromXml<GroupEnvelope>(GrpXml).Body.Data.Collection;
             List<Group> TGroups = GroupsColl.Groups ?? new();
             CLogger.TallyReqCompleted(ReqType);
             return TGroups;
@@ -358,7 +359,7 @@ namespace TallyConnector
                                                          NativeFields: Nativelist,
                                                          Filters: Filters,
                                                          SystemFilters: SystemFilters);
-            List<Ledger>  TLedgers = GetObjfromXml<LedgerEnvelope>(LedXml).Body.Data.Collection.Ledgers;
+            List<Ledger> TLedgers = GetObjfromXml<LedgerEnvelope>(LedXml).Body.Data.Collection.Ledgers;
             return TLedgers;
         }
 
@@ -635,7 +636,7 @@ namespace TallyConnector
             StaticVariables sv = new() { SVCompany = company, SVFromDate = fromDate, SVToDate = toDate };
             List<string> Filters = new() { "Groupfilter" };
             List<string> SystemFilter = new() { $"${LookupField} = \"{LookupValue}\"" };
-            
+
             string xml = await GetNativeCollectionXML(rName: "CusGroupObj",
                                                       colType: "Group",
                                                       Sv: sv,
@@ -707,8 +708,8 @@ namespace TallyConnector
             company ??= Company;
             fromDate ??= FromDate;
             toDate ??= ToDate;
-            Nativelist ??= new() { "Address","MasterId", "InterestCollection", "REMOTEGUID", "*" };
-            StaticVariables sv = new() { SVCompany = company,SVFromDate=fromDate,SVToDate=toDate };
+            Nativelist ??= new() { "Address", "MasterId", "InterestCollection", "REMOTEGUID", "*" };
+            StaticVariables sv = new() { SVCompany = company, SVFromDate = fromDate, SVToDate = toDate };
             List<string> Filters = new() { "LedgerFilter" };
             List<string> SystemFilter = new() { $"${LookupField} = \"{LookupValue}\"" };
 
@@ -753,7 +754,7 @@ namespace TallyConnector
             return ledger;
         }
 
-        
+
         /// <summary>
         /// Create/Alter/Delete Ledger in Tally by Ledger name - Set Ledger.Action if you want to Alter/Delete existing Ledger
         /// </summary>
@@ -810,7 +811,7 @@ namespace TallyConnector
             company ??= Company;
             fromDate ??= FromDate;
             toDate ??= ToDate;
-            fetchList ??= new() { "MasterId","*" };
+            fetchList ??= new() { "MasterId", "*" };
             StaticVariables sv = new() { SVCompany = company, SVFromDate = fromDate, SVToDate = toDate };
             List<string> Filters = new() { "Cusfilter" };
             List<string> SystemFilter = new() { $"${LookupField} = \"{LookupValue}\"" };
@@ -992,7 +993,7 @@ namespace TallyConnector
             StockGrpEnvelope.Body.Desc.StaticVariables = new() { SVCompany = company };
 
             StockGrpEnvelope.Body.Data.Message.StockGroup = stockGroup;
-            if (stockGroup.Parent !=null && stockGroup.Parent.Contains("Primary"))
+            if (stockGroup.Parent != null && stockGroup.Parent.Contains("Primary"))
             {
                 stockGroup.Parent = null;
             }
@@ -1065,7 +1066,7 @@ namespace TallyConnector
             StockCatEnvelope.Body.Desc.StaticVariables = new() { SVCompany = company };
 
             StockCatEnvelope.Body.Data.Message.StockCategory = stockCategory;
-            if (stockCategory.Parent !=null && stockCategory.Parent.Contains("Primary"))
+            if (stockCategory.Parent != null && stockCategory.Parent.Contains("Primary"))
             {
                 stockCategory.Parent = null;
             }
@@ -1571,7 +1572,7 @@ namespace TallyConnector
             return result;
         }
 
-       
+
         /// <summary>
         /// Gets CostCenter from Tally based on CostCenter name
         /// </summary>
@@ -1601,7 +1602,7 @@ namespace TallyConnector
                                                       NativeFields: fetchList,
                                                       Filters: Filters,
                                                       SystemFilters: SystemFilter);
-            Employee Employee= GetObjfromXml<EmployeeEnvelope>(xml).Body.Data.Collection.Employees[0];
+            Employee Employee = GetObjfromXml<EmployeeEnvelope>(xml).Body.Data.Collection.Employees[0];
             return Employee;
         }
 
@@ -1657,7 +1658,7 @@ namespace TallyConnector
             //If parameter is null Get value from instance
             company ??= Company;
             fetchList ??= new() { "MasterId", "*" };
-            StaticVariables sv = new() { SVCompany = company};
+            StaticVariables sv = new() { SVCompany = company };
             List<string> Filters = new() { "filter" };
             List<string> SystemFilter = new() { $"${LookupField} = \"{LookupValue}\"" };
 
@@ -1687,7 +1688,7 @@ namespace TallyConnector
         {
             //If parameter is null Get value from instance
             company ??= Company;
-            
+
             Models.Voucher voucher = (await GetObjFromTally<VoucherEnvelope>(ObjName: $"ID: {VoucherMasterID}",
                                                                              ObjType: "Voucher",
                                                                              company: company,
@@ -1808,11 +1809,11 @@ namespace TallyConnector
             company ??= Company;
             fromDate ??= FromDate;
             toDate ??= ToDate;
-            Nativelist = Nativelist == null?new() { "*" }: Nativelist;
-            StaticVariables sv = new() { SVCompany = company,SVFromDate=fromDate,SVToDate=toDate };
+            Nativelist = Nativelist == null ? new() { "*" } : Nativelist;
+            StaticVariables sv = new() { SVCompany = company, SVFromDate = fromDate, SVToDate = toDate };
 
-            string xml = await GetNativeCollectionXML(rName: "Vouchers", colType: "Vouchers : Ledger", Sv: sv,childof:ledgerName,
-                                                      NativeFields: Nativelist,Filters:Filters,SystemFilters:SystemFilter);
+            string xml = await GetNativeCollectionXML(rName: "Vouchers", colType: "Vouchers : Ledger", Sv: sv, childof: ledgerName,
+                                                      NativeFields: Nativelist, Filters: Filters, SystemFilters: SystemFilter);
 
             List<Voucher> Vouchers = GetObjfromXml<VoucherEnvelope>(xml).Body.Data.Collection.Vouchers;
             return Vouchers;
@@ -1840,10 +1841,10 @@ namespace TallyConnector
             company ??= Company;
             fromDate ??= FromDate;
             toDate ??= ToDate;
-            Nativelist = Nativelist == null?new() { "*" }: Nativelist;
-            StaticVariables sv = new() { SVCompany = company,SVFromDate=fromDate,SVToDate=toDate };
+            Nativelist = Nativelist == null ? new() { "*" } : Nativelist;
+            StaticVariables sv = new() { SVCompany = company, SVFromDate = fromDate, SVToDate = toDate };
 
-            string xml = await GetNativeCollectionXML(rName: "Vouchers", colType: "Vouchers : Group", Sv: sv,childof: GroupName,
+            string xml = await GetNativeCollectionXML(rName: "Vouchers", colType: "Vouchers : Group", Sv: sv, childof: GroupName,
                                                       NativeFields: Nativelist, Filters: Filters, SystemFilters: SystemFilter);
 
             List<Voucher> Vouchers = GetObjfromXml<VoucherEnvelope>(xml).Body.Data.Collection.Vouchers;
@@ -1875,9 +1876,9 @@ namespace TallyConnector
             fromDate ??= FromDate;
             toDate ??= ToDate;
             Nativelist = Nativelist == null ? new() { "*" } : Nativelist;
-            StaticVariables sv = new() { SVCompany = company,SVFromDate=fromDate,SVToDate=toDate };
+            StaticVariables sv = new() { SVCompany = company, SVFromDate = fromDate, SVToDate = toDate };
 
-            string xml = await GetNativeCollectionXML(rName: "Vouchers", colType: "Vouchers : Stockitem", Sv: sv,childof: ItemName,
+            string xml = await GetNativeCollectionXML(rName: "Vouchers", colType: "Vouchers : Stockitem", Sv: sv, childof: ItemName,
                                                       NativeFields: Nativelist, Filters: Filters, SystemFilters: SystemFilter);
 
             List<Voucher> Vouchers = GetObjfromXml<VoucherEnvelope>(xml).Body.Data.Collection.Vouchers;
@@ -1917,8 +1918,8 @@ namespace TallyConnector
                 string ReqXml = GetObjXML(objType: ObjType,
                                           ObjName: ObjName,
                                           company: company,
-                                          fromDate:fromDate,
-                                          toDate:toDate,
+                                          fromDate: fromDate,
+                                          toDate: toDate,
                                           fetchList: fetchList,
                                           viewname: viewname);
                 string ResXml = await SendRequest(ReqXml);
@@ -2244,7 +2245,7 @@ namespace TallyConnector
                     result.Result = Resp.Body.Data.LineError;
 
                 }
-                if (Resp.Body.Data.ImportResult !=null)
+                if (Resp.Body.Data.ImportResult != null)
                 {
                     if (Resp.Body.Data.ImportResult.LastVchId != null && Resp.Body.Data.ImportResult.LastVchId != 0)
                     {
@@ -2255,12 +2256,27 @@ namespace TallyConnector
                     {
                         if (Resp.Body.Data.ImportResult.Created != 0)
                         {
-                            result.Status = RespStatus.Sucess;
-                            result.Result = "Created";
+                            result.Result = "Created Sucessfully";
+                        }
+                        else if (Resp.Body.Data.ImportResult.Altered != 0)
+                        {
+                            result.Result = "Altered Sucessfully";
+                        }
+                        else if (Resp.Body.Data.ImportResult.Deleted != 0)
+                        {
+                            result.Result = "Deleted Sucessfully";
+                        }
+                        else if (Resp.Body.Data.ImportResult.Cacelled != 0)
+                        {
+                            result.Result = "Cancelled Sucessfully";
+                        }
+                        else if (Resp.Body.Data.ImportResult.Combined != 0)
+                        {
+                            result.Result = "Combined Sucessfully";
                         }
                     }
                 }
-                
+
 
             }
             else
