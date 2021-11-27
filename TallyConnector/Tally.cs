@@ -1813,7 +1813,8 @@ namespace TallyConnector
             company ??= Company;
             fromDate ??= FromDate;
             toDate ??= ToDate;
-            T Obj;
+            T Obj = default;
+            string ResXml = string.Empty;
             try
             {
                 string ReqXml = GetObjXML(objType: ObjType,
@@ -1823,12 +1824,13 @@ namespace TallyConnector
                                           toDate: toDate,
                                           fetchList: fetchList,
                                           viewname: viewname);
-                string ResXml = await SendRequest(ReqXml);
+                ResXml = await SendRequest(ReqXml);
                 Obj = GetObjfromXml<T>(ResXml);
             }
             catch (Exception e)
             {
-                throw;
+                Logger.LogError($"Error ocuured while converting object from xml - {ResXml}");
+                Logger.LogError($"Errrr - {e.Message}");
             }
             return Obj;
         }
@@ -2103,10 +2105,9 @@ namespace TallyConnector
 
                 return obj;
             }
-            catch (Exception e)
+            catch (Exception)
             {
-
-                throw;
+                return default(T);
             }
 
         }

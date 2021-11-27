@@ -91,7 +91,8 @@ namespace Tests
         {
             await TTally.Check();
             List<string> fields = new List<string>() { "Name", "Parent", "OpeningBalance", "Closing Balance" };
-            Ledger ledger = await TTally.GetLedgerDynamic("Cash", fromDate: "01032021", toDate: "31032021", Nativelist: fields);
+            Ledger ledger = await TTally.GetLedgerDynamic("Canara Bank", fromDate: "01032021", toDate: "31032021", Nativelist: fields);
+            string xml = ledger.GetXML();
             Assert.NotNull(ledger);
         }
 
@@ -219,29 +220,8 @@ namespace Tests
             Voucher voucher = await TTally.GetVoucher("dfghj");
             Assert.NotNull(voucher);
         }
-        [Test]
-        public async Task CheckGetLedgerVouchers()
-        {
-            await TTally.Check();
-            List<Voucher> Vouchers = await TTally.GetLedgerVouchers("Sales - Exports", null, "01-Mar-2010");
-            Assert.NotNull(Vouchers);
-        }
-        [Test]
-        public async Task CheckGetGroupVouchers()
-        {
-            await TTally.Check();
-            List<Voucher> Vouchers = await TTally.GetGroupVouchers("Local Sales", null, "01-oct-2016");
-            Assert.NotNull(Vouchers);
-        }
-
-        [Test]
-        public async Task CheckGetInventoryVouchers()
-        {
-            await TTally.Check();
-            List<Voucher> Vouchers = await TTally.GetInventoryVouchers("Mouse Pad", null, "01-Nov-2016");
-
-            Assert.NotNull(Vouchers);
-        }
+        
+        
 
         [Test]
         public async Task CheckGetLicenseInfo()

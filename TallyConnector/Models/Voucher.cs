@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.Linq;
 using System.Text.Json.Serialization;
+using System.Text.RegularExpressions;
 using System.Xml;
 using System.Xml.Serialization;
 
@@ -365,16 +367,23 @@ namespace TallyConnector.Models
             {
                 if (value != null)
                 {
+                    double t_amount;
                     if (value.ToString().Contains("="))
                     {
-                        var s = value.ToString().Split('=');
-                        var k = s[0].Split('@');
-                        ForexAmount = k[0];
-                        RateofExchange = k[1].Split()[2].Split('/')[0];
-                        _Amount = s[1].Split()[2];
+
+                        List<string> SplittedValues = value.ToString().Split('=').ToList();
+                        var CleanedAmounts = Regex.Match(SplittedValues[1], @"[0-9.]+");
+                        bool Isnegative = SplittedValues[1].Contains('-');
+                        bool sucess = Isnegative ? double.TryParse('-' + CleanedAmounts.Value, out t_amount) : double.TryParse(CleanedAmounts.ToString(), out t_amount);
+                        CleanedAmount = t_amount;
+                        var ForexInfo = SplittedValues[0].Split('@');
+                        ForexAmount = ForexInfo[0].Trim();
+                        RateofExchange = Regex.Match(ForexInfo[1], @"[0-9.]+").Value;
                     }
                     else
                     {
+                        double.TryParse(value, out t_amount);
+                        CleanedAmount = t_amount;
                         _Amount = value;
                     }
                 }
@@ -386,7 +395,8 @@ namespace TallyConnector.Models
             }
 
         }
-
+        [XmlIgnore]
+        public double CleanedAmount { get; set; }
         [XmlElement(ElementName = "BILLALLOCATIONS.LIST")]
         public List<BillAllocations> BillAllocations { get; set; }
 
