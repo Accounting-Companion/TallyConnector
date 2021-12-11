@@ -282,7 +282,7 @@ namespace TallyConnector.Models
             GetJulianday();
             return base.GetXML();
         }
-        private void GetJulianday()
+        public void GetJulianday()
         {
             Ledgers.ForEach(ledg =>
             {
@@ -290,6 +290,7 @@ namespace TallyConnector.Models
                 {
                     if (billalloc.BillCreditPeriod != null)
                     {
+                        EffectiveDate = EffectiveDate ?? VchDate;
                         DateTime dateTime = DateTime.ParseExact(EffectiveDate, "yyyyMMdd", CultureInfo.InvariantCulture);
                         double days = dateTime.Subtract(new DateTime(1900, 1, 1)).TotalDays + 1;
                         billalloc.BillCP.JD = days.ToString();
