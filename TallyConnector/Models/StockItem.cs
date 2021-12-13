@@ -38,8 +38,51 @@ namespace TallyConnector.Models
         [XmlElement(ElementName = "CATEGORY")]
         public string Category { get; set; }
 
+        [XmlElement(ElementName = "GSTAPPLICABLE")]
+        public string GSTApplicable { get; set; }
+
+        [XmlElement(ElementName = "GSTTYPEOFSUPPLY")]
+        public string GSTTypeOfSupply { get; set; }
+
+        [XmlElement(ElementName = "TCSAPPLICABLE")]
+        public string TCSApplicable { get; set; }
+
+        [XmlElement(ElementName = "DESCRIPTION")]
+        public string Description { get; set; }
+
+        [XmlElement(ElementName = "NARRATION")]
+        public string Narration { get; set; }
+
+        [XmlElement(ElementName = "COSTINGMETHOD")]
+        public string CostingMethod { get; set; }
+
+        [XmlElement(ElementName = "ISCOSTCENTRESON")]
+        public string IsCostTracking { get; set; }
+
+        [XmlElement(ElementName = "ISBATCHWISEON")]
+        public string MaintainInBranches { get; set; }
+
+        [XmlElement(ElementName = "ISPERISHABLEON")]
+        public string UseExpiryDates { get; set; }
+
+        [XmlElement(ElementName = "HASMFGDATE")]
+        public string TrackDateOfManufacturing { get; set; }
+
         [XmlElement(ElementName = "BASEUNITS")]
         public string BaseUnit { get; set; }
+
+        [XmlElement(ElementName = "ADDITIONALUNITS")]
+        public string AdditionalUnits { get; set; }
+
+        [XmlElement(ElementName = "INCLUSIVETAX")]
+        public string InclusiveOfTax { get; set; }
+
+        
+        [XmlElement(ElementName = "CONVERSION")]
+        public string Conversion { get; set; }
+        
+        [XmlElement(ElementName = "BASICRATEOFEXCISE")]
+        public string RateOfDuty { get; set; }
 
         [XmlElement(ElementName = "OPENINGBALANCE")]
         public string OpeningBal { get; set; }
