@@ -9,24 +9,24 @@ You can use **[Tally Connector](https://github.com/saivineeth100/TallyConnector/
 
 ## Supported Environments
 
-1. .Net Core 5.0 Applications
-2. .Net Framework Applications
+1. .Net Core 6.0 Applications
+2. .Net Framework 4.8 Applications
 3. Visual Basic
 
-This Library acts as complete abstraction for Tally XML API,
-You don't need to known or understand tally XML to interact with Tally.
+This Library is complete abstraction for Tally XML API, Using this library
+you don't need to known or understand tally XML to interact with Tally.
 
-This Repository has seperate branches for .Net Core 5.0 and .NET Framework 4.7.2 main branch is for .Net Core
+This Repository has seperate branches for .Net Core 6.0 and .NET Framework 48 main branch is for .Net Core
 
-1. [Tally Connector for .NET Core](https://github.com/saivineeth100/TallyConnector/tree/master)
-2. [Tally Connector for .Net Framework](https://github.com/saivineeth100/TallyConnector/tree/NET-Framework)
+1. [Tally Connector for .NET Core](https://github.com/Accounting-Companion/TallyConnector/tree/master)
+2. [Tally Connector for .Net Framework](https://github.com/Accounting-Companion/TallyConnector/tree/net_framework)
 
 ___
 
 ## Getting Started
 
 Add reference to Tallyconnector.dll in Your Project  
-Intiatate Tally in your Project
+Intiate Tally in your Project
 
 ### For C#
 
@@ -46,16 +46,35 @@ public bool status = await Ctally.Check(); // To check Whether Tally is running 
 List<Company> CompaniesList = await  Ctally.GetCompaniesList();
 
 //FetchAllTallyData() will get all tally masters like Groups/Ledgers ...etc., in Tally.Groups,Tally.Ledgers lists
-await Ctally.FetchAllTallyData(CompName);
+await Ctally.FetchAllTallyData("ABC Company");
 
 
 //To Get Full Object from Tally use Specific methods like GetGroup, GetLedger, GetCostCategory,GetCostCenter ..etc.,
 //For Ex. For getting Group by name
-Group TGrp = await Ctally.GetGroup(GroupName);
+Group TGrp = await Ctally.GetGroup("TestGroup");
 
 //To Create/Alter/Delete/Cancel Group,Ledger,Voucher from Tally use Specific methods like PostGroup, PostLedger, PostCostCategory,PostCostCenter ..etc.,
 //For Ex. To create group
-await Ctally.PostGroup(Group);
+PResult result = await TTally.PostGroup(new Group()
+            {
+                Name = "TestGroup",
+                Parent = "Sundry Debtors",
+            });
+//For Ex. To Alter group we need to Set Group.Action to Delete and use the same method
+PResult result = await TTally.PostGroup(new Group()
+            {
+                OldName = "TestGroup",
+                Name = "TestGroup_Edited",
+                Parent = "Sundry Debtors",
+                Action = Action.Alter,
+                AddLAllocType = AdAllocType.NotApplicable,
+            });
 //For Ex. To Delete group we need to Set Group.Action to Delete and use the same method
-await Ctally.PostGroup(Group); 
+PResult result = await TTally.PostGroup(new Group()
+            {
+                OldName = "TestGroup",
+                Action = Action.Delete,
+            }); 
 ```
+
+Xmls used are listed here - [PostMan Collection](https://documenter.getpostman.com/view/13855108/TzeRpAMt)
