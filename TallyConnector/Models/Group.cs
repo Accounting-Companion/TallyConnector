@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Text;
 using System.Text.Json.Serialization;
@@ -11,18 +12,19 @@ namespace TallyConnector.Models
     [XmlRoot(ElementName = "GROUP")]
     public class Group : TallyXmlJson
     {
-       
-
         [XmlElement(ElementName = "MASTERID")]
+        [MaxLength(20)]
         public int? TallyId { get; set; }
 
         [XmlAttribute(AttributeName = "NAME")]
         [JsonIgnore]
+        [Column(TypeName = "nvarchar(60)")]
         public string OldName { get; set; }
 
         private string name;
         [XmlElement(ElementName = "NAME")]
         [Required]
+        [Column(TypeName = "nvarchar(60)")]
         public string Name 
         { 
             get { return (name == null || name == string.Empty) ? OldName : name; } 
@@ -33,10 +35,12 @@ namespace TallyConnector.Models
         public string VName { get; set; }
 
         [XmlElement(ElementName = "PARENT")]
+        [Column(TypeName = "nvarchar(60)")]
         public string Parent { get; set; }
 
 
         [XmlIgnore]
+        [Column(TypeName = "nvarchar(60)")]
         public string Alias
         {
             get
@@ -93,31 +97,37 @@ namespace TallyConnector.Models
         }
 
         [XmlElement(ElementName = "GUID")]
+        [Column(TypeName = "nvarchar(100)")]
         public string GUID { get; set; }
         /// <summary>
         /// Tally Field - Used for Calculation
         /// </summary>
         [XmlElement(ElementName = "BASICGROUPISCALCULABLE")]
-        public string IsCalculable { get; set; }
+        [Column(TypeName = "nvarchar(3)")]
+        public YesNo IsCalculable { get; set; }
 
         /// <summary>
         /// Tally Field - Net Debit/Credit Balances for Reporting 
         /// </summary>
         [XmlElement(ElementName = "ISADDABLE")]
-        public string IsAddable { get; set; }
+        [Column(TypeName = "nvarchar(3)")]
+        public YesNo IsAddable { get; set; }
 
         /// <summary>
         /// Tally Field - Method to Allocate when used in purchase invoice
         /// </summary>
         [XmlElement(ElementName = "ADDLALLOCTYPE")]
-        public string AddLAllocType { get; set; }
+        [Column(TypeName = "nvarchar(25)")]
+        public AdAllocType AddLAllocType { get; set; }
 
         [XmlElement(ElementName = "ISSUBLEDGER")]
-        public string IsSubledger { get; set; }
+        [Column(TypeName = "nvarchar(3)")]
+        public YesNo IsSubledger { get; set; }
 
 
         [XmlElement(ElementName = "CANDELETE")]
-        public string CanDelete { get; set; } //Ignore This While Creating or Altering
+        [Column(TypeName = "nvarchar(3)")]
+        public YesNo CanDelete { get; set; }
 
         [JsonIgnore]
         [XmlElement(ElementName = "LANGUAGENAME.LIST")]
@@ -128,7 +138,7 @@ namespace TallyConnector.Models
         /// </summary>
         [JsonIgnore]
         [XmlAttribute(AttributeName = "Action")]
-        public string Action { get; set; }
+        public Action Action { get; set; }
 
     }
 

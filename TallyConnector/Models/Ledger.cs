@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Text.Json.Serialization;
 using System.Text.RegularExpressions;
@@ -19,15 +20,18 @@ namespace TallyConnector.Models
         }
 
         [XmlElement(ElementName = "MASTERID")]
+        [MaxLength(20)]
         public int? TallyId { get; set; }
 
         [XmlAttribute(AttributeName = "NAME")]
         [JsonIgnore]
+        [Column(TypeName = "nvarchar(60)")]
         public string OldName { get; set; }
 
         private string name;
         [XmlElement(ElementName = "NAME")]
         [Required]
+        [Column(TypeName = "nvarchar(60)")]
         public string Name
         {
             get { return (name == null || name == string.Empty) ? OldName : name; }
@@ -39,76 +43,81 @@ namespace TallyConnector.Models
 
         [XmlElement(ElementName = "PARENT")]
         [Required]
+        [Column(TypeName = "nvarchar(60)")]
         public string Group { get; set; }
 
         [XmlIgnore]
+        [Column(TypeName = "nvarchar(60)")]
         public string Alias
         {
             get
             {
-                if (this.LanguageNameList.NameList.NAMES.Count > 0)
+                if (this.LanguageNameList[0].NameList.NAMES.Count > 0)
                 {
-                    if (VName ==null)
+                    if (VName == null)
                     {
-                        VName = this.LanguageNameList.NameList.NAMES[0];
+                        VName = this.LanguageNameList[0].NameList.NAMES[0];
                     }
                     if (Name == VName)
                     {
-                        this.LanguageNameList.NameList.NAMES[0] = this.Name;
-                        return string.Join("..\n", this.LanguageNameList.NameList.NAMES.GetRange(1, this.LanguageNameList.NameList.NAMES.Count - 1));
+                        this.LanguageNameList[0].NameList.NAMES[0] = this.Name;
+                        return string.Join("..\n", this.LanguageNameList[0].NameList.NAMES.GetRange(1, this.LanguageNameList[0].NameList.NAMES.Count - 1));
 
                     }
                     else
                     {
                         //Name = this.LanguageNameList.NameList.NAMES[0];
-                        return string.Join("..\n", this.LanguageNameList.NameList.NAMES);
+                        return string.Join("..\n", this.LanguageNameList[0].NameList.NAMES);
 
                     }
                 }
                 else
                 {
-                   this.LanguageNameList.NameList.NAMES.Add(this.Name);
-                   return null;
+                    this.LanguageNameList[0].NameList.NAMES.Add(this.Name);
+                    return null;
                 }
-                
+
 
             }
             set
             {
                 this.LanguageNameList = new();
-               
-                if (value!=null)
+                this.LanguageNameList.Add(new LanguageNameList());
+                if (value != null)
                 {
                     List<string> lis = value.Split("..\n").ToList();
 
-                    LanguageNameList.NameList.NAMES.Add(Name);
+                    LanguageNameList[0].NameList.NAMES.Add(Name);
                     if (value != "")
                     {
-                        LanguageNameList.NameList.NAMES.AddRange(lis);
+                        LanguageNameList[0].NameList.NAMES.AddRange(lis);
                     }
-                    
+
                 }
                 else
                 {
-                    LanguageNameList.NameList.NAMES.Add(Name);
+                    LanguageNameList[0].NameList.NAMES.Add(Name);
                 }
-                
-                
+
+
             }
         }
 
         [XmlElement(ElementName = "ISDEEMEDPOSITIVE")]
-        public string DeemedPositive { get; set; }
+        [Column(TypeName = "nvarchar(3)")]
+        public YesNo DeemedPositive { get; set; }
         [XmlIgnore]
+        [Column(TypeName = "nvarchar(20)")]
         public string ForexAmount { get; set; }
         [XmlIgnore]
+        [Column(TypeName = "nvarchar(20)")]
         public string RateofExchange { get; set; }
 
-        
 
         private string _OpeningBal;
 
         [XmlElement(ElementName = "OPENINGBALANCE")]
+        [Column(TypeName = "nvarchar(20)")]
         public string OpeningBal
         {
             get
@@ -125,17 +134,17 @@ namespace TallyConnector.Models
             }
             set
             {
-                if (value!=null)
+                if (value != null)
                 {
                     double t_opbal;
                     Match CleanedAmount;
                     if (value.ToString().Contains('='))
                     {
-                        
+
                         List<string> SplittedValues = value.ToString().Split('=').ToList();
                         CleanedAmount = Regex.Match(SplittedValues[1], @"[0-9.]+");
                         bool Isnegative = SplittedValues[1].Contains('-');
-                        bool sucess = Isnegative ? double.TryParse('-'+CleanedAmount.Value, out t_opbal) : double.TryParse(CleanedAmount.ToString(),out t_opbal);
+                        bool sucess = Isnegative ? double.TryParse('-' + CleanedAmount.Value, out t_opbal) : double.TryParse(CleanedAmount.ToString(), out t_opbal);
                         CleanedOpeningBal = t_opbal;
                         var ForexInfo = SplittedValues[0].Split('@');
                         ForexAmount = ForexInfo[0].Trim();
@@ -152,23 +161,28 @@ namespace TallyConnector.Models
                 {
                     _OpeningBal = value;
                 }
-                
+
 
             }
         }
         [XmlIgnore]
-        public double CleanedOpeningBal { get; set; }
+        [MaxLength(20)]
+        public double? CleanedOpeningBal { get; set; }
 
         [XmlIgnore]
+        [Column(TypeName = "nvarchar(60)")]
         public string ClosingForexAmount { get; set; }
         [XmlIgnore]
+        [Column(TypeName = "nvarchar(60)")]
         public string ClosingRateofExchange { get; set; }
         [XmlIgnore]
-        public double CleanedClosingBal { get; set; }
+        [MaxLength(20)]
+        public double? CleanedClosingBal { get; set; }
 
         private string _ClosingBal;
-         
+
         [XmlElement(ElementName = "CLOSINGBALANCE")]
+        [Column(TypeName = "nvarchar(60)")]
         public string ClosingBal
         {
             get
@@ -211,18 +225,19 @@ namespace TallyConnector.Models
                     _ClosingBal = value;
                 }
             }
-            
+
         }
 
-        
+
         private string _Currency;
         [XmlElement(ElementName = "CURRENCYNAME")]
+        [Column(TypeName = "nvarchar(5)")]
         public string Currency
         {
             get { return _Currency; }
             set
             {
-                if (value=="?")
+                if (value == "?")
                 {
                     _Currency = null;
                 }
@@ -230,37 +245,44 @@ namespace TallyConnector.Models
                 {
                     _Currency = value;
                 }
-                 }
+            }
         }
 
         [XmlElement(ElementName = "TAXTYPE")]
-        public string TaxType { get; set; }
+        [Column(TypeName = "nvarchar(20)")]
+        public TaxType TaxType { get; set; }
 
         [XmlElement(ElementName = "GSTDUTYHEAD")]
-        public string GSTTaxType { get; set; }
+        [Column(TypeName = "nvarchar(15)")]
+        public GSTTaxType GSTTaxType { get; set; }
 
         [XmlElement(ElementName = "RATEOFTAXCALCULATION")]
-        public string RateofTax { get; set; }
+        [MaxLength(3)]
+        public double? RateofTax { get; set; }
 
         [XmlElement(ElementName = "ISBILLWISEON")]
-        public string IsBillwise { get; set; }
+        [Column(TypeName = "nvarchar(3)")]
+        public YesNo IsBillwise { get; set; }
 
         [XmlElement(ElementName = "BILLCREDITPERIOD")]
+        [Column(TypeName = "nvarchar(10)")]
         public string CreditPeriod { get; set; }
 
         [XmlElement(ElementName = "ISCREDITDAYSCHKON")]
-        public string IsCreditCheck { get; set; }
+        [Column(TypeName = "nvarchar(3)")]
+        public YesNo IsCreditCheck { get; set; }
 
 
-        [XmlElement(ElementName = "CREDITLIMIT")]
+        [XmlElement(ElementName = "CREDITLIMIT",IsNullable =true)]
+        [MaxLength(20)]
         public string CreditLimit { get; set; }
 
 
         [XmlElement(ElementName = "MAILINGNAME")]
+        [Column(TypeName = "nvarchar(60)")]
         public string MailingName { get; set; }
 
 
-        
         [XmlIgnore]
         public string Address
         {
@@ -271,165 +293,140 @@ namespace TallyConnector.Models
 
             set
             {
-                if (value !="")
+                if (value != "")
                 {
-                    
+
                     this.FAddress.FullAddress = value;
                 }
-                
+
 
             }
 
         }
 
         [XmlElement(ElementName = "COUNTRYNAME")]
+        [Column(TypeName = "nvarchar(60)")]
         public string Country { get; set; }
 
         [XmlElement(ElementName = "LEDSTATENAME")]
+        [Column(TypeName = "nvarchar(60)")]
         public string State { get; set; }
 
         [XmlElement(ElementName = "PINCODE")]
+        [Column(TypeName = "nvarchar(60)")]
         public string PinCode { get; set; }
 
         [XmlElement(ElementName = "LEDGERCONTACT")]
+        [Column(TypeName = "nvarchar(60)")]
         public string ContactPerson { get; set; }
 
         [XmlElement(ElementName = "LEDGERPHONE")]
+        [Column(TypeName = "nvarchar(60)")]
         public string LandlineNo { get; set; }
 
         [XmlElement(ElementName = "LEDGERMOBILE")]
+        [Column(TypeName = "nvarchar(60)")]
         public string MobileNo { get; set; }
 
         [XmlElement(ElementName = "LEDGERFAX")]
+        [Column(TypeName = "nvarchar(60)")]
         public string FaxNo { get; set; }
 
         [XmlElement(ElementName = "EMAIL")]
+        [Column(TypeName = "nvarchar(60)")]
         public string Email { get; set; }
 
         [XmlElement(ElementName = "EMAILCC")]
+        [Column(TypeName = "nvarchar(60)")]
         public string Emailcc { get; set; }
 
         [XmlElement(ElementName = "WEBSITE")]
+        [Column(TypeName = "nvarchar(60)")]
         public string Website { get; set; }
 
         [XmlElement(ElementName = "INCOMETAXNUMBER")]
+        [Column(TypeName = "nvarchar(12)")]
         public string PANNumber { get; set; }
 
         [XmlElement(ElementName = "GSTREGISTRATIONTYPE")]
-        public string GSTRegistrationType { get; set; }
+        [Column(TypeName = "nvarchar(15)")]
+        public GSTRegistrationType GSTRegistrationType { get; set; }
 
         [XmlElement(ElementName = "ISOTHTERRITORYASSESSEE")]
-        public string IsOtherTerritoryAssessee { get; set; }
+        [Column(TypeName = "nvarchar(3)")]
+        public YesNo IsOtherTerritoryAssessee { get; set; }
 
         [XmlElement(ElementName = "PARTYGSTIN")]
+        [Column(TypeName = "nvarchar(17)")]
         public string GSTIN { get; set; }
 
         [XmlElement(ElementName = "ISECOMMOPERATOR")]
-        public string IsECommerceOperator { get; set; }
+        [Column(TypeName = "nvarchar(3)")]
+        public YesNo IsECommerceOperator { get; set; }
 
         [XmlElement(ElementName = "CONSIDERPURCHASEFOREXPORT")]
-        public string DeemedExport { get; set; }
+        [Column(TypeName = "nvarchar(3)")]
+        public YesNo DeemedExport { get; set; }
 
         [XmlElement(ElementName = "GSTNATUREOFSUPPLY")]
-        public string GSTPartyType { get; set; }
+        [Column(TypeName = "nvarchar(20)")]
+        public GSTPartyType GSTPartyType { get; set; }
 
         [XmlElement(ElementName = "ISTRANSPORTER")]
-        public string IsTransporter { get; set; }
+        [Column(TypeName = "nvarchar(3)")]
+        public YesNo IsTransporter { get; set; }
 
         [XmlElement(ElementName = "TRANSPORTERID")]
+        [Column(TypeName = "nvarchar(20)")]
         public string TransporterID { get; set; }
 
 
         [XmlElement(ElementName = "AFFECTSSTOCK")]
-        public string AffectStock { get; set; }
+        [Column(TypeName = "nvarchar(3)")]
+        public YesNo AffectStock { get; set; }
 
         [XmlElement(ElementName = "ISCOSTCENTRESON")]
-        public string IsCostcenter { get; set; }
+        [Column(TypeName = "nvarchar(3)")]
+        public YesNo IsCostcenter { get; set; }
 
         [XmlElement(ElementName = "ISREVENUE")]
-        public string Isrevenue { get; set; }
+        [Column(TypeName = "nvarchar(3)")]
+        public YesNo Isrevenue { get; set; }
 
         [XmlElement(ElementName = "ISINTERESTON")]
-        public string Isintereston { get; set; }
+        [Column(TypeName = "nvarchar(3)")]
+        public YesNo Isintereston { get; set; }
+
+        [XmlElement(ElementName = "INTERESTONBILLWISE")]
+        [Column(TypeName = "nvarchar(3)")]
+        public YesNo IsinterestonBillWise { get; set; }
+
+        [XmlElement(ElementName = "OVERRIDEINTEREST")]
+        [Column(TypeName = "nvarchar(3)")]
+        public YesNo OverrideInterest { get; set; }
+
+        [XmlElement(ElementName = "OVERRIDEADVINTEREST")]
+        [Column(TypeName = "nvarchar(3)")]
+        public YesNo OverrideAdvanceInterest { get; set; }
+
+        [XmlElement(ElementName = "INTERESTINCLDAYOFADDITION")]
+        [Column(TypeName = "nvarchar(3)")]
+        public YesNo InterestIncludeForAmountsAdded { get; set; }
+
+        [XmlElement(ElementName = "INTERESTINCLDAYOFDEDUCTION")]
+        [Column(TypeName = "nvarchar(3)")]
+        public YesNo InterestIncludeForAmountsDeducted { get; set; }
 
 
-        private InterestList _InterestList;
-
-        
-        [JsonIgnore]
         [XmlElement(ElementName = "INTERESTCOLLECTION.LIST")]
-        public InterestList InterestList { 
-            get 
-            {
-                _InterestList.FromDate = Interestfromdate;
-                _InterestList.ToDate = Interesttodate;
-                _InterestList.InterestStyle = InterestStyle;
-                _InterestList.InterestBalancetype = InterestBalancetype;
-                _InterestList.Interestappliedon = Interestappliedon;
-                _InterestList.Interestfromtype = Interestfromtype;
-                _InterestList.RoundType = InterestRoundType;
-                _InterestList.InterestRate = InterestRate;
-                _InterestList.Interestappliedfrom = Interestappliedfrom;
-                _InterestList.RoundLimit = InterestRoundLimit;
-
-                
-                
-
-                return _InterestList; 
-            } 
-            set 
-            {
-                Interestfromdate = value.FromDate;
-                Interesttodate = value.ToDate;
-                InterestStyle = value.InterestStyle;
-                InterestBalancetype = value.InterestBalancetype;
-                Interestappliedon = value.Interestappliedon;
-                Interestfromtype = value.Interestfromtype;
-                InterestRoundType = value.RoundType;
-                InterestRate = value.InterestRate;
-                Interestappliedfrom = value.Interestappliedfrom;
-                InterestRoundLimit = value.RoundLimit;
-
-
-                _InterestList = value;
-            } }
-
-        [XmlIgnore]
-        public string Interestfromdate { get; set; }
-
-        [XmlIgnore]
-        public string Interesttodate { get; set; }
-
-        [XmlIgnore]
-        public string InterestStyle { get; set; }
-
-        [XmlIgnore]
-        public string InterestBalancetype { get; set; }
-
-        [XmlIgnore]
-        public string Interestappliedon { get; set; }
-
-        [XmlIgnore]
-        public string Interestfromtype { get; set; }
-
-        [XmlIgnore]
-        public string InterestRoundType { get; set; }
-
-        [XmlIgnore]
-        public string InterestRate { get; set; }
-
-        [XmlIgnore]
-        public string Interestappliedfrom { get; set; }
-
-        [XmlIgnore]
-        public string InterestRoundLimit { get; set; }
-
+        public List<InterestList> InterestList { get; set; }
 
 
         [XmlElement(ElementName = "FORPAYROLL")]
-        public string Forpayroll { get; set; }
-        
-        
+        [Column(TypeName = "nvarchar(3)")]
+        public YesNo Forpayroll { get; set; }
+
+
         [XmlElement(ElementName = "DESCRIPTION")]
         public string Description { get; set; }
 
@@ -443,19 +440,21 @@ namespace TallyConnector.Models
 
         [JsonIgnore]
         [XmlElement(ElementName = "LANGUAGENAME.LIST")]
-        public LanguageNameList LanguageNameList { get; set; }
+        public List<LanguageNameList> LanguageNameList { get; set; }
 
         [XmlElement(ElementName = "CANDELETE")]
-        public string CanDelete { get; set; }
+        [Column(TypeName = "nvarchar(3)")]
+        public YesNo CanDelete { get; set; }
 
         /// <summary>
         /// Accepted Values //Create, Alter, Delete
         /// </summary>
         [JsonIgnore]
         [XmlAttribute(AttributeName = "Action")]
-        public string Action { get; set; }
+        public Action Action { get; set; }
 
         [XmlElement(ElementName = "GUID")]
+        [Column(TypeName = "nvarchar(100)")]
         public string GUID { get; set; }
     }
 
@@ -463,39 +462,49 @@ namespace TallyConnector.Models
     public class InterestList
     {
         [XmlElement(ElementName = "INTERESTFROMDATE")]
+        [Column(TypeName = "nvarchar(10)")]
         public string FromDate { get; set; }
 
         [XmlElement(ElementName = "INTERESTTODATE")]
+        [Column(TypeName = "nvarchar(10)")]
         public string ToDate { get; set; }
 
         [XmlElement(ElementName = "INTERESTSTYLE")]
-        public string InterestStyle { get; set; }
+        [Column(TypeName = "nvarchar(20)")]
+        public InterestStyle InterestStyle { get; set; }
 
         [XmlElement(ElementName = "INTERESTBALANCETYPE")]
-        public string InterestBalancetype { get; set; }
+        [Column(TypeName = "nvarchar(25)")]
+        public InterestBalancetype InterestBalancetype { get; set; }
 
         [XmlElement(ElementName = "INTERESTAPPLON")]
-        public string Interestappliedon { get; set; }
+        [Column(TypeName = "nvarchar(20)")]
+        public InterestAppliedOn Interestappliedon { get; set; }
 
         [XmlElement(ElementName = "INTERESTFROMTYPE")]
-        public string Interestfromtype { get; set; }
+        [Column(TypeName = "nvarchar(30)")]
+        public InterestFromType Interestfromtype { get; set; }
 
         [XmlElement(ElementName = "ROUNDTYPE")]
-        public string RoundType { get; set; }
+        [Column(TypeName = "nvarchar(25)")]
+        public RoundType RoundType { get; set; }
 
         [XmlElement(ElementName = "INTERESTRATE")]
-        public string InterestRate { get; set; }
+        [MaxLength(3)]
+        public double? InterestRate { get; set; }
 
         [XmlElement(ElementName = "INTERESTAPPLFROM")]
-        public string Interestappliedfrom { get; set; }
+        [MaxLength(3)]
+        public double? Interestappliedfrom { get; set; }
 
         [XmlElement(ElementName = "ROUNDLIMIT")]
-        public string RoundLimit { get; set; }
+        [MaxLength(3)]
+        public double? RoundLimit { get; set; }
 
     }
 
     [XmlRoot(ElementName = "ENVELOPE")]
-    public class LedgerEnvelope: TallyXmlJson
+    public class LedgerEnvelope : TallyXmlJson
     {
 
         [XmlElement(ElementName = "HEADER")]
@@ -520,10 +529,10 @@ namespace TallyConnector.Models
     {
         [XmlElement(ElementName = "TALLYMESSAGE")]
         public LedgerMessage Message { get; set; } = new LedgerMessage();
-        
+
         [XmlElement(ElementName = "COLLECTION")]
         public LedgColl Collection { get; set; } = new LedgColl();
-        
+
 
     }
 
