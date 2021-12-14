@@ -309,27 +309,27 @@ namespace TallyConnector.Models
         public string Country { get; set; }
 
         [XmlElement(ElementName = "LEDSTATENAME")]
-        [Column(TypeName = "nvarchar(60)")]
+        [Column(TypeName = "nvarchar(100)")]
         public string State { get; set; }
 
         [XmlElement(ElementName = "PINCODE")]
-        [Column(TypeName = "nvarchar(60)")]
+        [Column(TypeName = "nvarchar(15)")]
         public string PinCode { get; set; }
 
         [XmlElement(ElementName = "LEDGERCONTACT")]
-        [Column(TypeName = "nvarchar(60)")]
+        [Column(TypeName = "nvarchar(20)")]
         public string ContactPerson { get; set; }
 
         [XmlElement(ElementName = "LEDGERPHONE")]
-        [Column(TypeName = "nvarchar(60)")]
+        [Column(TypeName = "nvarchar(20)")]
         public string LandlineNo { get; set; }
 
         [XmlElement(ElementName = "LEDGERMOBILE")]
-        [Column(TypeName = "nvarchar(60)")]
+        [Column(TypeName = "nvarchar(20)")]
         public string MobileNo { get; set; }
 
         [XmlElement(ElementName = "LEDGERFAX")]
-        [Column(TypeName = "nvarchar(60)")]
+        [Column(TypeName = "nvarchar(20)")]
         public string FaxNo { get; set; }
 
         [XmlElement(ElementName = "EMAIL")]
@@ -441,6 +441,9 @@ namespace TallyConnector.Models
         [JsonIgnore]
         [XmlElement(ElementName = "LANGUAGENAME.LIST")]
         public List<LanguageNameList> LanguageNameList { get; set; }
+
+        [XmlElement(ElementName = "LEDMULTIADDRESSLIST.LIST")]
+        public List<MultiAddress> MultipleAddresses { get; set; }
 
         [XmlElement(ElementName = "CANDELETE")]
         [Column(TypeName = "nvarchar(3)")]

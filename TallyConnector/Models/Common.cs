@@ -94,7 +94,15 @@ namespace TallyConnector.Models
         [XmlEnum(Name = "State Tax")]
         StateTax = 5,
     }
-
+    public enum ExciseNatureOfPurchase
+    {
+        [XmlEnum(Name = "")]
+        None = 0,
+        [XmlEnum(Name = " Any")]
+        Any = 1,
+        [XmlEnum(Name = "Importer")]
+        Importer = 2,
+    }
     public enum GSTRegistrationType
     {
         [XmlEnum(Name = "")]
