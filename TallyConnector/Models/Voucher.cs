@@ -269,18 +269,18 @@ namespace TallyConnector.Models
             });
         }
 
-        public new string GetJson()
+        public new string GetJson(bool Indented = false)
         {
             OrderLedgers();
 
-            return base.GetJson();
+            return base.GetJson(Indented);
         }
 
-        public new string GetXML()
+        public new string GetXML(XmlAttributeOverrides attrOverrides = null)
         {
             OrderLedgers();
             GetJulianday();
-            return base.GetXML();
+            return base.GetXML(attrOverrides);
         }
         public void GetJulianday()
         {
@@ -290,7 +290,7 @@ namespace TallyConnector.Models
                 {
                     if (billalloc.BillCreditPeriod != null)
                     {
-                        EffectiveDate = EffectiveDate ?? VchDate;
+                        EffectiveDate ??= VchDate;
                         DateTime dateTime = DateTime.ParseExact(EffectiveDate, "yyyyMMdd", CultureInfo.InvariantCulture);
                         double days = dateTime.Subtract(new DateTime(1900, 1, 1)).TotalDays + 1;
                         billalloc.BillCP.JD = days.ToString();
@@ -328,7 +328,7 @@ namespace TallyConnector.Models
             {
                 if (_Amount != null)
                 {
-                    if (!_Amount.Contains("-"))
+                    if (!_Amount.Contains('-'))
                     {
                         return "No";
                     }
@@ -369,7 +369,7 @@ namespace TallyConnector.Models
                 if (value != null)
                 {
                     double t_amount;
-                    if (value.ToString().Contains("="))
+                    if (value.ToString().Contains('='))
                     {
 
                         List<string> SplittedValues = value.ToString().Split('=').ToList();
@@ -473,7 +473,7 @@ namespace TallyConnector.Models
             {
                 if (value != null)
                 {
-                    if (value.ToString().Contains("="))
+                    if (value.ToString().Contains('='))
                     {
                         var s = value.ToString().Split('=');
                         var k = s[0].Split('@');
@@ -598,7 +598,7 @@ namespace TallyConnector.Models
             {
                 if (value != null)
                 {
-                    if (value.ToString().Contains("="))
+                    if (value.ToString().Contains('='))
                     {
                         var s = value.ToString().Split('=');
                         var k = s[0].Split('@');
@@ -668,7 +668,7 @@ namespace TallyConnector.Models
             {
                 if (value != null)
                 {
-                    if (value.ToString().Contains("="))
+                    if (value.ToString().Contains('='))
                     {
                         var s = value.ToString().Split('=');
                         var k = s[0].Split('@');
@@ -737,7 +737,7 @@ namespace TallyConnector.Models
             {
                 if (value != null)
                 {
-                    if (value.ToString().Contains("="))
+                    if (value.ToString().Contains('='))
                     {
                         var s = value.ToString().Split('=');
                         var k = s[0].Split('@');

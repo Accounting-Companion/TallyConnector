@@ -21,15 +21,9 @@ namespace TallyConnector.Models
         [JsonIgnore]
         public string OldName { get; set; }
 
-
-        private string name;
         [XmlElement(ElementName = "NAME")]
         [Required]
-        public string Name
-        {
-            get { return (name == null || name == string.Empty) ? OldName : name; }
-            set => name = value;
-        }
+        public string Name { get; set; }
 
 
         [XmlElement(ElementName = "ORIGINALNAME")]

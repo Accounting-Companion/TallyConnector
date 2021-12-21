@@ -22,17 +22,20 @@ namespace TallyConnector.Models
         public string OldName { get; set; }
 
         private string name;
+
+        public Group()
+        {
+            LanguageNameList = new();
+        }
+
         [XmlElement(ElementName = "NAME")]
         [Required]
         [Column(TypeName = "nvarchar(60)")]
-        public string Name 
-        { 
-            get { return (name == null || name == string.Empty) ? OldName : name; } 
-            set => name = value; 
+        public string Name
+        {
+            get { return (name == null || name == string.Empty) ? OldName : name; }
+            set => name = value;
         }
-
-        [XmlIgnore]
-        public string VName { get; set; }
 
         [XmlElement(ElementName = "PARENT")]
         [Column(TypeName = "nvarchar(60)")]
@@ -41,60 +44,7 @@ namespace TallyConnector.Models
 
         [XmlIgnore]
         [Column(TypeName = "nvarchar(60)")]
-        public string Alias
-        {
-            get
-            {
-                if (this.LanguageNameList.NameList.NAMES.Count > 0)
-                {
-                    if (VName == null)
-                    {
-                        VName = this.LanguageNameList.NameList.NAMES[0];
-                    }
-                    if (Name == VName)
-                    {
-                        this.LanguageNameList.NameList.NAMES[0] = this.Name;
-                        return string.Join("..\n", this.LanguageNameList.NameList.NAMES.GetRange(1, this.LanguageNameList.NameList.NAMES.Count - 1));
-
-                    }
-                    else
-                    {
-                        //Name = this.LanguageNameList.NameList.NAMES[0];
-                        return string.Join("..\n", this.LanguageNameList.NameList.NAMES);
-
-                    }
-                }
-                else
-                {
-                    this.LanguageNameList.NameList.NAMES.Add(this.Name);
-                    return null;
-                }
-
-
-            }
-            set
-            {
-                this.LanguageNameList = new();
-
-                if (value != null)
-                {
-                    List<string> lis = value.Split("..\n").ToList();
-
-                    LanguageNameList.NameList.NAMES.Add(Name);
-                    if (value != "")
-                    {
-                        LanguageNameList.NameList.NAMES.AddRange(lis);
-                    }
-
-                }
-                else
-                {
-                    LanguageNameList.NameList.NAMES.Add(Name);
-                }
-
-
-            }
-        }
+        public string Alias { get; set; }
 
         [XmlElement(ElementName = "GUID")]
         [Column(TypeName = "nvarchar(100)")]
@@ -131,7 +81,7 @@ namespace TallyConnector.Models
 
         [JsonIgnore]
         [XmlElement(ElementName = "LANGUAGENAME.LIST")]
-        public LanguageNameList LanguageNameList { get; set; }
+        public List<LanguageNameList> LanguageNameList { get; set; }
 
         /// <summary>
         /// Accepted Values //Create, Alter, Delete
@@ -139,6 +89,20 @@ namespace TallyConnector.Models
         [JsonIgnore]
         [XmlAttribute(AttributeName = "Action")]
         public Action Action { get; set; }
+
+        public void CreateNamesList()
+        {
+            if (this.LanguageNameList.Count == 0)
+            {
+                this.LanguageNameList.Add(new LanguageNameList());
+                this.LanguageNameList[0].NameList.NAMES.Add(this.Name);
+
+            }
+            if (this.Alias != null && this.Alias != string.Empty)
+            {
+                this.LanguageNameList[0].LanguageAlias = this.Alias;
+            }
+        }
 
     }
 

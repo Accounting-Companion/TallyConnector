@@ -17,6 +17,9 @@ namespace TallyConnector.Models
         {
             FAddress = new HAddress();
             InterestList = new();
+            LanguageNameList = new();
+            ClosingBalances = new();
+            MultipleAddresses = new();
         }
 
         [XmlElement(ElementName = "MASTERID")]
@@ -38,70 +41,16 @@ namespace TallyConnector.Models
             set => name = value;
         }
 
-        [XmlIgnore]
-        public string VName { get; set; }
 
         [XmlElement(ElementName = "PARENT")]
         [Required]
         [Column(TypeName = "nvarchar(60)")]
         public string Group { get; set; }
 
+
         [XmlIgnore]
         [Column(TypeName = "nvarchar(60)")]
-        public string Alias
-        {
-            get
-            {
-                if (this.LanguageNameList[0].NameList.NAMES.Count > 0)
-                {
-                    if (VName == null)
-                    {
-                        VName = this.LanguageNameList[0].NameList.NAMES[0];
-                    }
-                    if (Name == VName)
-                    {
-                        this.LanguageNameList[0].NameList.NAMES[0] = this.Name;
-                        return string.Join("..\n", this.LanguageNameList[0].NameList.NAMES.GetRange(1, this.LanguageNameList[0].NameList.NAMES.Count - 1));
-
-                    }
-                    else
-                    {
-                        //Name = this.LanguageNameList.NameList.NAMES[0];
-                        return string.Join("..\n", this.LanguageNameList[0].NameList.NAMES);
-
-                    }
-                }
-                else
-                {
-                    this.LanguageNameList[0].NameList.NAMES.Add(this.Name);
-                    return null;
-                }
-
-
-            }
-            set
-            {
-                this.LanguageNameList = new();
-                this.LanguageNameList.Add(new LanguageNameList());
-                if (value != null)
-                {
-                    List<string> lis = value.Split("..\n").ToList();
-
-                    LanguageNameList[0].NameList.NAMES.Add(Name);
-                    if (value != "")
-                    {
-                        LanguageNameList[0].NameList.NAMES.AddRange(lis);
-                    }
-
-                }
-                else
-                {
-                    LanguageNameList[0].NameList.NAMES.Add(Name);
-                }
-
-
-            }
-        }
+        public string Alias { get; set; }
 
         [XmlElement(ElementName = "ISDEEMEDPOSITIVE")]
         [Column(TypeName = "nvarchar(3)")]
@@ -140,7 +89,6 @@ namespace TallyConnector.Models
                     Match CleanedAmount;
                     if (value.ToString().Contains('='))
                     {
-
                         List<string> SplittedValues = value.ToString().Split('=').ToList();
                         CleanedAmount = Regex.Match(SplittedValues[1], @"[0-9.]+");
                         bool Isnegative = SplittedValues[1].Contains('-');
@@ -273,7 +221,7 @@ namespace TallyConnector.Models
         public YesNo IsCreditCheck { get; set; }
 
 
-        [XmlElement(ElementName = "CREDITLIMIT",IsNullable =true)]
+        [XmlElement(ElementName = "CREDITLIMIT", IsNullable = true)]
         [MaxLength(20)]
         public string CreditLimit { get; set; }
 
@@ -445,6 +393,12 @@ namespace TallyConnector.Models
         [XmlElement(ElementName = "LEDMULTIADDRESSLIST.LIST")]
         public List<MultiAddress> MultipleAddresses { get; set; }
 
+
+        [XmlElement(ElementName = "LEDGERCLOSINGVALUES.LIST")]
+        public List<ClosingBalances> ClosingBalances { get; set; }
+
+
+
         [XmlElement(ElementName = "CANDELETE")]
         [Column(TypeName = "nvarchar(3)")]
         public YesNo CanDelete { get; set; }
@@ -459,6 +413,20 @@ namespace TallyConnector.Models
         [XmlElement(ElementName = "GUID")]
         [Column(TypeName = "nvarchar(100)")]
         public string GUID { get; set; }
+
+        public void CreateNamesList()
+        {
+            if (this.LanguageNameList.Count == 0)
+            {
+                this.LanguageNameList.Add(new LanguageNameList());
+                this.LanguageNameList[0].NameList.NAMES.Add(this.Name);
+
+            }
+            if (this.Alias != null && this.Alias != string.Empty)
+            {
+                this.LanguageNameList[0].LanguageAlias = this.Alias;
+            }
+        }
     }
 
     [XmlRoot(ElementName = "INTERESTCOLLECTION.LIST")]
@@ -503,6 +471,22 @@ namespace TallyConnector.Models
         [XmlElement(ElementName = "ROUNDLIMIT")]
         [MaxLength(3)]
         public double? RoundLimit { get; set; }
+
+    }
+
+
+
+    [XmlRoot(ElementName = "LEDGERCLOSINGVALUES.LIST")]
+    public class ClosingBalances
+    {
+
+        [XmlElement(ElementName = "DATE")]
+        [Column(TypeName = "nvarchar(10)")]
+        public string Date { get; set; }
+
+        [XmlElement(ElementName = "AMOUNT")]
+        [Column(TypeName = "nvarchar(20)")]
+        public string Amount { get; set; }
 
     }
 

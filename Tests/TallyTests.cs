@@ -56,12 +56,49 @@ namespace Tests
             Group group = await TTally.GetGroup("Sundry Debtors");
             Assert.NotNull(group);
         }
-
+        [Test]
+        public async Task CheckCreateGroup()
+        {
+            await TTally.Check();
+            PResult result = await TTally.PostGroup(new Group()
+            {
+                Name = "TestGroup",
+                Parent = "Sundry Debtors",
+                AddLAllocType = AdAllocType.AppropriateByValue,
+            });
+            Assert.IsTrue(result.Status == RespStatus.Sucess);
+        }
+        [Test]
+        public async Task CheckAlterGroup()
+        {
+            await TTally.Check();
+            PResult result = await TTally.PostGroup(new Group()
+            {
+                OldName = "TestGroup",
+                Parent = "Sundry Debtors",
+                AddLAllocType = AdAllocType.NotApplicable,
+            }); ;
+            Assert.IsTrue(result.Status == RespStatus.Sucess);
+        }
+        [Test]
+        public async Task CheckDeleteGroup()
+        {
+            await TTally.Check();
+            PResult result = await TTally.PostGroup(new Group()
+            {
+                OldName = "TestGroup",
+                Action = Action.Delete,
+            });
+            Assert.IsTrue(result.Status == RespStatus.Sucess);
+        }
         [Test]
         public async Task CheckGetLedger()
         {
             await TTally.Check();
-            Ledger ledger = await TTally.GetLedger("Cash");
+            Ledger ledger = await TTally.GetLedger("TestLedgerCEdited__");
+            ledger.OtherAttributes = null;
+            ledger.OtherFields = null;
+            await TTally.PostLedger(ledger);
             Assert.NotNull(ledger);
         }
 
@@ -70,7 +107,7 @@ namespace Tests
         {
             if (await TTally.Check())
             {
-                Ledger nledger = new() { Name = "TestLedgerC", Group = "Sundry Debtors" };
+                Ledger nledger = new() { Name = "TestLedgerCres",Alias="gjkwknndnk", Group = "Sundry Debtors" };
                 PResult pResult = await TTally.PostLedger(nledger);
                 Assert.IsTrue(pResult.Status == RespStatus.Sucess);
             }
@@ -81,7 +118,7 @@ namespace Tests
         {
             if (await TTally.Check())
             {
-                Ledger nledger = new() { OldName = "TestLedgerC", Name = "TestLedgerCEdited", Group = "Sundry Debtors" };
+                Ledger nledger = new() { OldName = "TestLedgerCres", Name = "TestLedgerCEdited___", Group = "Sundry Debtors" };
                 PResult pResult = await TTally.PostLedger(nledger);
                 Assert.IsTrue(pResult.Status == RespStatus.Sucess);
             }
@@ -189,30 +226,6 @@ namespace Tests
 
 
 
-
-        [Test]
-        public async Task CheckGetVoucherbyMasterid()
-        {
-            await TTally.Check();
-            Voucher voucher = await TTally.GetVoucherByMasterID("1300");
-            //System.Xml.XmlDocument xmldoc = new System.Xml.XmlDocument();
-            //System.Xml.XmlAttribute fg = xmldoc.CreateAttribute("REMOTEID");
-            //voucher.OtherAttributes.AppendChild(fg);
-            //voucher.OtherAttributes = null;
-            //voucher.OtherFields = null;
-            //voucher.VchDate = "20210131";
-            //voucher.GUID = "tsv07fce-b577-4f86-9cee-bb46d1016cad-00000513";
-            //voucher.TallyId = null;
-            //var k = await TTally.PostVoucher(voucher);
-            //VoucherEnvelope voucherEnvelope = new();
-            //voucherEnvelope.Header = new();
-            //voucherEnvelope.Body.Data.Message.Voucher = voucher;
-            //string xml = voucher.GetXML();
-            //string json = voucher.GetJson();
-            Assert.NotNull(voucher);
-        }
-
-
         [Test]
         public async Task CheckGetVoucher()
         {
@@ -220,8 +233,8 @@ namespace Tests
             Voucher voucher = await TTally.GetVoucher("dfghj");
             Assert.NotNull(voucher);
         }
-        
-        
+
+
 
         [Test]
         public async Task CheckGetLicenseInfo()
