@@ -21,16 +21,17 @@ namespace TallyConnector.Models
         [XmlIgnore]
         public string LanguageAlias
         {
-            get { return NameList.NAMES.Count > 1 ? NameList.NAMES[1] : null; }
+            get { return NameList.NAMES.Count > 1 ? string.Join("..\n", NameList.NAMES.GetRange(1, NameList.NAMES.Count - 1)) : null; }
             set
             {
                 if (NameList.NAMES.Count > 1)
                 {
-                    NameList.NAMES[1] = value;
+                    NameList.NAMES.RemoveRange(1, NameList.NAMES.Count-1);
+                    NameList.NAMES.InsertRange(1, value.Split("..\n").ToList());
                 }
-                else if(NameList.NAMES.Count==1)
+                else if (NameList.NAMES.Count == 1)
                 {
-                    NameList.NAMES.Add(value);
+                    NameList.NAMES.InsertRange(1, value.Split("..\n").ToList());
                 }
             }
         }

@@ -33,14 +33,12 @@ namespace TallyConnector.Models
 
         private string name;
         [XmlElement(ElementName = "NAME")]
-        [Required]
         [Column(TypeName = "nvarchar(60)")]
         public string Name
         {
             get { return (name == null || name == string.Empty) ? OldName : name; }
             set => name = value;
         }
-
 
         [XmlElement(ElementName = "PARENT")]
         [Required]
