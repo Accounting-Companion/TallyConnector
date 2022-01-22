@@ -41,9 +41,10 @@ namespace TallyConnector
             xmlSerializer.Serialize(writer, this, ns);
             return textWriter.ToString(); ;
         }
+        
         [NotMapped]
         [JsonIgnore]
-        [XmlAnyElement]
+        [XmlAnyElement()]
         public XmlElement[] OtherFields { get; set; }
         [NotMapped]
         [JsonIgnore]

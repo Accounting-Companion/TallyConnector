@@ -2,12 +2,20 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using System.Xml.Serialization;
 
 namespace TallyConnector.Models
 {
+    public enum MasterLookupField
+    {
+        MasterId = 1,
+        AlterId = 2,
+        Name = 3,
+        GUID = 4,
+    }
 
     public enum Action
     {

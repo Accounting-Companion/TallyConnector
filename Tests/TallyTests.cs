@@ -95,7 +95,7 @@ namespace Tests
         public async Task CheckGetLedger()
         {
             await TTally.Check();
-            Ledger ledger = await TTally.GetLedger("TestLedgerCEdited__");
+            Ledger ledger = await TTally.GetLedger("TestLedger");
             ledger.OtherAttributes = null;
             ledger.OtherFields = null;
             await TTally.PostLedger(ledger);
@@ -230,7 +230,7 @@ namespace Tests
         public async Task CheckGetVoucher()
         {
             await TTally.Check();
-            Voucher voucher = await TTally.GetVoucher("dfghj");
+            Voucher voucher = await TTally.GetVoucher("1302",VoucherLookupField.MasterId);
             Assert.NotNull(voucher);
         }
 

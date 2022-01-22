@@ -10,7 +10,7 @@ using System.Xml.Serialization;
 namespace TallyConnector.Models
 {
     [Serializable]
-    [XmlRoot(ElementName = "VOUCHER",Namespace ="")]
+    [XmlRoot(ElementName = "VOUCHER", Namespace = "")]
     public class Voucher : TallyXmlJson
     {
         public Voucher()
@@ -51,41 +51,41 @@ namespace TallyConnector.Models
 
         private DeliveryNotes _DeliveryNotes;
 
-        
+
 
         [JsonIgnore]
         [XmlElement(ElementName = "BASICSHIPDELIVERYNOTE")]
         public DeliveryNotes DeliveryNotes
         {
-            get 
+            get
             {
                 DeliveryNoteNo = _DeliveryNotes.DeliveryNote;
                 ShippingDate = _DeliveryNotes.ShippingDate;
-                return _DeliveryNotes; 
+                return _DeliveryNotes;
             }
-            set 
+            set
             {
                 _DeliveryNotes.ShippingDate = value.ShippingDate;
                 _DeliveryNotes.DeliveryNote = value.DeliveryNote;
-                _DeliveryNotes = value; 
+                _DeliveryNotes = value;
             }
         }
 
         [XmlElement(ElementName = "BASICSHIPDOCUMENTNO")]
         public string DispatchDocNo { get; set; }
-        
+
         [XmlElement(ElementName = "BASICSHIPPEDBY")]
         public string BasicShippedBy { get; set; }
 
         [XmlElement(ElementName = "BASICFINALDESTINATION")]
         public string Destination { get; set; }
-        
+
         [XmlElement(ElementName = "EICHECKPOST")]
         public string CarrierName { get; set; }
 
         [XmlElement(ElementName = "BILLOFLADINGNO")]
         public string BillofLandingNo { get; set; }
-        
+
         [XmlElement(ElementName = "BILLOFLADINGDATE")]
         public string BillofLandingDate { get; set; }
 
@@ -136,12 +136,12 @@ namespace TallyConnector.Models
         [XmlElement(ElementName = "ISCANCELLED")]
         public string IsCancelled { get; set; }
 
-        [XmlElement(ElementName = "ALLLEDGERENTRIES.LIST",Type =typeof(IVoucherLedger))]
+        [XmlElement(ElementName = "ALLLEDGERENTRIES.LIST", Type = typeof(IVoucherLedger))]
         [XmlElement(ElementName = "LEDGERENTRIES.LIST", Type = typeof(EVoucherLedger))]
         public List<IVoucherLedger> Ledgers { get; set; }
-            
 
-        [XmlElement(ElementName = "ALLINVENTORYENTRIES.LIST",Type =typeof(AllInventoryAllocations))]
+
+        [XmlElement(ElementName = "ALLINVENTORYENTRIES.LIST", Type = typeof(AllInventoryAllocations))]
         [XmlElement(ElementName = "INVENTORYENTRIES.LIST", Type = typeof(InventoryEntries))]
         public List<AllInventoryAllocations> InventoryAllocations { get; set; }
 
@@ -218,7 +218,7 @@ namespace TallyConnector.Models
             }
         }
 
-        
+
 
         public void OrderLedgers()
         {
@@ -323,8 +323,9 @@ namespace TallyConnector.Models
 
 
         [XmlElement(ElementName = "ISDEEMEDPOSITIVE")]
-        public string IsDeemedPositive {
-            get 
+        public string IsDeemedPositive
+        {
+            get
             {
                 if (_Amount != null)
                 {
@@ -338,7 +339,7 @@ namespace TallyConnector.Models
                     }
                 }
                 return null;
-                
+
             }
             set { }
         }
@@ -574,7 +575,7 @@ namespace TallyConnector.Models
 
         private string _Amount;
 
-        
+
         public string ForexAmount { get; set; }
 
         public string RateofExchange { get; set; }
@@ -807,7 +808,7 @@ namespace TallyConnector.Models
     {
         [XmlElement(ElementName = "TALLYMESSAGE")]
         public VoucherMessage Message { get; set; } = new VoucherMessage();
-        
+
         [XmlElement(ElementName = "COLLECTION")]
         public VouchColl Collection { get; set; } = new VouchColl();
     }
@@ -826,7 +827,14 @@ namespace TallyConnector.Models
         public Voucher Voucher { get; set; }
     }
 
-
+    public enum VoucherLookupField
+    {
+        MasterId = 1,
+        AlterId = 2,
+        VoucherNumber = 3,
+        GUID = 4,
+    }
+    
 }
 
 

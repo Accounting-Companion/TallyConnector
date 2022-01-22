@@ -642,7 +642,7 @@ namespace TallyConnector
         /// <param name="fetchList">You can select the list of fields to be fetched from tally if nothing specified it pulls all fields availaible in Tally
         /// if field is in tally but it is not shown in Groupinstance then you need to extend Group model and specify that field</param>
         /// <returns>Returns instance of Models.Group instance with data from tally</returns>
-        public async Task<Group> GetGroup(string LookupValue, string LookupField = "Name",
+        public async Task<Group> GetGroup(string LookupValue, MasterLookupField LookupField = MasterLookupField.Name,
                                           string company = null,
                                           string fromDate = null,
                                           string toDate = null,
@@ -655,7 +655,11 @@ namespace TallyConnector
             fetchList ??= new() { "MasterId", "*" };
             StaticVariables sv = new() { SVCompany = company, SVFromDate = fromDate, SVToDate = toDate };
             List<string> Filters = new() { "Groupfilter" };
-            List<string> SystemFilter = new() { $"${LookupField} = \"{LookupValue}\"" };
+            List<string> SystemFilter = new()
+            {
+
+                (LookupField == MasterLookupField.MasterId || LookupField == MasterLookupField.AlterId) ? $"${LookupField} = {LookupValue}" : $"${LookupField} = \"{LookupValue}\""
+            };
 
             string xml = await GetNativeCollectionXML(rName: "CusGroupObj",
                                                       colType: "Group",
@@ -675,7 +679,7 @@ namespace TallyConnector
             else
             {
                 throw new ObjectDoesNotExist("Group",
-                                             LookupField,
+                                             LookupField.ToString(),
                                              LookupValue,
                                              company);
             }
@@ -739,7 +743,7 @@ namespace TallyConnector
         /// </param>
         /// <returns>Returns instance of Models.Ledger instance with data from tally</returns>
         public async Task<Ledger> GetLedgerDynamic(string LookupValue,
-                                                   string LookupField = "Name",
+                                                   MasterLookupField LookupField = MasterLookupField.Name,
                                                    string company = null,
                                                    string fromDate = null,
                                                    string toDate = null,
@@ -771,7 +775,7 @@ namespace TallyConnector
             else
             {
                 throw new ObjectDoesNotExist("Ledger",
-                                             LookupField,
+                                             LookupField.ToString(),
                                              LookupValue,
                                              company);
             }
@@ -786,7 +790,7 @@ namespace TallyConnector
         /// </param>
         /// <returns>Returns instance of Models.Ledger instance with data from tally</returns>
         public async Task<Ledger> GetLedger(string LookupValue,
-                                            string LookupField = "Name",
+                                            MasterLookupField LookupField = MasterLookupField.Name,
                                             string company = null,
                                             List<string> Nativelist = null)
         {
@@ -815,7 +819,7 @@ namespace TallyConnector
             else
             {
                 throw new ObjectDoesNotExist("Ledger",
-                                             LookupField,
+                                             LookupField.ToString(),
                                              LookupValue,
                                              company);
             }
@@ -870,7 +874,7 @@ namespace TallyConnector
         /// </param>
         /// <returns>Returns instance of Models.CostCategory instance with data from tally</returns>
         public async Task<CostCategory> GetCostCategory(string LookupValue,
-                                                        string LookupField = "Name",
+                                                        MasterLookupField LookupField = MasterLookupField.Name,
                                                         string company = null,
                                                         string fromDate = null,
                                                         string toDate = null,
@@ -903,7 +907,7 @@ namespace TallyConnector
             else
             {
                 throw new ObjectDoesNotExist("CostCategory",
-                                             LookupField,
+                                             LookupField.ToString(),
                                              LookupValue,
                                              company);
             }
@@ -955,7 +959,7 @@ namespace TallyConnector
         /// </param>
         /// <returns>Returns instance of Models.CostCenter instance with data from tally</returns>
         public async Task<CostCenter> GetCostCenter(string LookupValue,
-                                                    string LookupField = "Name",
+                                                    MasterLookupField LookupField = MasterLookupField.Name,
                                                     string company = null,
                                                     string fromDate = null,
                                                     string toDate = null,
@@ -987,7 +991,7 @@ namespace TallyConnector
             else
             {
                 throw new ObjectDoesNotExist("CostCenter",
-                                             LookupField,
+                                             LookupField.ToString(),
                                              LookupValue,
                                              company);
             }
@@ -1043,7 +1047,7 @@ namespace TallyConnector
         /// </param>
         /// <returns>Returns instance of Models.StockGroup instance with data from tally</returns>
         public async Task<StockGroup> GetStockGroup(string LookupValue,
-                                                    string LookupField = "Name",
+                                                    MasterLookupField LookupField = MasterLookupField.Name,
                                                     string company = null,
                                                     string fromDate = null,
                                                     string toDate = null,
@@ -1075,7 +1079,7 @@ namespace TallyConnector
             else
             {
                 throw new ObjectDoesNotExist("StockGroup",
-                                             LookupField,
+                                             LookupField.ToString(),
                                              LookupValue,
                                              company);
             }
@@ -1130,7 +1134,7 @@ namespace TallyConnector
         /// </param>
         /// <returns>Returns instance of Models.StockCategory with data from tally</returns>
         public async Task<StockCategory> GetStockCategory(string LookupValue,
-                                                          string LookupField = "Name",
+                                                          MasterLookupField LookupField = MasterLookupField.Name,
                                                           string company = null,
                                                           string fromDate = null,
                                                           string toDate = null,
@@ -1162,7 +1166,7 @@ namespace TallyConnector
             else
             {
                 throw new ObjectDoesNotExist("StockCategory",
-                                             LookupField,
+                                             LookupField.ToString(),
                                              LookupValue,
                                              company);
             }
@@ -1216,7 +1220,7 @@ namespace TallyConnector
         /// </param>
         /// <returns>Returns instance of Models.StockItem  with data from tally</returns>
         public async Task<StockItem> GetStockItem(string LookupValue,
-                                                  string LookupField = "Name",
+                                                  MasterLookupField LookupField = MasterLookupField.Name,
                                                   string company = null,
                                                   string fromDate = null,
                                                   string toDate = null,
@@ -1248,7 +1252,7 @@ namespace TallyConnector
             else
             {
                 throw new ObjectDoesNotExist("StockItem",
-                                             LookupField,
+                                             LookupField.ToString(),
                                              LookupValue,
                                              company);
             }
@@ -1303,7 +1307,7 @@ namespace TallyConnector
         /// </param>
         /// <returns>Returns instance of Models.Unit  with data from tally</returns>
         public async Task<Unit> GetUnit(string LookupValue,
-                                        string LookupField = "Name",
+                                        MasterLookupField LookupField = MasterLookupField.Name,
                                         string company = null,
                                         string fromDate = null,
                                         string toDate = null,
@@ -1334,7 +1338,7 @@ namespace TallyConnector
             else
             {
                 throw new ObjectDoesNotExist("Unit",
-                                             LookupField,
+                                             LookupField.ToString(),
                                              LookupValue,
                                              company);
             }
@@ -1385,7 +1389,7 @@ namespace TallyConnector
         /// </param>
         /// <returns>Returns instance of Models.Godown  with data from tally</returns>
         public async Task<Godown> GetGodown(string LookupValue,
-                                            string LookupField = "Name",
+                                            MasterLookupField LookupField = MasterLookupField.Name,
                                             string company = null,
                                             string fromDate = null,
                                             string toDate = null,
@@ -1418,7 +1422,7 @@ namespace TallyConnector
             else
             {
                 throw new ObjectDoesNotExist("Godown",
-                                             LookupField,
+                                             LookupField.ToString(),
                                              LookupValue,
                                              company);
             }
@@ -1473,7 +1477,7 @@ namespace TallyConnector
         /// </param>
         /// <returns>Returns instance of Models.VoucherType  with data from tally</returns>
         public async Task<VoucherType> GetVoucherType(string LookupValue,
-                                                      string LookupField = "Name",
+                                                      MasterLookupField LookupField = MasterLookupField.Name,
                                                       string company = null,
                                                       string fromDate = null,
                                                       string toDate = null,
@@ -1505,7 +1509,7 @@ namespace TallyConnector
             else
             {
                 throw new ObjectDoesNotExist("VoucherType",
-                                             LookupField,
+                                             LookupField.ToString(),
                                              LookupValue,
                                              company);
             }
@@ -1556,7 +1560,7 @@ namespace TallyConnector
         /// </param>
         /// <returns>Returns instance of Models.Currency  with data from tally</returns>
         public async Task<Currency> GetCurrency(string LookupValue,
-                                                string LookupField = "Name",
+                                                MasterLookupField LookupField = MasterLookupField.Name,
                                                 string company = null,
                                                 string fromDate = null,
                                                 string toDate = null,
@@ -1586,7 +1590,7 @@ namespace TallyConnector
             else
             {
                 throw new ObjectDoesNotExist("Currency",
-                                             LookupField,
+                                             LookupField.ToString(),
                                              LookupValue,
                                              company);
             }
@@ -1636,7 +1640,7 @@ namespace TallyConnector
         /// </param>
         /// <returns>Returns instance of Models.AttendanceType  with data from tally</returns>
         public async Task<AttendanceType> GetAttendanceType(string LookupValue,
-                                                            string LookupField = "Name",
+                                                            MasterLookupField LookupField = MasterLookupField.Name,
                                                             string company = null,
                                                             string fromDate = null,
                                                             string toDate = null,
@@ -1668,7 +1672,7 @@ namespace TallyConnector
             else
             {
                 throw new ObjectDoesNotExist("AttendanceType",
-                                             LookupField,
+                                             LookupField.ToString(),
                                              LookupValue,
                                              company);
             }
@@ -1720,7 +1724,7 @@ namespace TallyConnector
         /// </param>
         /// <returns>Returns instance of Models.CostCenter instance with data from tally</returns>
         public async Task<EmployeeGroup> GetEmployeeGroup(string LookupValue,
-                                                          string LookupField = "Name",
+                                                          MasterLookupField LookupField = MasterLookupField.Name,
                                                           string company = null,
                                                           string fromDate = null,
                                                           string toDate = null,
@@ -1752,7 +1756,7 @@ namespace TallyConnector
             else
             {
                 throw new ObjectDoesNotExist("EmployeeGroup",
-                                             LookupField,
+                                             LookupField.ToString(),
                                              LookupValue,
                                              company);
             }
@@ -1801,7 +1805,7 @@ namespace TallyConnector
         /// </param>
         /// <returns>Returns instance of Models.CostCenter instance with data from tally</returns>
         public async Task<Employee> GetEmployee(string LookupValue,
-                                                string LookupField = "Name",
+                                                MasterLookupField LookupField = MasterLookupField.Name,
                                                 string company = null,
                                                 List<string> fetchList = null)
         {
@@ -1829,7 +1833,7 @@ namespace TallyConnector
             else
             {
                 throw new ObjectDoesNotExist("Employee",
-                                             LookupField,
+                                             LookupField.ToString(),
                                              LookupValue,
                                              company);
             }
@@ -1879,7 +1883,7 @@ namespace TallyConnector
         /// </param>
         /// <returns>Returns instance of Models.CostCenter instance with data from tally</returns>
         public async Task<Voucher> GetVoucher(string LookupValue,
-                                              string LookupField = "VoucherNumber",
+                                              VoucherLookupField LookupField = VoucherLookupField.VoucherNumber,
                                               string company = null,
                                               List<string> fetchList = null)
         {
@@ -1888,7 +1892,14 @@ namespace TallyConnector
             fetchList ??= new() { "MasterId", "*" };
             StaticVariables sv = new() { SVCompany = company };
             List<string> Filters = new() { "filter" };
-            List<string> SystemFilter = new() { $"${LookupField} = \"{LookupValue}\"" };
+            List<string> SystemFilter = new()
+            {
+                (LookupField == VoucherLookupField.MasterId ||
+                LookupField == VoucherLookupField.AlterId) ?
+                $"${LookupField} = {LookupValue}" :
+                $"${LookupField} = \"{LookupValue}\""
+
+            };
 
             string xml = await GetNativeCollectionXML(rName: "CusVoucherObj",
                                                       colType: "Voucher",
@@ -1905,7 +1916,7 @@ namespace TallyConnector
             else
             {
                 throw new ObjectDoesNotExist("Voucher",
-                                             LookupField,
+                                             LookupField.ToString(),
                                              LookupValue,
                                              company);
             }
@@ -1935,7 +1946,7 @@ namespace TallyConnector
                                                                              fetchList: fetchList,
                                                                              viewname: "Accounting Voucher View"));
 
-            if (VchEnvelope.Body.Data.Message.Voucher !=null)
+            if (VchEnvelope.Body.Data.Message.Voucher != null)
             {
                 Voucher voucher = VchEnvelope.Body.Data.Message.Voucher;
                 return voucher;
