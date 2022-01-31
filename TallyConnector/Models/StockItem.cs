@@ -59,6 +59,9 @@ namespace TallyConnector.Models
         [XmlElement(ElementName = "COSTINGMETHOD")]
         public string CostingMethod { get; set; }
 
+        [XmlElement(ElementName = "VALUATIONMETHOD")]
+        public string ValuationMethod { get; set; }
+
         [XmlElement(ElementName = "ISCOSTCENTRESON")]
         public string IsCostTracking { get; set; }
 
@@ -104,6 +107,10 @@ namespace TallyConnector.Models
         [JsonIgnore]
         [XmlElement(ElementName = "LANGUAGENAME.LIST")]
         public List<LanguageNameList> LanguageNameList { get; set; }
+
+        [XmlElement(ElementName = "MULTICOMPONENTLIST.LIST")]
+        public List<ComponentsList> BOMList { get; set; }
+
         /// <summary>
         /// Accepted Values //Create, Alter, Delete
         /// </summary>
