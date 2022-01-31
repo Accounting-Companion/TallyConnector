@@ -64,7 +64,7 @@ namespace TallyConnector.Models
 	}
 
 	[XmlRoot(ElementName = "STATICVARIABLES")]
-	public class StaticVariables
+	public class StaticVariables : TallyBaseObject
 	{
 		private string _ExportFormat;
 
@@ -96,6 +96,7 @@ namespace TallyConnector.Models
 
 		[XmlElement(ElementName = "EXPLODEFLAG")]
 		public string ExplodeFlag { get; set; }
+
 
 	}
 	[XmlRoot(ElementName = "SVFROMDATE")]

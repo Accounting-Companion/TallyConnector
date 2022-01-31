@@ -8,7 +8,19 @@ using System.Xml.Serialization;
 
 namespace TallyConnector
 {
-    public class TallyXmlJson
+    public class TallyBaseObject
+    {
+        [NotMapped]
+        [JsonIgnore]
+        [XmlAnyElement()]
+        public XmlElement[] OtherFields { get; set; }
+        [NotMapped]
+        [JsonIgnore]
+        [XmlAnyAttribute]
+        public XmlAttribute[] OtherAttributes { get; set; }
+    }
+
+    public class TallyXmlJson : TallyBaseObject
     {
         public string GetJson(bool Indented =false)
         {
@@ -41,15 +53,5 @@ namespace TallyConnector
             xmlSerializer.Serialize(writer, this, ns);
             return textWriter.ToString(); ;
         }
-        
-        [NotMapped]
-        [JsonIgnore]
-        [XmlAnyElement()]
-        public XmlElement[] OtherFields { get; set; }
-        [NotMapped]
-        [JsonIgnore]
-        [XmlAnyAttribute]
-        public XmlAttribute[] OtherAttributes { get; set; }
-
     }
 }
