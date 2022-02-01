@@ -22,25 +22,55 @@ namespace TallyConnector.Models
         [XmlElement(ElementName = "MASTERID")]
         public int? TallyId { get; set; }
 
+        [XmlElement(ElementName = "ALTERID")]
+        public int? AlterId { get; set; }
+
         [XmlElement(ElementName = "DATE")]
-        public string VchDate { get; set; }
+        public string Date { get; set; }
+
+        [XmlElement(ElementName = "REFERENCEDATE")]
+        public string ReferenceDate { get; set; }
+
+        [XmlElement(ElementName = "REFERENCE")]
+        public string Reference { get; set; }
 
 
         [XmlElement(ElementName = "VOUCHERTYPENAME")]
         public string VoucherType { get; set; }
 
 
+        [XmlElement(ElementName = "PERSISTEDVIEW")]
+        public VoucherViewType View { get; set; }
+
         [XmlElement(ElementName = "VOUCHERNUMBER")]
         public string VoucherNumber { get; set; }
 
         [XmlElement(ElementName = "ISOPTIONAL")]
-        public string Isoptional { get; set; }
+        public string IsOptional { get; set; }
 
         [XmlElement(ElementName = "EFFECTIVEDATE")]
         public string EffectiveDate { get; set; }
 
         [XmlElement(ElementName = "NARRATION")]
         public string Narration { get; set; }
+
+        [XmlElement(ElementName = "PRICELEVEL")]
+        public string PriceLevel { get; set; }
+
+        //E-Invoice Details
+        [XmlElement(ElementName = "BILLTOPLACE")]
+        public string BillToPlace { get; set; }
+
+        [XmlElement(ElementName = "IRN")]
+        public string IRN { get; set; }
+
+        [XmlElement(ElementName = "IRNACKNO")]
+        public string IRNAckNo { get; set; }
+
+        [XmlElement(ElementName = "IRNACKDATE")]
+        public string IRNAckDate { get; set; }
+
+
 
         //Dispatch Details
         [XmlIgnore]
@@ -51,7 +81,19 @@ namespace TallyConnector.Models
 
         private DeliveryNotes _DeliveryNotes;
 
+        [XmlElement(ElementName = "DISPATCHFROMNAME")]
+        public string DispatchFromName { get; set; }
 
+        [XmlElement(ElementName = "DISPATCHFROMSTATENAME")]
+        public string DispatchFromStateName { get; set; }
+
+        [XmlElement(ElementName = "DISPATCHFROMPINCODE")]
+        public string DispatchFromPinCode { get; set; }
+
+        [XmlElement(ElementName = "DISPATCHFROMPLACE")]
+        public string DispatchFromPlace { get; set; }
+
+        //Shipping Details
 
         [JsonIgnore]
         [XmlElement(ElementName = "BASICSHIPDELIVERYNOTE")]
@@ -89,14 +131,55 @@ namespace TallyConnector.Models
         [XmlElement(ElementName = "BILLOFLADINGDATE")]
         public string BillofLandingDate { get; set; }
 
+
+        //Export Shipping Details
+
+        [XmlElement(ElementName = "BASICPLACEOFRECEIPT")]
+        public string PlaceOfReceipt { get; set; }
+
+        /// <summary>
+        /// Vehicle or Ship or Flight Number
+        /// </summary>
         [XmlElement(ElementName = "BASICSHIPVESSELNO")]
-        public string VehicleNo { get; set; }
+        public string ShipOrFlightNo { get; set; }
+
+        [XmlElement(ElementName = "BASICPORTOFLOADING")]
+        public string LandingPort { get; set; }
+
+        [XmlElement(ElementName = "BASICPORTOFDISCHARGE")]
+        public string DischargePort { get; set; }
+
+        [XmlElement(ElementName = "BASICDESTINATIONCOUNTRY")]
+        public string DesktinationCountry { get; set; }
+
+        [XmlElement(ElementName = "SHIPPINGBILLNO")]
+        public string ShippingBillNo { get; set; }
+
+        [XmlElement(ElementName = "SHIPPINGBILLDATE")]
+        public string ShippingBillDate { get; set; }
+
+        [XmlElement(ElementName = "PORTCODE")]
+        public string PortCode { get; set; }
+
+        //OrderDetails
+
+        [XmlElement(ElementName = "BASICDUEDATEOFPYMT")]
+        public string BasicDueDateofPayment { get; set; }
+
+        [XmlElement(ElementName = "BASICORDERREF")]
+        public string OrderReference { get; set; }
 
 
 
         //Party Details
         [XmlElement(ElementName = "PARTYNAME")]
         public string PartyName { get; set; }
+
+        [XmlElement(ElementName = "PARTYLEDGERNAME")]
+        public string PartyLedgerName { get; set; }
+
+        [XmlElement(ElementName = "PARTYMAILINGNAME")]
+        public string PartyMailingName { get; set; }
 
         [XmlElement(ElementName = "STATENAME")]
         public string State { get; set; }
@@ -112,6 +195,9 @@ namespace TallyConnector.Models
 
         [XmlElement(ElementName = "PLACEOFSUPPLY")]
         public string PlaceOfSupply { get; set; }
+
+        [XmlElement(ElementName = "PARTYPINCODE")]
+        public string PINCode { get; set; }
 
         //Consignee Details
 
@@ -130,6 +216,12 @@ namespace TallyConnector.Models
         [XmlElement(ElementName = "CONSIGNEEGSTIN")]
         public string ConsigneeGSTIN { get; set; }
 
+        [XmlElement(ElementName = "CONSIGNEEPINCODE")]
+        public string ConsigneePinCode { get; set; }
+
+        //EWAY Details
+        [XmlElement(ElementName = "OVRDNEWAYBILLAPPLICABILITY")]
+        public YesNo OverrideEWayBillApplicability { get; set; }
 
 
 
@@ -149,7 +241,11 @@ namespace TallyConnector.Models
         public List<InventoryoutAllocations> InventoriesOut { get; set; }
 
         [XmlElement(ElementName = "INVENTORYENTRIESIN.LIST")]
-        public List<InventoryinAllocations> Inventoriesin { get; set; }
+        public List<InventoryinAllocations> InventoriesIn { get; set; }
+
+
+        [XmlElement(ElementName = "EWAYBILLDETAILS.LIST")]
+        public List<EwayBillDetail> EWayBillDetails { get; set; }
 
         [JsonIgnore]
         [XmlAttribute(AttributeName = "DATE")]
@@ -157,11 +253,11 @@ namespace TallyConnector.Models
         {
             get
             {
-                return VchDate;
+                return Date;
             }
             set
             {
-                VchDate = value;
+                Date = value;
             }
         }
 
@@ -290,7 +386,7 @@ namespace TallyConnector.Models
                 {
                     if (billalloc.BillCreditPeriod != null)
                     {
-                        EffectiveDate ??= VchDate;
+                        EffectiveDate ??= Date;
                         DateTime dateTime = DateTime.ParseExact(EffectiveDate, "yyyyMMdd", CultureInfo.InvariantCulture);
                         double days = dateTime.Subtract(new DateTime(1900, 1, 1)).TotalDays + 1;
                         billalloc.BillCP.JD = days.ToString();
@@ -307,7 +403,7 @@ namespace TallyConnector.Models
     }
 
     [XmlRoot(ElementName = "ALLLEDGERENTRIES.LIST")]
-    public class IVoucherLedger
+    public class IVoucherLedger : TallyBaseObject
     {
 
         public IVoucherLedger()
@@ -399,6 +495,8 @@ namespace TallyConnector.Models
         }
         [XmlIgnore]
         public double CleanedAmount { get; set; }
+
+
         [XmlElement(ElementName = "BILLALLOCATIONS.LIST")]
         public List<BillAllocations> BillAllocations { get; set; }
 
@@ -411,7 +509,7 @@ namespace TallyConnector.Models
     }
 
     [XmlRoot(ElementName = "BILLALLOCATIONS.LIST")]
-    public class BillAllocations
+    public class BillAllocations : TallyBaseObject
     {
         public BillAllocations()
         {
@@ -549,7 +647,7 @@ namespace TallyConnector.Models
     }
 
     [XmlRoot(ElementName = "INVENTORYALLOCATIONS.LIST")]
-    public class InventoryAllocations
+    public class InventoryAllocations : TallyBaseObject
     {
         public InventoryAllocations()
         {
@@ -560,6 +658,12 @@ namespace TallyConnector.Models
 
         [XmlElement(ElementName = "STOCKITEMNAME")]
         public string StockItemName { get; set; }
+
+        [XmlElement(ElementName = "BOMNAME")]
+        public string BOMName { get; set; }
+
+        [XmlElement(ElementName = "ISSCRAP")]
+        public string IsScrap { get; set; }
 
         [XmlElement(ElementName = "ISDEEMEDPOSITIVE")]
         public string DeemedPositive { get; set; }
@@ -629,7 +733,7 @@ namespace TallyConnector.Models
     }
 
     [XmlRoot(ElementName = "BATCHALLOCATIONS.LIST")]
-    public class BatchAllocations //Godown Allocations
+    public class BatchAllocations : TallyBaseObject//Godown Allocations
     {
 
         [XmlElement(ElementName = "TRACKINGNUMBER")]
@@ -641,8 +745,9 @@ namespace TallyConnector.Models
         [XmlElement(ElementName = "GODOWNNAME")]
         public string GodownName { get; set; }
 
-        [XmlElement(ElementName = "ACTUALQTY")]
-        public string Quantity { get; set; }
+        [XmlElement(ElementName = "BATCHNAME")]
+        public string BatchName { get; set; }
+
 
         private string _Amount;
 
@@ -690,10 +795,15 @@ namespace TallyConnector.Models
             }
         }
 
+        [XmlElement(ElementName = "ACTUALQTY")]
+        public string ActualQuantity { get; set; }
+
+        [XmlElement(ElementName = "BILLEDQTY")]
+        public string BilledQuantity { get; set; }
     }
 
     [XmlRoot(ElementName = "CATEGORYALLOCATIONS.LIST")]
-    public class CostCategoryAllocations
+    public class CostCategoryAllocations : TallyBaseObject
     {
         public CostCategoryAllocations()
         {
@@ -708,7 +818,7 @@ namespace TallyConnector.Models
 
     }
     [XmlRoot(ElementName = "COSTCENTREALLOCATIONS.LIST")]
-    public class CostCenterAllocations
+    public class CostCenterAllocations : TallyBaseObject
     {
         [XmlElement(ElementName = "NAME")]
         public string Name { get; set; }
@@ -773,7 +883,76 @@ namespace TallyConnector.Models
     }
 
 
+    [XmlRoot(ElementName = "EWAYBILLDETAILS.LIST")]
+    public class EwayBillDetail : TallyBaseObject
+    {
+        [XmlElement(ElementName = "BILLDATE")]
+        public string BillDate { get; set; }
 
+        [XmlElement(ElementName = "CONSOLIDATEDBILLDATE")]
+        public string ConsolidatedBillDate { get; set; }
+
+        [XmlElement(ElementName = "BILLNUMBER")]
+        public string BillNumber { get; set; }
+
+        [XmlElement(ElementName = "CONSOLIDATEDBILLNUMBER")]
+        public string ConsolidatedBillNumber { get; set; }
+
+        [XmlElement(ElementName = "SUBTYPE")]
+        public SubSupplyType SubType { get; set; }
+
+        [XmlElement(ElementName = "DOCUMENTTYPE")]
+        public DocumentType DocumentType { get; set; }
+
+        [XmlElement(ElementName = "CONSIGNORPLACE")]
+        public string DispatchFrom { get; set; }
+
+        [XmlElement(ElementName = "CONSIGNEEPLACE")]
+        public string DispatchTo { get; set; }
+
+        [XmlElement(ElementName = "ISCANCELLED")]
+        public string IsCancelled { get; set; }
+
+        [XmlElement(ElementName = "ISCANCELPENDING")]
+        public string IsCancelledPending { get; set; }
+
+        [XmlElement(ElementName = "TRANSPORTDETAILS.LIST")]
+        public List<TransporterDetail> TransporterDetails { get; set; }
+
+
+
+    }
+
+    [XmlRoot(ElementName = "TRANSPORTDETAILS.LIST")]
+    public class TransporterDetail : TallyBaseObject
+    {
+        [XmlElement(ElementName = "DISTANCE")]
+        public string Distance { get; set; }
+
+        [XmlElement(ElementName = "TRANSPORTERNAME")]
+        public string TransporterName { get; set; }
+
+        [XmlElement(ElementName = "TRANSPORTERID")]
+        public string TransporterId { get; set; }
+
+        [XmlElement(ElementName = "TRANSPORTMODE")]
+        public TransportMode TransportMode { get; set; }
+
+        /// <summary>
+        /// Document/Landing/RR/Airway Number/ 
+        /// </summary>
+        [XmlElement(ElementName = "DOCUMENTNUMBER")]
+        public string DocumentNumber { get; set; }
+
+        [XmlElement(ElementName = "DOCUMENTDATE")]
+        public string DocumentDate { get; set; }
+
+        [XmlElement(ElementName = "VEHICLENUMBER")]
+        public string VehicleNumber { get; set; }
+
+        [XmlElement(ElementName = "VEHICLETYPE")]
+        public VehicleType VehicleType { get; set; }
+    }
 
     /// <summary>
     /// Voucher Message
@@ -834,7 +1013,128 @@ namespace TallyConnector.Models
         VoucherNumber = 3,
         GUID = 4,
     }
-    
+
+    /// <summary>
+    /// <para>Voucher ViewTypes avavailable in Tally</para>
+    /// <para>TDL Reference -  src\voucher\vchreport.tdl
+    /// Search using "Set						: SVViewName"</para>
+    /// </summary>
+    public enum VoucherViewType
+    {
+        [XmlEnum(Name = "Accounting Voucher View")]
+        AccountingVoucherView = 0,
+
+        [XmlEnum(Name = "Invoice Voucher View")]
+        InvoiceVoucherView = 1,
+
+        [XmlEnum(Name = "PaySlip Voucher View")]
+        PaySlipVoucherView = 2,
+
+        [XmlEnum(Name = "Multi Consumption Voucher View")]
+        MultiConsumptionVoucherView = 3,
+
+        [XmlEnum(Name = "Consumption Voucher View")]
+        ConsumptionVoucherView = 4,
+    }
+
+    /// <summary>
+    /// <para>e-Waybill SubTypes as per  Tally</para>
+    /// <para>TDL Reference -  "DEFTDL:src\voucher\vchreport\vchgstewaybillsubforms\vchgstewaybillfunctions.tdl"(496)
+    /// Search using "subSupplyTypeCode-"</para>
+    /// </summary>
+    public enum SubSupplyType
+    {
+        [XmlEnum(Name = "")]
+        None = 0,
+        [XmlEnum(Name = "Supply")]
+        Supply = 1,
+        [XmlEnum(Name = "Import")]
+        Import = 2,
+        [XmlEnum(Name = "Export")]
+        Export = 3,
+        [XmlEnum(Name = "Job Work")]
+        JobWork = 4,
+        [XmlEnum(Name = "For Own Use")]
+        ForOwnUse = 5,
+        [XmlEnum(Name = "Job Work Returns")]
+        JobWorkReturns = 6,
+
+        [XmlEnum(Name = "Sales Return")]
+        SalesReturn = 7,
+        [XmlEnum(Name = "Others")]
+        Others = 8,
+        [XmlEnum(Name = "SKD/CKD/Lots")]
+        SKD_CKD_Lots = 9,
+        [XmlEnum(Name = "Lines Sales")]
+        LinesSales = 10,
+        [XmlEnum(Name = "Recipient Not Known")]
+        RecipientNotKnown = 11,
+        [XmlEnum(Name = "Exhibition or Fairs")]
+        ExhibitionorFairs = 12,
+
+    }
+    /// <summary>
+    /// <para>e-Waybill DocTypes as per  Tally</para>
+    /// <para>TDL Reference -  "DEFTDL:src\voucher\vchreport\vchgstewaybillsubforms\vchgstewaybillfunctions.tdl"(496)
+    /// Search using "docTypeCode-"</para>
+    /// </summary>
+    public enum DocumentType
+    {
+        [XmlEnum(Name = "")]
+        None = 0,
+
+        [XmlEnum(Name = "Tax Invoice")]
+        TaxInvoice = 1,
+        [XmlEnum(Name = "Bill of Supply")]
+        BillofSupply = 2,
+        [XmlEnum(Name = "Bill of Entry")]
+        BillofEntry = 3,
+        [XmlEnum(Name = "Challan")]
+        Challan = 4,
+        [XmlEnum(Name = "Delivery Challan")]
+        DeliveryChallan = 5,
+        [XmlEnum(Name = "Credit Note")]
+        CreditNote = 6,
+        [XmlEnum(Name = "Others")]
+        Others = 7,
+    }
+
+    /// <summary>
+    /// <para>e-Waybill TransportModes as per  Tally</para>
+    /// <para>TDL Reference -  "DEFTDL:src\voucher\vchreport\vchgstewaybillsubforms\vchgstewaybillfunctions.tdl"(496)
+    /// Search using "transModeCode-"</para>
+    /// </summary>
+    public enum TransportMode
+    {
+        [XmlEnum(Name = "")]
+        None = 0,
+        [XmlEnum(Name = "1 - Road")]
+        Road = 1,
+        [XmlEnum(Name = "2 - Rail")]
+        Rail = 2,
+        [XmlEnum(Name = "3 - Air")]
+        Air = 3,
+        [XmlEnum(Name = "4 - Ship")]
+        Ship = 4,
+    }
+
+
+    /// <summary>
+    /// <para>e-Waybill VehicleTypes as per  Tally</para>
+    ///  <para>TDL Reference -  "DEFTDL:src\voucher\vchreport\vchgstewaybillsubforms\vchgstewaybillfunctions.tdl"
+    ///  Search using "Over Dimensional Cargo"</para>
+    /// </summary>
+    public enum VehicleType
+    {
+        [XmlEnum(Name = "")]
+        None = 0,
+        [XmlEnum(Name = "R - Regular")]
+        Regular = 1,
+        [XmlEnum(Name = "Over Dimensional Cargo")]
+        OverDimensionalCargo = 2,
+
+    }
 }
+
 
 

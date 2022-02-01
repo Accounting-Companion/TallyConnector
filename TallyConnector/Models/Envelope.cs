@@ -92,7 +92,7 @@ namespace TallyConnector.Models
 		public SVTo SVTo { get; set; }
 
 		[XmlElement(ElementName = "SVViewName")]
-		public string ViewName { get; set; }
+		public VoucherViewType ViewName { get; set; }
 
 		[XmlElement(ElementName = "EXPLODEFLAG")]
 		public string ExplodeFlag { get; set; }
