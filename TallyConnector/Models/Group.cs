@@ -104,6 +104,11 @@ namespace TallyConnector.Models
             }
         }
 
+        public new string GetXML(XmlAttributeOverrides attrOverrides = null)
+        {
+            CreateNamesList();
+            return base.GetXML(attrOverrides);
+        }
     }
 
     [XmlRoot(ElementName = "ENVELOPE")]

@@ -62,7 +62,7 @@ namespace Tests
             await TTally.Check();
             PResult result = await TTally.PostGroup(new Group()
             {
-                Name = "TestGroup",
+                Name = "TestGroup2",
                 Parent = "Sundry Debtors",
                 AddLAllocType = AdAllocType.AppropriateByValue,
             });
@@ -107,7 +107,7 @@ namespace Tests
         {
             if (await TTally.Check())
             {
-                Ledger nledger = new() { Name = "TestLedgerCres",Alias="gjkwknndnk", Group = "Sundry Debtors" };
+                Ledger nledger = new() { Name = "TestLedger",Alias="gjknndnk", Group = "Sundry Debtors" };
                 PResult pResult = await TTally.PostLedger(nledger);
                 Assert.IsTrue(pResult.Status == RespStatus.Sucess);
             }
@@ -118,7 +118,7 @@ namespace Tests
         {
             if (await TTally.Check())
             {
-                Ledger nledger = new() { OldName = "TestLedgerCres", Name = "TestLedgerCEdited___", Group = "Sundry Debtors" };
+                Ledger nledger = new() { OldName = "TestLedger", Name = "TestLedgeediteddd", Group = "Sundry Debtors" };
                 PResult pResult = await TTally.PostLedger(nledger);
                 Assert.IsTrue(pResult.Status == RespStatus.Sucess);
             }

@@ -658,7 +658,7 @@ namespace TallyConnector
             List<string> SystemFilter = new()
             {
 
-                (LookupField == MasterLookupField.MasterId || LookupField == MasterLookupField.AlterId) ? $"${LookupField} = {LookupValue}" : $"${LookupField} = \"{LookupValue}\""
+                (LookupField is MasterLookupField.MasterId or MasterLookupField.AlterId) ? $"${LookupField} = {LookupValue}" : $"${LookupField} = \"{LookupValue}\""
             };
 
             string xml = await GetNativeCollectionXML(rName: "CusGroupObj",
@@ -756,7 +756,7 @@ namespace TallyConnector
             Nativelist ??= new() { "Address", "MasterId", "InterestCollection", "CanDelete", "REMOTEGUID", "*" };
             StaticVariables sv = new() { SVCompany = company, SVFromDate = fromDate, SVToDate = toDate };
             List<string> Filters = new() { "LedgerFilter" };
-            List<string> SystemFilter = new() { $"${LookupField} = \"{LookupValue}\"" };
+            List<string> SystemFilter = new() { (LookupField is MasterLookupField.MasterId or MasterLookupField.AlterId) ? $"${LookupField} = {LookupValue}" : $"${LookupField} = \"{LookupValue}\"" };
 
             string xml = await GetNativeCollectionXML(rName: "CusLedgObj",
                                                       colType: "Ledger",
@@ -799,7 +799,7 @@ namespace TallyConnector
             Nativelist ??= new() { "Address", "InterestCollection", "CanDelete", "REMOTEGUID", "*" };
             StaticVariables sv = new() { SVCompany = company };
             List<string> Filters = new() { "Cusfilter" };
-            List<string> SystemFilter = new() { $"${LookupField} = \"{LookupValue}\"" };
+            List<string> SystemFilter = new() { (LookupField is MasterLookupField.MasterId or MasterLookupField.AlterId) ? $"${LookupField} = {LookupValue}" : $"${LookupField} = \"{LookupValue}\"" };
 
             string xml = await GetNativeCollectionXML(rName: "Ledgers",
                                                       colType: "Masters",
@@ -887,7 +887,7 @@ namespace TallyConnector
             fetchList ??= new() { "MasterId", "*" };
             StaticVariables sv = new() { SVCompany = company, SVFromDate = fromDate, SVToDate = toDate };
             List<string> Filters = new() { "Cusfilter" };
-            List<string> SystemFilter = new() { $"${LookupField} = \"{LookupValue}\"" };
+            List<string> SystemFilter = new() { (LookupField is MasterLookupField.MasterId or MasterLookupField.AlterId) ? $"${LookupField} = {LookupValue}" : $"${LookupField} = \"{LookupValue}\"" };
 
             string xml = await GetNativeCollectionXML(rName: "CusLedgObj",
                                                       colType: "CostCategory",
@@ -972,7 +972,7 @@ namespace TallyConnector
             fetchList ??= new() { "MasterId", "*" };
             StaticVariables sv = new() { SVCompany = company, SVFromDate = fromDate, SVToDate = toDate };
             List<string> Filters = new() { "Cusfilter" };
-            List<string> SystemFilter = new() { $"${LookupField} = \"{LookupValue}\"" };
+            List<string> SystemFilter = new() { (LookupField is MasterLookupField.MasterId or MasterLookupField.AlterId) ? $"${LookupField} = {LookupValue}" : $"${LookupField} = \"{LookupValue}\"" };
 
             string xml = await GetNativeCollectionXML(rName: "CusCostCentObj",
                                                       colType: "CostCenter",
@@ -1060,7 +1060,7 @@ namespace TallyConnector
             fetchList ??= new() { "MasterId", "*" };
             StaticVariables sv = new() { SVCompany = company, SVFromDate = fromDate, SVToDate = toDate };
             List<string> Filters = new() { "Cusfilter" };
-            List<string> SystemFilter = new() { $"${LookupField} = \"{LookupValue}\"" };
+            List<string> SystemFilter = new() { (LookupField is MasterLookupField.MasterId or MasterLookupField.AlterId) ? $"${LookupField} = {LookupValue}" : $"${LookupField} = \"{LookupValue}\"" };
 
             string xml = await GetNativeCollectionXML(rName: "CusStckGrpObj",
                                                       colType: "StockGroup",
@@ -1147,7 +1147,7 @@ namespace TallyConnector
             fetchList ??= new() { "MasterId", "*" };
             StaticVariables sv = new() { SVCompany = company, SVFromDate = fromDate, SVToDate = toDate };
             List<string> Filters = new() { "Cusfilter" };
-            List<string> SystemFilter = new() { $"${LookupField} = \"{LookupValue}\"" };
+            List<string> SystemFilter = new() { (LookupField is MasterLookupField.MasterId or MasterLookupField.AlterId) ? $"${LookupField} = {LookupValue}" : $"${LookupField} = \"{LookupValue}\"" };
 
             string xml = await GetNativeCollectionXML(rName: "CusStockCatObj",
                                                       colType: "StockCategory",
@@ -1233,7 +1233,7 @@ namespace TallyConnector
             fetchList ??= new() { "MasterId", "*" };
             StaticVariables sv = new() { SVCompany = company, SVFromDate = fromDate, SVToDate = toDate };
             List<string> Filters = new() { "Cusfilter" };
-            List<string> SystemFilter = new() { $"${LookupField} = \"{LookupValue}\"" };
+            List<string> SystemFilter = new() { (LookupField is MasterLookupField.MasterId or MasterLookupField.AlterId) ? $"${LookupField} = {LookupValue}" : $"${LookupField} = \"{LookupValue}\"" };
 
             string xml = await GetNativeCollectionXML(rName: "CusStckItmObj",
                                                       colType: "StockItem",
@@ -1320,7 +1320,7 @@ namespace TallyConnector
             fetchList ??= new() { "MasterId", "*" };
             StaticVariables sv = new() { SVCompany = company, SVFromDate = fromDate, SVToDate = toDate };
             List<string> Filters = new() { "Cusfilter" };
-            List<string> SystemFilter = new() { $"${LookupField} = \"{LookupValue}\"" };
+            List<string> SystemFilter = new() { (LookupField is MasterLookupField.MasterId or MasterLookupField.AlterId) ? $"${LookupField} = {LookupValue}" : $"${LookupField} = \"{LookupValue}\"" };
 
             string xml = await GetNativeCollectionXML(rName: "CusUnitObj",
                                                       colType: "Unit",
@@ -1402,7 +1402,7 @@ namespace TallyConnector
             fetchList ??= new() { "MasterId", "*" };
             StaticVariables sv = new() { SVCompany = company, SVFromDate = fromDate, SVToDate = toDate };
             List<string> Filters = new() { "Customfilter" };
-            List<string> SystemFilter = new() { $"${LookupField} = \"{LookupValue}\"" };
+            List<string> SystemFilter = new() { (LookupField is MasterLookupField.MasterId or MasterLookupField.AlterId) ? $"${LookupField} = {LookupValue}" : $"${LookupField} = \"{LookupValue}\"" };
 
             string xml = await GetNativeCollectionXML(rName: "CusGdwnObj",
                                                       colType: "Godown",
@@ -1490,7 +1490,7 @@ namespace TallyConnector
             fetchList ??= new() { "MasterId", "*" };
             StaticVariables sv = new() { SVCompany = company, SVFromDate = fromDate, SVToDate = toDate };
             List<string> Filters = new() { "Cusfilter" };
-            List<string> SystemFilter = new() { $"${LookupField} = \"{LookupValue}\"" };
+            List<string> SystemFilter = new() { (LookupField is MasterLookupField.MasterId or MasterLookupField.AlterId) ? $"${LookupField} = {LookupValue}" : $"${LookupField} = \"{LookupValue}\"" };
 
             string xml = await GetNativeCollectionXML(rName: "CusVchTypeObj",
                                                       colType: "VoucherType",
@@ -1573,7 +1573,7 @@ namespace TallyConnector
             fetchList ??= new() { "*" };
             StaticVariables sv = new() { SVCompany = company, SVFromDate = fromDate, SVToDate = toDate };
             List<string> Filters = new() { "filter" };
-            List<string> SystemFilter = new() { $"${LookupField} = \"{LookupValue}\"" };
+            List<string> SystemFilter = new() { (LookupField is MasterLookupField.MasterId or MasterLookupField.AlterId) ? $"${LookupField} = {LookupValue}" : $"${LookupField} = \"{LookupValue}\"" };
 
             string xml = await GetNativeCollectionXML(rName: "CusCurrencyObj",
                                                       colType: "Currency",
@@ -1639,44 +1639,44 @@ namespace TallyConnector
         /// <param name="fetchList">You can select the list of fields to be fetched from tally if nothing specified it pulls all fields availaible in Tally
         /// </param>
         /// <returns>Returns instance of Models.AttendanceType  with data from tally</returns>
-        public async Task<AttendanceType> GetAttendanceType(string LookupValue,
-                                                            MasterLookupField LookupField = MasterLookupField.Name,
-                                                            string company = null,
-                                                            string fromDate = null,
-                                                            string toDate = null,
-                                                            List<string> fetchList = null)
-        {
-            //If parameter is null Get value from instance
-            company ??= Company;
-            fromDate ??= FromDate;
-            toDate ??= ToDate;
-            fetchList ??= new() { "*" };
-            StaticVariables sv = new() { SVCompany = company, SVFromDate = fromDate, SVToDate = toDate };
-            List<string> Filters = new() { "filter" };
-            List<string> SystemFilter = new() { $"${LookupField} = \"{LookupValue}\"" };
+		public async Task<AttendanceType> GetAttendanceType(string LookupValue,
+															MasterLookupField LookupField = MasterLookupField.Name,
+															string company = null,
+															string fromDate = null,
+															string toDate = null,
+															List<string> fetchList = null)
+		{
+			//If parameter is null Get value from instance
+			company ??= Company;
+			fromDate ??= FromDate;
+			toDate ??= ToDate;
+			fetchList ??= new() { "*" };
+			StaticVariables sv = new() { SVCompany = company, SVFromDate = fromDate, SVToDate = toDate };
+			List<string> Filters = new() { "filter" };
+            List<string> SystemFilter = new() { (LookupField is MasterLookupField.MasterId or MasterLookupField.AlterId) ? $"${LookupField} = {LookupValue}" : $"${LookupField} = \"{LookupValue}\"" };
 
-            string xml = await GetNativeCollectionXML(rName: "CusAttndTypeObj",
-                                                      colType: "AttendanceType",
-                                                      Sv: sv,
-                                                      NativeFields: fetchList,
-                                                      Filters: Filters,
-                                                      SystemFilters: SystemFilter);
-            AttendanceTypeEnvelope attendanceTypeEnvelope = GetObjfromXml<AttendanceTypeEnvelope>(xml);
-            if (attendanceTypeEnvelope.Body.Data.Collection.AttendanceTypes.Count > 0)
-            {
-                AttendanceType attendanceType = attendanceTypeEnvelope.Body.Data.Collection.AttendanceTypes[0];
-                attendanceType.Alias = attendanceType.LanguageNameList[0].LanguageAlias;
-                attendanceType.Name ??= attendanceType.OldName;
-                return attendanceType;
-            }
-            else
-            {
-                throw new ObjectDoesNotExist("AttendanceType",
-                                             LookupField.ToString(),
-                                             LookupValue,
-                                             company);
-            }
-        }
+			string xml = await GetNativeCollectionXML(rName: "CusAttndTypeObj",
+													  colType: "AttendanceType",
+													  Sv: sv,
+													  NativeFields: fetchList,
+													  Filters: Filters,
+													  SystemFilters: SystemFilter);
+			AttendanceTypeEnvelope attendanceTypeEnvelope = GetObjfromXml<AttendanceTypeEnvelope>(xml);
+			if (attendanceTypeEnvelope.Body.Data.Collection.AttendanceTypes.Count > 0)
+			{
+				AttendanceType attendanceType = attendanceTypeEnvelope.Body.Data.Collection.AttendanceTypes[0];
+				attendanceType.Alias = attendanceType.LanguageNameList[0].LanguageAlias;
+				attendanceType.Name ??= attendanceType.OldName;
+				return attendanceType;
+			}
+			else
+			{
+				throw new ObjectDoesNotExist("AttendanceType",
+											 LookupField.ToString(),
+											 LookupValue,
+											 company);
+			}
+		}
 
 
         /// <summary>
@@ -1737,7 +1737,13 @@ namespace TallyConnector
             fetchList ??= new() { "*" };
             StaticVariables sv = new() { SVCompany = company, SVFromDate = fromDate, SVToDate = toDate };
             List<string> Filters = new() { "filter" };
-            List<string> SystemFilter = new() { $"${LookupField} = \"{LookupValue}\"" };
+            List<string> SystemFilter = new()
+            {
+                (LookupField is MasterLookupField.MasterId or MasterLookupField.AlterId) ?
+                $"${LookupField} = {LookupValue}" :
+                $"${LookupField} = \"{LookupValue}\""
+
+            };
 
             string xml = await GetNativeCollectionXML(rName: "CusEmployeeGrpObj",
                                                       colType: "Costcenter",
@@ -1814,7 +1820,13 @@ namespace TallyConnector
             fetchList ??= new() { "*" };
             StaticVariables sv = new() { SVCompany = company };
             List<string> Filters = new() { "filter" };
-            List<string> SystemFilter = new() { $"${LookupField} = \"{LookupValue}\"" };
+            List<string> SystemFilter = new()
+            {
+                (LookupField is MasterLookupField.MasterId or MasterLookupField.AlterId) ?
+                $"${LookupField} = {LookupValue}" :
+                $"${LookupField} = \"{LookupValue}\""
+
+            };
 
             string xml = await GetNativeCollectionXML(rName: "CusEmployeeObj",
                                                       colType: "Costcenter",
@@ -1885,12 +1897,13 @@ namespace TallyConnector
         public async Task<Voucher> GetVoucher(string LookupValue,
                                               VoucherLookupField LookupField = VoucherLookupField.VoucherNumber,
                                               string company = null,
-                                              List<string> fetchList = null)
+                                              List<string> fetchList = null,
+                                              VoucherViewType viewName = VoucherViewType.AccountingVoucherView)
         {
             //If parameter is null Get value from instance
             company ??= Company;
-            fetchList ??= new() { "MasterId", "*" };
-            StaticVariables sv = new() { SVCompany = company };
+            fetchList ??= new() { "MasterId", "LEDGERENTRIES", "INVENTORYENTRIES", "*" };
+            StaticVariables sv = new() { SVCompany = company, ViewName = viewName };
             List<string> Filters = new() { "filter" };
             List<string> SystemFilter = new()
             {
@@ -1944,7 +1957,7 @@ namespace TallyConnector
                                                                              ObjType: "Voucher",
                                                                              company: company,
                                                                              fetchList: fetchList,
-                                                                             viewname: "Accounting Voucher View"));
+                                                                             viewname: VoucherViewType.AccountingVoucherView));
 
             if (VchEnvelope.Body.Data.Message.Voucher != null)
             {
@@ -2040,7 +2053,7 @@ namespace TallyConnector
                                                 string fromDate = null,
                                                 string toDate = null,
                                                 List<string> fetchList = null,
-                                                string viewname = null)
+                                                VoucherViewType viewname = VoucherViewType.AccountingVoucherView)
         {
             //If parameter is null Get value from instance
             company ??= Company;
@@ -2087,7 +2100,7 @@ namespace TallyConnector
                                  string fromDate = null,
                                  string toDate = null,
                                  List<string> fetchList = null,
-                                 string viewname = null)
+                                 VoucherViewType viewname = VoucherViewType.AccountingVoucherView)
         {
             //If parameter is null Get value from instance
             company ??= Company;
