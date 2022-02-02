@@ -698,7 +698,7 @@ namespace TallyConnector
         /// Presult.result will be empty if sucess
         ///  </returns>
         public async Task<PResult> PostGroup(Group group,
-                                             string company = null)
+                                             string company = null, XmlAttributeOverrides xmlAttributeOverrides = null)
         {
 
             //If parameter is null Get value from instance
@@ -837,7 +837,8 @@ namespace TallyConnector
         /// Presult.result will be empty if sucess
         ///  </returns>
         public async Task<PResult> PostLedger(Ledger ledger,
-                                              string company = null)
+                                              string company = null,
+                                              XmlAttributeOverrides xmlAttributeOverrides = null)
         {
 
             //If parameter is null Get value from instance
@@ -854,7 +855,7 @@ namespace TallyConnector
             }
             //Creates Names List if Not Exists
             ledger.CreateNamesList();
-            string LedgXML = ledgerEnvelope.GetXML();
+            string LedgXML = ledgerEnvelope.GetXML(xmlAttributeOverrides);
 
             string RespXml = await SendRequest(LedgXML);
 
@@ -925,7 +926,8 @@ namespace TallyConnector
         ///  Presult.result will be empty if sucess 
         /// </returns>
         public async Task<PResult> PostCostCategory(CostCategory CostCategory,
-                                                    string company = null)
+                                                    string company = null,
+                                                    XmlAttributeOverrides xmlAttributeOverrides=null)
         {
             //If parameter is null Get value from instance
             company ??= Company;
@@ -936,7 +938,7 @@ namespace TallyConnector
 
             costCat.Body.Data.Message.CostCategory = CostCategory;
             CostCategory.CreateNamesList();
-            string CostCatXML = costCat.GetXML();
+            string CostCatXML = costCat.GetXML(xmlAttributeOverrides);
 
             string RespXml = await SendRequest(CostCatXML);
 
@@ -1010,7 +1012,8 @@ namespace TallyConnector
         ///  Presult.result will be empty if sucess 
         /// </returns>
         public async Task<PResult> PostCostCenter(CostCenter costCenter,
-                                                  string company = null)
+                                                  string company = null,
+                                                  XmlAttributeOverrides xmlAttributeOverrides = null)
         {
             //If parameter is null Get value from instance
             company ??= Company;
@@ -1025,7 +1028,7 @@ namespace TallyConnector
                 costCenter.Parent = null;
             }
             costCenter.CreateNamesList();
-            string CostCenterXML = costCentEnvelope.GetXML();
+            string CostCenterXML = costCentEnvelope.GetXML(xmlAttributeOverrides);
 
             string RespXml = await SendRequest(CostCenterXML);
 
@@ -1097,7 +1100,7 @@ namespace TallyConnector
         ///  Presult.result will be empty if sucess 
         /// </returns>
         public async Task<PResult> PostStockGroup(StockGroup stockGroup,
-                                                  string company = null)
+                                                  string company = null, XmlAttributeOverrides xmlAttributeOverrides = null)
         {
             //If parameter is null Get value from instance
             company ??= Company;
@@ -1112,7 +1115,7 @@ namespace TallyConnector
                 stockGroup.Parent = null;
             }
             stockGroup.CreateNamesList();
-            string StockGrpXML = StockGrpEnvelope.GetXML();
+            string StockGrpXML = StockGrpEnvelope.GetXML(xmlAttributeOverrides);
 
             string RespXml = await SendRequest(StockGrpXML);
 
@@ -1184,7 +1187,7 @@ namespace TallyConnector
         ///  Presult.result will be empty if sucess 
         /// </returns>
         public async Task<PResult> PostStockCategory(StockCategory stockCategory,
-                                                     string company = null)
+                                                     string company = null, XmlAttributeOverrides xmlAttributeOverrides = null)
         {
             //If parameter is null Get value from instance
             company ??= Company;
@@ -1199,7 +1202,7 @@ namespace TallyConnector
                 stockCategory.Parent = null;
             }
             stockCategory.CreateNamesList();
-            string StockCatXML = StockCatEnvelope.GetXML();
+            string StockCatXML = StockCatEnvelope.GetXML(xmlAttributeOverrides);
 
             string RespXml = await SendRequest(StockCatXML);
 
@@ -1270,7 +1273,7 @@ namespace TallyConnector
         ///  Presult.result will be empty if sucess 
         /// </returns>
         public async Task<PResult> PostStockItem(StockItem stockItem,
-                                                 string company = null)
+                                                 string company = null, XmlAttributeOverrides xmlAttributeOverrides = null)
         {
             //If parameter is null Get value from instance
             company ??= Company;
@@ -1285,7 +1288,7 @@ namespace TallyConnector
                 stockItem.StockGroup = null;
             }
             stockItem.CreateNamesList();
-            string StockItmXML = StockItmEnvelope.GetXML();
+            string StockItmXML = StockItmEnvelope.GetXML(xmlAttributeOverrides);
 
             string RespXml = await SendRequest(StockItmXML);
 
@@ -1357,7 +1360,7 @@ namespace TallyConnector
         ///  Presult.result will be empty if sucess 
         /// </returns>
         public async Task<PResult> PostUnit(Unit unit,
-                                            string company = null)
+                                            string company = null, XmlAttributeOverrides xmlAttributeOverrides = null)
         {
             //If parameter is null Get value from instance
             company ??= Company;
@@ -1368,7 +1371,7 @@ namespace TallyConnector
 
             UnitEnvelope.Body.Data.Message.Unit = unit;
 
-            string UnitXML = UnitEnvelope.GetXML();
+            string UnitXML = UnitEnvelope.GetXML(xmlAttributeOverrides);
 
             string RespXml = await SendRequest(UnitXML);
 
@@ -1440,7 +1443,7 @@ namespace TallyConnector
         ///  Presult.result will be empty if sucess 
         /// </returns>
         public async Task<PResult> PostGodown(Godown godown,
-                                              string company = null)
+                                              string company = null, XmlAttributeOverrides xmlAttributeOverrides = null)
         {
             //If parameter is null Get value from instance
             company ??= Company;
@@ -1455,7 +1458,7 @@ namespace TallyConnector
                 godown.Parent = null;
             }
             godown.CreateNamesList();
-            string GdwnXML = GdwnEnvelope.GetXML();
+            string GdwnXML = GdwnEnvelope.GetXML(xmlAttributeOverrides);
 
             string RespXml = await SendRequest(GdwnXML);
 
@@ -1528,7 +1531,7 @@ namespace TallyConnector
         ///  Presult.result will be empty if sucess 
         /// </returns>
         public async Task<PResult> PostVoucherType(VoucherType voucherType,
-                                                   string company = null)
+                                                   string company = null, XmlAttributeOverrides xmlAttributeOverrides = null)
         {
             //If parameter is null Get value from instance
             company ??= Company;
@@ -1539,7 +1542,7 @@ namespace TallyConnector
 
             VchTypeEnvelope.Body.Data.Message.VoucherType = voucherType;
             voucherType.CreateNamesList();
-            string GdwnXML = VchTypeEnvelope.GetXML();
+            string GdwnXML = VchTypeEnvelope.GetXML(xmlAttributeOverrides);
 
             string RespXml = await SendRequest(GdwnXML);
 
@@ -1608,7 +1611,7 @@ namespace TallyConnector
         ///  Presult.result will be empty if sucess 
         /// </returns>
         public async Task<PResult> PostCurrency(Currency currency,
-                                                string company = null)
+                                                string company = null, XmlAttributeOverrides xmlAttributeOverrides = null)
         {
             //If parameter is null Get value from instance
             company ??= Company;
@@ -1619,7 +1622,7 @@ namespace TallyConnector
 
             currencyEnvelope.Body.Data.Message.Currency = currency;
 
-            string GdwnXML = currencyEnvelope.GetXML();
+            string GdwnXML = currencyEnvelope.GetXML(xmlAttributeOverrides);
 
             string RespXml = await SendRequest(GdwnXML);
 
@@ -1690,7 +1693,7 @@ namespace TallyConnector
         ///  Presult.result will be empty if sucess 
         /// </returns>
         public async Task<PResult> PostAttendanceType(AttendanceType AttendanceType,
-                                                      string company = null)
+                                                      string company = null, XmlAttributeOverrides xmlAttributeOverrides = null)
         {
             //If parameter is null Get value from instance
             company ??= Company;
@@ -1701,7 +1704,7 @@ namespace TallyConnector
 
             AttndTypeEnvelope.Body.Data.Message.AttendanceType = AttendanceType;
             AttendanceType.CreateNamesList();
-            string AttndTypeXML = AttndTypeEnvelope.GetXML();
+            string AttndTypeXML = AttndTypeEnvelope.GetXML(xmlAttributeOverrides);
 
             string RespXml = await SendRequest(AttndTypeXML);
 
@@ -1779,7 +1782,7 @@ namespace TallyConnector
         /////  Presult.result will be empty if sucess 
         ///// </returns>
         public async Task<PResult> PostEmployeeGroup(EmployeeGroup EmployeeGroup,
-                                                     string company = null)
+                                                     string company = null, XmlAttributeOverrides xmlAttributeOverrides = null)
         {
             //If parameter is null Get value from instance
             company ??= Company;
@@ -1790,7 +1793,7 @@ namespace TallyConnector
 
             EmployeeGroupEnvelope.Body.Data.Message.EmployeeGroup = EmployeeGroup;
             EmployeeGroup.CreateNamesList();
-            string CostCenterXML = EmployeeGroupEnvelope.GetXML();
+            string CostCenterXML = EmployeeGroupEnvelope.GetXML(xmlAttributeOverrides);
 
             string RespXml = await SendRequest(CostCenterXML);
 
@@ -1862,7 +1865,7 @@ namespace TallyConnector
         /////  Presult.result will be empty if sucess 
         ///// </returns>
         public async Task<PResult> PostEmployee(Employee Employee,
-                                                string company = null)
+                                                string company = null, XmlAttributeOverrides xmlAttributeOverrides = null)
         {
             //If parameter is null Get value from instance
             company ??= Company;
@@ -1873,7 +1876,7 @@ namespace TallyConnector
 
             EmployeeEnvelope.Body.Data.Message.Employee = Employee;
             Employee.CreateNamesList();
-            string CostCenterXML = EmployeeEnvelope.GetXML();
+            string CostCenterXML = EmployeeEnvelope.GetXML(xmlAttributeOverrides);
 
             string RespXml = await SendRequest(CostCenterXML);
 
@@ -1982,7 +1985,8 @@ namespace TallyConnector
         ///  Presult.result will be Voucher masterID if sucess 
         /// </returns>
         public async Task<PResult> PostVoucher(Voucher voucher,
-                                               string company = null)
+                                               string company = null,
+                                               XmlAttributeOverrides xmlAttributeOverrides = null)
         {
             //If parameter is null Get value from instance
             company ??= Company;
@@ -1994,7 +1998,15 @@ namespace TallyConnector
             voucher.GetJulianday();
             voucherEnvelope.Body.Data.Message.Voucher = voucher;
 
-            string GdwnXML = voucherEnvelope.GetXML();
+            xmlAttributeOverrides ??= new XmlAttributeOverrides();
+                        
+            if (voucher.View != VoucherViewType.AccountingVoucherView)
+            {
+                XmlAttributes xmlattribute = new();
+                xmlattribute.XmlElements.Add(new XmlElementAttribute() { ElementName = "LEDGERENTRIES.LIST" });
+                xmlAttributeOverrides.Add(typeof(Voucher), "Ledgers", xmlattribute);
+            }
+            string GdwnXML = voucherEnvelope.GetXML(xmlAttributeOverrides);
 
             string RespXml = await SendRequest(GdwnXML);
 
