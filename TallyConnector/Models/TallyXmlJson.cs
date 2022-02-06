@@ -1,4 +1,4 @@
-﻿namespace TallyConnector;
+﻿namespace TallyConnector.Models;
 
 public class TallyBaseObject
 {
@@ -16,7 +16,7 @@ public class TallyXmlJson : TallyBaseObject
 {
     public string GetJson(bool Indented = false)
     {
-        string Json = JsonSerializer.Serialize(this, this.GetType(), new JsonSerializerOptions()
+        string Json = JsonSerializer.Serialize(this, GetType(), new JsonSerializerOptions()
         {
             WriteIndented = Indented,
             Converters = { new JsonStringEnumConverter() }

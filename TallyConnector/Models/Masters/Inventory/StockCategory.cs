@@ -1,4 +1,4 @@
-﻿namespace TallyConnector.Models;
+﻿namespace TallyConnector.Models.Masters.Inventory;
 
 [XmlRoot(ElementName = "STOCKCATEGORY")]
 public class StockCategory : TallyXmlJson
@@ -21,7 +21,7 @@ public class StockCategory : TallyXmlJson
     [Required]
     public string Name
     {
-        get { return (name == null || name == string.Empty) ? OldName : name; }
+        get { return name == null || name == string.Empty ? OldName : name; }
         set => name = value;
     }
 
@@ -46,15 +46,15 @@ public class StockCategory : TallyXmlJson
 
     public void CreateNamesList()
     {
-        if (this.LanguageNameList.Count == 0)
+        if (LanguageNameList.Count == 0)
         {
-            this.LanguageNameList.Add(new LanguageNameList());
-            this.LanguageNameList[0].NameList.NAMES.Add(this.Name);
+            LanguageNameList.Add(new LanguageNameList());
+            LanguageNameList[0].NameList.NAMES.Add(Name);
 
         }
-        if (this.Alias != null && this.Alias != string.Empty)
+        if (Alias != null && Alias != string.Empty)
         {
-            this.LanguageNameList[0].LanguageAlias = this.Alias;
+            LanguageNameList[0].LanguageAlias = Alias;
         }
     }
 }

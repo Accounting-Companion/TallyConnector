@@ -1,7 +1,9 @@
-﻿namespace TallyConnector.Models;
+﻿using MCS = TallyConnector.Models.Masters.CostCenter;
+
+namespace TallyConnector.Models.Masters.Payroll;
 
 [XmlRoot(ElementName = "COSTCENTRE")]
-public class EmployeeGroup : CostCenter
+public class EmployeeGroup : MCS.CostCenter
 {
     [XmlElement(ElementName = "FORPAYROLL")]
     public string ForPayroll { get; set; }

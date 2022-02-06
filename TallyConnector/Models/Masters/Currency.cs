@@ -1,4 +1,4 @@
-﻿namespace TallyConnector.Models;
+﻿namespace TallyConnector.Models.Masters;
 
 [XmlRoot(ElementName = "CURRENCY")]
 public class Currency : TallyXmlJson

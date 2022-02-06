@@ -1,7 +1,9 @@
-﻿namespace TallyConnector.Models;
+﻿using MCS = TallyConnector.Models.Masters.CostCenter;
+
+namespace TallyConnector.Models.Masters.Payroll;
 
 [XmlRoot(ElementName = "COSTCENTRE")]
-public class Employee : CostCenter
+public class Employee : MCS.CostCenter
 {
     public Employee()
     {
@@ -62,7 +64,7 @@ public class Employee : CostCenter
             if (value != "")
             {
 
-                this.FAddress.FullAddress = value;
+                FAddress.FullAddress = value;
             }
 
 
