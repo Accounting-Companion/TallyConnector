@@ -28,7 +28,7 @@ namespace TallyConnector.Models
         public string FullAddress
         {
             get { return _Address.Count > 0 ? string.Join(" ..\n", _Address) : null; }
-            set { _Address = value != null ? value.Split(" ..\n").ToList() : new(); }
+            set { _Address = value != null ? value.Split(" ..\n".ToCharArray()).ToList() : new(); }
         }
 
     }

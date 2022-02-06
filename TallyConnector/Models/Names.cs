@@ -27,11 +27,11 @@ namespace TallyConnector.Models
                 if (NameList.NAMES.Count > 1)
                 {
                     NameList.NAMES.RemoveRange(1, NameList.NAMES.Count-1);
-                    NameList.NAMES.InsertRange(1, value.Split("..\n").ToList());
+                    NameList.NAMES.InsertRange(1, value.Split("..\n".ToCharArray()).ToList());
                 }
                 else if (NameList.NAMES.Count == 1)
                 {
-                    NameList.NAMES.InsertRange(1, value.Split("..\n").ToList());
+                    NameList.NAMES.InsertRange(1, value.Split("..\n".ToCharArray()).ToList());
                 }
             }
         }

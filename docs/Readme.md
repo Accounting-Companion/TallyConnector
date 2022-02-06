@@ -9,18 +9,12 @@ You can use **[Tally Connector](https://github.com/saivineeth100/TallyConnector/
 
 ## Supported Environments
 
-1. .Net Core 6.0 Applications
-2. .Net Framework 4.8 Applications
+1. .Net Core 6.0 | .Net Core 5.0
+2. .Net Framework 4.8
 3. Visual Basic
 
 This Library is complete abstraction for Tally XML API, Using this library
 you don't need to known or understand tally XML to interact with Tally.
-
-This Repository has seperate branches for .Net Core 6.0 and .NET Framework 48 main branch is for .Net Core
-
-1. [Tally Connector for .NET Core](https://github.com/Accounting-Companion/TallyConnector/tree/master)
-2. [Tally Connector for .Net Framework](https://github.com/Accounting-Companion/TallyConnector/tree/net_framework)
-
 ___
 
 ## Getting Started
