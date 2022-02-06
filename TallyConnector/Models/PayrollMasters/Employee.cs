@@ -1,4 +1,6 @@
-﻿namespace TallyConnector.Models;
+﻿using TallyConnector.Models.CostCenterMasters;
+
+namespace TallyConnector.Models.PayrollMasters;
 
 [XmlRoot(ElementName = "COSTCENTRE")]
 public class Employee : CostCenter
@@ -62,7 +64,7 @@ public class Employee : CostCenter
             if (value != "")
             {
 
-                this.FAddress.FullAddress = value;
+                FAddress.FullAddress = value;
             }
 
 

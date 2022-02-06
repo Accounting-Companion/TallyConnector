@@ -1,11 +1,10 @@
-﻿namespace TallyConnector.Models;
+﻿namespace TallyConnector.Models.CostCenterMasters;
 
-[XmlRoot(ElementName = "STOCKGROUP")]
-public class StockGroup : TallyXmlJson
+[XmlRoot(ElementName = "COSTCENTRE")]
+public class CostCenter : TallyXmlJson
 {
-    public StockGroup()
+    public CostCenter()
     {
-        BaseUnit = "";
         LanguageNameList = new();
     }
 
@@ -22,22 +21,21 @@ public class StockGroup : TallyXmlJson
     [Required]
     public string Name
     {
-        get { return (name == null || name == string.Empty) ? OldName : name; }
+        get { return name == null || name == string.Empty ? OldName : name; }
         set => name = value;
     }
+
+    [XmlElement(ElementName = "CATEGORY")]
+    public string Category { get; set; }
 
     [XmlElement(ElementName = "PARENT")]
     public string Parent { get; set; }
 
+    [XmlElement(ElementName = "EMAILID")]
+    public string Emailid { get; set; }
 
-    [XmlElement(ElementName = "ISADDABLE")]
-    public string IsAddable { get; set; }  //Should Quantities of Items be Added
-
-    [XmlElement(ElementName = "GSTAPPLICABLE")]
-    public string GSTApplicability { get; set; }
-
-    [XmlElement(ElementName = "BASEUNITS")]
-    public string BaseUnit { get; set; }
+    [XmlElement(ElementName = "REVENUELEDFOROPBAL")]
+    public string ShowOpeningBal { get; set; }
 
 
     [XmlIgnore]
@@ -49,6 +47,7 @@ public class StockGroup : TallyXmlJson
     /// <summary>
     /// Accepted Values //Create, Alter, Delete
     /// </summary>
+    [JsonIgnore]
     [XmlAttribute(AttributeName = "Action")]
     public string Action { get; set; }
 
@@ -57,62 +56,62 @@ public class StockGroup : TallyXmlJson
 
     public void CreateNamesList()
     {
-        if (this.LanguageNameList.Count == 0)
+        if (LanguageNameList.Count == 0)
         {
-            this.LanguageNameList.Add(new LanguageNameList());
-            this.LanguageNameList[0].NameList.NAMES.Add(this.Name);
+            LanguageNameList.Add(new LanguageNameList());
+            LanguageNameList[0].NameList.NAMES.Add(Name);
 
         }
-        if (this.Alias != null && this.Alias != string.Empty)
+        if (Alias != null && Alias != string.Empty)
         {
-            this.LanguageNameList[0].LanguageAlias = this.Alias;
+            LanguageNameList[0].LanguageAlias = Alias;
         }
     }
 }
 
-
 [XmlRoot(ElementName = "ENVELOPE")]
-public class StockGrpEnvelope : TallyXmlJson
+public class CostCentEnvelope : TallyXmlJson
 {
 
     [XmlElement(ElementName = "HEADER")]
     public Header Header { get; set; }
 
     [XmlElement(ElementName = "BODY")]
-    public SGBody Body { get; set; } = new();
+    public CCentBody Body { get; set; } = new();
 }
 
 [XmlRoot(ElementName = "BODY")]
-public class SGBody
+public class CCentBody
 {
     [XmlElement(ElementName = "DESC")]
     public Description Desc { get; set; } = new();
 
     [XmlElement(ElementName = "DATA")]
-    public SGData Data { get; set; } = new();
+    public CCentData Data { get; set; } = new();
 }
 
 [XmlRoot(ElementName = "DATA")]
-public class SGData
+public class CCentData
 {
     [XmlElement(ElementName = "TALLYMESSAGE")]
-    public SGMessage Message { get; set; } = new();
+    public CCentMessage Message { get; set; } = new();
 
     [XmlElement(ElementName = "COLLECTION")]
-    public StockGrpColl Collection { get; set; } = new StockGrpColl();
+    public CostCentColl Collection { get; set; } = new CostCentColl();
 
 
 }
 
 [XmlRoot(ElementName = "COLLECTION")]
-public class StockGrpColl
+public class CostCentColl
 {
-    [XmlElement(ElementName = "STOCKGROUP")]
-    public List<StockGroup> StockGroups { get; set; }
+    [XmlElement(ElementName = "COSTCENTRE")]
+    public List<CostCenter> CostCenters { get; set; }
 }
+
 [XmlRoot(ElementName = "TALLYMESSAGE")]
-public class SGMessage
+public class CCentMessage
 {
-    [XmlElement(ElementName = "STOCKGROUP")]
-    public StockGroup StockGroup { get; set; }
+    [XmlElement(ElementName = "COSTCENTRE")]
+    public CostCenter CostCenter { get; set; }
 }

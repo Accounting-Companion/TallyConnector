@@ -1,4 +1,6 @@
-﻿namespace TallyConnector.Models;
+﻿using TallyConnector.Models.CostCenterMasters;
+
+namespace TallyConnector.Models.PayrollMasters;
 
 [XmlRoot(ElementName = "COSTCENTRE")]
 public class EmployeeGroup : CostCenter

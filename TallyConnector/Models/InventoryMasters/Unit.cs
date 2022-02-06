@@ -1,4 +1,4 @@
-﻿namespace TallyConnector.Models;
+﻿namespace TallyConnector.Models.InventoryMasters;
 
 [XmlRoot(ElementName = "UNIT")]
 public class Unit : TallyXmlJson

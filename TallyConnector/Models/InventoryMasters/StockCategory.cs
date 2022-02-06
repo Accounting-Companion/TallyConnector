@@ -1,9 +1,9 @@
-﻿namespace TallyConnector.Models;
+﻿namespace TallyConnector.Models.InventoryMasters;
 
-[XmlRoot(ElementName = "COSTCATEGORY")]
-public class CostCategory : TallyXmlJson
+[XmlRoot(ElementName = "STOCKCATEGORY")]
+public class StockCategory : TallyXmlJson
 {
-    public CostCategory()
+    public StockCategory()
     {
         LanguageNameList = new();
     }
@@ -21,18 +21,12 @@ public class CostCategory : TallyXmlJson
     [Required]
     public string Name
     {
-        get { return (name == null || name == string.Empty) ? OldName : name; }
+        get { return name == null || name == string.Empty ? OldName : name; }
         set => name = value;
     }
 
-    [XmlElement(ElementName = "ALLOCATEREVENUE")]
-    public string AllocateRevenue { get; set; }
-
-    [XmlElement(ElementName = "ALLOCATENONREVENUE")]
-    public string AllocateNonRevenue { get; set; }
-
-    [XmlElement(ElementName = "GUID")]
-    public string GUID { get; set; }
+    [XmlElement(ElementName = "PARENT")]
+    public string Parent { get; set; }
 
     [XmlIgnore]
     public string Alias { get; set; }
@@ -47,65 +41,67 @@ public class CostCategory : TallyXmlJson
     [XmlAttribute(AttributeName = "Action")]
     public string Action { get; set; }
 
+    [XmlElement(ElementName = "GUID")]
+    public string GUID { get; set; }
+
     public void CreateNamesList()
     {
-        if (this.LanguageNameList.Count == 0)
+        if (LanguageNameList.Count == 0)
         {
-            this.LanguageNameList.Add(new LanguageNameList());
-            this.LanguageNameList[0].NameList.NAMES.Add(this.Name);
+            LanguageNameList.Add(new LanguageNameList());
+            LanguageNameList[0].NameList.NAMES.Add(Name);
 
         }
-        if (this.Alias != null && this.Alias != string.Empty)
+        if (Alias != null && Alias != string.Empty)
         {
-            this.LanguageNameList[0].LanguageAlias = this.Alias;
+            LanguageNameList[0].LanguageAlias = Alias;
         }
     }
 }
+
 [XmlRoot(ElementName = "ENVELOPE")]
-public class CostCatEnvelope : TallyXmlJson
+public class StockCatEnvelope : TallyXmlJson
 {
 
     [XmlElement(ElementName = "HEADER")]
     public Header Header { get; set; }
 
     [XmlElement(ElementName = "BODY")]
-    public CCBody Body { get; set; } = new();
+    public SCBody Body { get; set; } = new();
 }
 
 [XmlRoot(ElementName = "BODY")]
-public class CCBody
+public class SCBody
 {
     [XmlElement(ElementName = "DESC")]
     public Description Desc { get; set; } = new();
 
     [XmlElement(ElementName = "DATA")]
-    public CCData Data { get; set; } = new();
+    public SCData Data { get; set; } = new();
 }
 
 [XmlRoot(ElementName = "DATA")]
-public class CCData
+public class SCData
 {
     [XmlElement(ElementName = "TALLYMESSAGE")]
-    public CCMessage Message { get; set; } = new();
+    public SCMessage Message { get; set; } = new();
 
     [XmlElement(ElementName = "COLLECTION")]
-    public CostCategoryColl Collection { get; set; } = new CostCategoryColl();
+    public CostCatColl Collection { get; set; } = new CostCatColl();
 
 
 }
 
 [XmlRoot(ElementName = "COLLECTION")]
-public class CostCategoryColl
+public class CostCatColl
 {
-    [XmlElement(ElementName = "COSTCATEGORY")]
-    public List<CostCategory> CostCategories { get; set; }
+    [XmlElement(ElementName = "STOCKCATEGORY")]
+    public List<StockCategory> StockCategories { get; set; }
 }
 
 [XmlRoot(ElementName = "TALLYMESSAGE")]
-public class CCMessage
+public class SCMessage
 {
-    [XmlElement(ElementName = "COSTCATEGORY")]
-    public CostCategory CostCategory { get; set; }
+    [XmlElement(ElementName = "STOCKCATEGORY")]
+    public StockCategory StockCategory { get; set; }
 }
-
-

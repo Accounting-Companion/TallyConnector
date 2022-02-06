@@ -2,6 +2,10 @@ using NUnit.Framework;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using TallyConnector.Models;
+using TallyConnector.Models.CostCenterMasters;
+using TallyConnector.Models.InventoryMasters;
+using TallyConnector.Models.Masters;
+using TallyConnector.Models.PayrollMasters;
 
 namespace Tests;
 
