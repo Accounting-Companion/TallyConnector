@@ -255,41 +255,13 @@ public class Voucher : TallyXmlJson
         }
     }
 
-    [JsonIgnore]
-    [XmlAttribute(AttributeName = "TAGNAME")]
-    public string TagName
-    {
-        get
-        {
-
-            return "Voucher Number";
-        }
-        set
-        {
-        }
-    }
-
-    [JsonIgnore]
-    [XmlAttribute(AttributeName = "TAGVALUE")]
-    public string TagValue
-    {
-        get
-        {
-            return VoucherNumber;
-        }
-        set
-        {
-            VoucherNumber = value;
-        }
-    }
-
 
     /// <summary>
     /// Accepted Values //Create, Alter, Delete
     /// </summary>
     [JsonIgnore]
     [XmlAttribute(AttributeName = "Action")]
-    public string Action { get; set; }
+    public Action Action { get; set; }
 
     [XmlElement(ElementName = "GUID")]
     public string GUID { get; set; }

@@ -6,6 +6,7 @@ public class TallyBaseObject
     [JsonIgnore]
     [XmlAnyElement()]
     public XmlElement[] OtherFields { get; set; }
+
     [NotMapped]
     [JsonIgnore]
     [XmlAnyAttribute]
