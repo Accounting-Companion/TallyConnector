@@ -71,4 +71,12 @@ PResult result = await TTally.PostGroup(new Group()
             }); 
 ```
 
-Xmls used are listed here - [PostMan Collection](https://documenter.getpostman.com/view/13855108/TzeRpAMt)
+___
+
+## Other Useful Resources Related to Tally Integration
+
+Xmls used under the hood are listed here - [PostMan Collection](https://documenter.getpostman.com/view/13855108/TzeRpAMt)
+
+StackOverflow threads answered by me  - [StackOverflow Answers](https://stackoverflow.com/search?tab=newest&q=user%3a13605609%20%5btally%5d)
+
+TDLExpert.com threads answered by me - [TDLexpert.com](http://tdlexpert.com/index.php?members/sai-vineeth.12412/)
