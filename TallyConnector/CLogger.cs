@@ -12,6 +12,14 @@ public class CLogger
         this.Logger = logger ?? NullLogger.Instance;
     }
 
+    public void SetupLog(string company, string fromDate, string toDate)
+    {
+        if (company != null)
+        {
+            Logger.LogInformation($"Setting up Tally get data of Company - \"{company}\"{(fromDate != null ? $" From Date - {fromDate}" : null)} {(toDate != null ? $" To Date - {toDate}" : null)}");
+
+        }
+    }
     public void SetupLog(string baseURL, int port, string company, string fromDate, string toDate)
     {
         Logger.LogInformation($"Setting up Tally to connect at \"{baseURL}:{port}\"");

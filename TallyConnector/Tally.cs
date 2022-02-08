@@ -109,7 +109,23 @@ public class Tally : IDisposable
         CLogger?.SetupLog(baseURL, port, company, fromDate, toDate);
     }
 
-    
+
+    /// <summary>
+    /// Setup instance default Static-varibales instead of specifying in each method
+    /// </summary>
+    /// <param name="company">Specify Company name - If multiple companies are opened in tally set this param to get from spcific ompany</param>
+    /// <param name="fromDate">Default from date from to use for fetching info</param>
+    /// <param name="toDate">Default from date from to use for fetching info<</param>
+    public void ChangeCompany(string company,
+                              string fromDate = null,
+                              string toDate = null)
+    {
+        Company = company;
+        FromDate = fromDate;
+        ToDate = toDate;
+        CLogger?.SetupLog(company, fromDate, toDate);
+
+    }
 
     /// <summary>
     /// Checks whether Tally is running in given URL and port
@@ -716,7 +732,7 @@ public class Tally : IDisposable
         }
 
         ColEnvelope.Body.Desc.TDL.TDLMessage = new(colName: RName,
-                                                   colType: ColType?? TallyType,
+                                                   colType: ColType ?? TallyType,
                                                    nativeFields: NativeFields,
                                                    filters: filters);
 
