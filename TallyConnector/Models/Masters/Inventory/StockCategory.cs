@@ -1,7 +1,7 @@
 ﻿namespace TallyConnector.Models.Masters.Inventory;
 
 [XmlRoot(ElementName = "STOCKCATEGORY")]
-public class StockCategory : TallyXmlJson
+public class StockCategory : TallyXmlJson, ITallyObject
 {
     public StockCategory()
     {
@@ -21,7 +21,11 @@ public class StockCategory : TallyXmlJson
     [Required]
     public string Name
     {
-        get { return name == null || name == string.Empty ? OldName : name; }
+        get
+        {
+            name = (name == null || name == string.Empty) ? OldName : name;
+            return name;
+        }
         set => name = value;
     }
 

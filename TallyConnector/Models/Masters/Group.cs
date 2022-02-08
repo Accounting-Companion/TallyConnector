@@ -1,7 +1,7 @@
 ﻿namespace TallyConnector.Models.Masters;
 
 [XmlRoot(ElementName = "GROUP")]
-public class Group : TallyXmlJson
+public class Group : TallyXmlJson, ITallyObject
 {
     [XmlElement(ElementName = "MASTERID")]
     [MaxLength(20)]
@@ -24,7 +24,11 @@ public class Group : TallyXmlJson
     [Column(TypeName = "nvarchar(60)")]
     public string Name
     {
-        get { return name == null || name == string.Empty ? OldName : name; }
+        get
+        {
+            name = (name == null || name == string.Empty) ? OldName : name;
+            return name;
+        }
         set => name = value;
     }
 

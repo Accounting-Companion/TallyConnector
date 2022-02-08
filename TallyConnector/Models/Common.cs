@@ -30,7 +30,7 @@ public enum YesNo
     [XmlEnum(Name = "Yes")]
     Yes = 1,
     [XmlEnum(Name = "No")]
-    No = 0,
+    No = 2,
 }
 
 /// <summary>

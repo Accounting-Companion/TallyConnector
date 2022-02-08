@@ -1,7 +1,7 @@
 ﻿namespace TallyConnector.Models.Masters.Inventory;
 
 [XmlRoot(ElementName = "UNIT")]
-public class Unit : TallyXmlJson
+public class Unit : TallyXmlJson, ITallyObject
 {
 
     [XmlElement(ElementName = "MASTERID")]
@@ -12,9 +12,19 @@ public class Unit : TallyXmlJson
     [JsonIgnore]
     public string OldName { get; set; }
 
+    private string name;
+
     [XmlElement(ElementName = "NAME")]
     [Required]
-    public string Name { get; set; }
+    public string Name
+    {
+        get
+        {
+            name = (name == null || name == string.Empty) ? OldName : name;
+            return name;
+        }
+        set => name = value;
+    }
 
 
     [XmlElement(ElementName = "ORIGINALNAME")]

@@ -115,6 +115,21 @@ public class ColTDLMessage
 
     }
 
+
+    public ColTDLMessage(string colName,
+                         string colType,
+                         List<string> nativeFields,
+                         List<Filter> filters = null)
+    {
+        List<string> TdlFilter = new();
+        filters?.ForEach(filter =>
+        {
+            TdlFilter.Add(filter.FilterName);
+            System.Add(new(filter.FilterName, filter.FilterFormulae));
+        });
+        Collection = new(colName: colName, colType: colType, nativeFields: nativeFields, filters: TdlFilter);
+
+    }
     [XmlElement(ElementName = "REPORT")]
     public Report Report { get; set; }
 

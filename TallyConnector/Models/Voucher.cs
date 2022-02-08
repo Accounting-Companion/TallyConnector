@@ -5,7 +5,7 @@ namespace TallyConnector.Models;
 
 [Serializable]
 [XmlRoot(ElementName = "VOUCHER", Namespace = "")]
-public class Voucher : TallyXmlJson
+public class Voucher : TallyXmlJson,ITallyObject
 {
     public Voucher()
     {

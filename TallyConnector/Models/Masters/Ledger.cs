@@ -4,7 +4,7 @@ namespace TallyConnector.Models.Masters;
 
 [Serializable]
 [XmlRoot("LEDGER")]
-public class Ledger : TallyXmlJson
+public class Ledger : TallyXmlJson, ITallyObject
 {
     public Ledger()
     {
@@ -29,7 +29,11 @@ public class Ledger : TallyXmlJson
     [Column(TypeName = "nvarchar(60)")]
     public string Name
     {
-        get { return name == null || name == string.Empty ? OldName : name; }
+        get
+        {
+            name = (name == null || name == string.Empty) ? OldName : name;
+            return name;
+        }
         set => name = value;
     }
 

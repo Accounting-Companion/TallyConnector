@@ -1,7 +1,7 @@
 ﻿namespace TallyConnector.Models.Masters.Inventory;
 
 [XmlRoot(ElementName = "STOCKITEM")]
-public class StockItem : TallyXmlJson
+public class StockItem : TallyXmlJson, ITallyObject
 {
     public StockItem()
     {
@@ -22,7 +22,11 @@ public class StockItem : TallyXmlJson
     [Required]
     public string Name
     {
-        get { return name == null || name == string.Empty ? OldName : name; }
+        get
+        {
+            name = (name == null || name == string.Empty) ? OldName : name;
+            return name;
+        }
         set => name = value;
     }
 

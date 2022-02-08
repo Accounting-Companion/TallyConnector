@@ -1,7 +1,7 @@
 ﻿namespace TallyConnector.Models.Masters.CostCenter;
 
 [XmlRoot(ElementName = "COSTCENTRE")]
-public class CostCenter : TallyXmlJson
+public class CostCenter : TallyXmlJson, ITallyObject
 {
     public CostCenter()
     {
@@ -21,7 +21,11 @@ public class CostCenter : TallyXmlJson
     [Required]
     public string Name
     {
-        get { return name == null || name == string.Empty ? OldName : name; }
+        get
+        {
+            name = (name == null || name == string.Empty) ? OldName : name;
+            return name;
+        }
         set => name = value;
     }
 

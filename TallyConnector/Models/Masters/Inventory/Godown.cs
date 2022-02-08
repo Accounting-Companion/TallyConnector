@@ -1,7 +1,7 @@
 ﻿namespace TallyConnector.Models.Masters.Inventory;
 
 [XmlRoot(ElementName = "GODOWN")]
-public class Godown : TallyXmlJson
+public class Godown : TallyXmlJson, ITallyObject
 {
 
     public Godown()
@@ -21,7 +21,11 @@ public class Godown : TallyXmlJson
     [Required]
     public string Name
     {
-        get { return name == null || name == string.Empty ? OldName : name; }
+        get
+        {
+            name = (name == null || name == string.Empty) ? OldName : name;
+            return name;
+        }
         set => name = value;
     }
 

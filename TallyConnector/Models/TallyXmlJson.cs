@@ -15,6 +15,7 @@ public class TallyBaseObject
 
 public class TallyXmlJson : TallyBaseObject
 {
+
     public string GetJson(bool Indented = false)
     {
         string Json = JsonSerializer.Serialize(this, GetType(), new JsonSerializerOptions()

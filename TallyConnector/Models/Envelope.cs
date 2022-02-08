@@ -1,25 +1,48 @@
 ﻿namespace TallyConnector.Models;
 
-//[XmlRoot(ElementName = "ENVELOPE")]
-//public class Envelope
-//{
+[XmlRoot(ElementName = "ENVELOPE")]
+public class Envelope<T>:TallyXmlJson
+{
 
-//	[XmlElement(ElementName = "HEADER")]
-//	public Header Header { get; set; }
+    [XmlElement(ElementName = "HEADER")]
+    public Header Header { get; set; }
 
-//	[XmlElement(ElementName = "BODY")]
-//	public Body Body { get; set; }
-//}
+    [XmlElement(ElementName = "BODY")]
+    public Body<T> Body { get; set; }
+}
 
-//[XmlRoot(ElementName = "BODY")]
-//public class Body
-//{
-//	[XmlElement(ElementName = "DESC")]
-//	public Description Desc { get; set; }
+[XmlRoot(ElementName = "BODY")]
+public class Body<T>
+{
+    [XmlElement(ElementName = "DESC")]
+    public Description Desc { get; set; }
 
-//	[XmlElement(ElementName = "DATA")]
-//	public Data Data { get; set; }
-//}
+    [XmlElement(ElementName = "DATA")]
+    public Data<T> Data { get; set; }
+}
+
+[XmlRoot(ElementName = "DATA")]
+public class Data<T>
+{
+    [XmlElement(ElementName = "TALLYMESSAGE")]
+    public Message<T> Message { get; set; } = new();
+
+    [XmlElement(ElementName = "COLLECTION")]
+    public Colllection<T> Collection { get; set; } = new();
+
+}
+
+[XmlRoot(ElementName = "COLLECTION")]
+public class Colllection<T>
+{
+    public List<T> Objects { get; set; }
+}
+
+[XmlRoot(ElementName = "TALLYMESSAGE")]
+public class Message<T>
+{
+    public T Object { get; set; }
+}
 
 
 [XmlRoot(ElementName = "HEADER")]

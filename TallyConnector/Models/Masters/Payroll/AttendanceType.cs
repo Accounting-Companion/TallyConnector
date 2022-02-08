@@ -1,7 +1,7 @@
 ﻿namespace TallyConnector.Models.Masters.Payroll;
 
 [XmlRoot(ElementName = "ATTENDANCETYPE")]
-public class AttendanceType : TallyXmlJson
+public class AttendanceType : TallyXmlJson,ITallyObject
 {
     public AttendanceType()
     {
@@ -11,14 +11,19 @@ public class AttendanceType : TallyXmlJson
     [XmlAttribute(AttributeName = "NAME")]
     [JsonIgnore]
     public string OldName { get; set; }
-
+    [XmlElement(ElementName = "MASTERID")]
+    public int? TallyId { get; set; }
     private string name;
 
     [XmlElement(ElementName = "NAME")]
     [Required]
     public string Name
     {
-        get { return name == null || name == string.Empty ? OldName : name; }
+        get
+        {
+            name = (name == null || name == string.Empty) ? OldName : name;
+            return name;
+        }
         set => name = value;
     }
 
@@ -40,6 +45,10 @@ public class AttendanceType : TallyXmlJson
 
     [XmlElement(ElementName = "CANDELETE")]
     public string CanDelete { get; set; } //Ignore This While Creating or Altering
+
+    [XmlElement(ElementName = "GUID")]
+    [Column(TypeName = "nvarchar(100)")]
+    public string GUID { get; set; }
 
     [JsonIgnore]
     [XmlElement(ElementName = "LANGUAGENAME.LIST")]
