@@ -109,7 +109,7 @@ public class Tally : IDisposable
         CLogger?.SetupLog(baseURL, port, company, fromDate, toDate);
     }
 
-
+    
 
     /// <summary>
     /// Checks whether Tally is running in given URL and port
@@ -626,6 +626,118 @@ public class Tally : IDisposable
                                                                             SystemFilters: EmployeeSystemFilters);
         List<Employee> TEmployees = GetObjfromXml<EmployeeEnvelope>(EmployeeesXml).Body.Data.Collection.Employees;
         return TEmployees;
+    }
+
+    public async Task<ReturnType> GetMasterfromTally<ReturnType>(string LookupValue,
+                                                                 MasterLookupField LookupField = MasterLookupField.Name,
+                                                                 string company = null,
+                                                                 string fromDate = null,
+                                                                 string toDate = null,
+                                                                 List<string> fetchList = null)
+    {
+        //If parameter is null Get value from instance
+        company ??= Company;
+        fromDate ??= FromDate;
+        toDate ??= ToDate;
+        fetchList ??= new() { "MasterId", "*" };
+
+        StaticVariables sv = new() { SVCompany = company, SVFromDate = fromDate, SVToDate = toDate };
+        string filterformulae;
+        if (LookupField is MasterLookupField.MasterId or MasterLookupField.GUID)
+        {
+            filterformulae = $"${LookupField} = {LookupValue}";
+        }
+        else
+        {
+            if (LookupField is MasterLookupField.Name && typeof(ReturnType).Name == typeof(Currency).Name)
+            {
+                filterformulae = $"$ORIGINALNAME = \"{LookupValue}\"";
+            }
+            else
+            {
+                filterformulae = $"${LookupField} = \"{LookupValue}\"";
+            }
+        }
+        List<Filter> filters = new() { new Filter() { FilterName = "masterfilter", FilterFormulae = filterformulae } };
+
+        List<ReturnType> objects = await GetNativeCollectionXML<ReturnType>(sv,
+                                                                            NativeFields: fetchList,
+                                                                            filters: filters);
+        if (objects.Count > 0)
+        {
+            var TallyMaster = objects[0];
+            //Alias
+            PropertyInfo Aliasinfo = typeof(ReturnType).GetProperty("Alias");
+            if (Aliasinfo != null)
+            {
+                List<LanguageNameList> languageNameLists = (List<LanguageNameList>)typeof(ReturnType).GetProperty("LanguageNameList").GetValue(TallyMaster);
+                Aliasinfo.SetValue(TallyMaster, languageNameLists[0].LanguageAlias);
+            }
+            //Name
+            PropertyInfo NamePropertyinfo = typeof(ReturnType).GetProperty("Name");
+            var name = NamePropertyinfo.GetValue(TallyMaster);
+            if (name is null)
+            {
+                NamePropertyinfo.SetValue(TallyMaster, typeof(ReturnType).GetProperty("OldName").GetValue(TallyMaster));
+            }
+            return TallyMaster;
+
+        }
+        else
+        {
+            throw new ObjectDoesNotExist(typeof(ReturnType).Name,
+                                         LookupField.ToString(),
+                                         LookupValue,
+                                         company);
+        }
+
+
+    }
+
+    private async Task<List<ReturnObject>> GetNativeCollectionXML<ReturnObject>(StaticVariables Sv = null,
+                                                                                string ColType = null,
+                                                                                string childof = null,
+                                                                                List<string> NativeFields = null,
+                                                                                List<Filter> filters = null,
+                                                                                bool isInitialize = false)
+    {
+        string Resxml;
+        CusColEnvelope ColEnvelope = new(); //Collection Envelope
+        //Gets Root attribute of ReturnObject
+        XmlRootAttribute RootAttribute = (XmlRootAttribute)Attribute.GetCustomAttribute(typeof(ReturnObject), typeof(XmlRootAttribute));
+        //ElementName of ReturnObject will match with TallyType
+        string TallyType = RootAttribute.ElementName;
+        //ColType = CollectionMapping[typeof(ReturnObject).Name];
+        string RName = $"CUSTOM{TallyType}";
+        ColEnvelope.Header = new("Export", "Collection", RName);  //Configuring Header To get Export data
+        if (Sv != null)
+        {
+            ColEnvelope.Body.Desc.StaticVariables = Sv;
+        }
+
+        ColEnvelope.Body.Desc.TDL.TDLMessage = new(colName: RName,
+                                                   colType: ColType?? TallyType,
+                                                   nativeFields: NativeFields,
+                                                   filters: filters);
+
+        ColEnvelope.Body.Desc.TDL.TDLMessage.Collection.Childof = childof;
+        if (isInitialize)
+        {
+            ColEnvelope.Body.Desc.TDL.TDLMessage.Collection.SetAttributes(isInitialize: "Yes");
+        }
+
+        string Reqxml = ColEnvelope.GetXML(); //Gets XML from Object
+
+        Resxml = await SendRequest(Reqxml);
+
+        //Adding xmlelement name according to RootElement name of ReturnObject
+        XmlAttributeOverrides xmlAttributeOverrides = new();
+        XmlAttributes attrs = new();
+        attrs.XmlElements.Add(new(TallyType));
+        xmlAttributeOverrides.Add(typeof(Colllection<ReturnObject>), "Objects", attrs);
+
+        Envelope<ReturnObject> Envelope = GetObjfromXml<Envelope<ReturnObject>>(Resxml, xmlAttributeOverrides);
+        return Envelope.Body.Data.Collection.Objects;
     }
 
     /// <summary>
