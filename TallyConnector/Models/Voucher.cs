@@ -5,7 +5,7 @@ namespace TallyConnector.Models;
 
 [Serializable]
 [XmlRoot(ElementName = "VOUCHER", Namespace = "")]
-public class Voucher : TallyXmlJson,ITallyObject
+public class Voucher : TallyXmlJson, ITallyObject
 {
     public Voucher()
     {
@@ -264,6 +264,7 @@ public class Voucher : TallyXmlJson,ITallyObject
     public Action Action { get; set; }
 
     [XmlElement(ElementName = "GUID")]
+    [Column(TypeName = "nvarchar(100)")]
     public string GUID { get; set; }
 
     [JsonIgnore]
@@ -558,10 +559,7 @@ public class BillAllocations : TallyBaseObject
 
         }
     }
-    [XmlIgnore]
-    public string LedgerId { get; set; }
-    [XmlIgnore]
-    public int VoucherLedgerId { get; set; }
+    
 }
 [XmlRoot(ElementName = "BILLCREDITPERIOD")]
 public class BillCP
@@ -590,22 +588,18 @@ public class BillCP
 [XmlRoot(ElementName = "INVENTORYENTRIESIN.LIST")]
 public class InventoryinAllocations : InventoryAllocations
 {
-    [XmlIgnore]
-    public string VoucherId { get; set; }
 }
 
 [XmlRoot(ElementName = "INVENTORYENTRIESOUT.LIST")]
 public class InventoryoutAllocations : InventoryAllocations
 {
-    [XmlIgnore]
-    public string VoucherId { get; set; }
+    
 }
 
 [XmlRoot(ElementName = "ALLINVENTORYENTRIES.LIST")]
 public class AllInventoryAllocations : InventoryAllocations
 {
-    [XmlIgnore]
-    public string VoucherId { get; set; }
+    
 }
 [XmlRoot(ElementName = "INVENTORYENTRIES.LIST")]
 public class InventoryEntries : AllInventoryAllocations
@@ -987,20 +981,22 @@ public enum VoucherLookupField
 /// </summary>
 public enum VoucherViewType
 {
+    [XmlEnum(Name = "")]
+    None = 0,
     [XmlEnum(Name = "Accounting Voucher View")]
-    AccountingVoucherView = 0,
+    AccountingVoucherView = 1,
 
     [XmlEnum(Name = "Invoice Voucher View")]
-    InvoiceVoucherView = 1,
+    InvoiceVoucherView = 2,
 
     [XmlEnum(Name = "PaySlip Voucher View")]
-    PaySlipVoucherView = 2,
+    PaySlipVoucherView = 3,
 
     [XmlEnum(Name = "Multi Consumption Voucher View")]
-    MultiConsumptionVoucherView = 3,
+    MultiConsumptionVoucherView = 4,
 
     [XmlEnum(Name = "Consumption Voucher View")]
-    ConsumptionVoucherView = 4,
+    ConsumptionVoucherView = 5,
 }
 
 /// <summary>
