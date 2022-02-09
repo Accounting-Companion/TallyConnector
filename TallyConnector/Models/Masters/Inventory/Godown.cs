@@ -7,6 +7,7 @@ public class Godown : TallyXmlJson, ITallyObject
     public Godown()
     {
         FAddress = new();
+        LanguageNameList = new();
     }
 
     [XmlElement(ElementName = "MASTERID")]
@@ -101,6 +102,11 @@ public class Godown : TallyXmlJson, ITallyObject
         {
             LanguageNameList[0].LanguageAlias = Alias;
         }
+    }
+    public new string GetXML(XmlAttributeOverrides attrOverrides = null)
+    {
+        CreateNamesList();
+        return base.GetXML(attrOverrides);
     }
 }
 

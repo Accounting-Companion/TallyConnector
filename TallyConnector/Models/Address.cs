@@ -18,7 +18,11 @@ public class HAddress
     public string FullAddress
     {
         get { return _Address.Count > 0 ? string.Join(" ..\n", _Address) : null; }
-        set { _Address = value != null ? value.Split(" ..\n".ToCharArray()).ToList() : new(); }
+        set
+        {
+            string[] stringSeparators = new string[] { " ..\n" };
+            _Address = value != null ? value.Split(stringSeparators, StringSplitOptions.None).ToList() : new();
+        }
     }
 
 }

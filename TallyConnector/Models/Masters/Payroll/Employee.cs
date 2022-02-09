@@ -155,7 +155,7 @@ public class Employee : MCS.CostCenter
     public List<TaxRegimeDetails> TaxRegimeDetails { get; set; }
 
     [XmlElement(ElementName = "PAYMENTDETAILS.LIST")]
-    public PaymentDetails PaymentDetails { get; set; }
+    public List<PaymentDetails> PaymentDetails { get; set; }
 
 
 }

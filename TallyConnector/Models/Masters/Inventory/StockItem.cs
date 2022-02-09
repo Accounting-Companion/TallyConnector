@@ -6,6 +6,7 @@ public class StockItem : TallyXmlJson, ITallyObject
     public StockItem()
     {
         LanguageNameList = new();
+        BOMList = new();
     }
 
     [XmlElement(ElementName = "MASTERID")]
@@ -128,6 +129,11 @@ public class StockItem : TallyXmlJson, ITallyObject
         {
             LanguageNameList[0].LanguageAlias = Alias;
         }
+    }
+    public new string GetXML(XmlAttributeOverrides attrOverrides = null)
+    {
+        CreateNamesList();
+        return base.GetXML(attrOverrides);
     }
 }
 [XmlRoot(ElementName = "ENVELOPE")]

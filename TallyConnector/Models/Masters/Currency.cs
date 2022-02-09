@@ -1,10 +1,11 @@
 ﻿namespace TallyConnector.Models.Masters;
 
 [XmlRoot(ElementName = "CURRENCY")]
-public class Currency : TallyXmlJson
+public class Currency : TallyXmlJson,ITallyObject
 {
-    [XmlAttribute(AttributeName = "ID")]
-    public int TallyId { get; set; }
+    [XmlElement(ElementName = "MASTERID")]
+    [MaxLength(20)]
+    public int? TallyId { get; set; }
 
     [XmlElement(ElementName = "ORIGINALNAME")]
     public string OriginalName { get; set; }

@@ -64,6 +64,11 @@ public class CostCategory : TallyXmlJson, ITallyObject
             LanguageNameList[0].LanguageAlias = Alias;
         }
     }
+    public new string GetXML(XmlAttributeOverrides attrOverrides = null)
+    {
+        CreateNamesList();
+        return base.GetXML(attrOverrides);
+    }
 }
 [XmlRoot(ElementName = "ENVELOPE")]
 public class CostCatEnvelope : TallyXmlJson

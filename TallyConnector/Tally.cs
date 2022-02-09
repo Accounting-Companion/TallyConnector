@@ -624,6 +624,7 @@ public class Tally : IDisposable
     private async Task<List<Employee>> GetEmployeesList(StaticVariables staticVariables = null,
                                                         List<string> Nativelist = null,
                                                         List<string> EmployeeFilters = null,
+
                                                         List<string> EmployeeSystemFilters = null)
     {
         staticVariables ??= new()
@@ -643,8 +644,53 @@ public class Tally : IDisposable
         List<Employee> TEmployees = GetObjfromXml<EmployeeEnvelope>(EmployeeesXml).Body.Data.Collection.Employees;
         return TEmployees;
     }
+    public async Task<ReturnType> GetObjectfromTally<ReturnType>(string LookupValue,
+                                                  VoucherLookupField LookupField = VoucherLookupField.MasterId,
+                                                  string company = null,
+                                                  string fromDate = null,
+                                                  string toDate = null,
+                                                  List<string> fetchList = null) 
+    {
+        //If parameter is null Get value from instance
+        company ??= Company;
+        fromDate ??= FromDate;
+        toDate ??= ToDate;
+        fetchList ??= new() { "MasterId", "*" };
 
-    public async Task<ReturnType> GetMasterfromTally<ReturnType>(string LookupValue,
+        StaticVariables sv = new() { SVCompany = company, SVFromDate = fromDate, SVToDate = toDate };
+        string filterformulae;
+        if (LookupField is VoucherLookupField.MasterId or VoucherLookupField.AlterId)
+        {
+            filterformulae = $"${LookupField} = {LookupValue}";
+        }
+        else
+        {
+            filterformulae = $"${LookupField} = \"{LookupValue}\"";
+        }
+        List<Filter> filters = new() { new Filter() { FilterName = "masterfilter", FilterFormulae = filterformulae } };
+
+        List<ReturnType> objects = await GetNativeCollectionXML<ReturnType>(sv,
+                                                                      NativeFields: fetchList,
+                                                                      filters: filters);
+        if (objects.Count > 0)
+        {
+            var TallyObject = objects[0];
+            
+            return TallyObject;
+
+        }
+        else
+        {
+            throw new ObjectDoesNotExist(typeof(ReturnType).Name,
+                                         LookupField.ToString(),
+                                         LookupValue,
+                                         company);
+        }
+
+
+    }
+
+    public async Task<ReturnType> GetObjectfromTally<ReturnType>(string LookupValue,
                                                                  MasterLookupField LookupField = MasterLookupField.Name,
                                                                  string company = null,
                                                                  string fromDate = null,
@@ -659,7 +705,7 @@ public class Tally : IDisposable
 
         StaticVariables sv = new() { SVCompany = company, SVFromDate = fromDate, SVToDate = toDate };
         string filterformulae;
-        if (LookupField is MasterLookupField.MasterId or MasterLookupField.GUID)
+        if (LookupField is MasterLookupField.MasterId or MasterLookupField.AlterId)
         {
             filterformulae = $"${LookupField} = {LookupValue}";
         }
@@ -691,8 +737,8 @@ public class Tally : IDisposable
             }
             //Name
             PropertyInfo NamePropertyinfo = typeof(ReturnType).GetProperty("Name");
-            var name = NamePropertyinfo.GetValue(TallyMaster);
-            if (name is null)
+            var name = NamePropertyinfo?.GetValue(TallyMaster);
+            if (name is null && NamePropertyinfo != null)
             {
                 NamePropertyinfo.SetValue(TallyMaster, typeof(ReturnType).GetProperty("OldName").GetValue(TallyMaster));
             }

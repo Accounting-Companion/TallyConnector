@@ -1,17 +1,23 @@
 ﻿namespace TallyConnector.Models;
 
-    //BOM
+//BOM
 [XmlRoot(ElementName = "MULTICOMPONENTLIST")]
 public class ComponentsList
 {
+    public ComponentsList()
+    {
+        ComponentsItems = new();
+    }
+
     [XmlElement(ElementName = "COMPONENTLISTNAME")]
-    public string Name;
+    public string Name { get; set; }
 
     [XmlElement(ElementName = "COMPONENTBASICQTY")]
-    public string BasicQuantity;
+    [MaxLength(50)]
+    public string BasicQuantity { get; set; }
 
     [XmlElement(ElementName = "MULTICOMPONENTITEMLIST.LIST")]
-    public List<ComponentsItem> ComponentsItems;
+    public List<ComponentsItem> ComponentsItems { get; set; }
 }
 
 
@@ -20,20 +26,20 @@ public class ComponentsItem
 {
 
     [XmlElement(ElementName = "NATUREOFITEM")]
-    public ComponentType NatureOfItem;
+    public ComponentType NatureOfItem { get; set; }
 
     [XmlElement(ElementName = "STOCKITEMNAME")]
-    public string StockItem;
+    public string StockItem { get; set; }
 
     [XmlElement(ElementName = "GODOWNNAME")]
-    public string Godown;
+    public string Godown { get; set; }
 
     //Percentage of Allocation in Voucher
     [XmlElement(ElementName = "ADDLCOSTALLOCPERC")]
-    public string CostAllocPercentage;
+    public string CostAllocPercentage { get; set; }
 
     [XmlElement(ElementName = "ACTUALQTY")]
-    public string ActualQuantity;
+    public string ActualQuantity { get; set; }
 }
 
 public enum ComponentType
