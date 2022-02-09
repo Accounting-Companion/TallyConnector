@@ -624,7 +624,6 @@ public class Tally : IDisposable
     private async Task<List<Employee>> GetEmployeesList(StaticVariables staticVariables = null,
                                                         List<string> Nativelist = null,
                                                         List<string> EmployeeFilters = null,
-
                                                         List<string> EmployeeSystemFilters = null)
     {
         staticVariables ??= new()
@@ -644,12 +643,26 @@ public class Tally : IDisposable
         List<Employee> TEmployees = GetObjfromXml<EmployeeEnvelope>(EmployeeesXml).Body.Data.Collection.Employees;
         return TEmployees;
     }
+
+    /// <summary>
+    /// Gets Existing Voucher from Tally based on LookupValue
+    /// </summary>
+    /// <typeparam name="ReturnType">Type must extend from Voucher </typeparam>
+    /// <param name="LookupValue">Lookupvalue based on LookupField</param>
+    /// <param name="LookupField">Lookupfield to use</param>
+    /// <param name="isDynamicBal">If true openining balance and closing balance change depending on from date and to date</param>
+    ///  <param name="company">Specify Company if not specified in Setup</param>
+    /// <param name="fromDate">Specify fromDate if not specified in Setup</param>
+    /// <param name="toDate">Specify toDate if not specified in Setup</param>
+    /// <param name="fetchList">You can select the list of fields to be fetched from tally if nothing specified it pulls all fields availaible in Tally</param>
+    /// <returns></returns>
+    /// <exception cref="ObjectDoesNotExist"></exception>
     public async Task<ReturnType> GetObjectfromTally<ReturnType>(string LookupValue,
                                                   VoucherLookupField LookupField = VoucherLookupField.MasterId,
                                                   string company = null,
                                                   string fromDate = null,
                                                   string toDate = null,
-                                                  List<string> fetchList = null) 
+                                                  List<string> fetchList = null) where ReturnType : Voucher
     {
         //If parameter is null Get value from instance
         company ??= Company;
@@ -675,7 +688,7 @@ public class Tally : IDisposable
         if (objects.Count > 0)
         {
             var TallyObject = objects[0];
-            
+
             return TallyObject;
 
         }
@@ -690,12 +703,26 @@ public class Tally : IDisposable
 
     }
 
+    /// <summary>
+    /// Gets Existing Masters from Tally based on LookupValue
+    /// </summary>
+    /// <typeparam name="ReturnType">Type must implement TallyBaseObject, ITallyObject </typeparam>
+    /// <param name="LookupValue">Lookupvalue based on LookupField</param>
+    /// <param name="LookupField">Lookupfield to use</param>
+    /// <param name="isDynamicBal">If true openining balance and closing balance change depending on from date and to date</param>
+    ///  <param name="company">Specify Company if not specified in Setup</param>
+    /// <param name="fromDate">Specify fromDate if not specified in Setup</param>
+    /// <param name="toDate">Specify toDate if not specified in Setup</param>
+    /// <param name="fetchList">You can select the list of fields to be fetched from tally if nothing specified it pulls all fields availaible in Tally</param>
+    /// <returns></returns>
+    /// <exception cref="ObjectDoesNotExist"></exception>
     public async Task<ReturnType> GetObjectfromTally<ReturnType>(string LookupValue,
                                                                  MasterLookupField LookupField = MasterLookupField.Name,
+                                                                 bool isDynamicBal = true,
                                                                  string company = null,
                                                                  string fromDate = null,
                                                                  string toDate = null,
-                                                                 List<string> fetchList = null)
+                                                                 List<string> fetchList = null) where ReturnType : TallyBaseObject, ITallyObject
     {
         //If parameter is null Get value from instance
         company ??= Company;
@@ -722,7 +749,8 @@ public class Tally : IDisposable
         }
         List<Filter> filters = new() { new Filter() { FilterName = "masterfilter", FilterFormulae = filterformulae } };
 
-        List<ReturnType> objects = await GetNativeCollectionXML<ReturnType>(sv,
+        List<ReturnType> objects = await GetNativeCollectionXML<ReturnType>(Sv: sv,
+                                                                            ColType: isDynamicBal ? null : "Masters",
                                                                             NativeFields: fetchList,
                                                                             filters: filters);
         if (objects.Count > 0)
@@ -805,6 +833,7 @@ public class Tally : IDisposable
     /// <summary>
     /// Gets Existing Group from Tally based on group name
     /// </summary>
+    /// <typeparam name="GroupType">Must Extend from Group</typeparam>
     /// <param name="LookupValue">Specify the name of group/unique value of group to be fetched from Tally</param>
     /// <param name="LookupField">Specify the lookup field based on which to be fetched from Tally</param>
     /// <param name="company">Specify Company if not specified in Setup</param>
@@ -812,47 +841,27 @@ public class Tally : IDisposable
     /// <param name="toDate">Specify toDate if not specified in Setup</param>
     /// <param name="fetchList">You can select the list of fields to be fetched from tally if nothing specified it pulls all fields availaible in Tally
     /// if field is in tally but it is not shown in Groupinstance then you need to extend Group model and specify that field</param>
-    /// <returns>Returns instance of Models.Group instance with data from tally</returns>
-    public async Task<Group> GetGroup(string LookupValue, MasterLookupField LookupField = MasterLookupField.Name,
-                                      string company = null,
-                                      string fromDate = null,
-                                      string toDate = null,
-                                      List<string> fetchList = null)
+    /// <returns>Returns instance of GroupType with data from tally</returns>
+    public async Task<GroupType> GetGroup<GroupType>(string LookupValue,
+                                                     MasterLookupField LookupField = MasterLookupField.Name,
+                                                     string company = null,
+                                                     string fromDate = null,
+                                                     string toDate = null,
+                                                     List<string> fetchList = null) where GroupType : Group
     {
-        //If parameter is null Get value from instance
-        company ??= Company;
-        fromDate ??= FromDate;
-        toDate ??= ToDate;
-        fetchList ??= new() { "MasterId", "*" };
-        StaticVariables sv = new() { SVCompany = company, SVFromDate = fromDate, SVToDate = toDate };
-        List<string> Filters = new() { "Groupfilter" };
-        List<string> SystemFilter = new()
+        try
         {
-
-            (LookupField is MasterLookupField.MasterId or MasterLookupField.AlterId) ? $"${LookupField} = {LookupValue}" : $"${LookupField} = \"{LookupValue}\""
-        };
-
-        string xml = await GetNativeCollectionXML(rName: "CusGroupObj",
-                                                  colType: "Group",
-                                                  Sv: sv,
-                                                  NativeFields: fetchList,
-                                                  Filters: Filters,
-                                                  SystemFilters: SystemFilter);
-
-        GroupEnvelope groupEnvelope = GetObjfromXml<GroupEnvelope>(xml);
-        if (groupEnvelope.Body.Data.Collection.Groups.Count > 0)
-        {
-            Group group = groupEnvelope.Body.Data.Collection.Groups[0];
-            group.Alias = group.LanguageNameList[0].LanguageAlias;
-            group.Name ??= group.OldName;
+            GroupType group = await GetObjectfromTally<GroupType>(LookupValue: LookupValue,
+                                                      LookupField: LookupField,
+                                                      company: company,
+                                                      fromDate: fromDate,
+                                                      toDate: toDate,
+                                                      fetchList: fetchList);
             return group;
         }
-        else
+        catch (ObjectDoesNotExist)
         {
-            throw new ObjectDoesNotExist("Group",
-                                         LookupField.ToString(),
-                                         LookupValue,
-                                         company);
+            throw;
         }
 
     }
@@ -906,93 +915,62 @@ public class Tally : IDisposable
     /// <summary>
     /// Gets Existing Ledger from Tally based on Ledger name
     /// </summary>
+    /// <typeparam name="LedgerType">Must Extend from Ledger</typeparam>
     /// <param name="ledgerName">Specify the name of Ledger to be fetched from Tally</param>
     /// <param name="company">Specify Company if not specified in Setup</param>
     /// <param name="fromDate">Specify fromDate if not specified in Setup</param>
     /// <param name="toDate">Specify toDate if not specified in Setup</param>
     /// <param name="fetchList">You can select the list of fields to be fetched from tally if nothing specified it pulls all fields availaible in Tally
     /// </param>
-    /// <returns>Returns instance of Models.Ledger instance with data from tally</returns>
-    public async Task<Ledger> GetLedgerDynamic(string LookupValue,
-                                               MasterLookupField LookupField = MasterLookupField.Name,
-                                               string company = null,
-                                               string fromDate = null,
-                                               string toDate = null,
-                                               List<string> Nativelist = null)
+    /// <returns>Returns instance of LedgerType instance with data from tally</returns>
+    public async Task<LedgerType> GetLedgerDynamic<LedgerType>(string LookupValue,
+                                                               MasterLookupField LookupField = MasterLookupField.Name,
+                                                               string company = null,
+                                                               string fromDate = null,
+                                                               string toDate = null,
+                                                               List<string> fetchList = null) where LedgerType : Ledger
     {
-        //If parameter is null Get value from instance
-        company ??= Company;
-        fromDate ??= FromDate;
-        toDate ??= ToDate;
-        Nativelist ??= new() { "Address", "MasterId", "InterestCollection", "CanDelete", "REMOTEGUID", "*" };
-        StaticVariables sv = new() { SVCompany = company, SVFromDate = fromDate, SVToDate = toDate };
-        List<string> Filters = new() { "LedgerFilter" };
-        List<string> SystemFilter = new() { (LookupField is MasterLookupField.MasterId or MasterLookupField.AlterId) ? $"${LookupField} = {LookupValue}" : $"${LookupField} = \"{LookupValue}\"" };
-
-        string xml = await GetNativeCollectionXML(rName: "CusLedgObj",
-                                                  colType: "Ledger",
-                                                  Sv: sv,
-                                                  NativeFields: Nativelist,
-                                                  Filters: Filters,
-                                                  SystemFilters: SystemFilter);
-        LedgerEnvelope ledgerEnvelope = GetObjfromXml<LedgerEnvelope>(xml);
-        if (GetObjfromXml<LedgerEnvelope>(xml).Body.Data.Collection.Ledgers.Count > 0)
+        try
         {
-            Ledger ledger = ledgerEnvelope.Body.Data.Collection.Ledgers[0];
-            ledger.Alias = ledger.LanguageNameList[0].LanguageAlias;
-            ledger.Name ??= ledger.OldName;
-            return ledger;
+            LedgerType Ledger = await GetObjectfromTally<LedgerType>(LookupValue: LookupValue,
+                                                                     LookupField: LookupField,
+                                                                     company: company,
+                                                                     fromDate: fromDate,
+                                                                     toDate: toDate,
+                                                                     fetchList: fetchList);
+            return Ledger;
         }
-        else
+        catch (ObjectDoesNotExist)
         {
-            throw new ObjectDoesNotExist("Ledger",
-                                         LookupField.ToString(),
-                                         LookupValue,
-                                         company);
+            throw;
         }
     }
 
     /// <summary>
     /// Gets Existing Ledger from Tally based on Ledger name Opening balance is Static as per Master
     /// </summary>
+    /// <typeparam name="LedgerType">Must Extend from Ledger</typeparam>
     /// <param name="ledgerName">Specify the name of Ledger to be fetched from Tally</param>
     /// <param name="company">Specify Company if not specified in Setup</param>
     /// <param name="fetchList">You can select the list of fields to be fetched from tally if nothing specified it pulls all fields availaible in Tally
     /// </param>
-    /// <returns>Returns instance of Models.Ledger instance with data from tally</returns>
-    public async Task<Ledger> GetLedger(string LookupValue,
-                                        MasterLookupField LookupField = MasterLookupField.Name,
-                                        string company = null,
-                                        List<string> Nativelist = null)
+    /// <returns>Returns instance of LedgerType instance with data from tally</returns>
+    public async Task<LedgerType> GetLedger<LedgerType>(string LookupValue,
+                                                    MasterLookupField LookupField = MasterLookupField.Name,
+                                                    string company = null,
+                                                    List<string> fetchList = null) where LedgerType : Ledger
     {
-        //If parameter is null Get value from instance
-        company ??= Company;
-        Nativelist ??= new() { "Address", "InterestCollection", "CanDelete", "REMOTEGUID", "*" };
-        StaticVariables sv = new() { SVCompany = company };
-        List<string> Filters = new() { "Cusfilter" };
-        List<string> SystemFilter = new() { (LookupField is MasterLookupField.MasterId or MasterLookupField.AlterId) ? $"${LookupField} = {LookupValue}" : $"${LookupField} = \"{LookupValue}\"" };
-
-        string xml = await GetNativeCollectionXML(rName: "Ledgers",
-                                                  colType: "Masters",
-                                                  Sv: sv,
-                                                  NativeFields: Nativelist,
-                                                  Filters: Filters,
-                                                  SystemFilters: SystemFilter);
-
-        LedgerEnvelope ledgerEnvelope = GetObjfromXml<LedgerEnvelope>(xml);
-        if (GetObjfromXml<LedgerEnvelope>(xml).Body.Data.Collection.Ledgers.Count > 0)
+        try
         {
-            Ledger ledger = ledgerEnvelope.Body.Data.Collection.Ledgers[0];
-            ledger.Alias = ledger.LanguageNameList[0].LanguageAlias;
-            ledger.Name ??= ledger.OldName;
-            return ledger;
+            LedgerType Ledger = await GetObjectfromTally<LedgerType>(LookupValue: LookupValue,
+                                                                     LookupField: LookupField,
+                                                                     company: company,
+                                                                     fetchList: fetchList);
+            return Ledger;
         }
-        else
+        catch (ObjectDoesNotExist)
         {
-            throw new ObjectDoesNotExist("Ledger",
-                                         LookupField.ToString(),
-                                         LookupValue,
-                                         company);
+            throw;
         }
     }
 
@@ -1045,43 +1023,26 @@ public class Tally : IDisposable
     /// <param name="fetchList">You can select the list of fields to be fetched from tally if nothing specified it pulls all fields availaible in Tally
     /// </param>
     /// <returns>Returns instance of Models.CostCategory instance with data from tally</returns>
-    public async Task<CostCategory> GetCostCategory(string LookupValue,
+    public async Task<CostCategory> GetCostCategory<CostCategoryType>(string LookupValue,
                                                     MasterLookupField LookupField = MasterLookupField.Name,
                                                     string company = null,
                                                     string fromDate = null,
                                                     string toDate = null,
-                                                    List<string> fetchList = null)
+                                                    List<string> fetchList = null) where CostCategoryType : CostCategory
     {
-        //If parameter is null Get value from instance
-        company ??= Company;
-        fromDate ??= FromDate;
-        toDate ??= ToDate;
-        fetchList ??= new() { "MasterId", "*" };
-        StaticVariables sv = new() { SVCompany = company, SVFromDate = fromDate, SVToDate = toDate };
-        List<string> Filters = new() { "Cusfilter" };
-        List<string> SystemFilter = new() { (LookupField is MasterLookupField.MasterId or MasterLookupField.AlterId) ? $"${LookupField} = {LookupValue}" : $"${LookupField} = \"{LookupValue}\"" };
-
-        string xml = await GetNativeCollectionXML(rName: "CusLedgObj",
-                                                  colType: "CostCategory",
-                                                  Sv: sv,
-                                                  NativeFields: fetchList,
-                                                  Filters: Filters,
-                                                  SystemFilters: SystemFilter);
-
-        CostCatEnvelope costCategoryEnvelope = GetObjfromXml<CostCatEnvelope>(xml);
-        if (costCategoryEnvelope.Body.Data.Collection.CostCategories.Count > 0)
+        try
         {
-            CostCategory costCategory = costCategoryEnvelope.Body.Data.Collection.CostCategories[0];
-            costCategory.Alias = costCategory.LanguageNameList[0].LanguageAlias;
-            costCategory.Name ??= costCategory.OldName;
-            return costCategory;
+            CostCategoryType CostCategory = await GetObjectfromTally<CostCategoryType>(LookupValue: LookupValue,
+                                                                                       LookupField: LookupField,
+                                                                                       company: company,
+                                                                                       fromDate: fromDate,
+                                                                                       toDate: toDate,
+                                                                                       fetchList: fetchList);
+            return CostCategory;
         }
-        else
+        catch (ObjectDoesNotExist)
         {
-            throw new ObjectDoesNotExist("CostCategory",
-                                         LookupField.ToString(),
-                                         LookupValue,
-                                         company);
+            throw;
         }
 
     }
@@ -1131,42 +1092,26 @@ public class Tally : IDisposable
     /// <param name="fetchList">You can select the list of fields to be fetched from tally if nothing specified it pulls all fields availaible in Tally
     /// </param>
     /// <returns>Returns instance of Models.CostCenter instance with data from tally</returns>
-    public async Task<CostCenter> GetCostCenter(string LookupValue,
+    public async Task<CostCenter> GetCostCenter<CostCenterType>(string LookupValue,
                                                 MasterLookupField LookupField = MasterLookupField.Name,
                                                 string company = null,
                                                 string fromDate = null,
                                                 string toDate = null,
-                                                List<string> fetchList = null)
+                                                List<string> fetchList = null) where CostCenterType : CostCenter
     {
-        //If parameter is null Get value from instance
-        company ??= Company;
-        fromDate ??= FromDate;
-        toDate ??= ToDate;
-        fetchList ??= new() { "MasterId", "*" };
-        StaticVariables sv = new() { SVCompany = company, SVFromDate = fromDate, SVToDate = toDate };
-        List<string> Filters = new() { "Cusfilter" };
-        List<string> SystemFilter = new() { (LookupField is MasterLookupField.MasterId or MasterLookupField.AlterId) ? $"${LookupField} = {LookupValue}" : $"${LookupField} = \"{LookupValue}\"" };
-
-        string xml = await GetNativeCollectionXML(rName: "CusCostCentObj",
-                                                  colType: "CostCenter",
-                                                  Sv: sv,
-                                                  NativeFields: fetchList,
-                                                  Filters: Filters,
-                                                  SystemFilters: SystemFilter);
-        CostCentEnvelope costCenterEnv = GetObjfromXml<CostCentEnvelope>(xml);
-        if (costCenterEnv.Body.Data.Collection.CostCenters.Count > 0)
+        try
         {
-            CostCenter costCenter = costCenterEnv.Body.Data.Collection.CostCenters[0];
-            costCenter.Alias = costCenter.LanguageNameList[0].LanguageAlias;
-            costCenter.Name ??= costCenter.OldName;
-            return costCenter;
+            CostCenterType CostCenter = await GetObjectfromTally<CostCenterType>(LookupValue: LookupValue,
+                                                                                 LookupField: LookupField,
+                                                                                 company: company,
+                                                                                 fromDate: fromDate,
+                                                                                 toDate: toDate,
+                                                                                 fetchList: fetchList);
+            return CostCenter;
         }
-        else
+        catch (ObjectDoesNotExist)
         {
-            throw new ObjectDoesNotExist("CostCenter",
-                                         LookupField.ToString(),
-                                         LookupValue,
-                                         company);
+            throw;
         }
 
     }
@@ -1220,43 +1165,28 @@ public class Tally : IDisposable
     /// <param name="fetchList">You can select the list of fields to be fetched from tally if nothing specified it pulls all fields availaible in Tally
     /// </param>
     /// <returns>Returns instance of Models.StockGroup instance with data from tally</returns>
-    public async Task<StockGroup> GetStockGroup(string LookupValue,
+    public async Task<StockGroup> GetStockGroup<StockGroupType>(string LookupValue,
                                                 MasterLookupField LookupField = MasterLookupField.Name,
                                                 string company = null,
                                                 string fromDate = null,
                                                 string toDate = null,
-                                                List<string> fetchList = null)
+                                                List<string> fetchList = null) where StockGroupType : StockGroup
     {
-        //If parameter is null Get value from instance
-        company ??= Company;
-        fromDate ??= FromDate;
-        toDate ??= ToDate;
-        fetchList ??= new() { "MasterId", "*" };
-        StaticVariables sv = new() { SVCompany = company, SVFromDate = fromDate, SVToDate = toDate };
-        List<string> Filters = new() { "Cusfilter" };
-        List<string> SystemFilter = new() { (LookupField is MasterLookupField.MasterId or MasterLookupField.AlterId) ? $"${LookupField} = {LookupValue}" : $"${LookupField} = \"{LookupValue}\"" };
+        try
+        {
+            StockGroupType StockGroup = await GetObjectfromTally<StockGroupType>(LookupValue: LookupValue,
+                                                                                 LookupField: LookupField,
+                                                                                 company: company,
+                                                                                 fromDate: fromDate,
+                                                                                 toDate: toDate,
+                                                                                 fetchList: fetchList);
+            return StockGroup;
+        }
+        catch (ObjectDoesNotExist)
+        {
+            throw;
+        }
 
-        string xml = await GetNativeCollectionXML(rName: "CusStckGrpObj",
-                                                  colType: "StockGroup",
-                                                  Sv: sv,
-                                                  NativeFields: fetchList,
-                                                  Filters: Filters,
-                                                  SystemFilters: SystemFilter);
-        StockGrpEnvelope stockGrpEnvelope = GetObjfromXml<StockGrpEnvelope>(xml);
-        if (stockGrpEnvelope.Body.Data.Collection.StockGroups.Count > 0)
-        {
-            StockGroup stockGroup = stockGrpEnvelope.Body.Data.Collection.StockGroups[0];
-            stockGroup.Alias = stockGroup.LanguageNameList[0].LanguageAlias;
-            stockGroup.Name ??= stockGroup.OldName;
-            return stockGroup;
-        }
-        else
-        {
-            throw new ObjectDoesNotExist("StockGroup",
-                                         LookupField.ToString(),
-                                         LookupValue,
-                                         company);
-        }
     }
 
 
@@ -1271,7 +1201,8 @@ public class Tally : IDisposable
     ///  Presult.result will be empty if sucess 
     /// </returns>
     public async Task<PResult> PostStockGroup(StockGroup stockGroup,
-                                              string company = null, XmlAttributeOverrides xmlAttributeOverrides = null)
+                                              string company = null,
+                                              XmlAttributeOverrides xmlAttributeOverrides = null)
     {
         //If parameter is null Get value from instance
         company ??= Company;
@@ -1307,43 +1238,28 @@ public class Tally : IDisposable
     /// <param name="fetchList">You can select the list of fields to be fetched from tally if nothing specified it pulls all fields availaible in Tally
     /// </param>
     /// <returns>Returns instance of Models.StockCategory with data from tally</returns>
-    public async Task<StockCategory> GetStockCategory(string LookupValue,
+    public async Task<StockCategory> GetStockCategory<StockCategoryType>(string LookupValue,
                                                       MasterLookupField LookupField = MasterLookupField.Name,
                                                       string company = null,
                                                       string fromDate = null,
                                                       string toDate = null,
-                                                      List<string> fetchList = null)
+                                                      List<string> fetchList = null) where StockCategoryType : StockCategory
     {
-        //If parameter is null Get value from instance
-        company ??= Company;
-        fromDate ??= FromDate;
-        toDate ??= ToDate;
-        fetchList ??= new() { "MasterId", "*" };
-        StaticVariables sv = new() { SVCompany = company, SVFromDate = fromDate, SVToDate = toDate };
-        List<string> Filters = new() { "Cusfilter" };
-        List<string> SystemFilter = new() { (LookupField is MasterLookupField.MasterId or MasterLookupField.AlterId) ? $"${LookupField} = {LookupValue}" : $"${LookupField} = \"{LookupValue}\"" };
+        try
+        {
+            StockCategoryType StockCategory = await GetObjectfromTally<StockCategoryType>(LookupValue: LookupValue,
+                                                                                          LookupField: LookupField,
+                                                                                          company: company,
+                                                                                          fromDate: fromDate,
+                                                                                          toDate: toDate,
+                                                                                          fetchList: fetchList);
+            return StockCategory;
+        }
+        catch (ObjectDoesNotExist)
+        {
+            throw;
+        }
 
-        string xml = await GetNativeCollectionXML(rName: "CusStockCatObj",
-                                                  colType: "StockCategory",
-                                                  Sv: sv,
-                                                  NativeFields: fetchList,
-                                                  Filters: Filters,
-                                                  SystemFilters: SystemFilter);
-        StockCatEnvelope StockCategoryEnve = GetObjfromXml<StockCatEnvelope>(xml);
-        if (StockCategoryEnve.Body.Data.Collection.StockCategories.Count > 0)
-        {
-            StockCategory stockCategory = StockCategoryEnve.Body.Data.Collection.StockCategories[0];
-            stockCategory.Alias = stockCategory.LanguageNameList[0].LanguageAlias;
-            stockCategory.Name ??= stockCategory.OldName;
-            return stockCategory;
-        }
-        else
-        {
-            throw new ObjectDoesNotExist("StockCategory",
-                                         LookupField.ToString(),
-                                         LookupValue,
-                                         company);
-        }
     }
 
 
@@ -1393,45 +1309,29 @@ public class Tally : IDisposable
     /// <param name="fetchList">You can select the list of fields to be fetched from tally if nothing specified it pulls all fields availaible in Tally
     /// </param>
     /// <returns>Returns instance of Models.StockItem  with data from tally</returns>
-    public async Task<StockItem> GetStockItem(string LookupValue,
-                                              MasterLookupField LookupField = MasterLookupField.Name,
-                                              string company = null,
-                                              string fromDate = null,
-                                              string toDate = null,
-                                              List<string> fetchList = null)
+    public async Task<StockItem> GetStockItem<StockItemType>(string LookupValue,
+                                                             MasterLookupField LookupField = MasterLookupField.Name,
+                                                             string company = null,
+                                                             string fromDate = null,
+                                                             string toDate = null,
+                                                             List<string> fetchList = null) where StockItemType : StockItem
     {
-        //If parameter is null Get value from instance
-        company ??= Company;
-        fromDate ??= FromDate;
-        toDate ??= ToDate;
-        fetchList ??= new() { "MasterId", "*" };
-        StaticVariables sv = new() { SVCompany = company, SVFromDate = fromDate, SVToDate = toDate };
-        List<string> Filters = new() { "Cusfilter" };
-        List<string> SystemFilter = new() { (LookupField is MasterLookupField.MasterId or MasterLookupField.AlterId) ? $"${LookupField} = {LookupValue}" : $"${LookupField} = \"{LookupValue}\"" };
+        try
+        {
+            StockItemType StockItem = await GetObjectfromTally<StockItemType>(LookupValue: LookupValue,
+                                                                              LookupField: LookupField,
+                                                                              company: company,
+                                                                              fromDate: fromDate,
+                                                                              toDate: toDate,
+                                                                              fetchList: fetchList);
+            return StockItem;
+        }
+        catch (ObjectDoesNotExist)
+        {
+            throw;
+        }
 
-        string xml = await GetNativeCollectionXML(rName: "CusStckItmObj",
-                                                  colType: "StockItem",
-                                                  Sv: sv,
-                                                  NativeFields: fetchList,
-                                                  Filters: Filters,
-                                                  SystemFilters: SystemFilter);
-        StockItemEnvelope StockItemEnvel = GetObjfromXml<StockItemEnvelope>(xml);
-        if (StockItemEnvel.Body.Data.Collection.StockItems.Count > 0)
-        {
-            StockItem stockItem = StockItemEnvel.Body.Data.Collection.StockItems[0];
-            stockItem.Alias = stockItem.LanguageNameList[0].LanguageAlias;
-            stockItem.Name ??= stockItem.OldName;
-            return stockItem;
-        }
-        else
-        {
-            throw new ObjectDoesNotExist("StockItem",
-                                         LookupField.ToString(),
-                                         LookupValue,
-                                         company);
-        }
     }
-
 
     /// <summary>
     /// Create/Alter/Delete StockItem in Tally
@@ -1480,41 +1380,26 @@ public class Tally : IDisposable
     /// <param name="fetchList">You can select the list of fields to be fetched from tally if nothing specified it pulls all fields availaible in Tally
     /// </param>
     /// <returns>Returns instance of Models.Unit  with data from tally</returns>
-    public async Task<Unit> GetUnit(string LookupValue,
-                                    MasterLookupField LookupField = MasterLookupField.Name,
-                                    string company = null,
-                                    string fromDate = null,
-                                    string toDate = null,
-                                    List<string> fetchList = null)
+    public async Task<Unit> GetUnit<UnitType>(string LookupValue,
+                                              MasterLookupField LookupField = MasterLookupField.Name,
+                                              string company = null,
+                                              string fromDate = null,
+                                              string toDate = null,
+                                              List<string> fetchList = null) where UnitType : Unit
     {
-        //If parameter is null Get value from instance
-        company ??= Company;
-        fromDate ??= FromDate;
-        toDate ??= ToDate;
-        fetchList ??= new() { "MasterId", "*" };
-        StaticVariables sv = new() { SVCompany = company, SVFromDate = fromDate, SVToDate = toDate };
-        List<string> Filters = new() { "Cusfilter" };
-        List<string> SystemFilter = new() { (LookupField is MasterLookupField.MasterId or MasterLookupField.AlterId) ? $"${LookupField} = {LookupValue}" : $"${LookupField} = \"{LookupValue}\"" };
-
-        string xml = await GetNativeCollectionXML(rName: "CusUnitObj",
-                                                  colType: "Unit",
-                                                  Sv: sv,
-                                                  NativeFields: fetchList,
-                                                  Filters: Filters,
-                                                  SystemFilters: SystemFilter);
-        UnitEnvelope UnitEnvelope = GetObjfromXml<UnitEnvelope>(xml);
-        if (UnitEnvelope.Body.Data.Collection.Units.Count > 0)
+        try
         {
-            Unit unit = UnitEnvelope.Body.Data.Collection.Units[0];
-            unit.Name ??= unit.OldName;
-            return unit;
+            UnitType Unit = await GetObjectfromTally<UnitType>(LookupValue: LookupValue,
+                                                               LookupField: LookupField,
+                                                               company: company,
+                                                               fromDate: fromDate,
+                                                               toDate: toDate,
+                                                               fetchList: fetchList);
+            return Unit;
         }
-        else
+        catch (ObjectDoesNotExist)
         {
-            throw new ObjectDoesNotExist("Unit",
-                                         LookupField.ToString(),
-                                         LookupValue,
-                                         company);
+            throw;
         }
 
     }
@@ -1531,7 +1416,8 @@ public class Tally : IDisposable
     ///  Presult.result will be empty if sucess 
     /// </returns>
     public async Task<PResult> PostUnit(Unit unit,
-                                        string company = null, XmlAttributeOverrides xmlAttributeOverrides = null)
+                                        string company = null,
+                                        XmlAttributeOverrides xmlAttributeOverrides = null)
     {
         //If parameter is null Get value from instance
         company ??= Company;
@@ -1562,46 +1448,29 @@ public class Tally : IDisposable
     /// <param name="fetchList">You can select the list of fields to be fetched from tally if nothing specified it pulls all fields availaible in Tally
     /// </param>
     /// <returns>Returns instance of Models.Godown  with data from tally</returns>
-    public async Task<Godown> GetGodown(string LookupValue,
+    public async Task<Godown> GetGodown<GodownType>(string LookupValue,
                                         MasterLookupField LookupField = MasterLookupField.Name,
                                         string company = null,
                                         string fromDate = null,
                                         string toDate = null,
-                                        List<string> fetchList = null)
+                                        List<string> fetchList = null) where GodownType : Godown
     {
-        //If parameter is null Get value from instance
-        company ??= Company;
-        fromDate ??= FromDate;
-        toDate ??= ToDate;
-        fetchList ??= new() { "MasterId", "*" };
-        StaticVariables sv = new() { SVCompany = company, SVFromDate = fromDate, SVToDate = toDate };
-        List<string> Filters = new() { "Customfilter" };
-        List<string> SystemFilter = new() { (LookupField is MasterLookupField.MasterId or MasterLookupField.AlterId) ? $"${LookupField} = {LookupValue}" : $"${LookupField} = \"{LookupValue}\"" };
-
-        string xml = await GetNativeCollectionXML(rName: "CusGdwnObj",
-                                                  colType: "Godown",
-                                                  Sv: sv,
-                                                  NativeFields: fetchList,
-                                                  Filters: Filters,
-                                                  SystemFilters: SystemFilter);
-        GodownEnvelope godownEnvelope = GetObjfromXml<GodownEnvelope>(xml);
-        if (godownEnvelope.Body.Data.Collection.Godowns.Count > 0)
+        try
         {
-            Godown godown = godownEnvelope.Body.Data.Collection.Godowns[0];
-            godown.Alias = godown.LanguageNameList[0].LanguageAlias;
-            godown.Name ??= godown.OldName;
-            return godown;
-
+            GodownType Godown = await GetObjectfromTally<GodownType>(LookupValue: LookupValue,
+                                                                     LookupField: LookupField,
+                                                                     company: company,
+                                                                     fromDate: fromDate,
+                                                                     toDate: toDate,
+                                                                     fetchList: fetchList);
+            return Godown;
         }
-        else
+        catch (ObjectDoesNotExist)
         {
-            throw new ObjectDoesNotExist("Godown",
-                                         LookupField.ToString(),
-                                         LookupValue,
-                                         company);
+            throw;
         }
+
     }
-
 
     /// <summary>
     /// Create/Alter/Delete Godown in Tally,
@@ -1614,7 +1483,8 @@ public class Tally : IDisposable
     ///  Presult.result will be empty if sucess 
     /// </returns>
     public async Task<PResult> PostGodown(Godown godown,
-                                          string company = null, XmlAttributeOverrides xmlAttributeOverrides = null)
+                                          string company = null,
+                                          XmlAttributeOverrides xmlAttributeOverrides = null)
     {
         //If parameter is null Get value from instance
         company ??= Company;
@@ -1650,42 +1520,26 @@ public class Tally : IDisposable
     /// <param name="fetchList">You can select the list of fields to be fetched from tally if nothing specified it pulls all fields availaible in Tally
     /// </param>
     /// <returns>Returns instance of Models.VoucherType  with data from tally</returns>
-    public async Task<VoucherType> GetVoucherType(string LookupValue,
+    public async Task<VoucherType> GetVoucherType<VchrType>(string LookupValue,
                                                   MasterLookupField LookupField = MasterLookupField.Name,
                                                   string company = null,
                                                   string fromDate = null,
                                                   string toDate = null,
-                                                  List<string> fetchList = null)
+                                                  List<string> fetchList = null) where VchrType : VoucherType
     {
-        //If parameter is null Get value from instance
-        company ??= Company;
-        fromDate ??= FromDate;
-        toDate ??= ToDate;
-        fetchList ??= new() { "MasterId", "*" };
-        StaticVariables sv = new() { SVCompany = company, SVFromDate = fromDate, SVToDate = toDate };
-        List<string> Filters = new() { "Cusfilter" };
-        List<string> SystemFilter = new() { (LookupField is MasterLookupField.MasterId or MasterLookupField.AlterId) ? $"${LookupField} = {LookupValue}" : $"${LookupField} = \"{LookupValue}\"" };
-
-        string xml = await GetNativeCollectionXML(rName: "CusVchTypeObj",
-                                                  colType: "VoucherType",
-                                                  Sv: sv,
-                                                  NativeFields: fetchList,
-                                                  Filters: Filters,
-                                                  SystemFilters: SystemFilter);
-        VoucherTypeEnvelope VoucherTypeEnvelope = GetObjfromXml<VoucherTypeEnvelope>(xml);
-        if (VoucherTypeEnvelope.Body.Data.Collection.VoucherTypes.Count > 0)
+        try
         {
-            VoucherType voucherType = VoucherTypeEnvelope.Body.Data.Collection.VoucherTypes[0];
-            voucherType.Alias = voucherType.LanguageNameList[0].LanguageAlias;
-            voucherType.Name ??= voucherType.OldName;
-            return voucherType;
+            VchrType VoucherType = await GetObjectfromTally<VchrType>(LookupValue: LookupValue,
+                                                                      LookupField: LookupField,
+                                                                      company: company,
+                                                                      fromDate: fromDate,
+                                                                      toDate: toDate,
+                                                                      fetchList: fetchList);
+            return VoucherType;
         }
-        else
+        catch (ObjectDoesNotExist)
         {
-            throw new ObjectDoesNotExist("VoucherType",
-                                         LookupField.ToString(),
-                                         LookupValue,
-                                         company);
+            throw;
         }
 
     }
@@ -1733,43 +1587,28 @@ public class Tally : IDisposable
     /// <param name="fetchList">You can select the list of fields to be fetched from tally if nothing specified it pulls all fields availaible in Tally
     /// </param>
     /// <returns>Returns instance of Models.Currency  with data from tally</returns>
-    public async Task<Currency> GetCurrency(string LookupValue,
+    public async Task<Currency> GetCurrency<CurrencyType>(string LookupValue,
                                             MasterLookupField LookupField = MasterLookupField.Name,
                                             string company = null,
                                             string fromDate = null,
                                             string toDate = null,
-                                            List<string> fetchList = null)
+                                            List<string> fetchList = null) where CurrencyType : Currency
     {
-        //If parameter is null Get value from instance
-        company ??= Company;
-        fromDate ??= FromDate;
-        toDate ??= ToDate;
-        fetchList ??= new() { "*" };
-        StaticVariables sv = new() { SVCompany = company, SVFromDate = fromDate, SVToDate = toDate };
-        List<string> Filters = new() { "filter" };
-        List<string> SystemFilter = new() { (LookupField is MasterLookupField.MasterId or MasterLookupField.AlterId) ? $"${LookupField} = {LookupValue}" : $"${LookupField} = \"{LookupValue}\"" };
-
-        string xml = await GetNativeCollectionXML(rName: "CusCurrencyObj",
-                                                  colType: "Currency",
-                                                  Sv: sv,
-                                                  NativeFields: fetchList,
-                                                  Filters: Filters,
-                                                  SystemFilters: SystemFilter);
-        CurrencyEnvelope CurrencyEnvelope = GetObjfromXml<CurrencyEnvelope>(xml);
-        if (CurrencyEnvelope.Body.Data.Collection.Currencies.Count > 0)
+        try
         {
-            Currency currency = CurrencyEnvelope.Body.Data.Collection.Currencies[0];
-            return currency;
+            CurrencyType Currency = await GetObjectfromTally<CurrencyType>(LookupValue: LookupValue,
+                                                                           LookupField: LookupField,
+                                                                           company: company,
+                                                                           fromDate: fromDate,
+                                                                           toDate: toDate,
+                                                                           fetchList: fetchList);
+            return Currency;
         }
-        else
+        catch (ObjectDoesNotExist)
         {
-            throw new ObjectDoesNotExist("Currency",
-                                         LookupField.ToString(),
-                                         LookupValue,
-                                         company);
+            throw;
         }
     }
-
 
     /// <summary>
     /// Create/Alter/Delete VoucherType in Tally,
@@ -1782,7 +1621,7 @@ public class Tally : IDisposable
     ///  Presult.result will be empty if sucess 
     /// </returns>
     public async Task<PResult> PostCurrency(Currency currency,
-                                            string company = null, XmlAttributeOverrides xmlAttributeOverrides = null)
+                                        string company = null, XmlAttributeOverrides xmlAttributeOverrides = null)
     {
         //If parameter is null Get value from instance
         company ??= Company;
@@ -1813,43 +1652,28 @@ public class Tally : IDisposable
     /// <param name="fetchList">You can select the list of fields to be fetched from tally if nothing specified it pulls all fields availaible in Tally
     /// </param>
     /// <returns>Returns instance of Models.AttendanceType  with data from tally</returns>
-    public async Task<AttendanceType> GetAttendanceType(string LookupValue,
+    public async Task<AttendanceType> GetAttendanceType<AttendnceType>(string LookupValue,
                                                         MasterLookupField LookupField = MasterLookupField.Name,
                                                         string company = null,
                                                         string fromDate = null,
                                                         string toDate = null,
-                                                        List<string> fetchList = null)
+                                                        List<string> fetchList = null) where AttendnceType : AttendanceType
     {
-        //If parameter is null Get value from instance
-        company ??= Company;
-        fromDate ??= FromDate;
-        toDate ??= ToDate;
-        fetchList ??= new() { "*" };
-        StaticVariables sv = new() { SVCompany = company, SVFromDate = fromDate, SVToDate = toDate };
-        List<string> Filters = new() { "filter" };
-        List<string> SystemFilter = new() { (LookupField is MasterLookupField.MasterId or MasterLookupField.AlterId) ? $"${LookupField} = {LookupValue}" : $"${LookupField} = \"{LookupValue}\"" };
+        try
+        {
+            AttendnceType AttendanceType = await GetObjectfromTally<AttendnceType>(LookupValue: LookupValue,
+                                                                                   LookupField: LookupField,
+                                                                                   company: company,
+                                                                                   fromDate: fromDate,
+                                                                                   toDate: toDate,
+                                                                                   fetchList: fetchList);
+            return AttendanceType;
+        }
+        catch (ObjectDoesNotExist)
+        {
+            throw;
+        }
 
-        string xml = await GetNativeCollectionXML(rName: "CusAttndTypeObj",
-                                                  colType: "AttendanceType",
-                                                  Sv: sv,
-                                                  NativeFields: fetchList,
-                                                  Filters: Filters,
-                                                  SystemFilters: SystemFilter);
-        AttendanceTypeEnvelope attendanceTypeEnvelope = GetObjfromXml<AttendanceTypeEnvelope>(xml);
-        if (attendanceTypeEnvelope.Body.Data.Collection.AttendanceTypes.Count > 0)
-        {
-            AttendanceType attendanceType = attendanceTypeEnvelope.Body.Data.Collection.AttendanceTypes[0];
-            attendanceType.Alias = attendanceType.LanguageNameList[0].LanguageAlias;
-            attendanceType.Name ??= attendanceType.OldName;
-            return attendanceType;
-        }
-        else
-        {
-            throw new ObjectDoesNotExist("AttendanceType",
-                                         LookupField.ToString(),
-                                         LookupValue,
-                                         company);
-        }
     }
 
 
@@ -1897,49 +1721,28 @@ public class Tally : IDisposable
     /// <param name="fetchList">You can select the list of fields to be fetched from tally if nothing specified it pulls all fields availaible in Tally
     /// </param>
     /// <returns>Returns instance of Models.CostCenter instance with data from tally</returns>
-    public async Task<EmployeeGroup> GetEmployeeGroup(string LookupValue,
+    public async Task<EmployeeGroup> GetEmployeeGroup<EmployeeGroupType>(string LookupValue,
                                                       MasterLookupField LookupField = MasterLookupField.Name,
                                                       string company = null,
                                                       string fromDate = null,
                                                       string toDate = null,
-                                                      List<string> fetchList = null)
+                                                      List<string> fetchList = null) where EmployeeGroupType : EmployeeGroup
     {
-        //If parameter is null Get value from instance
-        company ??= Company;
-        fromDate ??= FromDate;
-        toDate ??= ToDate;
-        fetchList ??= new() { "*" };
-        StaticVariables sv = new() { SVCompany = company, SVFromDate = fromDate, SVToDate = toDate };
-        List<string> Filters = new() { "filter" };
-        List<string> SystemFilter = new()
+        try
         {
-            (LookupField is MasterLookupField.MasterId or MasterLookupField.AlterId) ?
-            $"${LookupField} = {LookupValue}" :
-            $"${LookupField} = \"{LookupValue}\""
-
-        };
-
-        string xml = await GetNativeCollectionXML(rName: "CusEmployeeGrpObj",
-                                                  colType: "Costcenter",
-                                                  Sv: sv,
-                                                  NativeFields: fetchList,
-                                                  Filters: Filters,
-                                                  SystemFilters: SystemFilter);
-        EmployeeGroupEnvelope employeeGroupEnvelope = GetObjfromXml<EmployeeGroupEnvelope>(xml);
-        if (employeeGroupEnvelope.Body.Data.Collection.EmployeeGroups.Count > 0)
-        {
-            EmployeeGroup employeeGroup = employeeGroupEnvelope.Body.Data.Collection.EmployeeGroups[0];
-            employeeGroup.Alias = employeeGroup.LanguageNameList[0].LanguageAlias;
-            employeeGroup.Name ??= employeeGroup.OldName;
-            return employeeGroup;
+            EmployeeGroupType EmployeeGroup = await GetObjectfromTally<EmployeeGroupType>(LookupValue: LookupValue,
+                                                                                          LookupField: LookupField,
+                                                                                          company: company,
+                                                                                          fromDate: fromDate,
+                                                                                          toDate: toDate,
+                                                                                          fetchList: fetchList);
+            return EmployeeGroup;
         }
-        else
+        catch (ObjectDoesNotExist)
         {
-            throw new ObjectDoesNotExist("EmployeeGroup",
-                                         LookupField.ToString(),
-                                         LookupValue,
-                                         company);
+            throw;
         }
+
     }
 
     ///// <summary>
@@ -1984,45 +1787,28 @@ public class Tally : IDisposable
     /// <param name="fetchList">You can select the list of fields to be fetched from tally if nothing specified it pulls all fields availaible in Tally
     /// </param>
     /// <returns>Returns instance of Models.CostCenter instance with data from tally</returns>
-    public async Task<Employee> GetEmployee(string LookupValue,
-                                            MasterLookupField LookupField = MasterLookupField.Name,
-                                            string company = null,
-                                            List<string> fetchList = null)
+    public async Task<Employee> GetEmployee<EmployeeType>(string LookupValue,
+                                                          MasterLookupField LookupField = MasterLookupField.Name,
+                                                          string company = null,
+                                                          string fromDate = null,
+                                                          string toDate = null,
+                                                          List<string> fetchList = null) where EmployeeType : Employee
     {
-        //If parameter is null Get value from instance
-        company ??= Company;
-        fetchList ??= new() { "*" };
-        StaticVariables sv = new() { SVCompany = company };
-        List<string> Filters = new() { "filter" };
-        List<string> SystemFilter = new()
+        try
         {
-            (LookupField is MasterLookupField.MasterId or MasterLookupField.AlterId) ?
-            $"${LookupField} = {LookupValue}" :
-            $"${LookupField} = \"{LookupValue}\""
-
-        };
-
-        string xml = await GetNativeCollectionXML(rName: "CusEmployeeObj",
-                                                  colType: "Costcenter",
-                                                  Sv: sv,
-                                                  NativeFields: fetchList,
-                                                  Filters: Filters,
-                                                  SystemFilters: SystemFilter);
-        EmployeeEnvelope EmployeeEnvelope = GetObjfromXml<EmployeeEnvelope>(xml);
-        if (EmployeeEnvelope.Body.Data.Collection.Employees.Count > 0)
-        {
-            Employee employee = EmployeeEnvelope.Body.Data.Collection.Employees[0];
-            employee.Alias = employee.LanguageNameList[0].LanguageAlias;
-            employee.Name ??= employee.OldName;
-            return employee;
+            EmployeeType Employee = await GetObjectfromTally<EmployeeType>(LookupValue: LookupValue,
+                                                                           LookupField: LookupField,
+                                                                           company: company,
+                                                                           fromDate: fromDate,
+                                                                           toDate: toDate,
+                                                                           fetchList: fetchList);
+            return Employee;
         }
-        else
+        catch (ObjectDoesNotExist)
         {
-            throw new ObjectDoesNotExist("Employee",
-                                         LookupField.ToString(),
-                                         LookupValue,
-                                         company);
+            throw;
         }
+
     }
 
     ///// <summary>
@@ -2068,45 +1854,25 @@ public class Tally : IDisposable
     /// <param name="fetchList">You can select the list of fields to be fetched from tally if nothing specified it pulls all fields availaible in Tally
     /// </param>
     /// <returns>Returns instance of Models.CostCenter instance with data from tally</returns>
-    public async Task<Voucher> GetVoucher(string LookupValue,
+    public async Task<Voucher> GetVoucher<VchType>(string LookupValue,
                                           VoucherLookupField LookupField = VoucherLookupField.VoucherNumber,
                                           string company = null,
                                           List<string> fetchList = null,
-                                          VoucherViewType viewName = VoucherViewType.AccountingVoucherView)
+                                          VoucherViewType viewName = VoucherViewType.AccountingVoucherView) where VchType : Voucher
     {
-        //If parameter is null Get value from instance
-        company ??= Company;
-        fetchList ??= new() { "MasterId", "LEDGERENTRIES", "INVENTORYENTRIES", "*" };
-        StaticVariables sv = new() { SVCompany = company, ViewName = viewName };
-        List<string> Filters = new() { "filter" };
-        List<string> SystemFilter = new()
+        try
         {
-            (LookupField == VoucherLookupField.MasterId ||
-            LookupField == VoucherLookupField.AlterId) ?
-            $"${LookupField} = {LookupValue}" :
-            $"${LookupField} = \"{LookupValue}\""
-
-        };
-
-        string xml = await GetNativeCollectionXML(rName: "CusVoucherObj",
-                                                  colType: "Voucher",
-                                                  Sv: sv,
-                                                  NativeFields: fetchList,
-                                                  Filters: Filters,
-                                                  SystemFilters: SystemFilter);
-        VoucherEnvelope VchEnvelope = GetObjfromXml<VoucherEnvelope>(xml);
-        if (VchEnvelope.Body.Data.Collection.Vouchers.Count > 0)
-        {
-            Voucher voucher = VchEnvelope.Body.Data.Collection.Vouchers[0];
-            return voucher;
+            VchType Voucher = await GetObjectfromTally<VchType>(LookupValue: LookupValue,
+                                                                LookupField: LookupField,
+                                                                company: company,
+                                                                fetchList: fetchList);
+            return Voucher;
         }
-        else
+        catch (ObjectDoesNotExist)
         {
-            throw new ObjectDoesNotExist("Voucher",
-                                         LookupField.ToString(),
-                                         LookupValue,
-                                         company);
+            throw;
         }
+
     }
 
 
