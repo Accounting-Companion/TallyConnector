@@ -427,6 +427,11 @@ public class Ledger : TallyXmlJson, ITallyObject
         CreateNamesList();
         return base.GetXML(attrOverrides);
     }
+
+    public void PrepareForExport()
+    {
+        CreateNamesList();
+    }
 }
 
 [XmlRoot(ElementName = "INTERESTCOLLECTION.LIST")]

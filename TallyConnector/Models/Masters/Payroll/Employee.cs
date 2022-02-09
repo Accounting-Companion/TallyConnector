@@ -157,6 +157,11 @@ public class Employee : MCS.CostCenter
     [XmlElement(ElementName = "PAYMENTDETAILS.LIST")]
     public List<PaymentDetails> PaymentDetails { get; set; }
 
+    public new void CleanForExport()
+    {
+        CreateNamesList();
+    }
+
 
 }
 [XmlRoot(ElementName = "TAXREGIMEDETAILS.LIST")]

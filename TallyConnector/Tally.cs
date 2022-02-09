@@ -659,18 +659,21 @@ public class Tally : IDisposable
     /// <exception cref="ObjectDoesNotExist"></exception>
     public async Task<ReturnType> GetObjectfromTally<ReturnType>(string LookupValue,
                                                   VoucherLookupField LookupField = VoucherLookupField.MasterId,
+                                                  bool Isinventory = false,
                                                   string company = null,
                                                   string fromDate = null,
                                                   string toDate = null,
-                                                  List<string> fetchList = null) where ReturnType : Voucher
+                                                  List<string> fetchList = null,
+                                                  XmlAttributeOverrides xmlAttributeOverrides = null) where ReturnType : Voucher
     {
         //If parameter is null Get value from instance
         company ??= Company;
         fromDate ??= FromDate;
         toDate ??= ToDate;
-        fetchList ??= new() { "MasterId", "*" };
+        fetchList ??= new() { "MasterId", "*", "AllledgerEntries", "ledgerEntries", "Allinventoryenntries", "InventoryEntries", "InventoryEntriesIn", "InventoryEntriesOut" };
 
         StaticVariables sv = new() { SVCompany = company, SVFromDate = fromDate, SVToDate = toDate };
+        sv.ViewName = Isinventory ? VoucherViewType.None : VoucherViewType.AccountingVoucherView;
         string filterformulae;
         if (LookupField is VoucherLookupField.MasterId or VoucherLookupField.AlterId)
         {
@@ -683,8 +686,9 @@ public class Tally : IDisposable
         List<Filter> filters = new() { new Filter() { FilterName = "masterfilter", FilterFormulae = filterformulae } };
 
         List<ReturnType> objects = await GetNativeCollectionXML<ReturnType>(sv,
-                                                                      NativeFields: fetchList,
-                                                                      filters: filters);
+                                                                            NativeFields: fetchList,
+                                                                            filters: filters,
+                                                                            xmlAttributeOverrides: xmlAttributeOverrides);
         if (objects.Count > 0)
         {
             var TallyObject = objects[0];
@@ -722,7 +726,8 @@ public class Tally : IDisposable
                                                                  string company = null,
                                                                  string fromDate = null,
                                                                  string toDate = null,
-                                                                 List<string> fetchList = null) where ReturnType : TallyBaseObject, ITallyObject
+                                                                 List<string> fetchList = null,
+                                                                 XmlAttributeOverrides xmlAttributeOverrides = null) where ReturnType : TallyBaseObject, ITallyObject
     {
         //If parameter is null Get value from instance
         company ??= Company;
@@ -752,7 +757,8 @@ public class Tally : IDisposable
         List<ReturnType> objects = await GetNativeCollectionXML<ReturnType>(Sv: sv,
                                                                             ColType: isDynamicBal ? null : "Masters",
                                                                             NativeFields: fetchList,
-                                                                            filters: filters);
+                                                                            filters: filters,
+                                                                            xmlAttributeOverrides: xmlAttributeOverrides);
         if (objects.Count > 0)
         {
             var TallyMaster = objects[0];
@@ -784,12 +790,40 @@ public class Tally : IDisposable
 
     }
 
+    /// <summary>
+    /// Able to create/Uptate/Delete tally objects
+    /// </summary>
+    /// <typeparam name="ObjectType">Type of Model You are sending</typeparam>
+    /// <param name="Object">Instance of object</param>
+    /// <param name="company">Company name to be sent</param>
+    /// <param name="xmlAttributeOverrides"></param>
+    /// <returns></returns>
+    public async Task<PResult> PostObjectToTally<ObjectType>(ObjectType Object,
+                                                             string company = null,
+                                                             XmlAttributeOverrides xmlAttributeOverrides = null) where ObjectType : ITallyObject
+    {
+        //If parameter is null Get value from instance
+        company ??= Company;
+        Envelope<ObjectType> Objectenvelope = new();
+        Objectenvelope.Header = new(Request: "Import", Type: "Data", ID: "All Masters");
+        Objectenvelope.Body.Desc.StaticVariables = new() { SVCompany = company };
+        
+        Object.PrepareForExport();
+
+        Objectenvelope.Body.Data.Message.Objects.Add(Object);
+        string ReqXml = Objectenvelope.GetXML(xmlAttributeOverrides);
+        string RespXml = await SendRequest(ReqXml);
+        PResult result = ParseResponse(RespXml);
+        return result;
+    }
+
     private async Task<List<ReturnObject>> GetNativeCollectionXML<ReturnObject>(StaticVariables Sv = null,
                                                                                 string ColType = null,
                                                                                 string childof = null,
                                                                                 List<string> NativeFields = null,
                                                                                 List<Filter> filters = null,
-                                                                                bool isInitialize = false)
+                                                                                bool isInitialize = false,
+                                                                                XmlAttributeOverrides xmlAttributeOverrides = null)
     {
         string Resxml;
         CusColEnvelope ColEnvelope = new(); //Collection Envelope
@@ -821,7 +855,7 @@ public class Tally : IDisposable
         Resxml = await SendRequest(Reqxml);
 
         //Adding xmlelement name according to RootElement name of ReturnObject
-        XmlAttributeOverrides xmlAttributeOverrides = new();
+        xmlAttributeOverrides ??= new();
         XmlAttributes attrs = new();
         attrs.XmlElements.Add(new(TallyType));
         xmlAttributeOverrides.Add(typeof(Colllection<ReturnObject>), "Objects", attrs);
@@ -877,33 +911,15 @@ public class Tally : IDisposable
     /// Presult.result will have failure message incase of failure,
     /// Presult.result will be empty if sucess
     ///  </returns>
-    public async Task<PResult> PostGroup(Group group,
-                                         string company = null, XmlAttributeOverrides xmlAttributeOverrides = null)
+    public async Task<PResult> PostGroup<GroupType>(GroupType group,
+                                                    string company = null,
+                                                    XmlAttributeOverrides xmlAttributeOverrides = null) where GroupType : Group
     {
 
         //If parameter is null Get value from instance
-        company ??= Company;
-
-        GroupEnvelope groupEnvelope = new();
-        groupEnvelope.Header = new(Request: "Import", Type: "Data", ID: "All Masters");
-        groupEnvelope.Body.Desc.StaticVariables = new() { SVCompany = company };
-
-        groupEnvelope.Body.Data.Message.Group = group;
-        if (group.Parent != null && group.Parent.Contains("Primary"))
-        {
-            group.Parent = null;
-        }
-        if (group.Name == string.Empty || group.Name == null)
-        {
-            group.Name = group.OldName;
-        }
-        //Creates Names List if Not Exists
-        group.CreateNamesList();
-        string GroupXML = groupEnvelope.GetXML(xmlAttributeOverrides);
-
-        string RespXml = await SendRequest(GroupXML);
-
-        PResult result = ParseResponse(RespXml);
+        PResult result = await PostObjectToTally(Object: group,
+                                                 company: company,
+                                                 xmlAttributeOverrides: xmlAttributeOverrides);
 
         return result;
     }
@@ -1974,7 +1990,7 @@ public class Tally : IDisposable
         StaticVariables staticVariables = new() { SVCompany = company, SVExportFormat = "XML", SVFromDate = fromDate, SVToDate = toDate };
         List<string> VoucherFilters = new() { "VoucherType" };
         List<string> VoucherSystemFilters = new() { $"$VoucherTypeName = \"{VoucherType}\"" };
-        string VouchersXml = await GetCustomCollectionXML(rName: "List Of Vouchers", Fields: fields, colType: "Voucher", Sv: staticVariables,
+        string VouchersXml = await GetCustomReportXML(rName: "List Of Vouchers", Fields: fields, colType: "Voucher", Sv: staticVariables,
             Filters: VoucherFilters, SystemFilters: VoucherSystemFilters);
         VouchersList vl = GetObjfromXml<VouchersList>(Xml: VouchersXml);
         return vl;
@@ -2087,7 +2103,7 @@ public class Tally : IDisposable
     /// <param name="Filters">Filters if any</param>
     /// <param name="SystemFilters">Definition for filter</param>
     /// <returns>returns xml as string</returns>
-    public async Task<string> GetCustomCollectionXML(string rName,
+    public async Task<string> GetCustomReportXML(string rName,
                                                      Dictionary<string, string> Fields,
                                                      string colType,
                                                      StaticVariables Sv = null,
@@ -2341,7 +2357,7 @@ public class Tally : IDisposable
             {
                 if (Resp.Body.Data.ImportResult.LastVchId != null && Resp.Body.Data.ImportResult.LastVchId != 0)
                 {
-                    result.VCHID = Resp.Body.Data.ImportResult.LastVchId.ToString(); //Returns VoucherMaster ID
+                    result.VoucherMasterId = Resp.Body.Data.ImportResult.LastVchId.ToString(); //Returns VoucherMaster ID
                 }
                 result.Status = RespStatus.Sucess;
                 if (Resp.Body.Data.ImportResult.Created != 0)

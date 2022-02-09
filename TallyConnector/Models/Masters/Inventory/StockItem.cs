@@ -135,6 +135,11 @@ public class StockItem : TallyXmlJson, ITallyObject
         CreateNamesList();
         return base.GetXML(attrOverrides);
     }
+
+    public void PrepareForExport()
+    {
+        CreateNamesList();
+    }
 }
 [XmlRoot(ElementName = "ENVELOPE")]
 public class StockItemEnvelope : TallyXmlJson

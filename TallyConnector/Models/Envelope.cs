@@ -1,24 +1,40 @@
 ﻿namespace TallyConnector.Models;
 
 [XmlRoot(ElementName = "ENVELOPE")]
-public class Envelope<T>:TallyXmlJson
+public class Envelope<T> : TallyXmlJson
 {
 
     [XmlElement(ElementName = "HEADER")]
     public Header Header { get; set; }
 
     [XmlElement(ElementName = "BODY")]
-    public Body<T> Body { get; set; }
+    public Body<T> Body { get; set; } = new();
+
+
+    public new string GetXML(XmlAttributeOverrides attrOverrides = null)
+    {
+        //Gets Root attribute of ReturnObject
+        XmlRootAttribute RootAttribute = (XmlRootAttribute)Attribute.GetCustomAttribute(typeof(T), typeof(XmlRootAttribute));
+        //ElementName of ReturnObject will match with TallyType
+        string TallyType = RootAttribute.ElementName;
+
+        //Adding xmlelement name according to RootElement name of ReturnObject
+        attrOverrides ??= new();
+        XmlAttributes attrs = new();
+        attrs.XmlElements.Add(new(TallyType));
+        attrOverrides.Add(typeof(Message<T>), "Objects", attrs);
+        return base.GetXML(attrOverrides);
+    }
 }
 
 [XmlRoot(ElementName = "BODY")]
 public class Body<T>
 {
     [XmlElement(ElementName = "DESC")]
-    public Description Desc { get; set; }
+    public Description Desc { get; set; } = new();
 
     [XmlElement(ElementName = "DATA")]
-    public Data<T> Data { get; set; }
+    public Data<T> Data { get; set; } = new();
 }
 
 [XmlRoot(ElementName = "DATA")]
@@ -28,7 +44,7 @@ public class Data<T>
     public Message<T> Message { get; set; } = new();
 
     [XmlElement(ElementName = "COLLECTION")]
-    public Colllection<T> Collection { get; set; } = new();
+    public Colllection<T> Collection { get; set; }
 
 }
 
@@ -41,7 +57,8 @@ public class Colllection<T>
 [XmlRoot(ElementName = "TALLYMESSAGE")]
 public class Message<T>
 {
-    public T Object { get; set; }
+
+    public List<T> Objects { get; set; } = new();
 }
 
 

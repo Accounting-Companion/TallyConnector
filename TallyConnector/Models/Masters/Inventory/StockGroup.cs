@@ -77,6 +77,11 @@ public class StockGroup : TallyXmlJson, ITallyObject
         CreateNamesList();
         return base.GetXML(attrOverrides);
     }
+
+    public void PrepareForExport()
+    {
+        CreateNamesList();
+    }
 }
 
 

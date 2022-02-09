@@ -361,6 +361,12 @@ public class Voucher : TallyXmlJson, ITallyObject
             });
         });
     }
+
+    public void PrepareForExport()
+    {
+        GetJulianday();
+        OrderLedgers();
+    }
 }
 
 [XmlRoot(ElementName = "LEDGERENTRIES.LIST")]

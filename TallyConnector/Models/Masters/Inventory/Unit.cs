@@ -81,6 +81,10 @@ public class Unit : TallyXmlJson, ITallyObject
         return "NO";
     }
 
+    public void PrepareForExport()
+    {
+    }
+
 }
 [XmlRoot(ElementName = "ENVELOPE")]
 public class UnitEnvelope : TallyXmlJson

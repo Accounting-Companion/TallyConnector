@@ -104,6 +104,20 @@ public class Group : TallyXmlJson, ITallyObject
         CreateNamesList();
         return base.GetXML(attrOverrides);
     }
+
+    public void PrepareForExport()
+    {
+        if (Parent != null && Parent.Contains("Primary"))
+        {
+            Parent = null;
+        }
+        if (Name == string.Empty || Name == null)
+        {
+            Name = OldName;
+        }
+        //Creates Names List if Not Exists
+        CreateNamesList();
+    }
 }
 
 [XmlRoot(ElementName = "ENVELOPE")]

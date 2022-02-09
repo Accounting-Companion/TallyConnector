@@ -66,6 +66,11 @@ public class StockCategory : TallyXmlJson, ITallyObject
         CreateNamesList();
         return base.GetXML(attrOverrides);
     }
+
+    public void PrepareForExport()
+    {
+        CreateNamesList();
+    }
 }
 
 [XmlRoot(ElementName = "ENVELOPE")]

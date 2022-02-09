@@ -53,6 +53,11 @@ public class Currency : TallyXmlJson,ITallyObject
 
     //[XmlElement(ElementName = "DAILYSELLINGRATES.LIST")]
     //public List<DailySellingRate> DailySellingRateList { get; set; }
+
+    public void PrepareForExport()
+    {
+
+    }
 }
 //[XmlRoot(ElementName = "DAILYSTDRATES.LIST")]
 //public class DailystdRate

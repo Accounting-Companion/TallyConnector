@@ -4,4 +4,6 @@ public interface ITallyObject
 {
     string GUID { get; set; }
     int? TallyId { get; set; }
+
+    public void PrepareForExport();
 }

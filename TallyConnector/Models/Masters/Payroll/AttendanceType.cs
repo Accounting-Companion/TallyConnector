@@ -79,6 +79,10 @@ public class AttendanceType : TallyXmlJson,ITallyObject
         CreateNamesList();
         return base.GetXML(attrOverrides);
     }
+    public void PrepareForExport()
+    {
+        CreateNamesList();
+    }
 }
 
 
