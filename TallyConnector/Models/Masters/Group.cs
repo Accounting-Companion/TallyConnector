@@ -69,6 +69,14 @@ public class Group : TallyXmlJson, ITallyObject
     [Column(TypeName = "nvarchar(3)")]
     public YesNo IsSubledger { get; set; }
 
+    [XmlElement(ElementName = "ISREVENUE")]
+    [Column(TypeName = "nvarchar(3)")]
+    public YesNo IsRevenue { get; set; }
+
+    [XmlElement(ElementName = "AFFECTSGROSSPROFIT")]
+    [Column(TypeName = "nvarchar(3)")]
+    public YesNo AffectGrossProfit { get; set; }
+
 
     [XmlElement(ElementName = "CANDELETE")]
     [Column(TypeName = "nvarchar(3)")]

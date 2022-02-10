@@ -1778,7 +1778,7 @@ public class Tally : IDisposable
     /// </returns>
     public async Task<PResult> PostVoucher<TVoucher>(Voucher voucher,
                                            string company = null,
-                                           XmlAttributeOverrides xmlAttributeOverrides = null) where TVoucher : VoucherType
+                                           XmlAttributeOverrides xmlAttributeOverrides = null) where TVoucher : Voucher
     {
 
 

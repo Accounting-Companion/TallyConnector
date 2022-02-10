@@ -30,10 +30,10 @@ public class CostCategory : TallyXmlJson, ITallyObject
     }
 
     [XmlElement(ElementName = "ALLOCATEREVENUE")]
-    public string AllocateRevenue { get; set; }
+    public YesNo AllocateRevenue { get; set; }
 
     [XmlElement(ElementName = "ALLOCATENONREVENUE")]
-    public string AllocateNonRevenue { get; set; }
+    public YesNo AllocateNonRevenue { get; set; }
 
     [XmlElement(ElementName = "GUID")]
     public string GUID { get; set; }

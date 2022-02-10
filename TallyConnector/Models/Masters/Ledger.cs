@@ -38,8 +38,8 @@ public class Ledger : TallyXmlJson, ITallyObject
     }
 
     [XmlElement(ElementName = "PARENT")]
-    [Required]
     [Column(TypeName = "nvarchar(60)")]
+    [Required]
     public string Group { get; set; }
 
 
@@ -430,7 +430,7 @@ public class Ledger : TallyXmlJson, ITallyObject
 
     public void PrepareForExport()
     {
-        if (Group.Contains("Primary"))
+        if (Group != null && Group.Contains("Primary"))
         {
             Group = null;
         }
