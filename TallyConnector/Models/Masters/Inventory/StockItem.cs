@@ -138,6 +138,10 @@ public class StockItem : TallyXmlJson, ITallyObject
 
     public void PrepareForExport()
     {
+        if (StockGroup != null && StockGroup.Contains("Primary"))
+        {
+            StockGroup = null;
+        }
         CreateNamesList();
     }
 }

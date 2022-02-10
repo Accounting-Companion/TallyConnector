@@ -364,8 +364,8 @@ public class Voucher : TallyXmlJson, ITallyObject
 
     public void PrepareForExport()
     {
+        OrderLedgers(); //Ensures ledgers are ordered in correct way
         GetJulianday();
-        OrderLedgers();
     }
 }
 
@@ -565,7 +565,7 @@ public class BillAllocations : TallyBaseObject
 
         }
     }
-    
+
 }
 [XmlRoot(ElementName = "BILLCREDITPERIOD")]
 public class BillCP
@@ -599,13 +599,13 @@ public class InventoryinAllocations : InventoryAllocations
 [XmlRoot(ElementName = "INVENTORYENTRIESOUT.LIST")]
 public class InventoryoutAllocations : InventoryAllocations
 {
-    
+
 }
 
 [XmlRoot(ElementName = "ALLINVENTORYENTRIES.LIST")]
 public class AllInventoryAllocations : InventoryAllocations
 {
-    
+
 }
 [XmlRoot(ElementName = "INVENTORYENTRIES.LIST")]
 public class InventoryEntries : AllInventoryAllocations

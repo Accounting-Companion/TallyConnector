@@ -430,6 +430,10 @@ public class Ledger : TallyXmlJson, ITallyObject
 
     public void PrepareForExport()
     {
+        if (Group.Contains("Primary"))
+        {
+            Group = null;
+        }
         CreateNamesList();
     }
 }

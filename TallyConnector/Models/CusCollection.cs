@@ -86,6 +86,11 @@ public class ColTDLMessage
 
     }
 
+    public ColTDLMessage(string reportName,
+                         string ColType)
+    {
+
+    }
     public ColTDLMessage(string colName,
                          string colType,
                          List<string> nativeFields,
@@ -161,21 +166,30 @@ public class Report : DCollection
 {
     public Report(string rName, string formname)
     {
-        Name = rName;
+        AttrName = rName;
         FormName = formname;
         SetAttributes();
 
     }
     public Report() { }
 
+    [XmlAttribute(AttributeName = "NAME")]
+    public string AttrName { get; set; }
+
     [XmlElement(ElementName = "FORMS")]
     public string FormName { get; set; }
 
-    [XmlAttribute(AttributeName = "NAME")]
-    public string Name { get; set; }
+    [XmlElement(ElementName = "USE")]
+    public List<string> Use { get; set; }
 
-    [XmlText]
-    public string Text { get; set; } //Form Name must be same as FormID
+    [XmlElement(ElementName = "VARIABLE")]
+    public List<string> Variable { get; set; }
+
+    [XmlElement(ElementName = "REPEAT")]
+    public List<string> Repeat { get; set; }
+
+    [XmlElement(ElementName = "SET")]
+    public List<string> Set { get; set; }
 }
 
 [XmlRoot(ElementName = "FORM")]
@@ -185,20 +199,29 @@ public class Form : DCollection
 
     public Form(string formName, string partName, string rootXML)
     {
-        Caption = partName;
+        PartName = partName;
         ReportTag = rootXML;
         Name = formName;
         SetAttributes();
     }
 
     [XmlElement(ElementName = "TOPPARTS")]
-    public string Caption { get; set; }
+    public string PartName { get; set; }
 
     [XmlElement(ElementName = "XMLTAG")]
     public string ReportTag { get; set; }
 
     [XmlAttribute(AttributeName = "NAME")]
     public string Name { get; set; } //Should match with FormName in Report
+
+    [XmlElement(ElementName = "USE")]
+    public List<string> Use { get; set; }
+
+    [XmlElement(ElementName = "PARTS")]
+    public List<string> Parts { get; set; }
+
+    [XmlElement(ElementName = "SET")]
+    public List<string> Set { get; set; }
 
 }
 
@@ -210,8 +233,8 @@ public class Part : DCollection
     public Part(string topPartName, string colName, string lineName)
     {
         Name = topPartName;
-        TopLines = lineName;
-        _Repeat = $"{TopLines} : {colName}";
+        Lines = new() { lineName };
+        _Repeat = $"{lineName} : {colName}";
         SetAttributes();
 
     }
@@ -220,7 +243,7 @@ public class Part : DCollection
     }
 
     [XmlElement(ElementName = "TOPLINES")]
-    public string TopLines { get; set; } //MustMatch with LineName
+    public List<string> Lines { get; set; } //MustMatch with LineName
 
     [XmlElement(ElementName = "REPEAT")]
     public string Repeat { get { return _Repeat; } set { } }
@@ -499,7 +522,7 @@ public class PResult
 
     public String Result { get; set; }
 
-    public string VCHID { get; set; }
+    public string VoucherMasterId { get; set; }
 }
 
 public enum RespStatus

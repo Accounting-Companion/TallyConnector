@@ -111,6 +111,10 @@ public class Godown : TallyXmlJson, ITallyObject
 
     public void PrepareForExport()
     {
+        if (Parent != null && Parent.Contains("Primary"))
+        {
+            Parent = null;
+        }
         CreateNamesList();
     }
 }

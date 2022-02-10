@@ -1,8 +1,26 @@
 ﻿namespace TallyConnector.Models;
 
 [XmlRoot(ElementName = "ENVELOPE")]
-public class Envelope<T> : TallyXmlJson
+public class Envelope<T> : TallyXmlJson where T : TallyXmlJson, ITallyObject
 {
+    public Envelope()
+    {
+    }
+
+    public Envelope(T ObjecttoExport, StaticVariables staticVariables)
+    {
+        Body = new();
+        Header = new(Request: "Import", Type: "Data", ID: "All Masters");
+        Body.Desc.StaticVariables = staticVariables;
+        Body.Data.Message.Objects.Add(ObjecttoExport);
+    }
+    public Envelope(List<T> ObjectstoExport, StaticVariables staticVariables)
+    {
+        Body = new();
+        Header = new(Request: "Import", Type: "Data", ID: "All Masters");
+        Body.Desc.StaticVariables = staticVariables;
+        Body.Data.Message.Objects.AddRange(ObjectstoExport);
+    }
 
     [XmlElement(ElementName = "HEADER")]
     public Header Header { get; set; }

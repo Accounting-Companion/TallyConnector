@@ -727,7 +727,7 @@ public class Tally : IDisposable
                                                                  string fromDate = null,
                                                                  string toDate = null,
                                                                  List<string> fetchList = null,
-                                                                 XmlAttributeOverrides xmlAttributeOverrides = null) where ReturnType : TallyBaseObject, ITallyObject
+                                                                 XmlAttributeOverrides xmlAttributeOverrides = null) where ReturnType : TallyXmlJson, ITallyObject
     {
         //If parameter is null Get value from instance
         company ??= Company;
@@ -800,17 +800,12 @@ public class Tally : IDisposable
     /// <returns></returns>
     public async Task<PResult> PostObjectToTally<ObjectType>(ObjectType Object,
                                                              string company = null,
-                                                             XmlAttributeOverrides xmlAttributeOverrides = null) where ObjectType : ITallyObject
+                                                             XmlAttributeOverrides xmlAttributeOverrides = null) where ObjectType : TallyXmlJson, ITallyObject
     {
         //If parameter is null Get value from instance
         company ??= Company;
-        Envelope<ObjectType> Objectenvelope = new();
-        Objectenvelope.Header = new(Request: "Import", Type: "Data", ID: "All Masters");
-        Objectenvelope.Body.Desc.StaticVariables = new() { SVCompany = company };
-        
         Object.PrepareForExport();
-
-        Objectenvelope.Body.Data.Message.Objects.Add(Object);
+        Envelope<ObjectType> Objectenvelope = new(Object, new() { SVCompany = company });
         string ReqXml = Objectenvelope.GetXML(xmlAttributeOverrides);
         string RespXml = await SendRequest(ReqXml);
         PResult result = ParseResponse(RespXml);
@@ -823,7 +818,7 @@ public class Tally : IDisposable
                                                                                 List<string> NativeFields = null,
                                                                                 List<Filter> filters = null,
                                                                                 bool isInitialize = false,
-                                                                                XmlAttributeOverrides xmlAttributeOverrides = null)
+                                                                                XmlAttributeOverrides xmlAttributeOverrides = null) where ReturnObject : TallyXmlJson, ITallyObject
     {
         string Resxml;
         CusColEnvelope ColEnvelope = new(); //Collection Envelope
@@ -916,7 +911,7 @@ public class Tally : IDisposable
                                                     XmlAttributeOverrides xmlAttributeOverrides = null) where GroupType : Group
     {
 
-        //If parameter is null Get value from instance
+
         PResult result = await PostObjectToTally(Object: group,
                                                  company: company,
                                                  xmlAttributeOverrides: xmlAttributeOverrides);
@@ -1001,30 +996,14 @@ public class Tally : IDisposable
     /// Presult.result will have failure message incase of failure,
     /// Presult.result will be empty if sucess
     ///  </returns>
-    public async Task<PResult> PostLedger(Ledger ledger,
+    public async Task<PResult> PostLedger<LedgerType>(LedgerType ledger,
                                           string company = null,
-                                          XmlAttributeOverrides xmlAttributeOverrides = null)
+                                          XmlAttributeOverrides xmlAttributeOverrides = null) where LedgerType : Ledger
     {
 
-        //If parameter is null Get value from instance
-        company ??= Company;
-
-        LedgerEnvelope ledgerEnvelope = new();
-        ledgerEnvelope.Header = new(Request: "Import", Type: "Data", ID: "All Masters");
-        ledgerEnvelope.Body.Desc.StaticVariables = new() { SVCompany = company };
-
-        ledgerEnvelope.Body.Data.Message.Ledger = ledger;
-        if (ledger.Group.Contains("Primary"))
-        {
-            ledger.Group = null;
-        }
-        //Creates Names List if Not Exists
-        ledger.CreateNamesList();
-        string LedgXML = ledgerEnvelope.GetXML(xmlAttributeOverrides);
-
-        string RespXml = await SendRequest(LedgXML);
-
-        PResult result = ParseResponse(RespXml);
+        PResult result = await PostObjectToTally(Object: ledger,
+                                                 company: company,
+                                                 xmlAttributeOverrides: xmlAttributeOverrides);
 
         return result;
     }
@@ -1073,24 +1052,13 @@ public class Tally : IDisposable
     /// Presult.result will have failure message incase of failure,
     ///  Presult.result will be empty if sucess 
     /// </returns>
-    public async Task<PResult> PostCostCategory(CostCategory CostCategory,
+    public async Task<PResult> PostCostCategory<CostCategoryType>(CostCategory CostCategory,
                                                 string company = null,
-                                                XmlAttributeOverrides xmlAttributeOverrides = null)
+                                                XmlAttributeOverrides xmlAttributeOverrides = null) where CostCategoryType : CostCategory
     {
-        //If parameter is null Get value from instance
-        company ??= Company;
-
-        CostCatEnvelope costCat = new();
-        costCat.Header = new(Request: "Import", Type: "Data", ID: "All Masters");
-        costCat.Body.Desc.StaticVariables = new() { SVCompany = company };
-
-        costCat.Body.Data.Message.CostCategory = CostCategory;
-        CostCategory.CreateNamesList();
-        string CostCatXML = costCat.GetXML(xmlAttributeOverrides);
-
-        string RespXml = await SendRequest(CostCatXML);
-
-        PResult result = ParseResponse(RespXml);
+        PResult result = await PostObjectToTally(Object: CostCategory,
+                                                 company: company,
+                                                 xmlAttributeOverrides: xmlAttributeOverrides);
 
         return result;
     }
@@ -1143,28 +1111,15 @@ public class Tally : IDisposable
     /// Presult.result will have failure message incase of failure,
     ///  Presult.result will be empty if sucess 
     /// </returns>
-    public async Task<PResult> PostCostCenter(CostCenter costCenter,
+    public async Task<PResult> PostCostCenter<CostCenterType>(CostCenter costCenter,
                                               string company = null,
-                                              XmlAttributeOverrides xmlAttributeOverrides = null)
+                                              XmlAttributeOverrides xmlAttributeOverrides = null) where CostCenterType : CostCenter
     {
-        //If parameter is null Get value from instance
-        company ??= Company;
 
-        CostCentEnvelope costCentEnvelope = new();
-        costCentEnvelope.Header = new(Request: "Import", Type: "Data", ID: "All Masters");
-        costCentEnvelope.Body.Desc.StaticVariables = new() { SVCompany = company };
 
-        costCentEnvelope.Body.Data.Message.CostCenter = costCenter;
-        if (costCenter.Parent != null && costCenter.Parent.Contains("Primary"))
-        {
-            costCenter.Parent = null;
-        }
-        costCenter.CreateNamesList();
-        string CostCenterXML = costCentEnvelope.GetXML(xmlAttributeOverrides);
-
-        string RespXml = await SendRequest(CostCenterXML);
-
-        PResult result = ParseResponse(RespXml);
+        PResult result = await PostObjectToTally(Object: costCenter,
+                                                 company: company,
+                                                 xmlAttributeOverrides: xmlAttributeOverrides);
 
         return result;
     }
@@ -1216,28 +1171,14 @@ public class Tally : IDisposable
     /// Presult.result will have failure message incase of failure,
     ///  Presult.result will be empty if sucess 
     /// </returns>
-    public async Task<PResult> PostStockGroup(StockGroup stockGroup,
+    public async Task<PResult> PostStockGroup<StockGroupType>(StockGroup stockGroup,
                                               string company = null,
-                                              XmlAttributeOverrides xmlAttributeOverrides = null)
+                                              XmlAttributeOverrides xmlAttributeOverrides = null) where StockGroupType : StockGroup
     {
-        //If parameter is null Get value from instance
-        company ??= Company;
 
-        StockGrpEnvelope StockGrpEnvelope = new();
-        StockGrpEnvelope.Header = new(Request: "Import", Type: "Data", ID: "All Masters");
-        StockGrpEnvelope.Body.Desc.StaticVariables = new() { SVCompany = company };
-
-        StockGrpEnvelope.Body.Data.Message.StockGroup = stockGroup;
-        if (stockGroup.Parent != null && stockGroup.Parent.Contains("Primary"))
-        {
-            stockGroup.Parent = null;
-        }
-        stockGroup.CreateNamesList();
-        string StockGrpXML = StockGrpEnvelope.GetXML(xmlAttributeOverrides);
-
-        string RespXml = await SendRequest(StockGrpXML);
-
-        PResult result = ParseResponse(RespXml);
+        PResult result = await PostObjectToTally(Object: stockGroup,
+                                                 company: company,
+                                                 xmlAttributeOverrides: xmlAttributeOverrides);
 
         return result;
     }
@@ -1289,27 +1230,13 @@ public class Tally : IDisposable
     /// Presult.result will have failure message incase of failure,
     ///  Presult.result will be empty if sucess 
     /// </returns>
-    public async Task<PResult> PostStockCategory(StockCategory stockCategory,
-                                                 string company = null, XmlAttributeOverrides xmlAttributeOverrides = null)
+    public async Task<PResult> PostStockCategory<StockCategoryType>(StockCategory stockCategory,
+                                                                    string company = null,
+                                                                    XmlAttributeOverrides xmlAttributeOverrides = null) where StockCategoryType : StockCategory
     {
-        //If parameter is null Get value from instance
-        company ??= Company;
-
-        StockCatEnvelope StockCatEnvelope = new();
-        StockCatEnvelope.Header = new(Request: "Import", Type: "Data", ID: "All Masters");
-        StockCatEnvelope.Body.Desc.StaticVariables = new() { SVCompany = company };
-
-        StockCatEnvelope.Body.Data.Message.StockCategory = stockCategory;
-        if (stockCategory.Parent != null && stockCategory.Parent.Contains("Primary"))
-        {
-            stockCategory.Parent = null;
-        }
-        stockCategory.CreateNamesList();
-        string StockCatXML = StockCatEnvelope.GetXML(xmlAttributeOverrides);
-
-        string RespXml = await SendRequest(StockCatXML);
-
-        PResult result = ParseResponse(RespXml);
+        PResult result = await PostObjectToTally(Object: stockCategory,
+                                                 company: company,
+                                                 xmlAttributeOverrides: xmlAttributeOverrides);
 
         return result;
     }
@@ -1359,27 +1286,14 @@ public class Tally : IDisposable
     /// Presult.result will have failure message incase of failure,
     ///  Presult.result will be empty if sucess 
     /// </returns>
-    public async Task<PResult> PostStockItem(StockItem stockItem,
-                                             string company = null, XmlAttributeOverrides xmlAttributeOverrides = null)
+    public async Task<PResult> PostStockItem<StockItemType>(StockItem stockItem,
+                                             string company = null,
+                                             XmlAttributeOverrides xmlAttributeOverrides = null) where StockItemType : StockItem
     {
-        //If parameter is null Get value from instance
-        company ??= Company;
 
-        StockItemEnvelope StockItmEnvelope = new();
-        StockItmEnvelope.Header = new(Request: "Import", Type: "Data", ID: "All Masters");
-        StockItmEnvelope.Body.Desc.StaticVariables = new() { SVCompany = company };
-
-        StockItmEnvelope.Body.Data.Message.StockItem = stockItem;
-        if (stockItem.StockGroup != null && stockItem.StockGroup.Contains("Primary"))
-        {
-            stockItem.StockGroup = null;
-        }
-        stockItem.CreateNamesList();
-        string StockItmXML = StockItmEnvelope.GetXML(xmlAttributeOverrides);
-
-        string RespXml = await SendRequest(StockItmXML);
-
-        PResult result = ParseResponse(RespXml);
+        PResult result = await PostObjectToTally(Object: stockItem,
+                                                 company: company,
+                                                 xmlAttributeOverrides: xmlAttributeOverrides);
 
         return result;
     }
@@ -1431,24 +1345,15 @@ public class Tally : IDisposable
     /// Presult.result will have failure message incase of failure,
     ///  Presult.result will be empty if sucess 
     /// </returns>
-    public async Task<PResult> PostUnit(Unit unit,
+    public async Task<PResult> PostUnit<UnitType>(Unit unit,
                                         string company = null,
-                                        XmlAttributeOverrides xmlAttributeOverrides = null)
+                                        XmlAttributeOverrides xmlAttributeOverrides = null) where UnitType : Unit
     {
-        //If parameter is null Get value from instance
-        company ??= Company;
 
-        UnitEnvelope UnitEnvelope = new();
-        UnitEnvelope.Header = new(Request: "Import", Type: "Data", ID: "All Masters");
-        UnitEnvelope.Body.Desc.StaticVariables = new() { SVCompany = company };
 
-        UnitEnvelope.Body.Data.Message.Unit = unit;
-
-        string UnitXML = UnitEnvelope.GetXML(xmlAttributeOverrides);
-
-        string RespXml = await SendRequest(UnitXML);
-
-        PResult result = ParseResponse(RespXml);
+        PResult result = await PostObjectToTally(Object: unit,
+                                                 company: company,
+                                                 xmlAttributeOverrides: xmlAttributeOverrides);
 
         return result;
     }
@@ -1498,28 +1403,13 @@ public class Tally : IDisposable
     /// Presult.result will have failure message incase of failure,
     ///  Presult.result will be empty if sucess 
     /// </returns>
-    public async Task<PResult> PostGodown(Godown godown,
+    public async Task<PResult> PostGodown<GodownType>(Godown godown,
                                           string company = null,
-                                          XmlAttributeOverrides xmlAttributeOverrides = null)
+                                          XmlAttributeOverrides xmlAttributeOverrides = null) where GodownType : Godown
     {
-        //If parameter is null Get value from instance
-        company ??= Company;
-
-        GodownEnvelope GdwnEnvelope = new();
-        GdwnEnvelope.Header = new(Request: "Import", Type: "Data", ID: "All Masters");
-        GdwnEnvelope.Body.Desc.StaticVariables = new() { SVCompany = company };
-
-        GdwnEnvelope.Body.Data.Message.Godown = godown;
-        if (godown.Parent != null && godown.Parent.Contains("Primary"))
-        {
-            godown.Parent = null;
-        }
-        godown.CreateNamesList();
-        string GdwnXML = GdwnEnvelope.GetXML(xmlAttributeOverrides);
-
-        string RespXml = await SendRequest(GdwnXML);
-
-        PResult result = ParseResponse(RespXml);
+        PResult result = await PostObjectToTally(Object: godown,
+                                                 company: company,
+                                                 xmlAttributeOverrides: xmlAttributeOverrides);
 
         return result;
     }
@@ -1571,23 +1461,13 @@ public class Tally : IDisposable
     /// Presult.result will have failure message incase of failure,
     ///  Presult.result will be empty if sucess 
     /// </returns>
-    public async Task<PResult> PostVoucherType(VoucherType voucherType,
-                                               string company = null, XmlAttributeOverrides xmlAttributeOverrides = null)
+    public async Task<PResult> PostVoucherType<VoucherTypType>(VoucherType voucherType,
+                                               string company = null,
+                                               XmlAttributeOverrides xmlAttributeOverrides = null) where VoucherTypType : VoucherType
     {
-        //If parameter is null Get value from instance
-        company ??= Company;
-
-        VoucherTypeEnvelope VchTypeEnvelope = new();
-        VchTypeEnvelope.Header = new(Request: "Import", Type: "Data", ID: "All Masters");
-        VchTypeEnvelope.Body.Desc.StaticVariables = new() { SVCompany = company };
-
-        VchTypeEnvelope.Body.Data.Message.VoucherType = voucherType;
-        voucherType.CreateNamesList();
-        string GdwnXML = VchTypeEnvelope.GetXML(xmlAttributeOverrides);
-
-        string RespXml = await SendRequest(GdwnXML);
-
-        PResult result = ParseResponse(RespXml);
+        PResult result = await PostObjectToTally(Object: voucherType,
+                                                 company: company,
+                                                 xmlAttributeOverrides: xmlAttributeOverrides);
 
         return result;
     }
@@ -1636,23 +1516,12 @@ public class Tally : IDisposable
     /// Presult.result will have failure message incase of failure,
     ///  Presult.result will be empty if sucess 
     /// </returns>
-    public async Task<PResult> PostCurrency(Currency currency,
-                                        string company = null, XmlAttributeOverrides xmlAttributeOverrides = null)
+    public async Task<PResult> PostCurrency<CurrencyType>(Currency currency,
+                                        string company = null, XmlAttributeOverrides xmlAttributeOverrides = null) where CurrencyType : Currency
     {
-        //If parameter is null Get value from instance
-        company ??= Company;
-
-        CurrencyEnvelope currencyEnvelope = new();
-        currencyEnvelope.Header = new(Request: "Import", Type: "Data", ID: "All Masters");
-        currencyEnvelope.Body.Desc.StaticVariables = new() { SVCompany = company };
-
-        currencyEnvelope.Body.Data.Message.Currency = currency;
-
-        string GdwnXML = currencyEnvelope.GetXML(xmlAttributeOverrides);
-
-        string RespXml = await SendRequest(GdwnXML);
-
-        PResult result = ParseResponse(RespXml);
+        PResult result = await PostObjectToTally(Object: currency,
+                                                 company: company,
+                                                 xmlAttributeOverrides: xmlAttributeOverrides);
 
         return result;
     }
@@ -1703,23 +1572,13 @@ public class Tally : IDisposable
     /// Presult.result will have failure message incase of failure,
     ///  Presult.result will be empty if sucess 
     /// </returns>
-    public async Task<PResult> PostAttendanceType(AttendanceType AttendanceType,
-                                                  string company = null, XmlAttributeOverrides xmlAttributeOverrides = null)
+    public async Task<PResult> PostAttendanceType<AttendanceTypType>(AttendanceType AttendanceType,
+                                                                     string company = null,
+                                                                     XmlAttributeOverrides xmlAttributeOverrides = null) where AttendanceTypType : AttendanceType
     {
-        //If parameter is null Get value from instance
-        company ??= Company;
-
-        AttendanceTypeEnvelope AttndTypeEnvelope = new();
-        AttndTypeEnvelope.Header = new(Request: "Import", Type: "Data", ID: "All Masters");
-        AttndTypeEnvelope.Body.Desc.StaticVariables = new() { SVCompany = company };
-
-        AttndTypeEnvelope.Body.Data.Message.AttendanceType = AttendanceType;
-        AttendanceType.CreateNamesList();
-        string AttndTypeXML = AttndTypeEnvelope.GetXML(xmlAttributeOverrides);
-
-        string RespXml = await SendRequest(AttndTypeXML);
-
-        PResult result = ParseResponse(RespXml);
+        PResult result = await PostObjectToTally(Object: AttendanceType,
+                                                 company: company,
+                                                 xmlAttributeOverrides: xmlAttributeOverrides);
 
         return result;
     }
@@ -1771,23 +1630,13 @@ public class Tally : IDisposable
     ///// Presult.result will have failure message incase of failure,
     /////  Presult.result will be empty if sucess 
     ///// </returns>
-    public async Task<PResult> PostEmployeeGroup(EmployeeGroup EmployeeGroup,
-                                                 string company = null, XmlAttributeOverrides xmlAttributeOverrides = null)
+    public async Task<PResult> PostEmployeeGroup<EmployeeGroupType>(EmployeeGroup EmployeeGroup,
+                                                                    string company = null,
+                                                                    XmlAttributeOverrides xmlAttributeOverrides = null) where EmployeeGroupType : EmployeeGroup
     {
-        //If parameter is null Get value from instance
-        company ??= Company;
-
-        EmployeeGroupEnvelope EmployeeGroupEnvelope = new();
-        EmployeeGroupEnvelope.Header = new(Request: "Import", Type: "Data", ID: "All Masters");
-        EmployeeGroupEnvelope.Body.Desc.StaticVariables = new() { SVCompany = company };
-
-        EmployeeGroupEnvelope.Body.Data.Message.EmployeeGroup = EmployeeGroup;
-        EmployeeGroup.CreateNamesList();
-        string CostCenterXML = EmployeeGroupEnvelope.GetXML(xmlAttributeOverrides);
-
-        string RespXml = await SendRequest(CostCenterXML);
-
-        PResult result = ParseResponse(RespXml);
+        PResult result = await PostObjectToTally(Object: EmployeeGroup,
+                                                 company: company,
+                                                 xmlAttributeOverrides: xmlAttributeOverrides);
 
         return result;
     }
@@ -1837,23 +1686,13 @@ public class Tally : IDisposable
     ///// Presult.result will have failure message incase of failure,
     /////  Presult.result will be empty if sucess 
     ///// </returns>
-    public async Task<PResult> PostEmployee(Employee Employee,
-                                            string company = null, XmlAttributeOverrides xmlAttributeOverrides = null)
+    public async Task<PResult> PostEmployee<EmployeeType>(Employee Employee,
+                                                          string company = null,
+                                                          XmlAttributeOverrides xmlAttributeOverrides = null) where EmployeeType : Employee
     {
-        //If parameter is null Get value from instance
-        company ??= Company;
-
-        EmployeeEnvelope EmployeeEnvelope = new();
-        EmployeeEnvelope.Header = new(Request: "Import", Type: "Data", ID: "All Masters");
-        EmployeeEnvelope.Body.Desc.StaticVariables = new() { SVCompany = company };
-
-        EmployeeEnvelope.Body.Data.Message.Employee = Employee;
-        Employee.CreateNamesList();
-        string CostCenterXML = EmployeeEnvelope.GetXML(xmlAttributeOverrides);
-
-        string RespXml = await SendRequest(CostCenterXML);
-
-        PResult result = ParseResponse(RespXml);
+        PResult result = await PostObjectToTally(Object: Employee,
+                                                 company: company,
+                                                 xmlAttributeOverrides: xmlAttributeOverrides);
 
         return result;
     }
@@ -1937,19 +1776,11 @@ public class Tally : IDisposable
     /// Presult.result will have failure message incase of failure,
     ///  Presult.result will be Voucher masterID if sucess 
     /// </returns>
-    public async Task<PResult> PostVoucher(Voucher voucher,
+    public async Task<PResult> PostVoucher<TVoucher>(Voucher voucher,
                                            string company = null,
-                                           XmlAttributeOverrides xmlAttributeOverrides = null)
+                                           XmlAttributeOverrides xmlAttributeOverrides = null) where TVoucher : VoucherType
     {
-        //If parameter is null Get value from instance
-        company ??= Company;
 
-        VoucherEnvelope voucherEnvelope = new();
-        voucherEnvelope.Header = new(Request: "Import", Type: "Data", ID: "All Masters");
-        voucherEnvelope.Body.Desc.StaticVariables = new() { SVCompany = company };
-        voucher.OrderLedgers(); //Ensures ledgers are ordered in correct way
-        voucher.GetJulianday();
-        voucherEnvelope.Body.Data.Message.Voucher = voucher;
 
         xmlAttributeOverrides ??= new XmlAttributeOverrides();
 
@@ -1959,11 +1790,9 @@ public class Tally : IDisposable
             xmlattribute.XmlElements.Add(new XmlElementAttribute() { ElementName = "LEDGERENTRIES.LIST" });
             xmlAttributeOverrides.Add(typeof(Voucher), "Ledgers", xmlattribute);
         }
-        string GdwnXML = voucherEnvelope.GetXML(xmlAttributeOverrides);
-
-        string RespXml = await SendRequest(GdwnXML);
-
-        PResult result = ParseResponse(RespXml);
+        PResult result = await PostObjectToTally(Object: voucher,
+                                                 company: company,
+                                                 xmlAttributeOverrides: xmlAttributeOverrides);
 
         return result;
     }
@@ -2275,7 +2104,7 @@ public class Tally : IDisposable
     }
 
     //Converts to given object from Xml
-    public dynamic GetObjfromXml<T>(string Xml, XmlAttributeOverrides attrOverrides = null)
+    public T GetObjfromXml<T>(string Xml, XmlAttributeOverrides attrOverrides = null)
     {
         try
         {
@@ -2305,7 +2134,7 @@ public class Tally : IDisposable
                 xslTransform.Transform(rd, null, xmlwriter);
                 rd = XmlReader.Create(new StringReader(textWriter.ToString()), xset, context);
             }
-            dynamic obj = XMLSer.Deserialize(rd);
+            T obj = (T)XMLSer.Deserialize(rd);
 
             return obj;
         }

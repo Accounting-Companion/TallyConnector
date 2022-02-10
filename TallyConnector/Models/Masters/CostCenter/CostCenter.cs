@@ -73,6 +73,10 @@ public class CostCenter : TallyXmlJson, ITallyObject
     }
     public new string GetXML(XmlAttributeOverrides attrOverrides = null)
     {
+        if (Parent != null && Parent.Contains("Primary"))
+        {
+            Parent = null;
+        }
         CreateNamesList();
         return base.GetXML(attrOverrides);
     }

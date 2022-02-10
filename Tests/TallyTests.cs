@@ -67,8 +67,8 @@ public class TallyTests
         await TTally.Check();
         PResult result = await TTally.PostGroup(new Group()
         {
-            Name = "TestGroup2",
-            Parent = "Sundry Debtors",
+            Name = "TestGroup2345",
+            Parent = "Primary",
             AddLAllocType = AdAllocType.AppropriateByValue,
         });
         Assert.IsTrue(result.Status == RespStatus.Sucess);
@@ -177,7 +177,7 @@ public class TallyTests
         StockItem stockItem = await TTally.GetStockItem<StockItem>("CDROM Disks 100s");
         stockItem.OtherFields = null;
         stockItem.OtherAttributes = null;
-        await TTally.PostStockItem(stockItem);
+        await TTally.PostStockItem<StockItem>(stockItem);
         Assert.NotNull(stockItem);
     }
 
