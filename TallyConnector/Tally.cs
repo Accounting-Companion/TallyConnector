@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
+using System.Net.Http;
 using System.Reflection;
 using System.Xml.Xsl;
 using TallyConnector.Exceptions;
@@ -264,11 +265,11 @@ public class Tally : IDisposable
     {
         string ReqType = "Masters from Tally";
         CLogger.TallyReqStart(ReqType);
-        
+
         Masters = new();
         foreach (var mapping in MastersMapping.MastersMappings)
         {
-            Masters.Add(new MastersBasicInfo(mapping.MasterType, await GetBasicObjects<BasicTallyObject>(ColType: mapping.TallyMasterType,filters:mapping.Filters)));
+            Masters.Add(new MastersBasicInfo(mapping.MasterType, await GetBasicObjects<BasicTallyObject>(ColType: mapping.TallyMasterType, filters: mapping.Filters)));
 
         }
 
@@ -1675,7 +1676,40 @@ public class Tally : IDisposable
         return Resxml;
     }
 
+    public void GetObjectfromTally()
+    {
 
+        XmlRootAttribute Rootattribute = (XmlRootAttribute)Attribute.GetCustomAttribute(typeof(Group), typeof(XmlRootAttribute));
+        string RootTag = Rootattribute.ElementName;
+
+        ReportField rootreportField = new(RootTag);
+
+        PropertyInfo[] propertyInfoList = typeof(Group).GetProperties();
+
+        foreach (PropertyInfo propertyinfo in propertyInfoList)
+        {
+            Attribute CElement = Attribute.GetCustomAttribute(propertyinfo, typeof(XmlElementAttribute));//propertyinfo.CustomAttributes.FirstOrDefault(Attributedata => Attributedata.AttributeType == typeof(XmlAttributeAttribute));
+
+            if (CElement != null)
+            {
+                XmlElementAttribute xmlAttribute = (XmlElementAttribute)CElement;
+                string xmlTag = xmlAttribute.ElementName;
+                rootreportField.SubFields.Add(new ReportField(xmlTag));
+            }
+            Attribute Cattribute = Attribute.GetCustomAttribute(propertyinfo, typeof(XmlAttributeAttribute));//propertyinfo.CustomAttributes.FirstOrDefault(Attributedata => Attributedata.AttributeType == typeof(XmlAttributeAttribute));
+
+            if (Cattribute != null)
+            {
+                XmlAttributeAttribute xmlAttribute = (XmlAttributeAttribute)Cattribute;
+                string xmlAttr = xmlAttribute.AttributeName;
+                rootreportField.Atrributes.Add(xmlAttr);
+            }
+        }
+
+        CusColEnvelope CusColEnvelope = new(RequestTye.Export,HType.Data, $"LISTOF{RootTag}S");
+        CusColEnvelope.Body.Desc.TDL.TDLMessage = new(rootreportField);
+        string xml = CusColEnvelope.GetXML();
+    }
     public async Task<string> GetReportXML(string reportname, StaticVariables Sv = null)
     {
         string Resxml = null;

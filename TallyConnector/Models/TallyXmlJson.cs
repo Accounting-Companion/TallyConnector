@@ -1,4 +1,6 @@
-﻿namespace TallyConnector.Models;
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace TallyConnector.Models;
 
 public class TallyBaseObject
 {

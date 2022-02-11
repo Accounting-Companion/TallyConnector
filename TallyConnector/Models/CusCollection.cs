@@ -10,13 +10,18 @@ public class CusColEnvelope : TallyXmlJson
     {
     }
 
-    public CusColEnvelope(string reportName, StaticVariables staticVariables)
+    public CusColEnvelope(string reportName, StaticVariables staticVariables = null)
     {
         Body = new();
         Header = new(Request: RequestTye.Export, Type: HType.Collection, ID: reportName); //Configuring Header To get Export data
         Body.Desc.StaticVariables = staticVariables;
     }
-
+    public CusColEnvelope(RequestTye RequestTye, HType Type, string reportName, StaticVariables staticVariables = null)
+    {
+        Body = new();
+        Header = new(Request: RequestTye, Type: Type, ID: reportName); //Configuring Header To get Export data
+        Body.Desc.StaticVariables = staticVariables;
+    }
     [XmlElement(ElementName = "HEADER")]
     public Header Header { get; set; }
 
@@ -74,16 +79,16 @@ public class ColTDLMessage
         List<string> LF = leftFields.Values.ToList();
         List<string> RF = rightFields.Values.ToList();
         Line = new(lineName, LF, RF);
-        Field = new();
+        Fields = new();
         foreach (var Fld in leftFields)
         {
             Field field = new(Fld.Key, Fld.Value);
-            Field.Add(field);
+            Fields.Add(field);
         }
         foreach (var Fld in rightFields)
         {
             Field field = new(Fld.Key, Fld.Value);
-            Field.Add(field);
+            Fields.Add(field);
         }
         Collection = new(colName: colName, colType: colType, filters: filters);
         if (filters != null && SysFormulae != null)
@@ -146,6 +151,28 @@ public class ColTDLMessage
         Collection = new(colName: colName, colType: colType, nativeFields: nativeFields, filters: TdlFilter);
 
     }
+
+    public ColTDLMessage(ReportField rootreportField)
+    {
+        string rootTag = rootreportField.FieldName;
+        string name = $"LISTOF{rootTag}S";
+        string CollectionName = $"Custom{rootTag}Coll";
+        Report = new(name);
+        Form = new(name);
+        Part = new(name, CollectionName);
+        Line = new(name, rootTag);
+        Fields = new();
+        Field rootField = new(rootTag);
+        Fields.Add(rootField);
+        rootreportField.SubFields.ForEach(field =>
+        {
+            rootField.Fields = string.Join(",", rootField.Fields, field.FieldName);
+            Fields.Add(new Field(field.FieldName));
+        });
+        Collection = new(colName: CollectionName, colType: rootTag);
+        Collection.NativeFields = new() { rootField.Fields };
+    }
+
     [XmlElement(ElementName = "REPORT")]
     public Report Report { get; set; }
 
@@ -159,7 +186,7 @@ public class ColTDLMessage
     public Line Line { get; set; }
 
     [XmlElement(ElementName = "FIELD")]
-    public List<Field> Field { get; set; }
+    public List<Field> Fields { get; set; }
 
     [XmlElement(ElementName = "OBJECT")]
     public List<TallyCustomObject> Objects { get; set; }
@@ -183,6 +210,12 @@ public class Report : DCollection
 
     }
     public Report() { }
+    public Report(string rName)
+    {
+        AttrName = rName;
+        FormName = rName;
+        SetAttributes();
+    }
 
     [XmlAttribute(AttributeName = "NAME")]
     public string AttrName { get; set; }
@@ -207,7 +240,13 @@ public class Report : DCollection
 public class Form : DCollection
 {
     public Form() { }
-
+    public Form(string formName)
+    {
+        PartName = formName;
+        ReportTag = formName;
+        Name = formName;
+        SetAttributes();
+    }
     public Form(string formName, string partName, string rootXML)
     {
         PartName = partName;
@@ -249,6 +288,14 @@ public class Part : DCollection
         SetAttributes();
 
     }
+    public Part(string name, string colName)
+    {
+        Name = name;
+        Lines = new() { name };
+        _Repeat = $"{name} : {colName}";
+        SetAttributes();
+
+    }
     public Part()
     {
     }
@@ -277,7 +324,11 @@ public class Line : DCollection
         RightFields = rightFields;
         SetAttributes();
     }
-
+    public Line(string name, string rootfiledname)
+    {
+        Name = name;
+        LeftFields = new() { rootfiledname };
+    }
     public Line()
     {
     }
@@ -304,7 +355,14 @@ public class Field : DCollection
         Name = xMLTag;
         SetAttributes();
     }
-
+    public Field(string xMLTag)
+    {
+        XMLTag = xMLTag;
+        Set = $"${xMLTag}";
+        Name = xMLTag;
+        SetAttributes();
+    }
+    
     public Field()
     {
 
@@ -318,6 +376,12 @@ public class Field : DCollection
 
     [XmlAttribute(AttributeName = "NAME")]
     public string Name { get; set; }
+
+    [XmlElement(ElementName = "FIELDS")]
+    public string Fields { get; set; }
+
+    [XmlElement(ElementName = "XMLATTR")]
+    public string XMLAttr { get; set; }
 
 
 }

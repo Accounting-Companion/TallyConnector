@@ -53,7 +53,12 @@ public class TallyTests
         List<BasicTallyObject> LedgerMasters = TTally.Masters.Find(master => master.MasterType == "Ledgers").Masters;
         Assert.IsNotNull(LedgerMasters);
     }
-
+    [Test]
+    public void CheckGetObject()
+    {
+        TTally.GetObjectfromTally();
+        Assert.IsNotNull(null);
+    }
     [Test]
     public async Task CheckGetGroup()
     {
