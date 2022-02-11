@@ -28,27 +28,13 @@ public class Tally : IDisposable
     public string FromDate { get; private set; }
     public string ToDate { get; private set; }
 
+    public List<MastersBasicInfo> Masters { get; private set; }
+
     private bool disposedValue;
 
     //Gets Full Url from Baseurl and Port
     private string FullURL => BaseURL + ":" + Port;
 
-    public List<Group> Groups { get; private set; }
-    public List<Ledger> Ledgers { get; private set; }
-    public List<CostCategory> CostCategories { get; private set; }
-    public List<CostCenter> CostCenters { get; private set; }
-    public List<StockGroup> StockGroups { get; private set; }
-    public List<StockCategory> StockCategories { get; private set; }
-
-    public List<StockItem> StockItems { get; private set; }
-    public List<Godown> Godowns { get; private set; }
-    public List<VoucherType> VoucherTypes { get; private set; }
-    public List<Unit> Units { get; private set; }
-    public List<Currency> Currencies { get; private set; }
-
-    public List<AttendanceType> AttendanceTypes { get; private set; }
-    public List<EmployeeGroup> EmployeeGroups { get; private set; }
-    public List<Employee> Employees { get; private set; }
 
     public List<Company> CompaniesList { get; private set; }
 
@@ -196,7 +182,7 @@ public class Tally : IDisposable
 
         CusColEnvelope ColEnvelope = new(); //Collection Envelope
         string CollectionName = "LicenseInfo";
-        ColEnvelope.Header = new("Export", "Collection", CollectionName);
+        ColEnvelope.Header = new(RequestTye.Export, HType.Collection, CollectionName);
         ColEnvelope.Body.Desc.TDL.TDLMessage = new(tallyCustomObjects: tallyCustomObjects,
                                                    objCollectionName: CollectionName,
                                                    ObjNames: "LicenseInfo");
@@ -278,370 +264,41 @@ public class Tally : IDisposable
     {
         string ReqType = "Masters from Tally";
         CLogger.TallyReqStart(ReqType);
-        //Gets Groups from Tally
-        Groups = await GetGroupsList();
+        
+        Masters = new();
+        foreach (var mapping in MastersMapping.MastersMappings)
+        {
+            Masters.Add(new MastersBasicInfo(mapping.MasterType, await GetBasicObjects<BasicTallyObject>(ColType: mapping.TallyMasterType,filters:mapping.Filters)));
 
-        //Gets Ledgers from Tally
-        Ledgers = await GetLedgersList();
-
-        //Gets Cost Categories from Tally
-        CostCategories = await GetCostCategoriesList();
-
-        //Gets Cost Centers from Tally
-        CostCenters = await GetCostCentersList();
-
-        //Gets Stock Groups from Tally
-        StockGroups = await GetStockGroupsList();
-
-        //Gets Stock Categories from Tally
-        StockCategories = await GetStockCategories();
-
-        //Gets Stock Items from Tally
-        StockItems = await GetStockItemsList();
-
-        //Gets Godowns from Tally
-        Godowns = await GetGodownsList();
-
-        //Gets Voucher Types from Tally
-        VoucherTypes = await GetVoucherTypesList();
-
-        //Gets Units from Tally
-        Units = await GetUnitsList();
-
-        //Gets Currencies from Tally
-        Currencies = await GetCurrenciesList();
-
-        //Gets AttendanceType from Tally
-        AttendanceTypes = await GetAttendanceTypesList();
-
-        //Gets EmployeeGroups from Tally
-        EmployeeGroups = await GetEmployeeGroups();
-
-        //Gets Employeees from Tally
-        Employees = await GetEmployeesList();
+        }
 
         CLogger.TallyReqCompleted(ReqType);
     }
 
-    /// <summary>
-    /// By default Gets List of Group objects from Tally with basic data like MasterId,Name and GUID
-    /// </summary>
-    /// <param name="staticVariables">Static variables to be used in xml request</param>
-    /// <param name="Nativelist">List of fields to be fetched from tally</param>
-    /// <param name="Filters">If you want to get groups based on any filter use filter</param>
-    /// <param name="SystemFilters">Based on which filter needs to be applied.If you specify filter you need to specify this </param>
-    /// <returns>List of groups with basic data</returns>
-    public async Task<List<Group>> GetGroupsList(StaticVariables staticVariables = null,
-                                                 List<string> Nativelist = null,
-                                                 List<string> Filters = null,
-                                                 List<string> SystemFilters = null)
+    public async Task<List<ReturnObject>> GetBasicObjects<ReturnObject>(string company = null,
+                                                    string ColType = null,
+                                                    string childof = null,
+                                                    List<string> fetchList = null,
+                                                    List<Filter> filters = null,
+                                                    bool isInitialize = false,
+                                                    XmlAttributeOverrides xmlAttributeOverrides = null) where ReturnObject : BasicTallyObject
     {
-        string ReqType = "List of companies in Default Tally path";
-        CLogger.TallyReqStart(ReqType);
-        staticVariables ??= new()
-        {
-            SVCompany = Company,
-            SVExportFormat = "XML",
-        };
-        Nativelist ??= new() { "Name", "GUID", "Masterid" };
-        string GrpXml = await GetNativeCollectionXML(rName: "NativeGrpColl",
-                                                     colType: "Group",
-                                                     Sv: staticVariables,
-                                                     NativeFields: Nativelist,
-                                                     Filters: Filters,
-                                                     SystemFilters: SystemFilters);
-        GroupColl GroupsColl = GetObjfromXml<GroupEnvelope>(GrpXml).Body.Data.Collection;
-        List<Group> TGroups = GroupsColl.Groups ?? new();
-        CLogger.TallyReqCompleted(ReqType);
-        return TGroups;
-    }
+        //If parameter is null Get value from instance
+        company ??= Company;
+        fetchList ??= new() { "GUID", "Masterid" };
 
-    public async Task<List<Ledger>> GetLedgersList(StaticVariables staticVariables = null,
-                                                   List<string> Nativelist = null,
-                                                   List<string> Filters = null,
-                                                   List<string> SystemFilters = null)
-    {
-        staticVariables ??= new()
-        {
-            SVCompany = Company,
-            SVExportFormat = "XML",
-        };
-        Nativelist ??= new() { "Name", "GUID", "Masterid" };
-
-        string LedXml = await GetNativeCollectionXML(rName: "NativeLedgColl",
-                                                     colType: "Ledger",
-                                                     Sv: staticVariables,
-                                                     NativeFields: Nativelist,
-                                                     Filters: Filters,
-                                                     SystemFilters: SystemFilters);
-        List<Ledger> TLedgers = GetObjfromXml<LedgerEnvelope>(LedXml).Body.Data.Collection.Ledgers;
-        return TLedgers;
-    }
-
-    public async Task<List<CostCategory>> GetCostCategoriesList(StaticVariables staticVariables = null,
-                                                                List<string> Nativelist = null,
-                                                                List<string> Filters = null,
-                                                                List<string> SystemFilters = null)
-    {
-        staticVariables ??= new()
-        {
-            SVCompany = Company,
-            SVExportFormat = "XML",
-        };
-        Nativelist ??= new() { "Name", "GUID", "Masterid" };
-
-        string CostCategoryXml = await GetNativeCollectionXML(rName: "NativeCostCatColl",
-                                                              colType: "Costcategory",
-                                                              Sv: staticVariables,
-                                                              NativeFields: Nativelist,
-                                                              Filters: Filters,
-                                                              SystemFilters: SystemFilters);
-        List<CostCategory> TCostCategories = GetObjfromXml<CostCatEnvelope>(CostCategoryXml).Body.Data.Collection.CostCategories;
-        return TCostCategories;
-    }
-
-    public async Task<List<CostCenter>> GetCostCentersList(StaticVariables staticVariables = null,
-                                                           List<string> Nativelist = null,
-                                                           List<string> Filters = null,
-                                                           List<string> SystemFilters = null)
-    {
-        staticVariables ??= new()
-        {
-            SVCompany = Company,
-            SVExportFormat = "XML",
-        };
-
-        Nativelist ??= new() { "Name", "GUID", "Masterid" };
-        Filters ??= new() { "IsEmployeeGroup", "Payroll" };
-        SystemFilters ??= new() { "Not $ISEMPLOYEEGROUP", "Not $FORPAYROLL" };
-
-        string CostCenetrXml = await GetNativeCollectionXML(rName: "NativeCostCentColl",
-                                                            colType: "CostCenter",
-                                                            Sv: staticVariables,
-                                                            NativeFields: Nativelist,
-                                                            Filters: Filters,
-                                                            SystemFilters: SystemFilters);
-        List<CostCenter> TCostCenters = GetObjfromXml<CostCentEnvelope>(CostCenetrXml).Body.Data.Collection.CostCenters;
-        return TCostCenters;
-    }
+        StaticVariables sv = new() { SVCompany = company, SVExportFormat = "XML" };
 
 
-    private async Task<List<StockGroup>> GetStockGroupsList(StaticVariables staticVariables = null,
-                                                            List<string> Nativelist = null,
-                                                            List<string> Filters = null,
-                                                            List<string> SystemFilters = null)
-    {
-        staticVariables ??= new()
-        {
-            SVCompany = Company,
-            SVExportFormat = "XML",
-        };
-        Nativelist ??= new() { "Name", "GUID", "Masterid" };
-        string StockGroupXml = await GetNativeCollectionXML(rName: "NativeStckGrpColl",
-                                                            colType: "StockGroup",
-                                                            Sv: staticVariables,
-                                                            NativeFields: Nativelist,
-                                                            Filters: Filters,
-                                                            SystemFilters: SystemFilters);
-        List<StockGroup> TStockGroups = GetObjfromXml<StockGrpEnvelope>(StockGroupXml).Body.Data.Collection.StockGroups;
-        return TStockGroups;
-
-    }
-
-    private async Task<List<StockCategory>> GetStockCategories(StaticVariables staticVariables = null,
-                                                               List<string> Nativelist = null,
-                                                               List<string> Filters = null,
-                                                               List<string> SystemFilters = null)
-    {
-        staticVariables ??= new()
-        {
-            SVCompany = Company,
-            SVExportFormat = "XML",
-        };
-        Nativelist ??= new() { "Name", "GUID", "Masterid" };
-        string StockCategoryXml = await GetNativeCollectionXML(rName: "NativeStckCatColl",
-                                                               colType: "StockCategory",
-                                                               Sv: staticVariables,
-                                                               NativeFields: Nativelist,
-                                                               Filters: Filters,
-                                                               SystemFilters: SystemFilters);
-        List<StockCategory> TStockCategories = GetObjfromXml<StockCatEnvelope>(StockCategoryXml).Body.Data.Collection.StockCategories;
-        return TStockCategories;
-    }
-
-    private async Task<List<StockItem>> GetStockItemsList(StaticVariables staticVariables = null,
-                                                          List<string> Nativelist = null,
-                                                          List<string> Filters = null,
-                                                          List<string> SystemFilters = null)
-    {
-        staticVariables ??= new()
-        {
-            SVCompany = Company,
-            SVExportFormat = "XML",
-        };
-        Nativelist ??= new() { "Name", "GUID", "Masterid" };
-        string StockItemsXml = await GetNativeCollectionXML(rName: "NativeStckItmColl",
-                                                            colType: "StockItem",
-                                                            Sv: staticVariables,
-                                                            NativeFields: Nativelist,
-                                                            Filters: Filters,
-                                                            SystemFilters: SystemFilters);
-        List<StockItem> TStockItems = GetObjfromXml<StockItemEnvelope>(StockItemsXml).Body.Data.Collection.StockItems;
-        return TStockItems;
-    }
-
-    private async Task<List<Godown>> GetGodownsList(StaticVariables staticVariables = null,
-                                                    List<string> Nativelist = null,
-                                                    List<string> Filters = null,
-                                                    List<string> SystemFilters = null)
-    {
-        staticVariables ??= new()
-        {
-            SVCompany = Company,
-            SVExportFormat = "XML",
-        };
-        Nativelist ??= new() { "Name", "GUID", "Masterid" };
-        string GodownsXml = await GetNativeCollectionXML(rName: "NativeGdwnColl",
-                                                         colType: "Godown",
-                                                         Sv: staticVariables,
-                                                         NativeFields: Nativelist,
-                                                         Filters: Filters,
-                                                         SystemFilters: SystemFilters);
-        List<Godown> TGodowns = GetObjfromXml<GodownEnvelope>(GodownsXml).Body.Data.Collection.Godowns;
-        return TGodowns;
-    }
-
-    private async Task<List<VoucherType>> GetVoucherTypesList(StaticVariables staticVariables = null,
-                                                              List<string> Nativelist = null,
-                                                              List<string> Filters = null,
-                                                              List<string> SystemFilters = null)
-    {
-        staticVariables ??= new()
-        {
-            SVCompany = Company,
-            SVExportFormat = "XML",
-        };
-        Nativelist ??= new() { "Name", "GUID", "Masterid" };
-        string VoucherTypesXml = await GetNativeCollectionXML(rName: "NativeVchTypeColl",
-                                                              colType: "VoucherType",
-                                                              Sv: staticVariables,
-                                                              NativeFields: Nativelist,
-                                                              Filters: Filters,
-                                                              SystemFilters: SystemFilters);
-        List<VoucherType> TVoucherTypes = GetObjfromXml<VoucherTypeEnvelope>(VoucherTypesXml).Body.Data.Collection.VoucherTypes;
-        return TVoucherTypes;
-    }
-
-    private async Task<List<Unit>> GetUnitsList(StaticVariables staticVariables = null,
-                                                List<string> Nativelist = null,
-                                                List<string> Filters = null,
-                                                List<string> SystemFilters = null)
-    {
-        staticVariables ??= new()
-        {
-            SVCompany = Company,
-            SVExportFormat = "XML",
-        };
-        Nativelist ??= new() { "Name", "GUID", "Masterid" };
-        string UnitsXml = await GetNativeCollectionXML(rName: "NativeUnitColl",
-                                                       colType: "Unit",
-                                                       Sv: staticVariables,
-                                                       NativeFields: Nativelist,
-                                                       Filters: Filters,
-                                                       SystemFilters: SystemFilters);
-        List<Unit> TUnits = GetObjfromXml<UnitEnvelope>(UnitsXml).Body.Data.Collection.Units;
-        return TUnits;
-    }
-
-    private async Task<List<Currency>> GetCurrenciesList(StaticVariables staticVariables = null,
-                                                         List<string> Nativelist = null,
-                                                         List<string> Filters = null,
-                                                         List<string> SystemFilters = null)
-    {
-
-        //Dictionary<string, string> Currenciesfields = new() { { "$EXPANDEDSYMBOL", "NAME" } };
-        staticVariables ??= new()
-        {
-            SVCompany = Company,
-            SVExportFormat = "XML",
-        };
-        Nativelist ??= new() { "Name", "GUID", "EXPANDEDSYMBOL", "Masterid" };
-
-        string CurrenciesXml = await GetNativeCollectionXML(rName: "NativeCurrColl",
-                                                            colType: "Currency",
-                                                            Sv: staticVariables,
-                                                            NativeFields: Nativelist,
-                                                            Filters: Filters,
-                                                            SystemFilters: SystemFilters);
-        List<Currency> TCurrencies = GetObjfromXml<CurrencyEnvelope>(CurrenciesXml).Body.Data.Collection.Currencies;
-        return TCurrencies;
-    }
-
-    private async Task<List<AttendanceType>> GetAttendanceTypesList(StaticVariables staticVariables = null,
-                                                                    List<string> Nativelist = null,
-                                                                    List<string> Filters = null,
-                                                                    List<string> SystemFilters = null)
-    {
-        staticVariables ??= new()
-        {
-            SVCompany = Company,
-            SVExportFormat = "XML",
-        };
-        Nativelist ??= new() { "Name", "GUID", "Masterid" };
-
-        string AttendanceTypesXml = await GetNativeCollectionXML(rName: "NativeAtndTypeColl",
-                                                                 colType: "AttendanceType",
-                                                                 Sv: staticVariables,
-                                                                 NativeFields: Nativelist,
-                                                                 Filters: Filters,
-                                                                 SystemFilters: SystemFilters);
-        List<AttendanceType> TAttendanceTypes = GetObjfromXml<AttendanceTypeEnvelope>(AttendanceTypesXml).Body.Data.Collection.AttendanceTypes;
-        return TAttendanceTypes;
-    }
-
-    private async Task<List<EmployeeGroup>> GetEmployeeGroups(StaticVariables staticVariables = null,
-                                                              List<string> Nativelist = null,
-                                                              List<string> EmployeeGroupFilters = null,
-                                                              List<string> EmployeeGroupSystemFilters = null)
-    {
-        staticVariables ??= new()
-        {
-            SVCompany = Company,
-            SVExportFormat = "XML",
-        };
-        Nativelist ??= new() { "Name", "GUID", "Masterid" };
-        EmployeeGroupFilters ??= new() { "IsEmployeeGroup" };
-        EmployeeGroupSystemFilters ??= new() { "$ISEMPLOYEEGROUP" };
-        string EmployeeGroupsXml = await GetNativeCollectionXML(rName: "NativeEmployeeGrpColl",
-                                                                            colType: "CostCenter", Sv: staticVariables,
-                                                                            NativeFields: Nativelist,
-                                                                            Filters: EmployeeGroupFilters,
-                                                                            SystemFilters: EmployeeGroupSystemFilters);
-        List<EmployeeGroup> TEmployeeGroups = GetObjfromXml<EmployeeGroupEnvelope>(EmployeeGroupsXml).Body.Data.Collection.EmployeeGroups;
-        return TEmployeeGroups;
-    }
-
-    private async Task<List<Employee>> GetEmployeesList(StaticVariables staticVariables = null,
-                                                        List<string> Nativelist = null,
-                                                        List<string> EmployeeFilters = null,
-                                                        List<string> EmployeeSystemFilters = null)
-    {
-        staticVariables ??= new()
-        {
-            SVCompany = Company,
-            SVExportFormat = "XML",
-        };
-        Nativelist ??= new() { "Name", "GUID", "Masterid" };
-        EmployeeFilters ??= new() { "IsEmployeeGroup", "Payroll" };
-        EmployeeSystemFilters ??= new() { "Not $ISEMPLOYEEGROUP", "$FORPAYROLL" };
-
-        string EmployeeesXml = await GetNativeCollectionXML(rName: "NativeEmployeeColl",
-                                                                            colType: "CostCenter", Sv: staticVariables,
-                                                                            NativeFields: Nativelist,
-                                                                            Filters: EmployeeFilters,
-                                                                            SystemFilters: EmployeeSystemFilters);
-        List<Employee> TEmployees = GetObjfromXml<EmployeeEnvelope>(EmployeeesXml).Body.Data.Collection.Employees;
-        return TEmployees;
+        List<ReturnObject> basicObjects = await GetNativeCollectionXML<ReturnObject>(Sv: sv,
+                                                                                     ColType: ColType,
+                                                                                     childof: childof,
+                                                                                     NativeFields: fetchList,
+                                                                                     filters: filters,
+                                                                                     isInitialize: isInitialize,
+                                                                                     TallyType: ColType.ToUpper(),
+                                                                                     xmlAttributeOverrides: xmlAttributeOverrides);
+        return basicObjects;
     }
 
     /// <summary>
@@ -818,21 +475,20 @@ public class Tally : IDisposable
                                                                                 List<string> NativeFields = null,
                                                                                 List<Filter> filters = null,
                                                                                 bool isInitialize = false,
+                                                                                string TallyType = null,
                                                                                 XmlAttributeOverrides xmlAttributeOverrides = null) where ReturnObject : TallyXmlJson, ITallyObject
     {
         string Resxml;
-        CusColEnvelope ColEnvelope = new(); //Collection Envelope
+
         //Gets Root attribute of ReturnObject
         XmlRootAttribute RootAttribute = (XmlRootAttribute)Attribute.GetCustomAttribute(typeof(ReturnObject), typeof(XmlRootAttribute));
         //ElementName of ReturnObject will match with TallyType
-        string TallyType = RootAttribute.ElementName;
+        TallyType ??= RootAttribute.ElementName;
         //ColType = CollectionMapping[typeof(ReturnObject).Name];
         string RName = $"CUSTOM{TallyType}";
-        ColEnvelope.Header = new("Export", "Collection", RName);  //Configuring Header To get Export data
-        if (Sv != null)
-        {
-            ColEnvelope.Body.Desc.StaticVariables = Sv;
-        }
+
+        CusColEnvelope ColEnvelope = new(RName, Sv); //Collection Envelope
+
 
         ColEnvelope.Body.Desc.TDL.TDLMessage = new(colName: RName,
                                                    colType: ColType ?? TallyType,
@@ -1944,7 +1600,7 @@ public class Tally : IDisposable
         Models.CusColEnvelope ColEnvelope = new(); //Collection Envelope
         string RName = rName;
 
-        ColEnvelope.Header = new("Export", "Data", RName);  //Configuring Header To get Export data
+        ColEnvelope.Header = new(RequestTye.Export, HType.Data, RName);  //Configuring Header To get Export data
         if (Sv != null)
         {
             ColEnvelope.Body.Desc.StaticVariables = Sv;
@@ -1996,7 +1652,7 @@ public class Tally : IDisposable
         Models.CusColEnvelope ColEnvelope = new(); //Collection Envelope
         string RName = rName;
 
-        ColEnvelope.Header = new("Export", "Collection", RName);  //Configuring Header To get Export data
+        ColEnvelope.Header = new(RequestTye.Export, HType.Collection, RName);  //Configuring Header To get Export data
         if (Sv != null)
         {
             ColEnvelope.Body.Desc.StaticVariables = Sv;
@@ -2029,7 +1685,7 @@ public class Tally : IDisposable
             CusColEnvelope ColEnvelope = new(); //Collection Envelope
             string RName = reportname;
 
-            ColEnvelope.Header = new("Export", "Data", RName);  //Configuring Header To get Export data
+            ColEnvelope.Header = new(RequestTye.Export, HType.Data, RName);  //Configuring Header To get Export data
 
             if (Sv != null)
             {
@@ -2231,19 +1887,6 @@ public class Tally : IDisposable
                 // TODO: dispose managed state (managed objects)
             }
             //client.Dispose();
-            Groups = null;
-            Ledgers = null;
-            CostCategories = null;
-            CostCenters = null;
-            StockCategories = null;
-            StockGroups = null;
-            StockItems = null;
-            Units = null;
-            Currencies = null;
-            VoucherTypes = null;
-            Employees = null;
-            EmployeeGroups = null;
-            AttendanceTypes = null;
 
             disposedValue = true;
         }

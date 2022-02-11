@@ -1,11 +1,10 @@
 ﻿namespace TallyConnector.Models.Masters;
 
+
 [XmlRoot(ElementName = "GROUP")]
-public class Group : TallyXmlJson, ITallyObject
+[XmlType(AnonymousType = true)]
+public class Group : BasicTallyObject, ITallyObject
 {
-    [XmlElement(ElementName = "MASTERID")]
-    [MaxLength(20)]
-    public int? TallyId { get; set; }
 
     [XmlAttribute(AttributeName = "NAME")]
     [JsonIgnore]
@@ -41,9 +40,7 @@ public class Group : TallyXmlJson, ITallyObject
     [Column(TypeName = "nvarchar(60)")]
     public string Alias { get; set; }
 
-    [XmlElement(ElementName = "GUID")]
-    [Column(TypeName = "nvarchar(100)")]
-    public string GUID { get; set; }
+
     /// <summary>
     /// Tally Field - Used for Calculation
     /// </summary>
@@ -113,7 +110,7 @@ public class Group : TallyXmlJson, ITallyObject
         return base.GetXML(attrOverrides);
     }
 
-    public void PrepareForExport()
+    public new void PrepareForExport()
     {
         if (Parent != null && Parent.Contains("Primary"))
         {
@@ -126,51 +123,4 @@ public class Group : TallyXmlJson, ITallyObject
         //Creates Names List if Not Exists
         CreateNamesList();
     }
-}
-
-[XmlRoot(ElementName = "ENVELOPE")]
-public class GroupEnvelope : TallyXmlJson
-{
-
-    [XmlElement(ElementName = "HEADER")]
-    public Header Header { get; set; }
-
-    [XmlElement(ElementName = "BODY")]
-    public GBody Body { get; set; } = new();
-}
-
-[XmlRoot(ElementName = "BODY")]
-public class GBody
-{
-    [XmlElement(ElementName = "DESC")]
-    public Description Desc { get; set; } = new();
-
-    [XmlElement(ElementName = "DATA")]
-    public GData Data { get; set; } = new();
-}
-
-[XmlRoot(ElementName = "DATA")]
-public class GData
-{
-    [XmlElement(ElementName = "TALLYMESSAGE")]
-    public GroupMessage Message { get; set; } = new();
-
-    [XmlElement(ElementName = "COLLECTION")]
-    public GroupColl Collection { get; set; } = new GroupColl();
-
-
-}
-
-[XmlRoot(ElementName = "COLLECTION")]
-public class GroupColl
-{
-    [XmlElement(ElementName = "GROUP")]
-    public List<Group> Groups { get; set; }
-}
-
-[XmlRoot(ElementName = "TALLYMESSAGE")]
-public class GroupMessage
-{
-    [XmlElement(ElementName = "GROUP")]
-    public Group Group { get; set; }
 }

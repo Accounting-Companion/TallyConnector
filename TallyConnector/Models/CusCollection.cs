@@ -6,6 +6,17 @@ class CusCollection
 [XmlRoot(ElementName = "ENVELOPE")]
 public class CusColEnvelope : TallyXmlJson
 {
+    public CusColEnvelope()
+    {
+    }
+
+    public CusColEnvelope(string reportName, StaticVariables staticVariables)
+    {
+        Body = new();
+        Header = new(Request: RequestTye.Export, Type: HType.Collection, ID: reportName); //Configuring Header To get Export data
+        Body.Desc.StaticVariables = staticVariables;
+    }
+
     [XmlElement(ElementName = "HEADER")]
     public Header Header { get; set; }
 

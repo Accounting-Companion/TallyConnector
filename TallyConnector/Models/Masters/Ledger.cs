@@ -4,7 +4,8 @@ namespace TallyConnector.Models.Masters;
 
 [Serializable]
 [XmlRoot("LEDGER")]
-public class Ledger : TallyXmlJson, ITallyObject
+[XmlType(AnonymousType = true)]
+public class Ledger : BasicTallyObject, ITallyObject
 {
     public Ledger()
     {
@@ -15,9 +16,6 @@ public class Ledger : TallyXmlJson, ITallyObject
         MultipleAddresses = new();
     }
 
-    [XmlElement(ElementName = "MASTERID")]
-    [MaxLength(20)]
-    public int? TallyId { get; set; }
 
     [XmlAttribute(AttributeName = "NAME")]
     [JsonIgnore]
@@ -405,9 +403,7 @@ public class Ledger : TallyXmlJson, ITallyObject
     [XmlAttribute(AttributeName = "Action")]
     public Action Action { get; set; }
 
-    [XmlElement(ElementName = "GUID")]
-    [Column(TypeName = "nvarchar(100)")]
-    public string GUID { get; set; }
+
 
     public void CreateNamesList()
     {
@@ -428,7 +424,7 @@ public class Ledger : TallyXmlJson, ITallyObject
         return base.GetXML(attrOverrides);
     }
 
-    public void PrepareForExport()
+    public new void PrepareForExport()
     {
         if (Group != null && Group.Contains("Primary"))
         {
@@ -498,50 +494,3 @@ public class ClosingBalances
     public string Amount { get; set; }
 
 }
-
-[XmlRoot(ElementName = "ENVELOPE")]
-public class LedgerEnvelope : TallyXmlJson
-{
-
-    [XmlElement(ElementName = "HEADER")]
-    public Header Header { get; set; }
-
-    [XmlElement(ElementName = "BODY")]
-    public LBody Body { get; set; } = new LBody();
-}
-
-[XmlRoot(ElementName = "BODY")]
-public class LBody
-{
-    [XmlElement(ElementName = "DESC")]
-    public Description Desc { get; set; } = new Description();
-
-    [XmlElement(ElementName = "DATA")]
-    public LData Data { get; set; } = new LData();
-}
-
-[XmlRoot(ElementName = "DATA")]
-public class LData
-{
-    [XmlElement(ElementName = "TALLYMESSAGE")]
-    public LedgerMessage Message { get; set; } = new LedgerMessage();
-
-    [XmlElement(ElementName = "COLLECTION")]
-    public LedgColl Collection { get; set; } = new LedgColl();
-
-
-}
-
-[XmlRoot(ElementName = "COLLECTION")]
-public class LedgColl
-{
-    [XmlElement(ElementName = "LEDGER")]
-    public List<Ledger> Ledgers { get; set; }
-}
-[XmlRoot(ElementName = "TALLYMESSAGE")]
-public class LedgerMessage
-{
-    [XmlElement(ElementName = "LEDGER")]
-    public Ledger Ledger { get; set; }
-}
-

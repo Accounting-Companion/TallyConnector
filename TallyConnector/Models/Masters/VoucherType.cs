@@ -1,15 +1,13 @@
 ﻿namespace TallyConnector.Models.Masters;
 
 [XmlRoot(ElementName = "VOUCHERTYPE")]
-public class VoucherType : TallyXmlJson,ITallyObject
+[XmlType(AnonymousType = true)]
+public class VoucherType : BasicTallyObject, ITallyObject
 {
     public VoucherType()
     {
         LanguageNameList = new();
     }
-
-    [XmlElement(ElementName = "MASTERID")]
-    public int? TallyId { get; set; }
 
 
     [XmlAttribute(AttributeName = "NAME")]
@@ -99,9 +97,6 @@ public class VoucherType : TallyXmlJson,ITallyObject
     [XmlAttribute(AttributeName = "Action")]
     public string Action { get; set; }
 
-    [XmlElement(ElementName = "GUID")]
-    public string GUID { get; set; }
-
     public void CreateNamesList()
     {
         if (LanguageNameList.Count == 0)
@@ -120,56 +115,8 @@ public class VoucherType : TallyXmlJson,ITallyObject
         CreateNamesList();
         return base.GetXML(attrOverrides);
     }
-    public void PrepareForExport()
+    public new void PrepareForExport()
     {
         CreateNamesList();
     }
-}
-
-[XmlRoot(ElementName = "ENVELOPE")]
-public class VoucherTypeEnvelope : TallyXmlJson
-{
-
-    [XmlElement(ElementName = "HEADER")]
-    public Header Header { get; set; }
-
-    [XmlElement(ElementName = "BODY")]
-    public VTBody Body { get; set; } = new();
-}
-
-[XmlRoot(ElementName = "BODY")]
-public class VTBody
-{
-    [XmlElement(ElementName = "DESC")]
-    public Description Desc { get; set; } = new();
-
-    [XmlElement(ElementName = "DATA")]
-    public VTData Data { get; set; } = new();
-}
-
-[XmlRoot(ElementName = "DATA")]
-public class VTData
-{
-    [XmlElement(ElementName = "TALLYMESSAGE")]
-    public VoucherTypeMessage Message { get; set; } = new();
-
-    [XmlElement(ElementName = "COLLECTION")]
-    public VoucherTypeColl Collection { get; set; } = new VoucherTypeColl();
-
-
-}
-
-[XmlRoot(ElementName = "COLLECTION")]
-public class VoucherTypeColl
-{
-    [XmlElement(ElementName = "VOUCHERTYPE")]
-    public List<VoucherType> VoucherTypes { get; set; }
-}
-
-
-[XmlRoot(ElementName = "TALLYMESSAGE")]
-public class VoucherTypeMessage
-{
-    [XmlElement(ElementName = "VOUCHERTYPE")]
-    public VoucherType VoucherType { get; set; }
 }

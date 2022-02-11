@@ -157,7 +157,7 @@ public class Employee : MCS.CostCenter
     [XmlElement(ElementName = "PAYMENTDETAILS.LIST")]
     public List<PaymentDetails> PaymentDetails { get; set; }
 
-    public new void CleanForExport()
+    public  void CleanForExport()
     {
         CreateNamesList();
     }
@@ -174,53 +174,3 @@ public class TaxRegimeDetails
     public string TaxRegime { get; set; }
 
 }
-
-
-[XmlRoot(ElementName = "ENVELOPE")]
-public class EmployeeEnvelope : TallyXmlJson
-{
-
-    [XmlElement(ElementName = "HEADER")]
-    public Header Header { get; set; }
-
-    [XmlElement(ElementName = "BODY")]
-    public EmployeeBody Body { get; set; } = new();
-}
-
-[XmlRoot(ElementName = "BODY")]
-public class EmployeeBody
-{
-    [XmlElement(ElementName = "DESC")]
-    public Description Desc { get; set; } = new();
-
-    [XmlElement(ElementName = "DATA")]
-    public EmployeeData Data { get; set; } = new();
-}
-
-[XmlRoot(ElementName = "DATA")]
-public class EmployeeData
-{
-    [XmlElement(ElementName = "TALLYMESSAGE")]
-    public EmployeeMessage Message { get; set; } = new();
-
-
-    [XmlElement(ElementName = "COLLECTION")]
-    public EmployeeColl Collection { get; set; } = new EmployeeColl();
-
-
-}
-
-[XmlRoot(ElementName = "COLLECTION")]
-public class EmployeeColl
-{
-    [XmlElement(ElementName = "COSTCENTRE")]
-    public List<Employee> Employees { get; set; }
-}
-
-[XmlRoot(ElementName = "TALLYMESSAGE")]
-public class EmployeeMessage
-{
-    [XmlElement(ElementName = "COSTCENTRE")]
-    public Employee Employee { get; set; }
-}
-

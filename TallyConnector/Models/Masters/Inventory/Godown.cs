@@ -1,7 +1,9 @@
 ﻿namespace TallyConnector.Models.Masters.Inventory;
 
+
 [XmlRoot(ElementName = "GODOWN")]
-public class Godown : TallyXmlJson, ITallyObject
+[XmlType(AnonymousType = true)]
+public class Godown : BasicTallyObject, ITallyObject
 {
 
     public Godown()
@@ -10,8 +12,6 @@ public class Godown : TallyXmlJson, ITallyObject
         LanguageNameList = new();
     }
 
-    [XmlElement(ElementName = "MASTERID")]
-    public int? TallyId { get; set; }
 
     [XmlAttribute(AttributeName = "NAME")]
     public string OldName { get; set; }
@@ -86,10 +86,6 @@ public class Godown : TallyXmlJson, ITallyObject
     [XmlAttribute(AttributeName = "Action")]
     public YesNo Action { get; set; }
 
-    [XmlElement(ElementName = "GUID")]
-    [Column(TypeName = "nvarchar(100)")]
-    public string GUID { get; set; }
-
     public void CreateNamesList()
     {
         if (LanguageNameList.Count == 0)
@@ -109,7 +105,7 @@ public class Godown : TallyXmlJson, ITallyObject
         return base.GetXML(attrOverrides);
     }
 
-    public void PrepareForExport()
+    public new void PrepareForExport()
     {
         if (Parent != null && Parent.Contains("Primary"))
         {
@@ -117,51 +113,4 @@ public class Godown : TallyXmlJson, ITallyObject
         }
         CreateNamesList();
     }
-}
-
-[XmlRoot(ElementName = "ENVELOPE")]
-public class GodownEnvelope : TallyXmlJson
-{
-
-    [XmlElement(ElementName = "HEADER")]
-    public Header Header { get; set; }
-
-    [XmlElement(ElementName = "BODY")]
-    public GdwnBody Body { get; set; } = new();
-}
-
-[XmlRoot(ElementName = "BODY")]
-public class GdwnBody
-{
-    [XmlElement(ElementName = "DESC")]
-    public Description Desc { get; set; } = new();
-
-    [XmlElement(ElementName = "DATA")]
-    public GdwnData Data { get; set; } = new();
-}
-
-[XmlRoot(ElementName = "DATA")]
-public class GdwnData
-{
-    [XmlElement(ElementName = "TALLYMESSAGE")]
-    public GdwnMessage Message { get; set; } = new();
-
-    [XmlElement(ElementName = "COLLECTION")]
-    public GodownColl Collection { get; set; } = new GodownColl();
-
-
-}
-
-[XmlRoot(ElementName = "COLLECTION")]
-public class GodownColl
-{
-    [XmlElement(ElementName = "GODOWN")]
-    public List<Godown> Godowns { get; set; }
-}
-
-[XmlRoot(ElementName = "TALLYMESSAGE")]
-public class GdwnMessage
-{
-    [XmlElement(ElementName = "GODOWN")]
-    public Godown Godown { get; set; }
 }

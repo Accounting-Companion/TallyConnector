@@ -50,7 +50,7 @@ public class TallyTests
     {
         await TTally.Check();
         await TTally.FetchAllTallyData();
-        Assert.IsNotNull(TTally.Ledgers);
+        Assert.IsNotNull(TTally.Masters);
     }
 
     [Test]
@@ -235,7 +235,7 @@ public class TallyTests
     public async Task CheckGetVoucher()
     {
         await TTally.Check();
-        Voucher voucher = await TTally.GetVoucher<Voucher>("1302", VoucherLookupField.MasterId);
+        Voucher voucher = await TTally.GetVoucher<Voucher>("1", VoucherLookupField.MasterId);
         Assert.NotNull(voucher);
     }
 

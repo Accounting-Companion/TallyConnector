@@ -1,13 +1,10 @@
 ﻿namespace TallyConnector.Models.Masters.Inventory;
 
+
 [XmlRoot(ElementName = "UNIT")]
-public class Unit : TallyXmlJson, ITallyObject
+[XmlType(AnonymousType = true)]
+public class Unit : BasicTallyObject, ITallyObject
 {
-
-    [XmlElement(ElementName = "MASTERID")]
-    public int? TallyId { get; set; }
-
-
     [XmlAttribute(AttributeName = "NAME")]
     [JsonIgnore]
     public string OldName { get; set; }
@@ -53,9 +50,8 @@ public class Unit : TallyXmlJson, ITallyObject
     [XmlAttribute(AttributeName = "Action")]
     public string Action { get; set; }
 
-    [XmlElement(ElementName = "GUID")]
-    public string GUID { get; set; }
     private string _IsSimpleUnit;
+
     [XmlElement(ElementName = "ISSIMPLEUNIT")]
     public string IsSimpleUnit
     {
@@ -81,54 +77,8 @@ public class Unit : TallyXmlJson, ITallyObject
         return "NO";
     }
 
-    public void PrepareForExport()
+    public new void PrepareForExport()
     {
     }
 
-}
-[XmlRoot(ElementName = "ENVELOPE")]
-public class UnitEnvelope : TallyXmlJson
-{
-
-    [XmlElement(ElementName = "HEADER")]
-    public Header Header { get; set; }
-
-    [XmlElement(ElementName = "BODY")]
-    public UnitBody Body { get; set; } = new();
-}
-
-[XmlRoot(ElementName = "BODY")]
-public class UnitBody
-{
-    [XmlElement(ElementName = "DESC")]
-    public Description Desc { get; set; } = new();
-
-    [XmlElement(ElementName = "DATA")]
-    public UnitData Data { get; set; } = new();
-}
-
-[XmlRoot(ElementName = "DATA")]
-public class UnitData
-{
-    [XmlElement(ElementName = "TALLYMESSAGE")]
-    public UnitMessage Message { get; set; } = new();
-
-
-    [XmlElement(ElementName = "COLLECTION")]
-    public UnitColl Collection { get; set; } = new UnitColl();
-
-
-}
-
-[XmlRoot(ElementName = "COLLECTION")]
-public class UnitColl
-{
-    [XmlElement(ElementName = "UNIT")]
-    public List<Unit> Units { get; set; }
-}
-[XmlRoot(ElementName = "TALLYMESSAGE")]
-public class UnitMessage
-{
-    [XmlElement(ElementName = "UNIT")]
-    public Unit Unit { get; set; }
 }

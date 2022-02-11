@@ -1,16 +1,14 @@
 ﻿namespace TallyConnector.Models.Masters.Inventory;
 
 [XmlRoot(ElementName = "STOCKITEM")]
-public class StockItem : TallyXmlJson, ITallyObject
+[XmlType(AnonymousType = true)]
+public class StockItem : BasicTallyObject, ITallyObject
 {
     public StockItem()
     {
         LanguageNameList = new();
         BOMList = new();
     }
-
-    [XmlElement(ElementName = "MASTERID")]
-    public int? TallyId { get; set; }
 
 
     [XmlAttribute(AttributeName = "NAME")]
@@ -114,9 +112,6 @@ public class StockItem : TallyXmlJson, ITallyObject
     [XmlAttribute(AttributeName = "Action")]
     public string Action { get; set; }
 
-    [XmlElement(ElementName = "GUID")]
-    public string GUID { get; set; }
-
     public void CreateNamesList()
     {
         if (LanguageNameList.Count == 0)
@@ -136,7 +131,7 @@ public class StockItem : TallyXmlJson, ITallyObject
         return base.GetXML(attrOverrides);
     }
 
-    public void PrepareForExport()
+    public new void PrepareForExport()
     {
         if (StockGroup != null && StockGroup.Contains("Primary"))
         {
@@ -144,50 +139,4 @@ public class StockItem : TallyXmlJson, ITallyObject
         }
         CreateNamesList();
     }
-}
-[XmlRoot(ElementName = "ENVELOPE")]
-public class StockItemEnvelope : TallyXmlJson
-{
-
-    [XmlElement(ElementName = "HEADER")]
-    public Header Header { get; set; }
-
-    [XmlElement(ElementName = "BODY")]
-    public SIBody Body { get; set; } = new();
-}
-
-[XmlRoot(ElementName = "BODY")]
-public class SIBody
-{
-    [XmlElement(ElementName = "DESC")]
-    public Description Desc { get; set; } = new();
-
-    [XmlElement(ElementName = "DATA")]
-    public SIData Data { get; set; } = new();
-}
-
-[XmlRoot(ElementName = "DATA")]
-public class SIData
-{
-    [XmlElement(ElementName = "TALLYMESSAGE")]
-    public SIMessage Message { get; set; } = new();
-
-    [XmlElement(ElementName = "COLLECTION")]
-    public StockItemColl Collection { get; set; } = new StockItemColl();
-
-
-}
-
-[XmlRoot(ElementName = "COLLECTION")]
-public class StockItemColl
-{
-    [XmlElement(ElementName = "STOCKITEM")]
-    public List<StockItem> StockItems { get; set; }
-}
-
-[XmlRoot(ElementName = "TALLYMESSAGE")]
-public class SIMessage
-{
-    [XmlElement(ElementName = "STOCKITEM")]
-    public StockItem StockItem { get; set; }
 }

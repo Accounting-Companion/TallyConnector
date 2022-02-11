@@ -51,3 +51,18 @@ public class TallyXmlJson : TallyBaseObject
     
 }
 
+[XmlRoot(ElementName = "OBJECTS")]
+public class BasicTallyObject : TallyXmlJson,ITallyObject
+{
+    [XmlElement(ElementName = "MASTERID")]
+    [MaxLength(20)]
+    public int? TallyId { get; set; }
+
+    [XmlElement(ElementName = "GUID")]
+    [Column(TypeName = "nvarchar(100)")]
+    public string GUID { get; set; }
+
+    public void PrepareForExport()
+    {
+    }
+}

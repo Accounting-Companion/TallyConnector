@@ -1,12 +1,9 @@
 ﻿namespace TallyConnector.Models.Masters;
 
 [XmlRoot(ElementName = "CURRENCY")]
-public class Currency : TallyXmlJson,ITallyObject
+[XmlType(AnonymousType = true)]
+public class Currency : BasicTallyObject, ITallyObject
 {
-    [XmlElement(ElementName = "MASTERID")]
-    [MaxLength(20)]
-    public int? TallyId { get; set; }
-
     [XmlElement(ElementName = "ORIGINALNAME")]
     public string OriginalName { get; set; }
 
@@ -42,8 +39,6 @@ public class Currency : TallyXmlJson,ITallyObject
     [XmlAttribute(AttributeName = "Action")]
     public string Action { get; set; }
 
-    [XmlElement(ElementName = "GUID")]
-    public string GUID { get; set; }
 
     //[XmlElement(ElementName = "DAILYSTDRATES.LIST")]
     //public List<DailystdRate> DailystdRateList { get; set; }
@@ -54,7 +49,7 @@ public class Currency : TallyXmlJson,ITallyObject
     //[XmlElement(ElementName = "DAILYSELLINGRATES.LIST")]
     //public List<DailySellingRate> DailySellingRateList { get; set; }
 
-    public void PrepareForExport()
+    public new void PrepareForExport()
     {
 
     }
@@ -78,52 +73,4 @@ public class Currency : TallyXmlJson,ITallyObject
 //public class DailyBuyingRate : DailystdRate
 //{
 //}
-
-
-[XmlRoot(ElementName = "ENVELOPE")]
-public class CurrencyEnvelope : TallyXmlJson
-{
-
-    [XmlElement(ElementName = "HEADER")]
-    public Header Header { get; set; }
-
-    [XmlElement(ElementName = "BODY")]
-    public CrncyBody Body { get; set; } = new();
-}
-
-[XmlRoot(ElementName = "BODY")]
-public class CrncyBody
-{
-    [XmlElement(ElementName = "DESC")]
-    public Description Desc { get; set; } = new();
-
-    [XmlElement(ElementName = "DATA")]
-    public CrncyData Data { get; set; } = new();
-}
-
-[XmlRoot(ElementName = "DATA")]
-public class CrncyData
-{
-    [XmlElement(ElementName = "TALLYMESSAGE")]
-    public CrncyMessage Message { get; set; } = new();
-
-
-    [XmlElement(ElementName = "COLLECTION")]
-    public CurrencyColl Collection { get; set; } = new CurrencyColl();
-
-}
-
-[XmlRoot(ElementName = "COLLECTION")]
-public class CurrencyColl
-{
-    [XmlElement(ElementName = "CURRENCY")]
-    public List<Currency> Currencies { get; set; }
-}
-[XmlRoot(ElementName = "TALLYMESSAGE")]
-public class CrncyMessage
-{
-    [XmlElement(ElementName = "CURRENCY")]
-    public Currency Currency { get; set; }
-}
-
 

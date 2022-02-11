@@ -10,17 +10,18 @@ public class Envelope<T> : TallyXmlJson where T : TallyXmlJson, ITallyObject
     public Envelope(T ObjecttoExport, StaticVariables staticVariables)
     {
         Body = new();
-        Header = new(Request: "Import", Type: "Data", ID: "All Masters");
+        Header = new(Request: RequestTye.Import, Type: HType.Data, ID: "All Masters");
         Body.Desc.StaticVariables = staticVariables;
         Body.Data.Message.Objects.Add(ObjecttoExport);
     }
     public Envelope(List<T> ObjectstoExport, StaticVariables staticVariables)
     {
         Body = new();
-        Header = new(Request: "Import", Type: "Data", ID: "All Masters");
+        Header = new(Request: RequestTye.Import, Type: HType.Data, ID: "All Masters");
         Body.Desc.StaticVariables = staticVariables;
         Body.Data.Message.Objects.AddRange(ObjectstoExport);
     }
+   
 
     [XmlElement(ElementName = "HEADER")]
     public Header Header { get; set; }
@@ -83,7 +84,7 @@ public class Message<T>
 [XmlRoot(ElementName = "HEADER")]
 public class Header
 {
-    public Header(string Request, string Type, string ID)
+    public Header(RequestTye Request, HType Type, string ID)
     {
         this._request = Request;
         this._type = Type;
@@ -91,17 +92,17 @@ public class Header
     }
     public Header() { }
     private int _version = 1;
-    private string _request;
-    private string _type;
+    private RequestTye _request;
+    private HType _type;
     private string _Id;
     [XmlElement(ElementName = "VERSION")]
     public int Version { get { return _version; } set { _version = value; } }
 
     [XmlElement(ElementName = "TALLYREQUEST")]
-    public string Request { get { return _request; } set { _request = value; } }
+    public RequestTye Request { get { return _request; } set { _request = value; } }
 
     [XmlElement(ElementName = "TYPE")]
-    public string Type { get { return _type; } set { _type = value; } }
+    public HType Type { get { return _type; } set { _type = value; } }
 
     [XmlElement(ElementName = "ID")]
     public string ID { get { return _Id; } set { _Id = value; } }
@@ -171,3 +172,20 @@ public class SVTo
     public string Text { get; set; }
 }
 
+public enum RequestTye
+{
+    [XmlEnum(Name = "EXPORT")]
+    Export,
+    [XmlEnum(Name = "IMPORT")]
+    Import
+}
+
+public enum HType
+{
+    [XmlEnum(Name = "OBJECT")]
+    Object,
+    [XmlEnum(Name = "COLLECTION")]
+    Collection,
+    [XmlEnum(Name = "DATA")]
+    Data
+}

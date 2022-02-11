@@ -1,15 +1,14 @@
 ﻿namespace TallyConnector.Models.Masters.Inventory;
 
 [XmlRoot(ElementName = "STOCKCATEGORY")]
-public class StockCategory : TallyXmlJson, ITallyObject
+[XmlType(AnonymousType = true)]
+public class StockCategory : BasicTallyObject, ITallyObject
 {
     public StockCategory()
     {
         LanguageNameList = new();
     }
 
-    [XmlElement(ElementName = "MASTERID")]
-    public int? TallyId { get; set; }
 
     [XmlAttribute(AttributeName = "NAME")]
     [JsonIgnore]
@@ -45,8 +44,6 @@ public class StockCategory : TallyXmlJson, ITallyObject
     [XmlAttribute(AttributeName = "Action")]
     public string Action { get; set; }
 
-    [XmlElement(ElementName = "GUID")]
-    public string GUID { get; set; }
 
     public void CreateNamesList()
     {
@@ -67,7 +64,7 @@ public class StockCategory : TallyXmlJson, ITallyObject
         return base.GetXML(attrOverrides);
     }
 
-    public void PrepareForExport()
+    public new void PrepareForExport()
     {
         if (Parent != null && Parent.Contains("Primary"))
         {
@@ -75,51 +72,4 @@ public class StockCategory : TallyXmlJson, ITallyObject
         }
         CreateNamesList();
     }
-}
-
-[XmlRoot(ElementName = "ENVELOPE")]
-public class StockCatEnvelope : TallyXmlJson
-{
-
-    [XmlElement(ElementName = "HEADER")]
-    public Header Header { get; set; }
-
-    [XmlElement(ElementName = "BODY")]
-    public SCBody Body { get; set; } = new();
-}
-
-[XmlRoot(ElementName = "BODY")]
-public class SCBody
-{
-    [XmlElement(ElementName = "DESC")]
-    public Description Desc { get; set; } = new();
-
-    [XmlElement(ElementName = "DATA")]
-    public SCData Data { get; set; } = new();
-}
-
-[XmlRoot(ElementName = "DATA")]
-public class SCData
-{
-    [XmlElement(ElementName = "TALLYMESSAGE")]
-    public SCMessage Message { get; set; } = new();
-
-    [XmlElement(ElementName = "COLLECTION")]
-    public CostCatColl Collection { get; set; } = new CostCatColl();
-
-
-}
-
-[XmlRoot(ElementName = "COLLECTION")]
-public class CostCatColl
-{
-    [XmlElement(ElementName = "STOCKCATEGORY")]
-    public List<StockCategory> StockCategories { get; set; }
-}
-
-[XmlRoot(ElementName = "TALLYMESSAGE")]
-public class SCMessage
-{
-    [XmlElement(ElementName = "STOCKCATEGORY")]
-    public StockCategory StockCategory { get; set; }
 }

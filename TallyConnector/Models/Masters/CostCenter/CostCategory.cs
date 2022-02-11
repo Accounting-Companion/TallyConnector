@@ -1,15 +1,14 @@
 ﻿namespace TallyConnector.Models.Masters.CostCenter;
 
+
 [XmlRoot(ElementName = "COSTCATEGORY")]
-public class CostCategory : TallyXmlJson, ITallyObject
+[XmlType(AnonymousType = true)]
+public class CostCategory : BasicTallyObject, ITallyObject
 {
     public CostCategory()
     {
         LanguageNameList = new();
     }
-
-    [XmlElement(ElementName = "MASTERID")]
-    public int? TallyId { get; set; }
 
     [XmlAttribute(AttributeName = "NAME")]
     [JsonIgnore]
@@ -34,9 +33,6 @@ public class CostCategory : TallyXmlJson, ITallyObject
 
     [XmlElement(ElementName = "ALLOCATENONREVENUE")]
     public YesNo AllocateNonRevenue { get; set; }
-
-    [XmlElement(ElementName = "GUID")]
-    public string GUID { get; set; }
 
     [XmlIgnore]
     public string Alias { get; set; }
@@ -70,56 +66,8 @@ public class CostCategory : TallyXmlJson, ITallyObject
         return base.GetXML(attrOverrides);
     }
 
-    public void PrepareForExport()
+    public new void PrepareForExport()
     {
         CreateNamesList();
     }
 }
-[XmlRoot(ElementName = "ENVELOPE")]
-public class CostCatEnvelope : TallyXmlJson
-{
-
-    [XmlElement(ElementName = "HEADER")]
-    public Header Header { get; set; }
-
-    [XmlElement(ElementName = "BODY")]
-    public CCBody Body { get; set; } = new();
-}
-
-[XmlRoot(ElementName = "BODY")]
-public class CCBody
-{
-    [XmlElement(ElementName = "DESC")]
-    public Description Desc { get; set; } = new();
-
-    [XmlElement(ElementName = "DATA")]
-    public CCData Data { get; set; } = new();
-}
-
-[XmlRoot(ElementName = "DATA")]
-public class CCData
-{
-    [XmlElement(ElementName = "TALLYMESSAGE")]
-    public CCMessage Message { get; set; } = new();
-
-    [XmlElement(ElementName = "COLLECTION")]
-    public CostCategoryColl Collection { get; set; } = new CostCategoryColl();
-
-
-}
-
-[XmlRoot(ElementName = "COLLECTION")]
-public class CostCategoryColl
-{
-    [XmlElement(ElementName = "COSTCATEGORY")]
-    public List<CostCategory> CostCategories { get; set; }
-}
-
-[XmlRoot(ElementName = "TALLYMESSAGE")]
-public class CCMessage
-{
-    [XmlElement(ElementName = "COSTCATEGORY")]
-    public CostCategory CostCategory { get; set; }
-}
-
-

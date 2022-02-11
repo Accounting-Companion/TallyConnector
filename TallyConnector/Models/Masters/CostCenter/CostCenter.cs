@@ -1,15 +1,14 @@
 ﻿namespace TallyConnector.Models.Masters.CostCenter;
 
+
 [XmlRoot(ElementName = "COSTCENTRE")]
-public class CostCenter : TallyXmlJson, ITallyObject
+[XmlType(AnonymousType = true)]
+public class CostCenter : BasicTallyObject, ITallyObject
 {
     public CostCenter()
     {
         LanguageNameList = new();
     }
-
-    [XmlElement(ElementName = "MASTERID")]
-    public int? TallyId { get; set; }
 
     [XmlAttribute(AttributeName = "NAME")]
     [JsonIgnore]
@@ -55,9 +54,6 @@ public class CostCenter : TallyXmlJson, ITallyObject
     [XmlAttribute(AttributeName = "Action")]
     public string Action { get; set; }
 
-    [XmlElement(ElementName = "GUID")]
-    public string GUID { get; set; }
-
     public void CreateNamesList()
     {
         if (LanguageNameList.Count == 0)
@@ -81,55 +77,8 @@ public class CostCenter : TallyXmlJson, ITallyObject
         return base.GetXML(attrOverrides);
     }
 
-    public void PrepareForExport()
+    public new void PrepareForExport()
     {
         CreateNamesList();
     }
-}
-
-[XmlRoot(ElementName = "ENVELOPE")]
-public class CostCentEnvelope : TallyXmlJson
-{
-
-    [XmlElement(ElementName = "HEADER")]
-    public Header Header { get; set; }
-
-    [XmlElement(ElementName = "BODY")]
-    public CCentBody Body { get; set; } = new();
-}
-
-[XmlRoot(ElementName = "BODY")]
-public class CCentBody
-{
-    [XmlElement(ElementName = "DESC")]
-    public Description Desc { get; set; } = new();
-
-    [XmlElement(ElementName = "DATA")]
-    public CCentData Data { get; set; } = new();
-}
-
-[XmlRoot(ElementName = "DATA")]
-public class CCentData
-{
-    [XmlElement(ElementName = "TALLYMESSAGE")]
-    public CCentMessage Message { get; set; } = new();
-
-    [XmlElement(ElementName = "COLLECTION")]
-    public CostCentColl Collection { get; set; } = new CostCentColl();
-
-
-}
-
-[XmlRoot(ElementName = "COLLECTION")]
-public class CostCentColl
-{
-    [XmlElement(ElementName = "COSTCENTRE")]
-    public List<CostCenter> CostCenters { get; set; }
-}
-
-[XmlRoot(ElementName = "TALLYMESSAGE")]
-public class CCentMessage
-{
-    [XmlElement(ElementName = "COSTCENTRE")]
-    public CostCenter CostCenter { get; set; }
 }
