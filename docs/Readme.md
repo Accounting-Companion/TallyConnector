@@ -39,23 +39,26 @@ public bool status = await Ctally.Check(); // To check Whether Tally is running 
 //GetCompaniesList() Returns List of companies opened in Tally
 List<Company> CompaniesList = await  Ctally.GetCompaniesList();
 
-//FetchAllTallyData() will get all tally masters like Groups/Ledgers ...etc., in Tally.Groups,Tally.Ledgers lists
+//FetchAllTallyData() will get all tally masters like Groups/Ledgers ...etc., in Tally.Masters
 await Ctally.FetchAllTallyData("ABC Company");
-
+//Ex:
+//masterType can be Ledgers,Groups ... or any masters from Tally
+string masterType = "Ledgers"
+List<BasicTallyObject> LedgerMasters = Ctally.Masters.Find(master => master.MasterType == masterType).Masters;
 
 //To Get Full Object from Tally use Specific methods like GetGroup, GetLedger, GetCostCategory,GetCostCenter ..etc.,
 //For Ex. For getting Group by name
-Group TGrp = await Ctally.GetGroup("TestGroup");
+Group TGrp = await Ctally.GetGroup<Group>("TestGroup");
 
 //To Create/Alter/Delete/Cancel Group,Ledger,Voucher from Tally use Specific methods like PostGroup, PostLedger, PostCostCategory,PostCostCenter ..etc.,
 //For Ex. To create group
-PResult result = await TTally.PostGroup(new Group()
+PResult result = await Ctally.PostGroup(new Group()
             {
                 Name = "TestGroup",
                 Parent = "Sundry Debtors",
             });
 //For Ex. To Alter group we need to Set Group.Action to Delete and use the same method
-PResult result = await TTally.PostGroup(new Group()
+PResult result = await Ctally.PostGroup(new Group()
             {
                 OldName = "TestGroup",
                 Name = "TestGroup_Edited",
@@ -64,7 +67,7 @@ PResult result = await TTally.PostGroup(new Group()
                 AddLAllocType = AdAllocType.NotApplicable,
             });
 //For Ex. To Delete group we need to Set Group.Action to Delete and use the same method
-PResult result = await TTally.PostGroup(new Group()
+PResult result = await Ctally.PostGroup(new Group()
             {
                 OldName = "TestGroup",
                 Action = Action.Delete,
