@@ -151,7 +151,7 @@ public enum InterestStyle
 
 }
 
-public enum InterestBalancetype
+public enum InterestBalanceType
 {
     [XmlEnum(Name = "")]
     None = 0,

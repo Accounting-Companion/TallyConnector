@@ -155,8 +155,8 @@ public class ColTDLMessage
     public ColTDLMessage(ReportField rootreportField)
     {
         string rootTag = rootreportField.FieldName;
-        string name = $"LISTOF{rootTag}S";
-        string CollectionName = $"Custom{rootTag}Coll";
+        string name = $"LISTOF{rootTag}";
+        string CollectionName = $"Custom{rootTag}Coll".ToUpper();
         Report = new(name);
         Form = new(name);
         Part = new(name, CollectionName);
@@ -164,13 +164,71 @@ public class ColTDLMessage
         Fields = new();
         Field rootField = new(rootTag);
         Fields.Add(rootField);
-        rootreportField.SubFields.ForEach(field =>
-        {
-            rootField.Fields = string.Join(",", rootField.Fields, field.FieldName);
-            Fields.Add(new Field(field.FieldName));
-        });
+        Dictionary<string, string> Repeatfields = new();
+        List<string> RootFields = new();
+        List<string> Fetchlist = new();
+
+        GenerateFields(rootreportField, RootFields, Repeatfields, Fetchlist);
+        rootField.Fields = string.Join(",", RootFields);
+        rootField.Repeat = Repeatfields.Select(kv => $"{kv.Value} : {kv.Key}").ToList();
         Collection = new(colName: CollectionName, colType: rootTag);
-        Collection.NativeFields = new() { rootField.Fields };
+        Collection.NativeFields = new() { string.Join(",", Fetchlist) };
+    }
+
+    private void GenerateFields(ReportField rootreportField, List<string> Tfields, Dictionary<string, string> Repeatfields, List<string> fetchlist = null)
+    {
+
+        rootreportField.SubFields?.ForEach(field =>
+        {
+            List<string> TSfields = new();
+            Dictionary<string, string> TSRepeatfields = new();
+            if (field.SubFields.Count > 0)
+            {
+                if (field.CollectionName != null)
+                {
+                    Repeatfields[field.CollectionName] = field.FieldName;
+                    Tfields.Add(field.FieldName);
+                    fetchlist?.Add(field.XMLTag);
+                    GenerateFields(field, TSfields, TSRepeatfields);
+
+                    //Field Newf = new(new List<string>() { field.FieldName }, Repeatfields, $"C{field.FieldName}");
+                    //Newf.XMLTag = string.Empty;
+                    Fields.Add(new(TSfields, TSRepeatfields, field.FieldName, field.XMLTag));
+                    //Fields.Add(Newf);
+                }
+                else
+                {
+                    Tfields.Add(field.FieldName);
+                    fetchlist?.Add(field.XMLTag);
+                    GenerateFields(field, TSfields, TSRepeatfields);
+
+                    Fields.Add(new(TSfields, TSRepeatfields, field.FieldName, field.XMLTag));
+
+                }
+
+            }
+            else
+            {
+
+                if (field.CollectionName != null)
+                {
+                    Repeatfields[field.CollectionName] = field.FieldName;
+                    Tfields.Add(field.FieldName);
+                    fetchlist?.Add(field.XMLTag);
+                    //Fields.Add(new(TSfields, Repeatfields, field.XMLTag));
+                    Fields.Add(new(field.FieldName, field.XMLTag));
+                }
+                else
+                {
+                    Tfields.Add(field.FieldName);
+                    fetchlist?.Add(field.XMLTag);
+                    Field Newf = new(field.FieldName, field.XMLTag);
+                    Fields.Add(Newf);
+                }
+
+            }
+
+        });
     }
 
     [XmlElement(ElementName = "REPORT")]
@@ -348,11 +406,11 @@ public class Line : DCollection
 [XmlRoot(ElementName = "FIELD")]
 public class Field : DCollection
 {
-    public Field(string TallyField, String xMLTag)
+    public Field(string name, string xMLTag)
     {
         XMLTag = xMLTag;
-        Set = TallyField;
-        Name = xMLTag;
+        Set = $"${xMLTag}";
+        Name = name;
         SetAttributes();
     }
     public Field(string xMLTag)
@@ -362,11 +420,28 @@ public class Field : DCollection
         Name = xMLTag;
         SetAttributes();
     }
-    
+
+    public Field(List<string> fields, Dictionary<string, string> repeatFields, string fieldName, string xmlTag)
+    {
+        Fields = string.Join(",", fields);
+        Name = fieldName;
+        Repeat = repeatFields.Select(kv => $"{kv.Value} : {kv.Key}").ToList();
+
+        XMLTag = xmlTag;
+        SetAttributes();
+    }
+    public Field(List<string> fields, string fieldName, string xmltag)
+    {
+        Fields = string.Join(",", fields);
+        Name = fieldName;
+        XMLTag = xmltag;
+        SetAttributes();
+    }
     public Field()
     {
 
     }
+    private bool _IsVerticleVisible => Repeat?.Count > 0;
 
     [XmlElement(ElementName = "SET")]
     public string Set { get; set; } //TallyFields Like $Name
@@ -382,6 +457,13 @@ public class Field : DCollection
 
     [XmlElement(ElementName = "XMLATTR")]
     public string XMLAttr { get; set; }
+
+
+    [XmlElement(ElementName = "REPEAT")]
+    public List<string> Repeat { get; set; }
+
+    [XmlElement(ElementName = "SCROLLED")]
+    public string Scrolled { get { return _IsVerticleVisible ? "Vertical" : null; } set { } }
 
 
 }

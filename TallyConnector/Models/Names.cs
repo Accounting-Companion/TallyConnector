@@ -1,4 +1,6 @@
-﻿namespace TallyConnector.Models;
+﻿using TallyConnector.Attributes;
+
+namespace TallyConnector.Models;
 
 [XmlRoot(ElementName = "LANGUAGENAME.LIST")]
 public class LanguageNameList
@@ -26,7 +28,8 @@ public class LanguageNameList
             }
         }
     }
-    [XmlElement(ElementName = "NAME.LIST")]
+    
+    [XmlElement(ElementName = "NAME.LIST")]    
     public Names NameList { get; set; }
 
     //[XmlElement(ElementName = "LANGUAGEID")]
@@ -34,6 +37,7 @@ public class LanguageNameList
 }
 
 [XmlRoot(ElementName = "NAME.LIST")]
+
 public class Names
 {
     public Names()
@@ -42,6 +46,7 @@ public class Names
     }
 
     [XmlElement(ElementName = "NAME")]
+    [TDLCollection(CollectionName = "Name")]
     public List<string> NAMES { get; set; }
 
     //[XmlAttribute(AttributeName = "TYPE")]

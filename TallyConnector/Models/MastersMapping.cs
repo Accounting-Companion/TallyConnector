@@ -56,9 +56,9 @@ public class MastersMapping
     };
 }
 
-public class MastersBasicInfo
+public class MastersBasicInfo<T>
 {
-    public MastersBasicInfo(string masterType, List<BasicTallyObject> masters)
+    public MastersBasicInfo(string masterType, List<T> masters)
     {
         MasterType = masterType;
         Masters = masters;
@@ -66,7 +66,7 @@ public class MastersBasicInfo
 
     public string MasterType { get; set; }
 
-    public List<BasicTallyObject> Masters { get; set; } = new();
+    public List<T> Masters { get; set; } = new();
 
     public int Count => Masters.Count;
 }

@@ -100,6 +100,7 @@ public class StockItem : BasicTallyObject, ITallyObject
 
     [JsonIgnore]
     [XmlElement(ElementName = "LANGUAGENAME.LIST")]
+    [TDLCollection(CollectionName = "LanguageName")]
     public List<LanguageNameList> LanguageNameList { get; set; }
 
     [XmlElement(ElementName = "MULTICOMPONENTLIST.LIST")]

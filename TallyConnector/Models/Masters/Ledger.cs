@@ -360,6 +360,7 @@ public class Ledger : BasicTallyObject, ITallyObject
 
 
     [XmlElement(ElementName = "INTERESTCOLLECTION.LIST")]
+    [TDLCollection(CollectionName = "Interest Collection")]
     public List<InterestList> InterestList { get; set; }
 
 
@@ -381,6 +382,7 @@ public class Ledger : BasicTallyObject, ITallyObject
 
     [JsonIgnore]
     [XmlElement(ElementName = "LANGUAGENAME.LIST")]
+    [TDLCollection(CollectionName = "LanguageName")]
     public List<LanguageNameList> LanguageNameList { get; set; }
 
     [XmlElement(ElementName = "LEDMULTIADDRESSLIST.LIST")]
@@ -451,7 +453,7 @@ public class InterestList
 
     [XmlElement(ElementName = "INTERESTBALANCETYPE")]
     [Column(TypeName = "nvarchar(25)")]
-    public InterestBalancetype InterestBalancetype { get; set; }
+    public InterestBalanceType InterestBalancetype { get; set; }
 
     [XmlElement(ElementName = "INTERESTAPPLON")]
     [Column(TypeName = "nvarchar(20)")]

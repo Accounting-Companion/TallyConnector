@@ -32,6 +32,7 @@ public class VoucherType : BasicTallyObject, ITallyObject
 
     [JsonIgnore]
     [XmlElement(ElementName = "LANGUAGENAME.LIST")]
+    [TDLCollection(CollectionName = "LanguageName")]
     public List<LanguageNameList> LanguageNameList { get; set; }
 
     [XmlElement(ElementName = "PARENT")]

@@ -52,6 +52,7 @@ public class AttendanceType : BasicTallyObject, ITallyObject
 
     [JsonIgnore]
     [XmlElement(ElementName = "LANGUAGENAME.LIST")]
+    [TDLCollection(CollectionName = "LanguageName")]
     public List<LanguageNameList> LanguageNameList { get; set; }
 
     /// <summary>
