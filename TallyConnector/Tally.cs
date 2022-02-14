@@ -3,6 +3,7 @@ using Microsoft.Extensions.Logging.Abstractions;
 using System.Net.Http;
 using System.Reflection;
 using System.Xml.Xsl;
+using TallyConnector.Attributes;
 using TallyConnector.Exceptions;
 using TallyConnector.Models;
 using TallyConnector.Models.Masters;
@@ -29,7 +30,9 @@ public class Tally : IDisposable
     public string FromDate { get; private set; }
     public string ToDate { get; private set; }
 
-    public List<MastersBasicInfo> Masters { get; private set; }
+    public List<MastersBasicInfo<BasicTallyObject>> Masters { get; private set; }
+
+    private Dictionary<Type, PropertyInfo[]> PropertyInfoList { get; set; } = new();
 
     private bool disposedValue;
 
@@ -269,7 +272,7 @@ public class Tally : IDisposable
         Masters = new();
         foreach (var mapping in MastersMapping.MastersMappings)
         {
-            Masters.Add(new MastersBasicInfo(mapping.MasterType, await GetBasicObjects<BasicTallyObject>(ColType: mapping.TallyMasterType, filters: mapping.Filters)));
+            Masters.Add(new MastersBasicInfo<BasicTallyObject>(mapping.MasterType, await GetBasicObjects<BasicTallyObject>(ColType: mapping.TallyMasterType, filters: mapping.Filters)));
 
         }
 
@@ -1590,7 +1593,7 @@ public class Tally : IDisposable
     /// <param name="SystemFilters">Definition for filter</param>
     /// <returns>returns xml as string</returns>
     public async Task<string> GetCustomReportXML(string rName,
-                                                     Dictionary<string, string> Fields,
+                                                     Dictionary<string,string> Fields,
                                                      string colType,
                                                      StaticVariables Sv = null,
                                                      List<string> Filters = null,
@@ -1676,40 +1679,185 @@ public class Tally : IDisposable
         return Resxml;
     }
 
-    public void GetObjectfromTally()
+    public PropertyInfo[] GetPropertyInfo(Type type)
     {
+        PropertyInfo[] PropertyInfo;
+        PropertyInfoList.TryGetValue(type, out PropertyInfo);
+        if (PropertyInfo == null)
+        {
+            PropertyInfo = type.GetProperties();
+            PropertyInfoList[type] = PropertyInfo;
+        };
+        return PropertyInfo;
+    }
 
-        XmlRootAttribute Rootattribute = (XmlRootAttribute)Attribute.GetCustomAttribute(typeof(Group), typeof(XmlRootAttribute));
-        string RootTag = Rootattribute.ElementName;
+    public  void GetObjectfromTally()
+    {
+        Type type = typeof(Ledger);
+
+        string RootTag = GetRootTag(type);
 
         ReportField rootreportField = new(RootTag);
 
-        PropertyInfo[] propertyInfoList = typeof(Group).GetProperties();
+        GetTDLReport(type, rootreportField);
 
-        foreach (PropertyInfo propertyinfo in propertyInfoList)
-        {
-            Attribute CElement = Attribute.GetCustomAttribute(propertyinfo, typeof(XmlElementAttribute));//propertyinfo.CustomAttributes.FirstOrDefault(Attributedata => Attributedata.AttributeType == typeof(XmlAttributeAttribute));
-
-            if (CElement != null)
-            {
-                XmlElementAttribute xmlAttribute = (XmlElementAttribute)CElement;
-                string xmlTag = xmlAttribute.ElementName;
-                rootreportField.SubFields.Add(new ReportField(xmlTag));
-            }
-            Attribute Cattribute = Attribute.GetCustomAttribute(propertyinfo, typeof(XmlAttributeAttribute));//propertyinfo.CustomAttributes.FirstOrDefault(Attributedata => Attributedata.AttributeType == typeof(XmlAttributeAttribute));
-
-            if (Cattribute != null)
-            {
-                XmlAttributeAttribute xmlAttribute = (XmlAttributeAttribute)Cattribute;
-                string xmlAttr = xmlAttribute.AttributeName;
-                rootreportField.Atrributes.Add(xmlAttr);
-            }
-        }
-
-        CusColEnvelope CusColEnvelope = new(RequestTye.Export,HType.Data, $"LISTOF{RootTag}S");
+        CusColEnvelope CusColEnvelope = new(RequestTye.Export, HType.Data, $"LISTOF{RootTag}");
         CusColEnvelope.Body.Desc.TDL.TDLMessage = new(rootreportField);
         string xml = CusColEnvelope.GetXML();
+        //string Rxml = await SendRequest(xml);
+
     }
+
+    private void GetTDLReport(Type type, ReportField rootreportField)
+    {
+        List<Type> IgnoreTypes = new() { typeof(string), typeof(int), typeof(int?) };
+        PropertyInfo[] propertyInfoList = GetPropertyInfo(type);
+        foreach (PropertyInfo propertyinfo in propertyInfoList)
+        {
+            Type Ctype = propertyinfo.PropertyType;
+
+            if (Ctype.IsGenericType && (Ctype.GetGenericTypeDefinition() == typeof(List<>)))
+            {
+                Type ChildType = Ctype.GetGenericArguments()[0];
+                if (!ChildType.IsPrimitive)
+                {
+                    string ColName = GetTDLCollectionName(propertyinfo);
+                    string xmlElem = GetXmlElement(propertyinfo);
+                    ReportField ChildreportField = new(xmlElem, ColName);
+                    if (!IgnoreTypes.Contains(Ctype))
+                    {
+                        ChildreportField.FieldName = $"{rootreportField.FieldName.Substring(0, 5)}_{ChildreportField.FieldName}";
+                        GetTDLReport(ChildType, ChildreportField);
+                    }
+                    rootreportField.SubFields.Add(ChildreportField);
+                }
+
+            }
+            else if (!Ctype.IsPrimitive && !Ctype.IsEnum && !IgnoreTypes.Contains(Ctype))
+            {
+                GetChildReport(propertyinfo, rootreportField);
+            }
+            else
+            {
+                GetReportFields(rootreportField, propertyinfo);
+            }
+
+        }
+    }
+
+
+
+    private void GetChildReport(PropertyInfo propertyinfo, ReportField rootreportField)
+    {
+        string xmlElem = GetXmlElement(propertyinfo);
+        if (xmlElem != null)
+        {
+            string ColName = GetTDLCollectionName(propertyinfo);
+            ReportField ChildreportField = new(xmlElem, ColName);
+            ChildreportField.FieldName = $"{rootreportField.FieldName.Substring(0, 5)}_{ChildreportField.FieldName}";
+            GetTDLReport(propertyinfo.PropertyType, ChildreportField);
+            rootreportField.SubFields.Add(ChildreportField);    
+        }
+
+    }
+
+    //private void GetChildReport(Type ChildType, string xmlTag, ReportField rootreportField)
+    //{
+    //    PropertyInfo[] childpropertyinfo = GetPropertyInfo(ChildType);
+    //    string ColName = GetTDLCollectionName(ChildType);
+    //    ReportField subrootReportField = new(xmlTag, ColName);
+    //    foreach (PropertyInfo chilPropertyinfo in childpropertyinfo)
+    //    {
+    //        Type Ctype = chilPropertyinfo.PropertyType;
+    //        if (Ctype.IsGenericType && (Ctype.GetGenericTypeDefinition() == typeof(List<>)))
+    //        {
+    //            Type DChildType = Ctype.GetGenericArguments()[0];
+
+    //            if (!DChildType.IsPrimitive)
+    //            {
+    //                string XmlTag = GetXmlElement(chilPropertyinfo);
+    //                if (DChildType == typeof(string))
+    //                {
+    //                    string ChColName = GetTDLCollectionName(ChildType);
+    //                    ReportField ChsubrootReportField = new(XmlTag, ChColName);
+    //                    subrootReportField.SubFields.Add(ChsubrootReportField);
+    //                }
+    //                else
+    //                {
+    //                    GetChildReport(ChildType: ChildType, XmlTag, rootreportField: rootreportField);
+    //                }
+    //            }
+    //        }
+    //        else if (!Ctype.IsPrimitive && !Ctype.IsEnum && Ctype != typeof(string))
+    //        {
+    //            string rootTag = GetXmlElement(chilPropertyinfo);
+    //            if (rootTag != null)
+    //            {
+    //                string XmlTag = GetXmlElement(chilPropertyinfo);
+    //                GetChildReport(ChildType: Ctype, XmlTag, rootreportField: subrootReportField);
+    //            }
+    //        }
+    //        else
+    //        {
+    //            GetReportFields(subrootReportField, chilPropertyinfo);
+    //        }
+
+    //    }
+    //    rootreportField.SubFields.Add(subrootReportField);
+    //}
+
+    private static string GetRootTag(Type type)
+    {
+        XmlRootAttribute Rootattribute = (XmlRootAttribute)Attribute.GetCustomAttribute(type, typeof(XmlRootAttribute));
+        string RootTag = Rootattribute?.ElementName;
+        return RootTag;
+    }
+    private static string GetTDLCollectionName(Type type)
+    {
+        TDLCollectionAttribute TDLColattribute = (TDLCollectionAttribute)Attribute.GetCustomAttribute(type, typeof(TDLCollectionAttribute));
+        string CollectionName = TDLColattribute?.CollectionName;
+        return CollectionName;
+    }
+    private string GetTDLCollectionName(PropertyInfo propertyinfo)
+    {
+        TDLCollectionAttribute TDLColattribute = (TDLCollectionAttribute)propertyinfo.GetCustomAttributes().FirstOrDefault(Attribute => Attribute.GetType() == typeof(TDLCollectionAttribute));
+        string CollectionName = TDLColattribute?.CollectionName;
+        return CollectionName;
+    }
+    private static void GetReportFields(ReportField rootreportField, PropertyInfo propertyinfo)
+    {
+        string xmlTag = GetXmlElement(propertyinfo);
+        if (xmlTag != null)
+        {
+            rootreportField.SubFields.Add(new ReportField(xmlTag));
+        }
+        string xmlAttr = GetXmlAttribute(propertyinfo);
+        if (xmlAttr != null)
+        {
+            rootreportField.Atrributes.Add(xmlAttr);
+        }
+
+    }
+
+    private static string GetXmlAttribute(PropertyInfo propertyinfo)
+    {
+        XmlAttributeAttribute Cattribute = (XmlAttributeAttribute)Attribute.GetCustomAttribute(propertyinfo, typeof(XmlAttributeAttribute));//propertyinfo.CustomAttributes.FirstOrDefault(Attributedata => Attributedata.AttributeType == typeof(XmlAttributeAttribute));
+
+        string xmlAttr = Cattribute?.AttributeName;
+        return xmlAttr;
+    }
+
+    private static string GetXmlElement(PropertyInfo propertyinfo)
+    {
+        XmlElementAttribute[] CElement = (XmlElementAttribute[])Attribute.GetCustomAttributes(propertyinfo, typeof(XmlElementAttribute));//propertyinfo.CustomAttributes.FirstOrDefault(Attributedata => Attributedata.AttributeType == typeof(XmlAttributeAttribute));
+        if (CElement.Length > 0)
+        {
+            string xmlTag = CElement[0].ElementName;
+            return xmlTag;
+        }
+        return null;
+    }
+
     public async Task<string> GetReportXML(string reportname, StaticVariables Sv = null)
     {
         string Resxml = null;

@@ -82,12 +82,12 @@ public class ColTDLMessage
         Fields = new();
         foreach (var Fld in leftFields)
         {
-            Field field = new(Fld.Key, Fld.Value);
+            Field field = new(Fld.Value);
             Fields.Add(field);
         }
         foreach (var Fld in rightFields)
         {
-            Field field = new(Fld.Key, Fld.Value);
+            Field field = new(Fld.Value);
             Fields.Add(field);
         }
         Collection = new(colName: colName, colType: colType, filters: filters);
