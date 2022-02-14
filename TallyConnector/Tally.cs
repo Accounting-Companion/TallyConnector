@@ -211,7 +211,7 @@ public class Tally : IDisposable
             try
             {
                 CLogger.TallyReqStart(ReqType);
-                List<string> NativeFields = new() { "Name", "StartingFrom", "GUID", "*" };
+                List<string> NativeFields = new() { "Name", "StartingFrom", "GUID", "MobileNo, RemoteFullListName", "*" };
                 string xml = await GetNativeCollectionXML(rName: "ListofCompanies",
                                                       colType: "Company", NativeFields: NativeFields, isInitialize: true);
                 CompaniesList = GetObjfromXml<ComListEnvelope>(xml).Body.Data.Collection.CompaniesList;
@@ -1593,7 +1593,7 @@ public class Tally : IDisposable
     /// <param name="SystemFilters">Definition for filter</param>
     /// <returns>returns xml as string</returns>
     public async Task<string> GetCustomReportXML(string rName,
-                                                     Dictionary<string,string> Fields,
+                                                     Dictionary<string, string> Fields,
                                                      string colType,
                                                      StaticVariables Sv = null,
                                                      List<string> Filters = null,
@@ -1691,7 +1691,7 @@ public class Tally : IDisposable
         return PropertyInfo;
     }
 
-    public  void GetObjectfromTally()
+    public void GetObjectfromTally()
     {
         Type type = typeof(Ledger);
 
@@ -1756,7 +1756,7 @@ public class Tally : IDisposable
             ReportField ChildreportField = new(xmlElem, ColName);
             ChildreportField.FieldName = $"{rootreportField.FieldName.Substring(0, 5)}_{ChildreportField.FieldName}";
             GetTDLReport(propertyinfo.PropertyType, ChildreportField);
-            rootreportField.SubFields.Add(ChildreportField);    
+            rootreportField.SubFields.Add(ChildreportField);
         }
 
     }

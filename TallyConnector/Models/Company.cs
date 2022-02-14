@@ -23,6 +23,12 @@ public class Company : TallyXmlJson
     [XmlElement(ElementName = "PHONENUMBER")]
     public string PhoneNumber { get; set; }
 
+    [XmlElement(ElementName = "MOBILENO")]
+    public string MobileNumber { get; set; }
+
+    [XmlElement(ElementName = "REMOTEFULLLISTNAME")]
+    public string Address { get; set; }
+
     [XmlElement(ElementName = "FAXNUMBER")]
     public string FaxNumber { get; set; }
 
