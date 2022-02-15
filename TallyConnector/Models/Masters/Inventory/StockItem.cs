@@ -7,7 +7,6 @@ public class StockItem : BasicTallyObject, ITallyObject
     public StockItem()
     {
         LanguageNameList = new();
-        BOMList = new();
     }
 
 

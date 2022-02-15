@@ -1,6 +1,4 @@
-﻿using TallyConnector.Attributes;
-
-namespace TallyConnector.Models;
+﻿namespace TallyConnector.Models;
 
 [XmlRoot(ElementName = "LANGUAGENAME.LIST")]
 public class LanguageNameList

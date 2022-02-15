@@ -10,7 +10,6 @@ public class Voucher : TallyXmlJson, ITallyObject
     public Voucher()
     {
         _DeliveryNotes = new();
-        Ledgers = new();
     }
 
     [XmlElement(ElementName = "MASTERID")]
@@ -241,6 +240,9 @@ public class Voucher : TallyXmlJson, ITallyObject
     [XmlElement(ElementName = "EWAYBILLDETAILS.LIST")]
     public List<EwayBillDetail> EWayBillDetails { get; set; }
 
+    [XmlElement(ElementName = "ATTENDANCEENTRIES.LIST")]
+    public List<AttendanceEntry> AttendanceEntries { get; set; }
+
     [JsonIgnore]
     [XmlAttribute(AttributeName = "DATE")]
     public string Dt
@@ -287,45 +289,45 @@ public class Voucher : TallyXmlJson, ITallyObject
     {
         if (VchType != "Contra" && VchType != "Purchase" && VchType != "Receipt" && VchType != "Credit Note")
         {
-            Ledgers.Sort((x, y) => y.LedgerName.CompareTo(x.LedgerName));//First Sort Ledger list Using Ledger Names
-            Ledgers.Sort((x, y) => y.Amount.CompareTo(x.Amount)); //Next sort Ledger List Using Ledger Amounts
+            Ledgers?.Sort((x, y) => y.LedgerName.CompareTo(x.LedgerName));//First Sort Ledger list Using Ledger Names
+            Ledgers?.Sort((x, y) => y.Amount.CompareTo(x.Amount)); //Next sort Ledger List Using Ledger Amounts
 
         }
         else
         {
-            Ledgers.Sort((x, y) => x.LedgerName.CompareTo(y.LedgerName));//First Sort Ledger list Using Ledger Names
-            Ledgers.Sort((x, y) => x.Amount.CompareTo(y.Amount)); //Next sort Ledger List Using Ledger Amounts
+            Ledgers?.Sort((x, y) => x.LedgerName.CompareTo(y.LedgerName));//First Sort Ledger list Using Ledger Names
+            Ledgers?.Sort((x, y) => x.Amount.CompareTo(y.Amount)); //Next sort Ledger List Using Ledger Amounts
         }
 
         //Looop Through all Ledgers
-        Ledgers.ForEach(c =>
+        Ledgers?.ForEach(c =>
         {
             //Sort Bill Allocations
-            c.BillAllocations.Sort((x, y) => x.Name.CompareTo(y.Name)); //First Sort BillAllocations Using Bill Numbers
-            c.BillAllocations.Sort((x, y) => x.Amount.CompareTo(y.Amount));//Next sort BillAllocationst Using  Amounts
+            c.BillAllocations?.Sort((x, y) => x.Name.CompareTo(y.Name)); //First Sort BillAllocations Using Bill Numbers
+            c.BillAllocations?.Sort((x, y) => x.Amount.CompareTo(y.Amount));//Next sort BillAllocationst Using  Amounts
 
-            c.CostCategoryAllocations.Sort((x, y) => x.CostCategoryName.CompareTo(y.CostCategoryName));
+            c.CostCategoryAllocations?.Sort((x, y) => x.CostCategoryName.CompareTo(y.CostCategoryName));
 
-            c.CostCategoryAllocations.ForEach(cc =>
+            c.CostCategoryAllocations?.ForEach(cc =>
             {
-                cc.CostCenterAllocations.Sort((x, y) => x.Name.CompareTo(y.Name));
-                cc.CostCenterAllocations.Sort((x, y) => x.Amount.CompareTo(y.Amount));
+                cc.CostCenterAllocations?.Sort((x, y) => x.Name.CompareTo(y.Name));
+                cc.CostCenterAllocations?.Sort((x, y) => x.Amount.CompareTo(y.Amount));
             });
             //sort Inventory Allocations
-            c.InventoryAllocations.Sort((x, y) => x.ActualQuantity.CompareTo(y.ActualQuantity));
-            c.InventoryAllocations.Sort((x, y) => x.Amount.CompareTo(y.Amount));
+            c.InventoryAllocations?.Sort((x, y) => x.ActualQuantity.CompareTo(y.ActualQuantity));
+            c.InventoryAllocations?.Sort((x, y) => x.Amount.CompareTo(y.Amount));
 
-            c.InventoryAllocations.ForEach(inv =>
+            c.InventoryAllocations?.ForEach(inv =>
             {
-                inv.BatchAllocations.Sort((x, y) => x.GodownName.CompareTo(y.GodownName));
-                inv.BatchAllocations.Sort((x, y) => x.Amount.CompareTo(y.Amount));
+                inv.BatchAllocations?.Sort((x, y) => x.GodownName.CompareTo(y.GodownName));
+                inv.BatchAllocations?.Sort((x, y) => x.Amount.CompareTo(y.Amount));
 
-                inv.CostCategoryAllocations.Sort((x, y) => x.CostCategoryName.CompareTo(y.CostCategoryName));
+                inv.CostCategoryAllocations?.Sort((x, y) => x.CostCategoryName.CompareTo(y.CostCategoryName));
 
-                inv.CostCategoryAllocations.ForEach(cc =>
+                inv.CostCategoryAllocations?.ForEach(cc =>
                 {
-                    cc.CostCenterAllocations.Sort((x, y) => x.Name.CompareTo(y.Name));
-                    cc.CostCenterAllocations.Sort((x, y) => x.Amount.CompareTo(y.Amount));
+                    cc.CostCenterAllocations?.Sort((x, y) => x.Name.CompareTo(y.Name));
+                    cc.CostCenterAllocations?.Sort((x, y) => x.Amount.CompareTo(y.Amount));
                 });
             });
 
@@ -347,9 +349,9 @@ public class Voucher : TallyXmlJson, ITallyObject
     }
     public void GetJulianday()
     {
-        Ledgers.ForEach(ledg =>
+        Ledgers?.ForEach(ledg =>
         {
-            ledg.BillAllocations.ForEach(billalloc =>
+            ledg.BillAllocations?.ForEach(billalloc =>
             {
                 if (billalloc.BillCreditPeriod != null)
                 {
@@ -381,9 +383,6 @@ public class IVoucherLedger : TallyBaseObject
 
     public IVoucherLedger()
     {
-        BillAllocations = new();
-        InventoryAllocations = new();
-        CostCategoryAllocations = new();
     }
 
 
@@ -446,7 +445,7 @@ public class IVoucherLedger : TallyBaseObject
                     var CleanedAmounts = Regex.Match(SplittedValues[1], @"[0-9.]+");
                     bool Isnegative = SplittedValues[1].Contains('-');
                     bool sucess = Isnegative ? double.TryParse('-' + CleanedAmounts.Value, out t_amount) : double.TryParse(CleanedAmounts.ToString(), out t_amount);
-                    CleanedAmount = t_amount;
+                    CleanedAmount = sucess? t_amount: null;
                     var ForexInfo = SplittedValues[0].Split('@');
                     ForexAmount = ForexInfo[0].Trim();
                     RateofExchange = Regex.Match(ForexInfo[1], @"[0-9.]+").Value;
@@ -467,7 +466,7 @@ public class IVoucherLedger : TallyBaseObject
 
     }
     [XmlIgnore]
-    public double CleanedAmount { get; set; }
+    public double? CleanedAmount { get; set; }
 
 
     [XmlElement(ElementName = "BILLALLOCATIONS.LIST")]
@@ -617,8 +616,6 @@ public class InventoryAllocations : TallyBaseObject
 {
     public InventoryAllocations()
     {
-        BatchAllocations = new();
-        CostCategoryAllocations = new();
     }
 
 
@@ -773,7 +770,6 @@ public class CostCategoryAllocations : TallyBaseObject
 {
     public CostCategoryAllocations()
     {
-        CostCenterAllocations = new();
     }
 
     [XmlElement(ElementName = "CATEGORY")]
@@ -835,6 +831,31 @@ public class CostCenterAllocations : TallyBaseObject
         }
     }
 
+
+}
+
+
+[XmlRoot(ElementName = "ATTENDANCEENTRIES.LIST")]
+public class AttendanceEntry
+{
+
+    [XmlIgnore]
+    public string AttdTypeId { get; set; }
+
+
+
+    [XmlElement(ElementName = "NAME")]
+    public string Name { get; set; }
+
+
+    [XmlElement(ElementName = "ATTENDANCETYPE")]
+    public string AttdType { get; set; }
+
+    [XmlElement(ElementName = "ATTDTYPETIMEVALUE")]
+    public string AttdTypeTimeValue { get; set; }
+
+    [XmlElement(ElementName = "ATTDTYPEVALUE")]
+    public string AttdTypeValue { get; set; }
 
 }
 

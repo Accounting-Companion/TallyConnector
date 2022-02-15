@@ -1,5 +1,4 @@
-﻿using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Logging.Abstractions;
+﻿using Microsoft.Extensions.Logging.Abstractions;
 using System.Reflection;
 using System.Xml.Xsl;
 using TallyConnector.Exceptions;

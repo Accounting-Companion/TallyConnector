@@ -1,6 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
-
-namespace TallyConnector.Models;
+﻿namespace TallyConnector.Models;
 
 public class TallyBaseObject
 {
@@ -50,11 +48,11 @@ public class TallyXmlJson : TallyBaseObject
         return textWriter.ToString(); ;
     }
 
-    
+
 }
 
 [XmlRoot(ElementName = "OBJECTS")]
-public class BasicTallyObject : TallyXmlJson,ITallyObject
+public class BasicTallyObject : TallyXmlJson, ITallyObject
 {
     [XmlElement(ElementName = "MASTERID")]
     [MaxLength(20)]
@@ -66,5 +64,10 @@ public class BasicTallyObject : TallyXmlJson,ITallyObject
 
     public void PrepareForExport()
     {
+    }
+
+    public override string ToString()
+    {
+        return GUID ?? string.Empty;
     }
 }

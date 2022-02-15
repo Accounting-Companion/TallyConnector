@@ -1,70 +1,64 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace TallyConnector.Models;
+﻿namespace TallyConnector.Models;
 
 public class MastersMapping
 {
-    public MastersMapping(string masterType, string tallyMasterType, List<Filter> filters)
+    public MastersMapping(TallyObjectType masterType, string tallyMasterType, List<Filter> filters)
     {
         MasterType = masterType;
         Filters = filters;
         TallyMasterType = tallyMasterType;
     }
 
-    public string MasterType { get; set; }
+    public TallyObjectType MasterType { get; set; }
     public string TallyMasterType { get; set; }
 
     public List<Filter> Filters { get; set; }
 
     public static readonly List<MastersMapping> MastersMappings = new()
     {
-        new MastersMapping("Currencies", "Currency", null),
+        new MastersMapping(TallyObjectType.Currencies, "Currency", null),
 
-        new MastersMapping("Groups", "Group", null),
-        new MastersMapping("Ledgers", "Ledger", null),
+        new MastersMapping(TallyObjectType.Groups, "Group", null),
+        new MastersMapping(TallyObjectType.Ledgers, "Ledger", null),
 
-        new MastersMapping("CostCategories", "CostCategory", null),
-        new MastersMapping("CostCenters", "CostCentre",
+        new MastersMapping(TallyObjectType.CostCategories, "CostCategory", null),
+        new MastersMapping(TallyObjectType.CostCenters, "CostCentre",
             new List<Filter>()
             {
                 new Filter("IsEmployeeGroup", "Not $ISEMPLOYEEGROUP"),
                 new Filter("IsPayroll", "Not $FORPAYROLL")
             }),
 
-        new MastersMapping("Units", "Unit", null),
-        new MastersMapping("Godowns", "Godown", null),
-        new MastersMapping("StockCategories", "StockCategory", null),
-        new MastersMapping("StockGroups", "StockGroup", null),
-        new MastersMapping("StockItems", "StockItem", null),
+        new MastersMapping(TallyObjectType.Units, "Unit", null),
+        new MastersMapping(TallyObjectType.Godowns, "Godown", null),
+        new MastersMapping(TallyObjectType.StockCategories, "StockCategory", null),
+        new MastersMapping(TallyObjectType.StockGroups, "StockGroup", null),
+        new MastersMapping(TallyObjectType.StockItems, "StockItem", null),
 
-        new MastersMapping("AttendanceTypes", "AttendanceType", null),
-        new MastersMapping("EmployeeGroups", "CostCentre", new List<Filter>()
+        new MastersMapping(TallyObjectType.AttendanceTypes, "AttendanceType", null),
+        new MastersMapping(TallyObjectType.EmployeeGroups, "CostCentre", new List<Filter>()
             {
                 new Filter("IsEmployeeGroup", "$ISEMPLOYEEGROUP"),
             }),
-        new MastersMapping("Employees", "CostCentre", new List<Filter>()
+        new MastersMapping(TallyObjectType.Employees, "CostCentre", new List<Filter>()
             {
                 new Filter("IsEmployeeGroup", "Not $ISEMPLOYEEGROUP"),
                 new Filter("IsPayroll", "$FORPAYROLL")
             }),
 
-        new MastersMapping("VoucherTypes", "VoucherType", null),
+        new MastersMapping(TallyObjectType.VoucherTypes, "VoucherType", null),
     };
 }
 
 public class MastersBasicInfo<T>
 {
-    public MastersBasicInfo(string masterType, List<T> masters)
+    public MastersBasicInfo(TallyObjectType masterType, List<T> masters)
     {
         MasterType = masterType;
         Masters = masters;
     }
 
-    public string MasterType { get; set; }
+    public TallyObjectType MasterType { get; set; }
 
     public List<T> Masters { get; set; } = new();
 

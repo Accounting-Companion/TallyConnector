@@ -9,11 +9,8 @@ public class Ledger : BasicTallyObject, ITallyObject
 {
     public Ledger()
     {
-        FAddress = new HAddress();
-        InterestList = new();
         LanguageNameList = new();
-        ClosingBalances = new();
-        MultipleAddresses = new();
+        FAddress = new HAddress();
     }
 
 
