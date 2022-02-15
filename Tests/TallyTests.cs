@@ -50,7 +50,7 @@ public class TallyTests
     {
         await TTally.Check();
         await TTally.FetchAllTallyData();
-        List<BasicTallyObject> LedgerMasters = TTally.Masters.Find(master => master.MasterType == "Ledgers").Masters;
+        List<BasicTallyObject> LedgerMasters = TTally.Masters.Find(master => master.MasterType == TallyObjectType.Ledgers).Masters;
         Assert.IsNotNull(LedgerMasters);
     }
     [Test]

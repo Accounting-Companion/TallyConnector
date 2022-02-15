@@ -1,9 +1,7 @@
 ﻿using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
-using System.Net.Http;
 using System.Reflection;
 using System.Xml.Xsl;
-using TallyConnector.Attributes;
 using TallyConnector.Exceptions;
 using TallyConnector.Models;
 using TallyConnector.Models.Masters;
@@ -277,6 +275,12 @@ public class Tally : IDisposable
         }
 
         CLogger.TallyReqCompleted(ReqType);
+    }
+
+    public List<BasicTallyObject> GetMasters(TallyObjectType masterType)
+    {
+        MastersBasicInfo<BasicTallyObject> mastersBasicInfo = Masters.FirstOrDefault(info => info.MasterType == masterType);
+        return mastersBasicInfo?.Masters;
     }
 
     public async Task<List<ReturnObject>> GetBasicObjects<ReturnObject>(string company = null,
