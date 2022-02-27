@@ -53,6 +53,11 @@ public class Currency : BasicTallyObject, ITallyObject
     {
 
     }
+
+    public override string ToString()
+    {
+        return $"{OriginalName} - {ExpandedSymbol}";
+    }
 }
 //[XmlRoot(ElementName = "DAILYSTDRATES.LIST")]
 //public class DailystdRate

@@ -97,6 +97,11 @@ public class Company : BasicTallyObject
     [XmlElement(ElementName = "ISINTERESTON")]
     public string Isintereston { get; set; }
 
+    public override string ToString()
+    {
+        return Name;
+    }
+
 
 }
 
@@ -114,5 +119,10 @@ public class CompanyOnDisk : BasicTallyObject
 
     [XmlElement(ElementName = "COMPANYNUMBER")]
     public string CompNum { get; set; }
+
+    public override string ToString()
+    {
+        return Name;
+    }
 }
 

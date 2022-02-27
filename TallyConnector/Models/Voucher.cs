@@ -369,6 +369,12 @@ public class Voucher : TallyXmlJson, ITallyObject
         OrderLedgers(); //Ensures ledgers are ordered in correct way
         GetJulianday();
     }
+
+
+    public override string ToString()
+    {
+        return $"{VoucherType} - {VoucherNumber}";
+    }
 }
 
 [XmlRoot(ElementName = "LEDGERENTRIES.LIST")]
@@ -445,7 +451,7 @@ public class IVoucherLedger : TallyBaseObject
                     var CleanedAmounts = Regex.Match(SplittedValues[1], @"[0-9.]+");
                     bool Isnegative = SplittedValues[1].Contains('-');
                     bool sucess = Isnegative ? double.TryParse('-' + CleanedAmounts.Value, out t_amount) : double.TryParse(CleanedAmounts.ToString(), out t_amount);
-                    CleanedAmount = sucess? t_amount: null;
+                    CleanedAmount = sucess ? t_amount : null;
                     var ForexInfo = SplittedValues[0].Split('@');
                     ForexAmount = ForexInfo[0].Trim();
                     RateofExchange = Regex.Match(ForexInfo[1], @"[0-9.]+").Value;

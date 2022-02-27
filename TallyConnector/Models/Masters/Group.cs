@@ -124,4 +124,9 @@ public class Group : BasicTallyObject, ITallyObject
         //Creates Names List if Not Exists
         CreateNamesList();
     }
+
+    public override string ToString()
+    {
+        return Name;
+    }
 }

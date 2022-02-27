@@ -71,4 +71,9 @@ public class CostCategory : BasicTallyObject, ITallyObject
     {
         CreateNamesList();
     }
+
+    public override string ToString()
+    {
+        return $"{Name}";
+    }
 }

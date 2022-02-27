@@ -81,4 +81,9 @@ public class Unit : BasicTallyObject, ITallyObject
     {
     }
 
+    public override string ToString()
+    {
+        return $"{Name}";
+    }
+
 }

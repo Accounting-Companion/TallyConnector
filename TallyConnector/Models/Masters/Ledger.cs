@@ -431,6 +431,11 @@ public class Ledger : BasicTallyObject, ITallyObject
         }
         CreateNamesList();
     }
+
+    public override string ToString()
+    {
+        return Name;
+    }
 }
 
 [XmlRoot(ElementName = "INTERESTCOLLECTION.LIST")]

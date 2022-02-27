@@ -84,4 +84,8 @@ public class StockGroup : BasicTallyObject, ITallyObject
         }
         CreateNamesList();
     }
+    public override string ToString()
+    {
+        return $"{Name}";
+    }
 }

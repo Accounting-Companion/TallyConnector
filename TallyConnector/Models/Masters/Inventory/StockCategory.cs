@@ -73,4 +73,9 @@ public class StockCategory : BasicTallyObject, ITallyObject
         }
         CreateNamesList();
     }
+
+    public override string ToString()
+    {
+        return $"{Name}";
+    }
 }
