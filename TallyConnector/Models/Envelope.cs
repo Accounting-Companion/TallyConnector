@@ -187,5 +187,7 @@ public enum HType
     [XmlEnum(Name = "COLLECTION")]
     Collection,
     [XmlEnum(Name = "DATA")]
-    Data
+    Data,
+    [XmlEnum(Name = "FUNCTION")]
+    Function,
 }

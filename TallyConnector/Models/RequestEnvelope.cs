@@ -1,178 +1,117 @@
 ﻿namespace TallyConnector.Models;
-class CusCollection
-{
-}
 
 [XmlRoot(ElementName = "ENVELOPE")]
-public class CusColEnvelope : TallyXmlJson
+public class RequestEnvelope : TallyXmlJson
 {
-    public CusColEnvelope()
+    public RequestEnvelope()
     {
     }
 
-    public CusColEnvelope(string reportName, StaticVariables staticVariables = null)
+    public RequestEnvelope(HType Type, string iD)
     {
-        Body = new();
-        Header = new(Request: RequestTye.Export, Type: HType.Collection, ID: reportName); //Configuring Header To get Export data
-        Body.Desc.StaticVariables = staticVariables;
+        Header = new(Request: RequestTye.Export, Type: Type, ID: iD); //Configuring Header To get Export data
     }
-    public CusColEnvelope(RequestTye RequestTye, HType Type, string reportName, StaticVariables staticVariables = null)
+
+    public RequestEnvelope(HType Type, string iD, StaticVariables sv) : this(Type, iD)
     {
-        Body = new();
-        Header = new(Request: RequestTye, Type: Type, ID: reportName); //Configuring Header To get Export data
-        Body.Desc.StaticVariables = staticVariables;
+        Body.Desc.StaticVariables = sv;
     }
+
+    public RequestEnvelope(HType Type, string iD, StaticVariables sv, ReportField rootreportfield) : this(Type, iD, sv)
+    {
+        Body.Desc.TDL.TDLMessage = new(rootreportfield);
+    }
+
     [XmlElement(ElementName = "HEADER")]
     public Header Header { get; set; }
 
     [XmlElement(ElementName = "BODY")]
-    public ColBody Body { get; set; } = new();
+    public RequestBody Body { get; set; } = new();
 }
 
 [XmlRoot(ElementName = "BODY")]
-public class ColBody
+public class RequestBody
 {
     [XmlElement(ElementName = "DESC")]
-    public ColDescription Desc { get; set; } = new();
-
-    //[XmlElement(ElementName = "DATA")]
-    //public LData Data { get; set; } = new LData();
+    public ReqDescription Desc { get; set; } = new();
 }
 
 [XmlRoot(ElementName = "DESC")]
-public class ColDescription
+public class ReqDescription
 {
 
     [XmlElement(ElementName = "STATICVARIABLES")]
     public StaticVariables StaticVariables { get; set; } = new();
 
     [XmlElement(ElementName = "TDL")]
-    public ColTDL TDL { get; set; } = new();
+    public ReqTDL TDL { get; set; } = new();
 }
 
 [XmlRoot(ElementName = "TDL")]
-public class ColTDL
+public class ReqTDL
 {
 
     [XmlElement(ElementName = "TDLMESSAGE")]
-    public ColTDLMessage TDLMessage { get; set; } = new();
+    public TDLMessage TDLMessage { get; set; } = new();
 }
 
 [XmlRoot(ElementName = "TDLMESSAGE")]
-public class ColTDLMessage
+public class TDLMessage
 {
-    public ColTDLMessage(string rName,
-                         string fName,
-                         string topPartName,
-                         string rootXML,
-                         string colName,
-                         string lineName,
-                         Dictionary<string, string> leftFields,
-                         Dictionary<string, string> rightFields,
-                         string colType,
-                         List<string> filters = null,
-                         List<string> SysFormulae = null)
+    public TDLMessage()
     {
-        Report = new(rName, fName);
-        Form = new(fName, topPartName, rootXML);
-        Part = new(topPartName, colName, lineName);
-        List<string> LF = leftFields.Values.ToList();
-        List<string> RF = rightFields.Values.ToList();
-        Line = new(lineName, LF, RF);
-        Fields = new();
-        foreach (var Fld in leftFields)
-        {
-            Field field = new(Fld.Value);
-            Fields.Add(field);
-        }
-        foreach (var Fld in rightFields)
-        {
-            Field field = new(Fld.Value);
-            Fields.Add(field);
-        }
-        Collection = new(colName: colName, colType: colType, filters: filters);
-        if (filters != null && SysFormulae != null)
-        {
-            for (int i = 0; i < SysFormulae.Count; i++)
-            {
-                System NSystem = new(filters[i], SysFormulae[i]);
-                System.Add(NSystem);
-            }
-        }
+    }
+    public TDLMessage(string colName,
+                      string colType,
+                      string childof,
+                      List<string> nativeFields,
+                      List<Filter> filters,
+                      YesNo isInitialize)
+    {
+        Collection.Add(new(colName: colName,
+                           colType: colType,
+                           childOf: childof,
+                           nativeFields: nativeFields,
+                           filters: filters?.Select(c => c.FilterName).ToList(),
+                           Isintialize: isInitialize));
 
+        filters?.ForEach(filter => System.Add(new(name: filter.FilterName,
+                                                 text: filter.FilterFormulae)));
     }
 
-    public ColTDLMessage(string reportName,
-                         string ColType)
-    {
 
-    }
-    public ColTDLMessage(string colName,
-                         string colType,
-                         List<string> nativeFields,
-                         List<string> filters = null,
-                         List<string> SysFormulae = null)
-    {
-        Collection = new(colName: colName, colType: colType, nativeFields: nativeFields, filters: filters);
-        if (filters != null && SysFormulae != null)
-        {
-            for (int i = 0; i < SysFormulae.Count; i++)
-            {
-                System NSystem = new(filters[i], SysFormulae[i]);
-                System.Add(NSystem);
-            }
-        }
-    }
-    public ColTDLMessage(List<TallyCustomObject> tallyCustomObjects,
+    public TDLMessage(List<TallyCustomObject> tallyCustomObjects,
                          string objCollectionName,
                          string ObjNames)
     {
-        Objects = tallyCustomObjects;
-        Collection = new(objcollectionName: objCollectionName,
-                         objects: ObjNames);
-    }
-    public ColTDLMessage()
-    {
-
+        Object = tallyCustomObjects;
+        Collection.Add(new(objcollectionName: objCollectionName,
+                         objects: ObjNames));
     }
 
-
-    public ColTDLMessage(string colName,
-                         string colType,
-                         List<string> nativeFields,
-                         List<Filter> filters = null)
+    public TDLMessage(ReportField rootreportField)
     {
-        List<string> TdlFilter = new();
-        filters?.ForEach(filter =>
-        {
-            TdlFilter.Add(filter.FilterName);
-            System.Add(new(filter.FilterName, filter.FilterFormulae));
-        });
-        Collection = new(colName: colName, colType: colType, nativeFields: nativeFields, filters: TdlFilter);
-
-    }
-
-    public ColTDLMessage(ReportField rootreportField)
-    {
-        string rootTag = rootreportField.FieldName;
-        string name = $"LISTOF{rootTag}";
-        string CollectionName = $"Custom{rootTag}Coll".ToUpper();
-        Report = new(name);
-        Form = new(name);
-        Part = new(name, CollectionName);
-        Line = new(name, rootTag);
-        Fields = new();
-        Field rootField = new(rootTag);
-        Fields.Add(rootField);
+        string rName = $"LISTOF{rootreportField.FieldName}";
+        string CollectionName = $"Coll_{rName}";
+        Report = new() { new(rName) };
+        Form = new() { new(rName) };
+        Part = new() { new(rName, CollectionName) };
+        List<string> rootlinefields = new();
+        Line RootLine = new(rName, new(), rootreportField.FieldName);
+        Line = new() { RootLine };
         Dictionary<string, string> Repeatfields = new();
-        List<string> RootFields = new();
         List<string> Fetchlist = new();
 
-        GenerateFields(rootreportField, RootFields, Repeatfields, Fetchlist);
-        rootField.Fields = string.Join(",", RootFields);
-        rootField.Repeat = Repeatfields.Select(kv => $"{kv.Value} : {kv.Key}").ToList();
-        Collection = new(colName: CollectionName, colType: rootTag);
-        Collection.NativeFields = new() { string.Join(",", Fetchlist) };
+        GenerateFields(rootreportField, rootlinefields, Repeatfields, Fetchlist);
+        RootLine.Fields.Add(string.Join(",", rootlinefields));
+        foreach (var key in Repeatfields.Keys)
+        {
+            var value = Repeatfields[key];
+            RootLine.Option.Add($"{value}:$$NumItems:{key} > 0");
+            Line.Add(new Line(lineName: value, CollectionName: key));
+        }
+        Collection = new() { new(CollectionName, rootreportField.FieldName, null, new() { string.Join(",", Fetchlist) }) };
+
     }
 
     private void GenerateFields(ReportField rootreportField, List<string> Tfields, Dictionary<string, string> Repeatfields, List<string> fetchlist = null)
@@ -187,13 +126,13 @@ public class ColTDLMessage
                 if (field.CollectionName != null)
                 {
                     Repeatfields[field.CollectionName] = field.FieldName;
-                    Tfields.Add(field.FieldName);
+                    //Tfields.Add(field.FieldName);
                     fetchlist?.Add(field.XMLTag);
                     GenerateFields(field, TSfields, TSRepeatfields);
 
                     //Field Newf = new(new List<string>() { field.FieldName }, Repeatfields, $"C{field.FieldName}");
                     //Newf.XMLTag = string.Empty;
-                    Fields.Add(new(TSfields, TSRepeatfields, field.FieldName, field.XMLTag));
+                    Field.Add(new(TSfields, TSRepeatfields, field.FieldName, field.XMLTag));
                     //Fields.Add(Newf);
                 }
                 else
@@ -202,7 +141,7 @@ public class ColTDLMessage
                     fetchlist?.Add(field.XMLTag);
                     GenerateFields(field, TSfields, TSRepeatfields);
 
-                    Fields.Add(new(TSfields, TSRepeatfields, field.FieldName, field.XMLTag));
+                    Field.Add(new(TSfields, TSRepeatfields, field.FieldName, field.XMLTag));
 
                 }
 
@@ -213,17 +152,17 @@ public class ColTDLMessage
                 if (field.CollectionName != null)
                 {
                     Repeatfields[field.CollectionName] = field.FieldName;
-                    Tfields.Add(field.FieldName);
+                    //Tfields.Add(field.FieldName);
                     fetchlist?.Add(field.XMLTag);
                     //Fields.Add(new(TSfields, Repeatfields, field.XMLTag));
-                    Fields.Add(new(field.FieldName, field.XMLTag));
+                    Field.Add(new(field.FieldName, field.XMLTag));
                 }
                 else
                 {
                     Tfields.Add(field.FieldName);
                     fetchlist?.Add(field.XMLTag);
                     Field Newf = new(field.FieldName, field.XMLTag);
-                    Fields.Add(Newf);
+                    Field.Add(Newf);
                 }
 
             }
@@ -232,25 +171,25 @@ public class ColTDLMessage
     }
 
     [XmlElement(ElementName = "REPORT")]
-    public Report Report { get; set; }
+    public List<Report> Report { get; set; }
 
     [XmlElement(ElementName = "FORM")]
-    public Form Form { get; set; }
+    public List<Form> Form { get; set; }
 
     [XmlElement(ElementName = "PART")]
-    public Part Part { get; set; }
+    public List<Part> Part { get; set; }
 
     [XmlElement(ElementName = "LINE")]
-    public Line Line { get; set; }
+    public List<Line> Line { get; set; }
 
     [XmlElement(ElementName = "FIELD")]
-    public List<Field> Fields { get; set; }
+    public List<Field> Field { get; set; } = new();
 
     [XmlElement(ElementName = "OBJECT")]
-    public List<TallyCustomObject> Objects { get; set; }
+    public List<TallyCustomObject> Object { get; set; }
 
     [XmlElement(ElementName = "COLLECTION")]
-    public Collection Collection { get; set; }
+    public List<Collection> Collection { get; set; } = new();
 
     [XmlElement(ElementName = "SYSTEM")]
     public List<System> System { get; set; } = new();
@@ -260,13 +199,6 @@ public class ColTDLMessage
 [XmlRoot(ElementName = "REPORT")]
 public class Report : DCollection
 {
-    public Report(string rName, string formname)
-    {
-        AttrName = rName;
-        FormName = formname;
-        SetAttributes();
-
-    }
     public Report() { }
     public Report(string rName)
     {
@@ -298,18 +230,11 @@ public class Report : DCollection
 public class Form : DCollection
 {
     public Form() { }
+
     public Form(string formName)
     {
+        Name = formName;
         PartName = formName;
-        ReportTag = formName;
-        Name = formName;
-        SetAttributes();
-    }
-    public Form(string formName, string partName, string rootXML)
-    {
-        PartName = partName;
-        ReportTag = rootXML;
-        Name = formName;
         SetAttributes();
     }
 
@@ -346,16 +271,16 @@ public class Part : DCollection
         SetAttributes();
 
     }
-    public Part(string name, string colName)
-    {
-        Name = name;
-        Lines = new() { name };
-        _Repeat = $"{name} : {colName}";
-        SetAttributes();
-
-    }
     public Part()
     {
+    }
+
+    public Part(string rootTag, string collectionName)
+    {
+        Name = rootTag;
+        Lines = new() { rootTag };
+        _Repeat = $"{rootTag} : {collectionName}";
+        SetAttributes();
     }
 
     [XmlElement(ElementName = "TOPLINES")]
@@ -372,40 +297,60 @@ public class Part : DCollection
 
 }
 
+
+
 [XmlRoot(ElementName = "LINE")]
 public class Line : DCollection
 {
-    public Line(string lineName, List<string> leftFields, List<string> rightFields)
+    private bool _IsVerticleVisible => Repeat is null;
+    public Line(string lineName, List<string> fields, string xmlTag)
     {
         Name = lineName;
-        LeftFields = leftFields;
-        RightFields = rightFields;
+        Fields = fields;
+        XMLTag = xmlTag;
         SetAttributes();
     }
-    public Line(string name, string rootfiledname)
+
+    public Line(string lineName, string CollectionName)
     {
-        Name = name;
-        LeftFields = new() { rootfiledname };
+        Name = lineName;
+        Fields = new() { lineName };
+        Repeat = $"{lineName} : {CollectionName}";
+        SetAttributes(isOption: YesNo.Yes);
     }
+
     public Line()
     {
     }
 
-    [XmlElement(ElementName = "LEFTFIELDS")]
-    public List<string> LeftFields { get; set; }
-
-    [XmlElement(ElementName = "RIGHTFIELDS")]
-    public List<string> RightFields { get; set; }
+    [XmlElement(ElementName = "FIELDS")]
+    public List<string> Fields { get; set; }
 
     [XmlAttribute(AttributeName = "NAME")]
     public string Name { get; set; }
 
+    [XmlElement(ElementName = "XMLTAG")]
+    public string XMLTag { get; set; }
+
+    [XmlElement(ElementName = "OPTION")]
+    public List<string> Option { get; set; } = new();
+
+
+    [XmlElement(ElementName = "REPEAT")]
+    public string Repeat { get; set; }
+
+    [XmlElement(ElementName = "SCROLLED")]
+    public string Scrolled { get { return _IsVerticleVisible ? "Vertical" : null; } set { } }
+
 }
+
+
 
 
 [XmlRoot(ElementName = "FIELD")]
 public class Field : DCollection
 {
+
     public Field(string name, string xMLTag)
     {
         XMLTag = xMLTag;
@@ -413,19 +358,12 @@ public class Field : DCollection
         Name = name;
         SetAttributes();
     }
-    public Field(string xMLTag)
-    {
-        XMLTag = xMLTag;
-        Set = $"${xMLTag}";
-        Name = xMLTag;
-        SetAttributes();
-    }
 
     public Field(List<string> fields, Dictionary<string, string> repeatFields, string fieldName, string xmlTag)
     {
         Fields = string.Join(",", fields);
         Name = fieldName;
-        Repeat = repeatFields.Select(kv => $"{kv.Value} : {kv.Key}").ToList();
+        Option = repeatFields.Select(kv => $"{kv.Value} : {kv.Key}").ToList();
 
         XMLTag = xmlTag;
         SetAttributes();
@@ -441,7 +379,7 @@ public class Field : DCollection
     {
 
     }
-    private bool _IsVerticleVisible => Repeat?.Count > 0;
+    private bool _IsVerticleVisible => Repeat is null;
 
     [XmlElement(ElementName = "SET")]
     public string Set { get; set; } //TallyFields Like $Name
@@ -460,23 +398,31 @@ public class Field : DCollection
 
 
     [XmlElement(ElementName = "REPEAT")]
-    public List<string> Repeat { get; set; }
+    public string Repeat { get; set; }
 
     [XmlElement(ElementName = "SCROLLED")]
     public string Scrolled { get { return _IsVerticleVisible ? "Vertical" : null; } set { } }
 
-
+    [XmlElement(ElementName = "OPTION")]
+    public List<string> Option { get; set; }
 }
+
+
 
 
 [XmlRoot(ElementName = "COLLECTION")]
 public class Collection : DCollection
 {
-    public Collection(string colName, string colType, List<string> nativeFields = null,
-        List<string> filters = null)
+    public Collection(string colName,
+                      string colType,
+                      string childOf,
+                      List<string> nativeFields = null,
+                      List<string> filters = null,
+                      YesNo Isintialize = YesNo.No)
     {
         Name = colName;
         Type = colType;
+        Childof = childOf;
         if (nativeFields != null)
         {
             NativeFields = nativeFields;
@@ -485,7 +431,7 @@ public class Collection : DCollection
         {
             Filters = filters;
         }
-        SetAttributes();
+        SetAttributes(isInitialize: Isintialize);
 
 
     }
@@ -523,6 +469,7 @@ public class Collection : DCollection
 
 }
 
+
 [XmlRoot(ElementName = "SYSTEM")]
 public class System
 {
@@ -541,26 +488,30 @@ public class System
     [XmlText]
     public string Text { get; set; }
 }
+
 public class DCollection
 {
 
     [XmlAttribute(AttributeName = "ISMODIFY")]
-    public string IsModify { get; set; }
+    public YesNo IsModify { get; set; }
 
     [XmlAttribute(AttributeName = "ISFIXED")]
-    public string IsFixed { get; set; }
+    public YesNo IsFixed { get; set; }
 
     [XmlAttribute(AttributeName = "ISINITIALIZE")]
-    public string IsInitialize { get; set; }
+    public YesNo IsInitialize { get; set; }
 
     [XmlAttribute(AttributeName = "ISOPTION")]
-    public string IsOption { get; set; }
+    public YesNo IsOption { get; set; }
 
     [XmlAttribute(AttributeName = "ISINTERNAL")]
-    public string IsInternal { get; set; }
+    public YesNo IsInternal { get; set; }
 
-    public void SetAttributes(string ismodify = "No", string isFixed = "No", string isInitialize = "No",
-        string isOption = "No", string isInternal = "No")
+    public void SetAttributes(YesNo ismodify = YesNo.No,
+                              YesNo isFixed = YesNo.No,
+                              YesNo isInitialize = YesNo.No,
+                              YesNo isOption = YesNo.No,
+                              YesNo isInternal = YesNo.No)
     {
         IsModify = ismodify;
         IsFixed = isFixed;
@@ -589,82 +540,6 @@ public class TallyCustomObject : DCollection
 
     [XmlElement(ElementName = "LOCALFORMULA")]
     public List<string> LocalFormulas { get; set; }
-}
-
-[XmlRoot(ElementName = "ENVELOPE")]
-public class ResponseEnvelope
-{
-
-    [XmlElement(ElementName = "HEADER")]
-    public RHeader Header { get; set; }
-
-    [XmlElement(ElementName = "BODY")]
-    public RBody Body { get; set; }
-}
-
-[XmlRoot(ElementName = "HEADER")]
-public class RHeader
-{
-
-    [XmlElement(ElementName = "VERSION")]
-    public int Version { get; set; }
-
-    [XmlElement(ElementName = "STATUS")]
-    public int Status { get; set; }
-}
-
-[XmlRoot(ElementName = "BODY")]
-public class RBody
-{
-
-    [XmlElement(ElementName = "DATA")]
-    public Rdata Data { get; set; }
-
-    //[XmlElement(ElementName = "DESC")]
-    //public Desc Desc { get; set; }
-}
-
-[XmlRoot(ElementName = "DATA")]
-public class Rdata
-{
-    [XmlElement(ElementName = "LINEERROR")]
-    public string LineError { get; set; }
-
-    [XmlElement(ElementName = "IMPORTRESULT")]
-    public ImportResult ImportResult { get; set; }
-}
-
-[XmlRoot(ElementName = "IMPORTRESULT")]
-public class ImportResult
-{
-
-
-    [XmlElement(ElementName = "CREATED")]
-    public int? Created { get; set; }
-
-    [XmlElement(ElementName = "ALTERED")]
-    public int? Altered { get; set; }
-
-    [XmlElement(ElementName = "DELETED")]
-    public int? Deleted { get; set; }
-
-    [XmlElement(ElementName = "LASTVCHID")]
-    public int? LastVchId { get; set; }
-
-    [XmlElement(ElementName = "LASTMID")]
-    public int? LastMID { get; set; }
-
-    [XmlElement(ElementName = "COMBINED")]
-    public int? Combined { get; set; }
-
-    [XmlElement(ElementName = "IGNORED")]
-    public int? Ignored { get; set; }
-
-    [XmlElement(ElementName = "ERRORS")]
-    public int? Errors { get; set; }
-
-    [XmlElement(ElementName = "CANCELLED")]
-    public int? Cacelled { get; set; }
 }
 
 [XmlRoot(ElementName = "RESPONSE")]

@@ -2,11 +2,12 @@
 
 
 [XmlRoot(ElementName = "COMPANY")]
-public class Company : TallyXmlJson
+public class Company : BasicTallyObject
 {
 
     [XmlElement(ElementName = "NAME")]
     public string Name { get; set; }
+
 
     [XmlElement(ElementName = "BASICCOMPANYFORMALNAME")]
     public string MailingName { get; set; }
@@ -65,9 +66,6 @@ public class Company : TallyXmlJson
     public string CompNum { get; set; }
 
 
-    [XmlElement(ElementName = "GUID")]
-    public string GUID { get; set; }
-
     //Settings
 
     [XmlElement(ElementName = "ISINVENTORYON")]
@@ -103,7 +101,7 @@ public class Company : TallyXmlJson
 }
 
 [XmlRoot(ElementName = "COMPANYONDISK")]
-public class CompanyOnDisk
+public class CompanyOnDisk : BasicTallyObject
 {
     [XmlElement(ElementName = "NAME")]
     public string Name { get; set; }

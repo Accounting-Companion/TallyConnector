@@ -253,4 +253,23 @@ public class TallyTests
         await TTally.Check();
         await TTally.GetLicenseInfo();
     }
+    [Test]
+    public async Task CheckVoucherCount()
+    {
+        await TTally.Check();
+        string ReportName = "$$NUM";
+        //CusColEnvelope cusColEnvelope = new(RequestTye.Export, HType.Function, ReportName);
+        //cusColEnvelope.Body.Desc.TDL.TDLMessage = new(reportName: ReportName,
+        //                                              colName: "VoucherTypeColl",
+        //                                              colType: "VoucherType",
+        //                                              fields: new List<Field>()
+        //                                              {
+        //                                                  new Field("Count","$$DirectTotalVch:$Name","Count")
+        //                                              },
+        //                                              nativeFields: new List<string>() { "Name" });
+        //string xml = cusColEnvelope.GetXML();
+    }
+
+
+
 }

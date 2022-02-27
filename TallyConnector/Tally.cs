@@ -180,10 +180,12 @@ public class Tally : IDisposable
         {
             new TallyCustomObject("LicenseInfo", LicenseInfoFormulas)
         };
-
-        CusColEnvelope ColEnvelope = new(); //Collection Envelope
         string CollectionName = "LicenseInfo";
-        ColEnvelope.Header = new(RequestTye.Export, HType.Collection, CollectionName);
+        RequestEnvelope ColEnvelope = new(HType.Collection, CollectionName); //Collection Envelope
+
+        //Collection collection = new() { Objects = tallyCustomObjects };
+
+
         ColEnvelope.Body.Desc.TDL.TDLMessage = new(tallyCustomObjects: tallyCustomObjects,
                                                    objCollectionName: CollectionName,
                                                    ObjNames: "LicenseInfo");
@@ -209,9 +211,8 @@ public class Tally : IDisposable
             {
                 CLogger.TallyReqStart(ReqType);
                 List<string> NativeFields = new() { "Name", "StartingFrom", "GUID", "MobileNo, RemoteFullListName", "*" };
-                string xml = await GetNativeCollectionXML(rName: "ListofCompanies",
-                                                      colType: "Company", NativeFields: NativeFields, isInitialize: true);
-                CompaniesList = GetObjfromXml<ComListEnvelope>(xml).Body.Data.Collection.CompaniesList;
+                CompaniesList = await GetNativeCollectionXML<Company>(NativeFields: NativeFields, isInitialize: YesNo.Yes);
+                // CompaniesList = GetObjfromXml<ComListEnvelope>(xml).Body.Data.Collection.CompaniesList;
                 CLogger.TallyReqCompleted(ReqType);
             }
             catch (Exception e)
@@ -237,13 +238,15 @@ public class Tally : IDisposable
         {
             CLogger.TallyReqStart(ReqType);
             List<string> NativeFields = new() { "*" };
-            List<string> Filters = new() { "NonGroupFilter" };
-            List<string> SystemFilter = new() { $"$ISAGGREGATE = \"No\"" };
-            string xml = await GetNativeCollectionXML(rName: "ListofCompaniesOpened",
-                                                  colType: "Company On Disk", NativeFields: NativeFields, Filters: Filters, SystemFilters: SystemFilter);
+            List<Filter> filters = new()
+            {
+                new() { FilterName = "NonGroupFilter", FilterFormulae = $"$ISAGGREGATE = \"No\"" }
+            };
+
             try
             {
-                Companies = GetObjfromXml<ComListinpathEnvelope>(xml).Body.Data.Collection.CompaniesList;
+                Companies = await GetNativeCollectionXML<CompanyOnDisk>(NativeFields: NativeFields,
+                                                                     filters: filters);
                 CLogger.TallyReqCompleted(ReqType);
             }
             catch (Exception e)
@@ -287,7 +290,7 @@ public class Tally : IDisposable
                                                     string childof = null,
                                                     List<string> fetchList = null,
                                                     List<Filter> filters = null,
-                                                    bool isInitialize = false,
+                                                    YesNo isInitialize = YesNo.No,
                                                     XmlAttributeOverrides xmlAttributeOverrides = null) where ReturnObject : BasicTallyObject
     {
         //If parameter is null Get value from instance
@@ -481,7 +484,7 @@ public class Tally : IDisposable
                                                                                 string childof = null,
                                                                                 List<string> NativeFields = null,
                                                                                 List<Filter> filters = null,
-                                                                                bool isInitialize = false,
+                                                                                YesNo isInitialize = YesNo.No,
                                                                                 string TallyType = null,
                                                                                 XmlAttributeOverrides xmlAttributeOverrides = null) where ReturnObject : TallyXmlJson, ITallyObject
     {
@@ -492,21 +495,18 @@ public class Tally : IDisposable
         //ElementName of ReturnObject will match with TallyType
         TallyType ??= RootAttribute.ElementName;
         //ColType = CollectionMapping[typeof(ReturnObject).Name];
-        string RName = $"CUSTOM{TallyType}";
+        string ColName = $"CUSTOM{TallyType}";
 
-        CusColEnvelope ColEnvelope = new(RName, Sv); //Collection Envelope
+        RequestEnvelope ColEnvelope = new(HType.Collection, ColName, Sv); //Collection Envelope
 
 
-        ColEnvelope.Body.Desc.TDL.TDLMessage = new(colName: RName,
+        ColEnvelope.Body.Desc.TDL.TDLMessage = new(colName: ColName,
                                                    colType: ColType ?? TallyType,
+                                                   childof: childof,
                                                    nativeFields: NativeFields,
-                                                   filters: filters);
+                                                   filters: filters,
+                                                   isInitialize);
 
-        ColEnvelope.Body.Desc.TDL.TDLMessage.Collection.Childof = childof;
-        if (isInitialize)
-        {
-            ColEnvelope.Body.Desc.TDL.TDLMessage.Collection.SetAttributes(isInitialize: "Yes");
-        }
 
         string Reqxml = ColEnvelope.GetXML(); //Gets XML from Object
 
@@ -1462,35 +1462,36 @@ public class Tally : IDisposable
 
 
 
-    #region Reports
-    /// <summary>
-    /// Gets List of Vouchers  based on <strong>Voucher Type</strong>
-    /// </summary>
-    /// <param name="VoucherType">Specify the name of VoucherType based on which vouchers to be fetched</param>
-    /// <param name="company">Specify Company if not specified in Setup</param>
-    /// <param name="fromDate">Specify fromDate if not specified in Setup</param>
-    /// <param name="toDate">Specify toDate if not specified in Setup</param>
-    /// <returns>Returns instance of Models.VouchersList with data from tally</returns>
-    public async Task<VouchersList> GetVouchersListByVoucherType(string VoucherType,
-                                                                 string company = null,
-                                                                 string fromDate = null,
-                                                                 string toDate = null)
-    {
-        company ??= Company;
+    //#region Reports
+    ///// <summary>
+    ///// Gets List of Vouchers  based on <strong>Voucher Type</strong>
+    ///// </summary>
+    ///// <param name="VoucherType">Specify the name of VoucherType based on which vouchers to be fetched</param>
+    ///// <param name="company">Specify Company if not specified in Setup</param>
+    ///// <param name="fromDate">Specify fromDate if not specified in Setup</param>
+    ///// <param name="toDate">Specify toDate if not specified in Setup</param>
+    ///// <returns>Returns instance of Models.VouchersList with data from tally</returns>
+    //public async Task<VouchersList> GetVouchersListByVoucherType(string VoucherType,
+    //                                                             string company = null,
+    //                                                             string fromDate = null,
+    //                                                             string toDate = null)
+    //{
+    //    company ??= Company;
 
-        Dictionary<string, string> fields = new() { { "$MASTERID", "MASTERID" }, { "$VoucherNumber", "VoucherNumber" }, { "$Date", "Date" } };
-        StaticVariables staticVariables = new() { SVCompany = company, SVExportFormat = "XML", SVFromDate = fromDate, SVToDate = toDate };
-        List<string> VoucherFilters = new() { "VoucherType" };
-        List<string> VoucherSystemFilters = new() { $"$VoucherTypeName = \"{VoucherType}\"" };
-        string VouchersXml = await GetCustomReportXML(rName: "List Of Vouchers", Fields: fields, colType: "Voucher", Sv: staticVariables,
-            Filters: VoucherFilters, SystemFilters: VoucherSystemFilters);
-        VouchersList vl = GetObjfromXml<VouchersList>(Xml: VouchersXml);
-        return vl;
-    }
+    //    Dictionary<string, string> fields = new() { { "$MASTERID", "MASTERID" }, { "$VoucherNumber", "VoucherNumber" }, { "$Date", "Date" } };
+    //    StaticVariables staticVariables = new() { SVCompany = company, SVExportFormat = "XML", SVFromDate = fromDate, SVToDate = toDate };
+    //    List<string> VoucherFilters = new() { "VoucherType" };
+    //    List<string> VoucherSystemFilters = new() { $"$VoucherTypeName = \"{VoucherType}\"" };
+    //    //string VouchersXml = await GetCustomReportXML(rName: "List Of Vouchers", Fields: fields, colType: "Voucher", Sv: staticVariables,
+    //    //    Filters: VoucherFilters, SystemFilters: VoucherSystemFilters);
+
+    //    VouchersList vl = GetNativeCollectionXML<VouchersList>();
+    //    return vl;
+    //}
 
 
 
-    #endregion
+    //#endregion
     /// <summary>
     /// Retrives Data from Tally in Objects 
     /// </summary>
@@ -1584,104 +1585,6 @@ public class Tally : IDisposable
 
 
 
-
-    /// <summary>
-    /// Generates XML for custom collection using TDL report
-    /// </summary>
-    /// <param name="rName">Custom Report Name to be used</param>
-    /// <param name="Fields">Fields Dictionary with key as tally field and value as XML tag Name</param>
-    /// <param name="colType">Specify Name of collection as per Tally</param>
-    /// <param name="Sv">instance of Static vairiables</param>
-    /// <param name="Filters">Filters if any</param>
-    /// <param name="SystemFilters">Definition for filter</param>
-    /// <returns>returns xml as string</returns>
-    public async Task<string> GetCustomReportXML(string rName,
-                                                     Dictionary<string, string> Fields,
-                                                     string colType,
-                                                     StaticVariables Sv = null,
-                                                     List<string> Filters = null,
-                                                     List<string> SystemFilters = null)
-    {
-        //LedgersList LedgList = new();
-        string Resxml;
-        Models.CusColEnvelope ColEnvelope = new(); //Collection Envelope
-        string RName = rName;
-
-        ColEnvelope.Header = new(RequestTye.Export, HType.Data, RName);  //Configuring Header To get Export data
-        if (Sv != null)
-        {
-            ColEnvelope.Body.Desc.StaticVariables = Sv;
-        }
-
-        Dictionary<string, string> LeftFields = Fields;
-        Dictionary<string, string> RightFields = new();
-
-        ColEnvelope.Body.Desc.TDL.TDLMessage = new(rName: RName,
-                                                   fName: RName,
-                                                   topPartName: RName,
-                                                   rootXML: rName.Replace(" ", ""),
-                                                   colName: $"Form{RName}",
-                                                   lineName: RName,
-                                                   leftFields: LeftFields,
-                                                   rightFields: RightFields,
-                                                   colType: colType,
-                                                   filters: Filters,
-                                                   SysFormulae: SystemFilters);
-
-        string Reqxml = ColEnvelope.GetXML(); //Gets XML from Object
-        Resxml = await SendRequest(Reqxml);
-
-        return Resxml;
-    }
-
-
-    /// <summary>
-    /// Generates XML for custom collection using TDL report
-    /// </summary>
-    /// <param name="rName">Custom Report Name to be used</param>
-    /// <param name="colType">Specify Name of collection as per Tally</param>
-    /// <param name="Sv">instance of Static vairiables</param>
-    /// <param name="NativeFields">Filters if any</param>
-    /// <param name="Filters">Filters if any</param>
-    /// <param name="SystemFilters">Definition for filter</param>
-    /// <returns>returns xml as string</returns>
-    public async Task<string> GetNativeCollectionXML(string rName,
-                                                     string colType,
-                                                     StaticVariables Sv = null,
-                                                     string childof = null,
-                                                     List<string> NativeFields = null,
-                                                     List<string> Filters = null,
-                                                     List<string> SystemFilters = null,
-                                                     bool isInitialize = false)
-    {
-        //LedgersList LedgList = new();
-        string Resxml;
-        Models.CusColEnvelope ColEnvelope = new(); //Collection Envelope
-        string RName = rName;
-
-        ColEnvelope.Header = new(RequestTye.Export, HType.Collection, RName);  //Configuring Header To get Export data
-        if (Sv != null)
-        {
-            ColEnvelope.Body.Desc.StaticVariables = Sv;
-        }
-
-        ColEnvelope.Body.Desc.TDL.TDLMessage = new(colName: RName,
-                                                   colType: colType,
-                                                   nativeFields: NativeFields,
-                                                   Filters,
-                                                   SystemFilters);
-        ColEnvelope.Body.Desc.TDL.TDLMessage.Collection.Childof = childof;
-        if (isInitialize)
-        {
-            ColEnvelope.Body.Desc.TDL.TDLMessage.Collection.SetAttributes(isInitialize: "Yes");
-        }
-
-        string Reqxml = ColEnvelope.GetXML(); //Gets XML from Object
-        Resxml = await SendRequest(Reqxml);
-
-        return Resxml;
-    }
-
     public PropertyInfo[] GetPropertyInfo(Type type)
     {
         PropertyInfo[] PropertyInfo;
@@ -1704,7 +1607,7 @@ public class Tally : IDisposable
 
         GetTDLReport(type, rootreportField);
 
-        CusColEnvelope CusColEnvelope = new(RequestTye.Export, HType.Data, $"LISTOF{RootTag}");
+        RequestEnvelope CusColEnvelope = new(HType.Data, $"LISTOF{RootTag}");
         CusColEnvelope.Body.Desc.TDL.TDLMessage = new(rootreportField);
         string xml = CusColEnvelope.GetXML();
         //string Rxml = await SendRequest(xml);
@@ -1867,15 +1770,9 @@ public class Tally : IDisposable
         await Check();
         if (Status == "Running")
         {
-            CusColEnvelope ColEnvelope = new(); //Collection Envelope
             string RName = reportname;
+            RequestEnvelope ColEnvelope = new(HType.Data, RName, Sv); //Collection Envelope
 
-            ColEnvelope.Header = new(RequestTye.Export, HType.Data, RName);  //Configuring Header To get Export data
-
-            if (Sv != null)
-            {
-                ColEnvelope.Body.Desc.StaticVariables = Sv;
-            }
             string Reqxml = ColEnvelope.GetXML(); //Gets XML from Object
             Resxml = await SendRequest(Reqxml);
         }
