@@ -270,13 +270,20 @@ public class Tally : IDisposable
         CLogger.TallyReqStart(ReqType);
 
         Masters = new();
+        List<Task> tasks = new();
         foreach (var mapping in MastersMapping.MastersMappings)
         {
-            Masters.Add(new MastersBasicInfo<BasicTallyObject>(mapping.MasterType, await GetBasicObjects<BasicTallyObject>(ColType: mapping.TallyMasterType, filters: mapping.Filters)));
+            tasks.Add(GetBasicMasterInfo(mapping));
 
         }
-
+        await Task.WhenAll(tasks);
         CLogger.TallyReqCompleted(ReqType);
+    }
+
+    private async Task GetBasicMasterInfo(MastersMapping mapping)
+    {
+        List<BasicTallyObject> basicTallyObjects = await GetObjectsfromTally<BasicTallyObject>(ColType: mapping.TallyMasterType, filters: mapping.Filters);
+        Masters.Add(new MastersBasicInfo<BasicTallyObject>(mapping.MasterType, basicTallyObjects));
     }
 
     public List<BasicTallyObject> GetMasters(TallyObjectType masterType)
@@ -285,13 +292,13 @@ public class Tally : IDisposable
         return mastersBasicInfo?.Masters;
     }
 
-    public async Task<List<ReturnObject>> GetBasicObjects<ReturnObject>(string company = null,
-                                                    string ColType = null,
-                                                    string childof = null,
-                                                    List<string> fetchList = null,
-                                                    List<Filter> filters = null,
-                                                    YesNo isInitialize = YesNo.No,
-                                                    XmlAttributeOverrides xmlAttributeOverrides = null) where ReturnObject : BasicTallyObject
+    public async Task<List<ReturnObjectType>> GetObjectsfromTally<ReturnObjectType>(string company = null,
+                                                                                    string ColType = null,
+                                                                                    string childof = null,
+                                                                                    List<string> fetchList = null,
+                                                                                    List<Filter> filters = null,
+                                                                                    YesNo isInitialize = YesNo.No,
+                                                                                    XmlAttributeOverrides xmlAttributeOverrides = null) where ReturnObjectType : BasicTallyObject
     {
         //If parameter is null Get value from instance
         company ??= Company;
@@ -300,14 +307,30 @@ public class Tally : IDisposable
         StaticVariables sv = new() { SVCompany = company, SVExportFormat = "XML" };
 
 
-        List<ReturnObject> basicObjects = await GetNativeCollectionXML<ReturnObject>(Sv: sv,
-                                                                                     ColType: ColType,
-                                                                                     childof: childof,
-                                                                                     NativeFields: fetchList,
-                                                                                     filters: filters,
-                                                                                     isInitialize: isInitialize,
-                                                                                     TallyType: ColType.ToUpper(),
-                                                                                     xmlAttributeOverrides: xmlAttributeOverrides);
+        List<ReturnObjectType> basicObjects = await GetNativeCollectionXML<ReturnObjectType>(Sv: sv,
+                                                                                             ColType: ColType,
+                                                                                             childof: childof,
+                                                                                             NativeFields: fetchList,
+                                                                                             filters: filters,
+                                                                                             isInitialize: isInitialize,
+                                                                                             TallyType: ColType.ToUpper(),
+                                                                                             xmlAttributeOverrides: xmlAttributeOverrides);
+        basicObjects?.ForEach(Object =>
+        {
+            PropertyInfo Aliasinfo = typeof(ReturnObjectType).GetProperty("Alias");
+            if (Aliasinfo != null)
+            {
+                List<LanguageNameList> languageNameLists = (List<LanguageNameList>)typeof(ReturnObjectType).GetProperty("LanguageNameList").GetValue(Object);
+                Aliasinfo.SetValue(Object, languageNameLists[0].LanguageAlias);
+            }
+            //Name
+            PropertyInfo NamePropertyinfo = typeof(ReturnObjectType).GetProperty("Name");
+            var name = NamePropertyinfo?.GetValue(Object);
+            if (name is null && NamePropertyinfo != null)
+            {
+                NamePropertyinfo.SetValue(Object, typeof(ReturnObjectType).GetProperty("OldName").GetValue(Object));
+            }
+        });
         return basicObjects;
     }
 
@@ -325,13 +348,13 @@ public class Tally : IDisposable
     /// <returns></returns>
     /// <exception cref="ObjectDoesNotExist"></exception>
     public async Task<ReturnType> GetObjectfromTally<ReturnType>(string LookupValue,
-                                                  VoucherLookupField LookupField = VoucherLookupField.MasterId,
-                                                  bool Isinventory = false,
-                                                  string company = null,
-                                                  string fromDate = null,
-                                                  string toDate = null,
-                                                  List<string> fetchList = null,
-                                                  XmlAttributeOverrides xmlAttributeOverrides = null) where ReturnType : Voucher
+                                                                 VoucherLookupField LookupField = VoucherLookupField.MasterId,
+                                                                 bool Isinventory = false,
+                                                                 string company = null,
+                                                                 string fromDate = null,
+                                                                 string toDate = null,
+                                                                 List<string> fetchList = null,
+                                                                 XmlAttributeOverrides xmlAttributeOverrides = null) where ReturnType : Voucher
     {
         //If parameter is null Get value from instance
         company ??= Company;
@@ -389,7 +412,6 @@ public class Tally : IDisposable
     /// <exception cref="ObjectDoesNotExist"></exception>
     public async Task<ReturnType> GetObjectfromTally<ReturnType>(string LookupValue,
                                                                  MasterLookupField LookupField = MasterLookupField.Name,
-                                                                 bool isDynamicBal = true,
                                                                  string company = null,
                                                                  string fromDate = null,
                                                                  string toDate = null,
@@ -422,7 +444,6 @@ public class Tally : IDisposable
         List<Filter> filters = new() { new Filter() { FilterName = "masterfilter", FilterFormulae = filterformulae } };
 
         List<ReturnType> objects = await GetNativeCollectionXML<ReturnType>(Sv: sv,
-                                                                            ColType: isDynamicBal ? null : "Masters",
                                                                             NativeFields: fetchList,
                                                                             filters: filters,
                                                                             xmlAttributeOverrides: xmlAttributeOverrides);
@@ -479,7 +500,7 @@ public class Tally : IDisposable
         return result;
     }
 
-    private async Task<List<ReturnObject>> GetNativeCollectionXML<ReturnObject>(StaticVariables Sv = null,
+    public async Task<List<ReturnObject>> GetNativeCollectionXML<ReturnObject>(StaticVariables Sv = null,
                                                                                 string ColType = null,
                                                                                 string childof = null,
                                                                                 List<string> NativeFields = null,
@@ -1597,7 +1618,7 @@ public class Tally : IDisposable
         return PropertyInfo;
     }
 
-    public void GetObjectfromTally()
+    public void GetObjectfromTallyBasedonClass()
     {
         Type type = typeof(Ledger);
 

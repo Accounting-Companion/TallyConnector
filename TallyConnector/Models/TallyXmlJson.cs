@@ -52,7 +52,7 @@ public class TallyXmlJson : TallyBaseObject
 }
 
 [XmlRoot(ElementName = "OBJECTS")]
-public class BasicTallyObject : TallyXmlJson, ITallyObject
+public class BasicTallyObject : TallyXmlJson, ITallyObject, IBasicTallyObject
 {
     [XmlElement(ElementName = "MASTERID")]
     [MaxLength(20)]

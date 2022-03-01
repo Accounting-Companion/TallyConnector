@@ -56,7 +56,7 @@ public class TallyTests
     [Test]
     public void CheckGetObject()
     {
-        TTally.GetObjectfromTally();
+        //TTally.GetObjectfromTally();
         Assert.IsNotNull(null);
     }
     [Test]
