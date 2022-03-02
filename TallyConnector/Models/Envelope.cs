@@ -1,7 +1,7 @@
 ﻿namespace TallyConnector.Models;
 
 [XmlRoot(ElementName = "ENVELOPE")]
-public class Envelope<T> : TallyXmlJson where T : TallyXmlJson, ITallyObject
+public class Envelope<T> : TallyXmlJson
 {
     public Envelope()
     {
@@ -21,7 +21,7 @@ public class Envelope<T> : TallyXmlJson where T : TallyXmlJson, ITallyObject
         Body.Desc.StaticVariables = staticVariables;
         Body.Data.Message.Objects.AddRange(ObjectstoExport);
     }
-   
+
 
     [XmlElement(ElementName = "HEADER")]
     public Header Header { get; set; }
@@ -64,6 +64,9 @@ public class Data<T>
 
     [XmlElement(ElementName = "COLLECTION")]
     public Colllection<T> Collection { get; set; }
+
+    [XmlElement(ElementName = "RESULT")]
+    public FunctionResult FuncResult { get; set; }
 
 }
 
@@ -190,4 +193,12 @@ public enum HType
     Data,
     [XmlEnum(Name = "FUNCTION")]
     Function,
+}
+
+[XmlRoot(ElementName = "RESULT")]
+public class FunctionResult
+{
+
+    [XmlText]
+    public string Result { get; set; }
 }

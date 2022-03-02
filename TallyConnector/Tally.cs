@@ -292,6 +292,17 @@ public class Tally : IDisposable
         return mastersBasicInfo?.Masters;
     }
 
+
+    public async Task<string> GetActiveTallyCompany()
+    {
+        RequestEnvelope requestEnvelope = new(HType.Function, "$$string");
+        requestEnvelope.Body.Desc.FunctionParams = new(new() { "##SVCURRENTCOMPANY" });
+        string Reqxml = requestEnvelope.GetXML();
+        string Resxml = await SendRequest(Reqxml);
+        Envelope<FunctionResult> result = GetObjfromXml<Envelope<FunctionResult>>(Resxml);
+        return result.Body.Data.FuncResult.Result;
+    }
+
     public async Task<List<ReturnObjectType>> GetObjectsfromTally<ReturnObjectType>(string company = null,
                                                                                     string ColType = null,
                                                                                     string childof = null,
