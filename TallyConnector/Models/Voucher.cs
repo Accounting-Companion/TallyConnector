@@ -51,43 +51,53 @@ public class Voucher : TallyXmlJson, ITallyObject
     public string PriceLevel { get; set; }
 
     //E-Invoice Details
+    [TallyCategory("E-InvoiceDetails")]
     [XmlElement(ElementName = "BILLTOPLACE")]
     public string BillToPlace { get; set; }
 
+    [TallyCategory("E-InvoiceDetails")]
     [XmlElement(ElementName = "IRN")]
     public string IRN { get; set; }
 
+    [TallyCategory("E-InvoiceDetails")]
     [XmlElement(ElementName = "IRNACKNO")]
     public string IRNAckNo { get; set; }
 
+    [TallyCategory("E-InvoiceDetails")]
     [XmlElement(ElementName = "IRNACKDATE")]
     public string IRNAckDate { get; set; }
 
 
 
     //Dispatch Details
+    [TallyCategory("DispatchDetails")]
     [XmlIgnore]
     public string DeliveryNoteNo { get; set; }
 
+    [TallyCategory("DispatchDetails")]
     [XmlIgnore]
     public string ShippingDate { get; set; }
 
     private DeliveryNotes _DeliveryNotes;
 
+    [TallyCategory("DispatchDetails")]
     [XmlElement(ElementName = "DISPATCHFROMNAME")]
     public string DispatchFromName { get; set; }
 
+    [TallyCategory("DispatchDetails")]
     [XmlElement(ElementName = "DISPATCHFROMSTATENAME")]
     public string DispatchFromStateName { get; set; }
 
+    [TallyCategory("DispatchDetails")]
     [XmlElement(ElementName = "DISPATCHFROMPINCODE")]
     public string DispatchFromPinCode { get; set; }
 
+    [TallyCategory("DispatchDetails")]
     [XmlElement(ElementName = "DISPATCHFROMPLACE")]
     public string DispatchFromPlace { get; set; }
 
     //Shipping Details
-
+    [TallyCategory("ShippingDetails")]
     [JsonIgnore]
     [XmlElement(ElementName = "BASICSHIPDELIVERYNOTE")]
     public DeliveryNotes DeliveryNotes
@@ -106,124 +116,155 @@ public class Voucher : TallyXmlJson, ITallyObject
         }
     }
 
+    [TallyCategory("ShippingDetails")]
     [XmlElement(ElementName = "BASICSHIPDOCUMENTNO")]
     public string DispatchDocNo { get; set; }
-
+    [TallyCategory("ShippingDetails")]
     [XmlElement(ElementName = "BASICSHIPPEDBY")]
     public string BasicShippedBy { get; set; }
-
+    [TallyCategory("ShippingDetails")]
     [XmlElement(ElementName = "BASICFINALDESTINATION")]
     public string Destination { get; set; }
 
+    [TallyCategory("ShippingDetails")]
     [XmlElement(ElementName = "EICHECKPOST")]
     public string CarrierName { get; set; }
 
+    [TallyCategory("ShippingDetails")]
     [XmlElement(ElementName = "BILLOFLADINGNO")]
     public string BillofLandingNo { get; set; }
 
+    [TallyCategory("ShippingDetails")]
     [XmlElement(ElementName = "BILLOFLADINGDATE")]
     public string BillofLandingDate { get; set; }
 
 
     //Export Shipping Details
-
+    [TallyCategory("ExportShippingDetails")]
     [XmlElement(ElementName = "BASICPLACEOFRECEIPT")]
     public string PlaceOfReceipt { get; set; }
 
     /// <summary>
     /// Vehicle or Ship or Flight Number
     /// </summary>
+    [TallyCategory("ExportShippingDetails")]
     [XmlElement(ElementName = "BASICSHIPVESSELNO")]
     public string ShipOrFlightNo { get; set; }
 
+    [TallyCategory("ExportShippingDetails")]
     [XmlElement(ElementName = "BASICPORTOFLOADING")]
     public string LandingPort { get; set; }
 
+    [TallyCategory("ExportShippingDetails")]
     [XmlElement(ElementName = "BASICPORTOFDISCHARGE")]
     public string DischargePort { get; set; }
 
+    [TallyCategory("ExportShippingDetails")]
     [XmlElement(ElementName = "BASICDESTINATIONCOUNTRY")]
     public string DesktinationCountry { get; set; }
 
+    [TallyCategory("ExportShippingDetails")]
     [XmlElement(ElementName = "SHIPPINGBILLNO")]
     public string ShippingBillNo { get; set; }
 
+    [TallyCategory("ExportShippingDetails")]
     [XmlElement(ElementName = "SHIPPINGBILLDATE")]
     public string ShippingBillDate { get; set; }
 
+    [TallyCategory("ExportShippingDetails")]
     [XmlElement(ElementName = "PORTCODE")]
     public string PortCode { get; set; }
 
     //OrderDetails
-
+    [TallyCategory("OrderDetails")]
     [XmlElement(ElementName = "BASICDUEDATEOFPYMT")]
     public string BasicDueDateofPayment { get; set; }
 
+    [TallyCategory("OrderDetails")]
     [XmlElement(ElementName = "BASICORDERREF")]
     public string OrderReference { get; set; }
 
 
 
     //Party Details
+    [TallyCategory("PartyDetails")]
     [XmlElement(ElementName = "PARTYNAME")]
     public string PartyName { get; set; }
 
+    [TallyCategory("PartyDetails")]
     [XmlElement(ElementName = "PARTYLEDGERNAME")]
     public string PartyLedgerName { get; set; }
 
+    [TallyCategory("PartyDetails")]
     [XmlElement(ElementName = "PARTYMAILINGNAME")]
     public string PartyMailingName { get; set; }
 
+    [TallyCategory("PartyDetails")]
     [XmlElement(ElementName = "STATENAME")]
     public string State { get; set; }
 
+    [TallyCategory("PartyDetails")]
     [XmlElement(ElementName = "COUNTRYOFRESIDENCE")]
     public string Country { get; set; }
 
+    [TallyCategory("PartyDetails")]
     [XmlElement(ElementName = "GSTREGISTRATIONTYPE")]
     public string RegistrationType { get; set; }
 
+    [TallyCategory("PartyDetails")]
     [XmlElement(ElementName = "PARTYGSTIN")]
     public string PartyGSTIN { get; set; }
 
+    [TallyCategory("PartyDetails")]
     [XmlElement(ElementName = "PLACEOFSUPPLY")]
     public string PlaceOfSupply { get; set; }
 
+    [TallyCategory("PartyDetails")]
     [XmlElement(ElementName = "PARTYPINCODE")]
     public string PINCode { get; set; }
 
     //Consignee Details
-
+    [TallyCategory("ConsigneeDetails")]
     [XmlElement(ElementName = "BASICBUYERNAME")]
     public string ConsigneeName { get; set; }
 
+    [TallyCategory("ConsigneeDetails")]
     [XmlElement(ElementName = "CONSIGNEEMAILINGNAME")]
     public string ConsigneeMailingName { get; set; }
 
+    [TallyCategory("ConsigneeDetails")]
     [XmlElement(ElementName = "CONSIGNEESTATENAME")]
     public string ConsigneeState { get; set; }
 
+    [TallyCategory("ConsigneeDetails")]
     [XmlElement(ElementName = "CONSIGNEECOUNTRYNAME")]
     public string ConsigneeCountry { get; set; }
 
+    [TallyCategory("ConsigneeDetails")]
     [XmlElement(ElementName = "CONSIGNEEGSTIN")]
     public string ConsigneeGSTIN { get; set; }
 
+    [TallyCategory("ConsigneeDetails")]
     [XmlElement(ElementName = "CONSIGNEEPINCODE")]
     public string ConsigneePinCode { get; set; }
 
-    //EWAY Details
-    [XmlElement(ElementName = "OVRDNEWAYBILLAPPLICABILITY")]
-    public YesNo OverrideEWayBillApplicability { get; set; }
+
 
 
 
     [XmlElement(ElementName = "ISCANCELLED")]
     public string IsCancelled { get; set; }
 
-    [XmlElement(ElementName = "ALLLEDGERENTRIES.LIST", Type = typeof(IVoucherLedger))]
+    //EWAY Details
+    [XmlElement(ElementName = "OVRDNEWAYBILLAPPLICABILITY")]
+    public YesNo OverrideEWayBillApplicability { get; set; }
+
+    [XmlElement(ElementName = "EWAYBILLDETAILS.LIST")]
+    public List<EwayBillDetail> EWayBillDetails { get; set; }
+
+    [XmlElement(ElementName = "ALLLEDGERENTRIES.LIST", Type = typeof(VoucherLedger))]
     [XmlElement(ElementName = "LEDGERENTRIES.LIST", Type = typeof(EVoucherLedger))]
-    public List<IVoucherLedger> Ledgers { get; set; }
+    public List<VoucherLedger> Ledgers { get; set; }
 
 
     [XmlElement(ElementName = "ALLINVENTORYENTRIES.LIST", Type = typeof(AllInventoryAllocations))]
@@ -237,8 +278,6 @@ public class Voucher : TallyXmlJson, ITallyObject
     public List<InventoryinAllocations> InventoriesIn { get; set; }
 
 
-    [XmlElement(ElementName = "EWAYBILLDETAILS.LIST")]
-    public List<EwayBillDetail> EWayBillDetails { get; set; }
 
     [XmlElement(ElementName = "ATTENDANCEENTRIES.LIST")]
     public List<AttendanceEntry> AttendanceEntries { get; set; }
@@ -378,16 +417,16 @@ public class Voucher : TallyXmlJson, ITallyObject
 }
 
 [XmlRoot(ElementName = "LEDGERENTRIES.LIST")]
-public class EVoucherLedger : IVoucherLedger
+public class EVoucherLedger : VoucherLedger
 {
 
 }
 
 [XmlRoot(ElementName = "ALLLEDGERENTRIES.LIST")]
-public class IVoucherLedger : TallyBaseObject
+public class VoucherLedger : TallyBaseObject
 {
 
-    public IVoucherLedger()
+    public VoucherLedger()
     {
     }
 
@@ -483,6 +522,8 @@ public class IVoucherLedger : TallyBaseObject
 
     [XmlElement(ElementName = "CATEGORYALLOCATIONS.LIST")]
     public List<CostCategoryAllocations> CostCategoryAllocations { get; set; }
+
+
 
 }
 
