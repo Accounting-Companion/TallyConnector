@@ -5,12 +5,21 @@
 		<OutputType>Library</OutputType>
 		<AssemblyName>TallyConnector</AssemblyName>
 		<LangVersion>latest</LangVersion>
-		<Authors>Sai Vineeth</Authors>
+		<Authors>saivineeth</Authors>
 		<PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
 		<RepositoryUrl>https://github.com/Accounting-Companion/TallyConnector.git</RepositoryUrl>
 		<PackageProjectUrl>https://github.com/Accounting-Companion/TallyConnector</PackageProjectUrl>
-		<Description />
+		<Description>Using This library you can interact with Tall prime/ Tally erp9 easilt without knowing Tally XML</Description>
+		
 		<ImplicitUsings>enable</ImplicitUsings>
+		
+		<PackageTags>tally,xml,tallyprime,tallyerp9</PackageTags>
+		
+		<PackageLicenseExpression>MIT</PackageLicenseExpression>
+		
+		<RepositoryType>git</RepositoryType>
+		
+		<VersionPrefix>1.0.1</VersionPrefix>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">

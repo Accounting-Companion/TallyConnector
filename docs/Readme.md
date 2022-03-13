@@ -1,4 +1,4 @@
-# Welcome to Tally Connector
+# Tally Connector [![NuGet Version](http://img.shields.io/nuget/v/TallyConnector.svg?style=flat)](https://www.nuget.org/packages/TallyConnector/)
 
 You can use **[Tally Connector](https://github.com/saivineeth100/TallyConnector/)** to Connect your desktop/Mobile Applications with Tally seamlessly.
 
@@ -19,7 +19,10 @@ ___
 
 ## Getting Started
 
-Add reference to Tallyconnector.dll in Your Project  
+```shell
+Install-Package TallyConnector -Version 1.0.1 
+```
+
 Intiate Tally in your Project
 
 ### For C#
