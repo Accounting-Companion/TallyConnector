@@ -26,7 +26,7 @@ namespace WpfDemo
         {
             if (await tally.Check())
             {
-                Voucher v1 = await tally.GetVoucherByMasterID("1296");
+                Voucher v1 = await tally.GetVoucher<Voucher>("1296");
                 //Voucher v = await tally.GetVoucherByVoucherNumber("20-21/Example","20210331");
             }
 
