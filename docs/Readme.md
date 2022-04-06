@@ -1,6 +1,6 @@
 # Tally Connector [![NuGet Version](http://img.shields.io/nuget/v/TallyConnector.svg?style=flat)](https://www.nuget.org/packages/TallyConnector/)
 
-You can use **[Tally Connector](https://github.com/saivineeth100/TallyConnector/)** to Connect your desktop/Mobile Applications with Tally seamlessly.
+You can use **[Tally Connector](https://github.com/saivineeth100/TallyConnector/)** to Integrate your desktop/Mobile Applications with Tally.
 
 ## Supported Tally Versions
 

@@ -518,7 +518,7 @@ public class Tally : IDisposable
                                                                                 List<Filter> filters = null,
                                                                                 YesNo isInitialize = YesNo.No,
                                                                                 string TallyType = null,
-                                                                                XmlAttributeOverrides xmlAttributeOverrides = null) where ReturnObject : TallyXmlJson, ITallyObject
+                                                                                XmlAttributeOverrides xmlAttributeOverrides = null) where ReturnObject : TallyXmlJson
     {
         string Resxml;
 
