@@ -62,6 +62,9 @@ public class BasicTallyObject : TallyXmlJson, ITallyObject, IBasicTallyObject
     [Column(TypeName = "nvarchar(100)")]
     public string GUID { get; set; }
 
+    [XmlElement(ElementName = "ALTERID")]
+    public int? AlterId { get; set; }
+
     public void PrepareForExport()
     {
     }
