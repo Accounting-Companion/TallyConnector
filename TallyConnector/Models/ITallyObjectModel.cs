@@ -3,7 +3,7 @@
 public interface ITallyObject
 {
     string GUID { get; set; }
-    int? TallyId { get; set; }
+    int? MasterId { get; set; }
 
     public void PrepareForExport();
 }

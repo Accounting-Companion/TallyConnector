@@ -3,5 +3,5 @@
 public interface IBasicTallyObject
 {
     string GUID { get; set; }
-    int? TallyId { get; set; }
+    int? MasterId { get; set; }
 }
