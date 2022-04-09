@@ -202,3 +202,9 @@ public class FunctionResult
     [XmlText]
     public string Result { get; set; }
 }
+
+[XmlRoot(ElementName = "ENVELOPE")]
+public class CustomReportEnvelope<T>
+{
+    public List<T> Objects { get; set; }
+}
