@@ -5,18 +5,12 @@ namespace TallyConnector.Models;
 
 [Serializable]
 [XmlRoot(ElementName = "VOUCHER", Namespace = "")]
-public class Voucher : TallyXmlJson, ITallyObject
+public class Voucher : BasicTallyObject, ITallyObject
 {
     public Voucher()
     {
         _DeliveryNotes = new();
     }
-
-    [XmlElement(ElementName = "MASTERID")]
-    public int? TallyId { get; set; }
-
-    [XmlElement(ElementName = "ALTERID")]
-    public int? AlterId { get; set; }
 
     [XmlElement(ElementName = "DATE")]
     public string Date { get; set; }
@@ -304,9 +298,6 @@ public class Voucher : TallyXmlJson, ITallyObject
     [XmlAttribute(AttributeName = "Action")]
     public Action Action { get; set; }
 
-    [XmlElement(ElementName = "GUID")]
-    [Column(TypeName = "nvarchar(100)")]
-    public string GUID { get; set; }
 
     [JsonIgnore]
     [XmlAttribute(AttributeName = "VCHTYPE")]
@@ -403,7 +394,7 @@ public class Voucher : TallyXmlJson, ITallyObject
         });
     }
 
-    public void PrepareForExport()
+    public new void PrepareForExport()
     {
         OrderLedgers(); //Ensures ledgers are ordered in correct way
         GetJulianday();
