@@ -282,7 +282,7 @@ public class Tally : IDisposable
 
     private async Task GetBasicMasterInfo(MastersMapping mapping)
     {
-        List<BasicTallyObject> basicTallyObjects = await GetObjectsfromTally<BasicTallyObject>(ColType: mapping.TallyMasterType, filters: mapping.Filters);
+        List<BasicTallyObject> basicTallyObjects = await GetBasicObjectData(ObjectType: mapping.TallyMasterType, filters: mapping.Filters);
         Masters.Add(new MastersBasicInfo<BasicTallyObject>(mapping.MasterType, basicTallyObjects));
     }
 
@@ -302,6 +302,56 @@ public class Tally : IDisposable
         Envelope<FunctionResult> result = GetObjfromXml<Envelope<FunctionResult>>(Resxml);
         return result.Body.Data.FuncResult.Result;
     }
+
+    /// <summary>
+    /// Get Basic Object data for Given Type - TallyId,GUID,AlterId
+    /// fromDate and toDate has no effect unless ObjectType is Voucher
+    /// </summary>
+    /// <param name="ObjectType">Type of Object, Ex: Group,Ledger</param>
+    ///  <param name="company">Specify Company if not specified in Setup</param>
+    /// <param name="fromDate">Specify fromDate if not specified in Setup</param>
+    /// <param name="toDate">Specify toDate if not specified in Setup</param>
+    /// <param name="filters"></param>
+    /// <returns></returns>
+    public async Task<List<BasicTallyObject>> GetBasicObjectData(string ObjectType,
+                                                                 string company = null,
+                                                                 string fromDate = null,
+                                                                 string toDate = null,
+                                                                 List<Filter> filters = null)
+    {
+        string Resxml;
+        company ??= Company;
+        fromDate ??= FromDate;
+        toDate ??= ToDate;
+        StaticVariables sv = new() { SVCompany = company, SVFromDate = fromDate, SVToDate = toDate, SVExportFormat = "XML" };
+
+        ReportField rootreportField = new(ObjectType, $"Cust{ObjectType}Collection".ToUpper(), ObjectType);
+
+        GetTDLReport(typeof(BasicTallyObject), rootreportField);
+
+        RequestEnvelope CusColEnvelope = new(HType.Data, $"LISTOF{ObjectType}".ToUpper());
+
+        CusColEnvelope.Body.Desc.TDL.TDLMessage = new(rootreportField, filters);
+
+        filters?.ForEach(filter => CusColEnvelope.Body.Desc.TDL.TDLMessage.System.Add(new(name: filter.FilterName,
+                                                text: filter.FilterFormulae)));
+
+        string Reqxml = CusColEnvelope.GetXML();
+        Resxml = await SendRequest(Reqxml);
+
+        XmlAttributeOverrides xmlAttributeOverrides = new();
+        //Adding xmlelement name according to RootElement name of ReturnObject
+        xmlAttributeOverrides ??= new();
+        XmlAttributes attrs = new();
+
+        attrs.XmlElements.Add(new(ObjectType.ToUpper()));
+
+        xmlAttributeOverrides.Add(typeof(CustomReportEnvelope<BasicTallyObject>), "Objects", attrs);
+
+        var BasicObjects = GetObjfromXml<CustomReportEnvelope<BasicTallyObject>>(Resxml, xmlAttributeOverrides);
+        return BasicObjects.Objects;
+    }
+
 
     public async Task<List<ReturnObjectType>> GetObjectsfromTally<ReturnObjectType>(string company = null,
                                                                                     string ColType = null,
@@ -1494,6 +1544,12 @@ public class Tally : IDisposable
 
 
 
+
+    public void GetBasicVoucherData()
+    {
+        //Get
+    }
+
     //#region Reports
     ///// <summary>
     ///// Gets List of Vouchers  based on <strong>Voucher Type</strong>
@@ -1629,9 +1685,8 @@ public class Tally : IDisposable
         return PropertyInfo;
     }
 
-    public void GetObjectfromTallyBasedonClass()
+    public void GetObjectfromTallyBasedonClass(Type type)
     {
-        Type type = typeof(Ledger);
 
         string RootTag = GetRootTag(type);
 
@@ -1646,7 +1701,7 @@ public class Tally : IDisposable
 
     }
 
-    private void GetTDLReport(Type type, ReportField rootreportField)
+    public void GetTDLReport(Type type, ReportField rootreportField)
     {
         List<Type> IgnoreTypes = new() { typeof(string), typeof(int), typeof(int?) };
         PropertyInfo[] propertyInfoList = GetPropertyInfo(type);

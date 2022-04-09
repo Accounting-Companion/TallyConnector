@@ -109,10 +109,10 @@ public class TDLMessage
                          objects: ObjNames));
     }
 
-    public TDLMessage(ReportField rootreportField)
+    public TDLMessage(ReportField rootreportField, List<Filter> filters = null)
     {
         string rName = $"LISTOF{rootreportField.FieldName}";
-        string CollectionName = $"Coll_{rName}";
+        string CollectionName = rootreportField.CollectionName;
         Report = new() { new(rName) };
         Form = new() { new(rName) };
         Part = new() { new(rName, CollectionName) };
@@ -130,7 +130,7 @@ public class TDLMessage
             RootLine.Option.Add($"{value}:$$NumItems:{key} > 0");
             Line.Add(new Line(lineName: value, CollectionName: key));
         }
-        Collection = new() { new(CollectionName, rootreportField.FieldName, null, new() { string.Join(",", Fetchlist) }) };
+        Collection = new() { new(CollectionName, rootreportField.CollectionType, null, new() { string.Join(",", Fetchlist) }, filters?.Select(c => c.FilterName).ToList()) };
 
     }
 

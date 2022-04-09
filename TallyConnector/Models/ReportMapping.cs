@@ -18,6 +18,11 @@ public class ReportField
         CollectionName = colName;
     }
 
+    public ReportField(string XmlTag, string colName, string colType) : this(XmlTag, colName)
+    {
+        CollectionType = colType;
+    }
+
     public string XMLTag { get; set; }
     public string FieldName { get; set; }
 
@@ -26,6 +31,8 @@ public class ReportField
     public List<string> Atrributes { get; set; } = new();
 
     public string CollectionName { get; set; }
+
+    public string CollectionType { get; set; }
 }
 
 
