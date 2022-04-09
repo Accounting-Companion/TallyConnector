@@ -9,7 +9,8 @@
 		<PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
 		<RepositoryUrl>https://github.com/Accounting-Companion/TallyConnector.git</RepositoryUrl>
 		<PackageProjectUrl>https://github.com/Accounting-Companion/TallyConnector</PackageProjectUrl>
-		<Description>Using This library you can interact with Tall prime/ Tally erp9 easilt without knowing Tally XML</Description>
+		<Description>Using This library we can interact with Tally prime / Tally erp9 easily without knowing Tally XML
+		This library is complete abstraction for Tally XML API</Description>
 		
 		<ImplicitUsings>enable</ImplicitUsings>
 		
