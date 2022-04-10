@@ -114,7 +114,7 @@ public class TallyTests
     public async Task CheckGetLedger()
     {
         await TTally.Check();
-        Ledger ledger = await TTally.GetLedger<Ledger>("TestLedger");
+        Ledger ledger = await TTally.GetLedger<Ledger>("Profit  &  Loss A/c");
         ledger.OtherAttributes = null;
         ledger.OtherFields = null;
         await TTally.PostLedger(ledger);
@@ -146,7 +146,7 @@ public class TallyTests
     public async Task CheckGetLedgerDynamic()
     {
         await TTally.Check();
-        List<string> fields = new List<string>() { "Name", "Parent", "OpeningBalance", "Closing Balance" };
+        List<string> fields = new() { "Name", "Parent", "OpeningBalance", "Closing Balance" };
         Ledger ledger = await TTally.GetLedgerDynamic<Ledger>("Canara Bank", fromDate: "01032021", toDate: "31032021", fetchList: fields);
         string xml = ledger.GetXML();
         Assert.NotNull(ledger);
@@ -251,6 +251,15 @@ public class TallyTests
         await TTally.Check();
         Voucher voucher = await TTally.GetVoucher<Voucher>("1", VoucherLookupField.MasterId);
         Assert.NotNull(voucher);
+    }
+
+    [Test]
+    public async Task CheckGetBasicVoucher()
+    {
+        await TTally.Check();
+        var BasicData =  await TTally.GetBasicObjectData("VOUCHER");
+
+        Assert.NotZero(BasicData.Count);
     }
 
 

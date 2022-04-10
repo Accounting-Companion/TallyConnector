@@ -9,12 +9,18 @@ public class StockCategory : BasicTallyObject, ITallyObject
         LanguageNameList = new();
     }
 
+    public StockCategory(string name)
+    {
+        LanguageNameList = new();
+        Name = name;
+    }
+
 
     [XmlAttribute(AttributeName = "NAME")]
     [JsonIgnore]
-    public string OldName { get; set; }
+    public string? OldName { get; set; }
 
-    private string name;
+    private string? name;
 
     [XmlElement(ElementName = "NAME")]
     [Required]
@@ -23,16 +29,16 @@ public class StockCategory : BasicTallyObject, ITallyObject
         get
         {
             name = (name == null || name == string.Empty) ? OldName : name;
-            return name;
+            return name!;
         }
         set => name = value;
     }
 
     [XmlElement(ElementName = "PARENT")]
-    public string Parent { get; set; }
+    public string? Parent { get; set; }
 
     [XmlIgnore]
-    public string Alias { get; set; }
+    public string? Alias { get; set; }
 
     [JsonIgnore]
     [XmlElement(ElementName = "LANGUAGENAME.LIST")]
@@ -43,7 +49,7 @@ public class StockCategory : BasicTallyObject, ITallyObject
     /// </summary>
     [JsonIgnore]
     [XmlAttribute(AttributeName = "Action")]
-    public string Action { get; set; }
+    public string? Action { get; set; }
 
 
     public void CreateNamesList()
@@ -51,7 +57,7 @@ public class StockCategory : BasicTallyObject, ITallyObject
         if (LanguageNameList.Count == 0)
         {
             LanguageNameList.Add(new LanguageNameList());
-            LanguageNameList[0].NameList.NAMES.Add(Name);
+            LanguageNameList[0].NameList?.NAMES?.Add(Name);
 
         }
         if (Alias != null && Alias != string.Empty)
@@ -59,7 +65,7 @@ public class StockCategory : BasicTallyObject, ITallyObject
             LanguageNameList[0].LanguageAlias = Alias;
         }
     }
-    public new string GetXML(XmlAttributeOverrides attrOverrides = null)
+    public new string GetXML(XmlAttributeOverrides? attrOverrides = null)
     {
         CreateNamesList();
         return base.GetXML(attrOverrides);
@@ -76,6 +82,6 @@ public class StockCategory : BasicTallyObject, ITallyObject
 
     public override string ToString()
     {
-        return $"{Name}";
+        return $"Stock Category - {Name}";
     }
 }

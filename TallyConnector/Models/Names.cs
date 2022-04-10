@@ -10,19 +10,19 @@ public class LanguageNameList
     }
     [JsonIgnore]
     [XmlIgnore]
-    public string LanguageAlias
+    public string? LanguageAlias
     {
-        get { return NameList.NAMES.Count > 1 ? string.Join("..\n", NameList.NAMES.GetRange(1, NameList.NAMES.Count - 1)) : null; }
+        get { return NameList.NAMES?.Count > 1 ? string.Join("..\n", NameList.NAMES.GetRange(1, NameList.NAMES.Count - 1)) : null; }
         set
         {
-            if (NameList.NAMES.Count > 1)
+            if (NameList.NAMES?.Count > 1)
             {
                 NameList.NAMES.RemoveRange(1, NameList.NAMES.Count - 1);
-                NameList.NAMES.InsertRange(1, value.Split("..\n".ToCharArray()).ToList());
+                NameList.NAMES.InsertRange(1, value?.Split("..\n".ToCharArray()).ToList()!);
             }
-            else if (NameList.NAMES.Count == 1)
+            else if (NameList.NAMES?.Count == 1)
             {
-                NameList.NAMES.InsertRange(1, value.Split("..\n".ToCharArray()).ToList());
+                NameList.NAMES.InsertRange(1, value?.Split("..\n".ToCharArray()).ToList()!);
             }
         }
     }
@@ -45,7 +45,7 @@ public class Names
 
     [XmlElement(ElementName = "NAME")]
     [TDLCollection(CollectionName = "Name")]
-    public List<string> NAMES { get; set; }
+    public List<string>? NAMES { get; set; }
 
     //[XmlAttribute(AttributeName = "TYPE")]
     //public string TYPE { get; set; }

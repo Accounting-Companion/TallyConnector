@@ -20,14 +20,14 @@ public class Tally : IDisposable
     private int Port;
     private string BaseURL;
 
-    public string Status { get; private set; }
-    public string ReqStatus { get; private set; }
+    public string? Status { get; private set; }
+    public string? ReqStatus { get; private set; }
 
-    public string Company { get; private set; }
-    public string FromDate { get; private set; }
-    public string ToDate { get; private set; }
+    public string? Company { get; private set; }
+    public string? FromDate { get; private set; }
+    public string? ToDate { get; private set; }
 
-    public List<MastersBasicInfo<BasicTallyObject>> Masters { get; private set; }
+    public List<MastersBasicInfo<BasicTallyObject>>? Masters { get; private set; }
 
     private Dictionary<Type, PropertyInfo[]> PropertyInfoList { get; set; } = new();
 
@@ -37,9 +37,9 @@ public class Tally : IDisposable
     private string FullURL => BaseURL + ":" + Port;
 
 
-    public List<Company> CompaniesList { get; private set; }
+    public List<Company>? CompaniesList { get; private set; }
 
-    public LicenseInfo LicenseInfo { get; private set; }
+    public LicenseInfo? LicenseInfo { get; private set; }
 
     /// <summary>
     /// Intiate Tally with <strong>baseURL</strong> and <strong>port</strong>
@@ -48,7 +48,7 @@ public class Tally : IDisposable
     /// <param name="port">Port on which Tally is Running</param>
     public Tally(string baseURL,
                  int port,
-                 ILogger<Tally> Logger = null,
+                 ILogger<Tally>? Logger = null,
                  int Timeoutseconds = 30)
     {
         this.Logger = Logger ?? NullLogger<Tally>.Instance;
@@ -62,13 +62,14 @@ public class Tally : IDisposable
     /// <summary>
     /// If nothing Specified during Intialisation default Url will be <strong>http://localhost</strong> running on port <strong>9000</strong>
     /// </summary>
-    public Tally(ILogger<Tally> Logger = null,
+    public Tally(ILogger<Tally>? Logger = null,
                  int Timeoutseconds = 30)
     {
         this.Logger = Logger ?? NullLogger<Tally>.Instance;
         CLogger = new CLogger(Logger);
         client.Timeout = TimeSpan.FromSeconds(Timeoutseconds);
-        Setup("http://localhost", 9000);
+        BaseURL = "http://localhost";
+        Port = 9000;
 
     }
 
@@ -83,9 +84,9 @@ public class Tally : IDisposable
     /// <param name="toDate">Default from date from to use for fetching info<</param>
     public void Setup(string baseURL,
                       int port,
-                      string company = null,
-                      string fromDate = null,
-                      string toDate = null)
+                      string? company = null,
+                      string? fromDate = null,
+                      string? toDate = null)
     {
         BaseURL = baseURL;
         Port = port;
@@ -93,7 +94,7 @@ public class Tally : IDisposable
         FromDate = fromDate;
         ToDate = toDate;
 
-        CLogger?.SetupLog(baseURL, port, company, fromDate, toDate);
+        CLogger?.SetupLog(baseURL, port, company!, fromDate!, toDate!);
     }
 
 
@@ -104,13 +105,13 @@ public class Tally : IDisposable
     /// <param name="fromDate">Default from date from to use for fetching info</param>
     /// <param name="toDate">Default from date from to use for fetching info<</param>
     public void ChangeCompany(string company,
-                              string fromDate = null,
-                              string toDate = null)
+                              string? fromDate = null,
+                              string? toDate = null)
     {
         Company = company;
         FromDate = fromDate;
         ToDate = toDate;
-        CLogger?.SetupLog(company, fromDate, toDate);
+        CLogger?.SetupLog(company, fromDate!, toDate!);
 
     }
 
@@ -191,9 +192,9 @@ public class Tally : IDisposable
                                                    ObjNames: "LicenseInfo");
         string Reqxml = ColEnvelope.GetXML();
         String RespXml = await SendRequest(Reqxml);
-        LicenseInfo licenseInfo = GetObjfromXml<LicInfoEnvelope>(RespXml).Body.Data.Collection.LicenseInfo;
-        LicenseInfo = licenseInfo;
-        return licenseInfo;
+        LicenseInfo? licenseInfo = GetObjfromXml<LicInfoEnvelope>(RespXml)?.Body.Data.Collection.LicenseInfo;
+        LicenseInfo = licenseInfo!;
+        return LicenseInfo;
         //string xml = GetCustomCollectionXML("TallyInfo", tallyCustomObjects);
     }
 
@@ -201,7 +202,7 @@ public class Tally : IDisposable
     /// Gets List of Companies opened in tally and saves in Model.Company List
     /// </summary>
     /// <returns>return list of Model.Company List</returns>
-    public async Task<List<Company>> GetCompaniesList()
+    public async Task<List<Company>?> GetCompaniesList()
     {
         string ReqType = "List of companies opened in Tally";
         await Check(); //Checks Whether Tally is running
@@ -229,10 +230,10 @@ public class Tally : IDisposable
     /// Gets List of Companies in tally default Tally path
     /// </summary>
     /// <returns>return list of Model.Company List</returns>
-    public async Task<List<CompanyOnDisk>> GetCompaniesListinPath()
+    public async Task<List<CompanyOnDisk>?> GetCompaniesListinPath()
     {
         string ReqType = "List of companies in Default Tally path";
-        List<CompanyOnDisk> Companies = new();
+        List<CompanyOnDisk>? Companies = new();
         await Check(); //Checks Whether Tally is running
         if (Status == "Running")
         {
@@ -282,25 +283,25 @@ public class Tally : IDisposable
 
     private async Task GetBasicMasterInfo(MastersMapping mapping)
     {
-        List<BasicTallyObject> basicTallyObjects = await GetBasicObjectData(ObjectType: mapping.TallyMasterType, filters: mapping.Filters);
-        Masters.Add(new MastersBasicInfo<BasicTallyObject>(mapping.MasterType, basicTallyObjects));
+        List<BasicTallyObject>? basicTallyObjects = await GetBasicObjectData(ObjectType: mapping.TallyMasterType, filters: mapping.Filters);
+        Masters?.Add(new MastersBasicInfo<BasicTallyObject>(mapping.MasterType, basicTallyObjects!));
     }
 
-    public List<BasicTallyObject> GetMasters(TallyObjectType masterType)
+    public List<BasicTallyObject>? GetMasters(TallyObjectType masterType)
     {
-        MastersBasicInfo<BasicTallyObject> mastersBasicInfo = Masters.FirstOrDefault(info => info.MasterType == masterType);
+        MastersBasicInfo<BasicTallyObject>? mastersBasicInfo = Masters?.FirstOrDefault(info => info.MasterType == masterType);
         return mastersBasicInfo?.Masters;
     }
 
 
-    public async Task<string> GetActiveTallyCompany()
+    public async Task<string?> GetActiveTallyCompany()
     {
         RequestEnvelope requestEnvelope = new(HType.Function, "$$string");
         requestEnvelope.Body.Desc.FunctionParams = new(new() { "##SVCURRENTCOMPANY" });
         string Reqxml = requestEnvelope.GetXML();
         string Resxml = await SendRequest(Reqxml);
-        Envelope<FunctionResult> result = GetObjfromXml<Envelope<FunctionResult>>(Resxml);
-        return result.Body.Data.FuncResult.Result;
+        Envelope<FunctionResult>? result = GetObjfromXml<Envelope<FunctionResult>>(Resxml);
+        return result?.Body.Data.FuncResult?.Result;
     }
 
     /// <summary>
@@ -313,11 +314,11 @@ public class Tally : IDisposable
     /// <param name="toDate">Specify toDate if not specified in Setup</param>
     /// <param name="filters"></param>
     /// <returns></returns>
-    public async Task<List<BasicTallyObject>> GetBasicObjectData(string ObjectType,
-                                                                 string company = null,
-                                                                 string fromDate = null,
-                                                                 string toDate = null,
-                                                                 List<Filter> filters = null)
+    public async Task<List<BasicTallyObject>?> GetBasicObjectData(string ObjectType,
+                                                                 string? company = null,
+                                                                 string? fromDate = null,
+                                                                 string? toDate = null,
+                                                                 List<Filter>? filters = null)
     {
         string Resxml;
         company ??= Company;
@@ -333,8 +334,8 @@ public class Tally : IDisposable
 
         CusColEnvelope.Body.Desc.TDL.TDLMessage = new(rootreportField, filters);
 
-        filters?.ForEach(filter => CusColEnvelope.Body.Desc.TDL.TDLMessage.System.Add(new(name: filter.FilterName,
-                                                text: filter.FilterFormulae)));
+        filters?.ForEach(filter => CusColEnvelope?.Body?.Desc?.TDL?.TDLMessage?.System?.Add(new(name: filter.FilterName!,
+                                                                                                text: filter.FilterFormulae!)));
 
         string Reqxml = CusColEnvelope.GetXML();
         Resxml = await SendRequest(Reqxml);
@@ -349,17 +350,17 @@ public class Tally : IDisposable
         xmlAttributeOverrides.Add(typeof(CustomReportEnvelope<BasicTallyObject>), "Objects", attrs);
 
         var BasicObjects = GetObjfromXml<CustomReportEnvelope<BasicTallyObject>>(Resxml, xmlAttributeOverrides);
-        return BasicObjects.Objects;
+        return BasicObjects?.Objects;
     }
 
 
-    public async Task<List<ReturnObjectType>> GetObjectsfromTally<ReturnObjectType>(string company = null,
-                                                                                    string ColType = null,
-                                                                                    string childof = null,
-                                                                                    List<string> fetchList = null,
-                                                                                    List<Filter> filters = null,
+    public async Task<List<ReturnObjectType>?> GetObjectsfromTally<ReturnObjectType>(string? company = null,
+                                                                                    string? ColType = null,
+                                                                                    string? childof = null,
+                                                                                    List<string>? fetchList = null,
+                                                                                    List<Filter>? filters = null,
                                                                                     YesNo isInitialize = YesNo.No,
-                                                                                    XmlAttributeOverrides xmlAttributeOverrides = null) where ReturnObjectType : BasicTallyObject
+                                                                                    XmlAttributeOverrides? xmlAttributeOverrides = null) where ReturnObjectType : BasicTallyObject
     {
         //If parameter is null Get value from instance
         company ??= Company;
@@ -368,28 +369,28 @@ public class Tally : IDisposable
         StaticVariables sv = new() { SVCompany = company, SVExportFormat = "XML" };
 
 
-        List<ReturnObjectType> basicObjects = await GetNativeCollectionXML<ReturnObjectType>(Sv: sv,
+        List<ReturnObjectType>? basicObjects = await GetNativeCollectionXML<ReturnObjectType>(Sv: sv,
                                                                                              ColType: ColType,
                                                                                              childof: childof,
                                                                                              NativeFields: fetchList,
                                                                                              filters: filters,
                                                                                              isInitialize: isInitialize,
-                                                                                             TallyType: ColType.ToUpper(),
+                                                                                             TallyType: ColType?.ToUpper(),
                                                                                              xmlAttributeOverrides: xmlAttributeOverrides);
         basicObjects?.ForEach(Object =>
         {
-            PropertyInfo Aliasinfo = typeof(ReturnObjectType).GetProperty("Alias");
+            PropertyInfo? Aliasinfo = typeof(ReturnObjectType).GetProperty("Alias");
             if (Aliasinfo != null)
             {
-                List<LanguageNameList> languageNameLists = (List<LanguageNameList>)typeof(ReturnObjectType).GetProperty("LanguageNameList").GetValue(Object);
-                Aliasinfo.SetValue(Object, languageNameLists[0].LanguageAlias);
+                List<LanguageNameList>? languageNameLists = (List<LanguageNameList>?)typeof(ReturnObjectType).GetProperty("LanguageNameList")?.GetValue(Object);
+                Aliasinfo.SetValue(Object, languageNameLists?[0].LanguageAlias);
             }
             //Name
-            PropertyInfo NamePropertyinfo = typeof(ReturnObjectType).GetProperty("Name");
+            PropertyInfo? NamePropertyinfo = typeof(ReturnObjectType).GetProperty("Name");
             var name = NamePropertyinfo?.GetValue(Object);
             if (name is null && NamePropertyinfo != null)
             {
-                NamePropertyinfo.SetValue(Object, typeof(ReturnObjectType).GetProperty("OldName").GetValue(Object));
+                NamePropertyinfo.SetValue(Object, typeof(ReturnObjectType).GetProperty("OldName")?.GetValue(Object));
             }
         });
         return basicObjects;
@@ -411,11 +412,11 @@ public class Tally : IDisposable
     public async Task<ReturnType> GetObjectfromTally<ReturnType>(string LookupValue,
                                                                  VoucherLookupField LookupField = VoucherLookupField.MasterId,
                                                                  bool Isinventory = false,
-                                                                 string company = null,
-                                                                 string fromDate = null,
-                                                                 string toDate = null,
-                                                                 List<string> fetchList = null,
-                                                                 XmlAttributeOverrides xmlAttributeOverrides = null) where ReturnType : Voucher
+                                                                 string? company = null,
+                                                                 string? fromDate = null,
+                                                                 string? toDate = null,
+                                                                 List<string>? fetchList = null,
+                                                                 XmlAttributeOverrides? xmlAttributeOverrides = null) where ReturnType : Voucher
     {
         //If parameter is null Get value from instance
         company ??= Company;
@@ -436,11 +437,11 @@ public class Tally : IDisposable
         }
         List<Filter> filters = new() { new Filter() { FilterName = "masterfilter", FilterFormulae = filterformulae } };
 
-        List<ReturnType> objects = await GetNativeCollectionXML<ReturnType>(sv,
+        List<ReturnType>? objects = await GetNativeCollectionXML<ReturnType>(sv,
                                                                             NativeFields: fetchList,
                                                                             filters: filters,
                                                                             xmlAttributeOverrides: xmlAttributeOverrides);
-        if (objects.Count > 0)
+        if (objects?.Count > 0)
         {
             var TallyObject = objects[0];
 
@@ -452,7 +453,7 @@ public class Tally : IDisposable
             throw new ObjectDoesNotExist(typeof(ReturnType).Name,
                                          LookupField.ToString(),
                                          LookupValue,
-                                         company);
+                                         company!);
         }
 
 
@@ -473,11 +474,11 @@ public class Tally : IDisposable
     /// <exception cref="ObjectDoesNotExist"></exception>
     public async Task<ReturnType> GetObjectfromTally<ReturnType>(string LookupValue,
                                                                  MasterLookupField LookupField = MasterLookupField.Name,
-                                                                 string company = null,
-                                                                 string fromDate = null,
-                                                                 string toDate = null,
-                                                                 List<string> fetchList = null,
-                                                                 XmlAttributeOverrides xmlAttributeOverrides = null) where ReturnType : TallyXmlJson, ITallyObject
+                                                                 string? company = null,
+                                                                 string? fromDate = null,
+                                                                 string? toDate = null,
+                                                                 List<string>? fetchList = null,
+                                                                 XmlAttributeOverrides? xmlAttributeOverrides = null) where ReturnType : TallyXmlJson, ITallyObject
     {
         //If parameter is null Get value from instance
         company ??= Company;
@@ -504,26 +505,26 @@ public class Tally : IDisposable
         }
         List<Filter> filters = new() { new Filter() { FilterName = "masterfilter", FilterFormulae = filterformulae } };
 
-        List<ReturnType> objects = await GetNativeCollectionXML<ReturnType>(Sv: sv,
+        List<ReturnType>? objects = await GetNativeCollectionXML<ReturnType>(Sv: sv,
                                                                             NativeFields: fetchList,
                                                                             filters: filters,
                                                                             xmlAttributeOverrides: xmlAttributeOverrides);
-        if (objects.Count > 0)
+        if (objects?.Count > 0)
         {
             var TallyMaster = objects[0];
             //Alias
-            PropertyInfo Aliasinfo = typeof(ReturnType).GetProperty("Alias");
+            PropertyInfo? Aliasinfo = typeof(ReturnType).GetProperty("Alias");
             if (Aliasinfo != null)
             {
-                List<LanguageNameList> languageNameLists = (List<LanguageNameList>)typeof(ReturnType).GetProperty("LanguageNameList").GetValue(TallyMaster);
-                Aliasinfo.SetValue(TallyMaster, languageNameLists[0].LanguageAlias);
+                List<LanguageNameList>? languageNameLists = (List<LanguageNameList>?)typeof(ReturnType).GetProperty("LanguageNameList")?.GetValue(TallyMaster);
+                Aliasinfo.SetValue(TallyMaster, languageNameLists?[0].LanguageAlias);
             }
             //Name
-            PropertyInfo NamePropertyinfo = typeof(ReturnType).GetProperty("Name");
+            PropertyInfo? NamePropertyinfo = typeof(ReturnType).GetProperty("Name");
             var name = NamePropertyinfo?.GetValue(TallyMaster);
             if (name is null && NamePropertyinfo != null)
             {
-                NamePropertyinfo.SetValue(TallyMaster, typeof(ReturnType).GetProperty("OldName").GetValue(TallyMaster));
+                NamePropertyinfo.SetValue(TallyMaster, typeof(ReturnType).GetProperty("OldName")?.GetValue(TallyMaster));
             }
             return TallyMaster;
 
@@ -533,7 +534,7 @@ public class Tally : IDisposable
             throw new ObjectDoesNotExist(typeof(ReturnType).Name,
                                          LookupField.ToString(),
                                          LookupValue,
-                                         company);
+                                         company!);
         }
 
 
@@ -548,8 +549,8 @@ public class Tally : IDisposable
     /// <param name="xmlAttributeOverrides"></param>
     /// <returns></returns>
     public async Task<PResult> PostObjectToTally<ObjectType>(ObjectType Object,
-                                                             string company = null,
-                                                             XmlAttributeOverrides xmlAttributeOverrides = null) where ObjectType : TallyXmlJson, ITallyObject
+                                                             string? company = null,
+                                                             XmlAttributeOverrides? xmlAttributeOverrides = null) where ObjectType : TallyXmlJson, ITallyObject
     {
         //If parameter is null Get value from instance
         company ??= Company;
@@ -561,21 +562,21 @@ public class Tally : IDisposable
         return result;
     }
 
-    public async Task<List<ReturnObject>> GetNativeCollectionXML<ReturnObject>(StaticVariables Sv = null,
-                                                                                string ColType = null,
-                                                                                string childof = null,
-                                                                                List<string> NativeFields = null,
-                                                                                List<Filter> filters = null,
+    public async Task<List<ReturnObject>?> GetNativeCollectionXML<ReturnObject>(StaticVariables? Sv = null,
+                                                                                string? ColType = null,
+                                                                                string? childof = null,
+                                                                                List<string>? NativeFields = null,
+                                                                                List<Filter>? filters = null,
                                                                                 YesNo isInitialize = YesNo.No,
-                                                                                string TallyType = null,
-                                                                                XmlAttributeOverrides xmlAttributeOverrides = null) where ReturnObject : TallyXmlJson
+                                                                                string? TallyType = null,
+                                                                                XmlAttributeOverrides? xmlAttributeOverrides = null) where ReturnObject : TallyXmlJson
     {
         string Resxml;
 
         //Gets Root attribute of ReturnObject
-        XmlRootAttribute RootAttribute = (XmlRootAttribute)Attribute.GetCustomAttribute(typeof(ReturnObject), typeof(XmlRootAttribute));
+        XmlRootAttribute RootAttribute = (XmlRootAttribute)Attribute.GetCustomAttribute(typeof(ReturnObject), typeof(XmlRootAttribute))!;
         //ElementName of ReturnObject will match with TallyType
-        TallyType ??= RootAttribute.ElementName;
+        TallyType ??= RootAttribute?.ElementName;
         //ColType = CollectionMapping[typeof(ReturnObject).Name];
         string ColName = $"CUSTOM{TallyType}";
 
@@ -583,7 +584,7 @@ public class Tally : IDisposable
 
 
         ColEnvelope.Body.Desc.TDL.TDLMessage = new(colName: ColName,
-                                                   colType: ColType ?? TallyType,
+                                                   colType: ColType ?? TallyType!,
                                                    childof: childof,
                                                    nativeFields: NativeFields,
                                                    filters: filters,
@@ -600,8 +601,8 @@ public class Tally : IDisposable
         attrs.XmlElements.Add(new(TallyType));
         xmlAttributeOverrides.Add(typeof(Colllection<ReturnObject>), "Objects", attrs);
 
-        Envelope<ReturnObject> Envelope = GetObjfromXml<Envelope<ReturnObject>>(Resxml, xmlAttributeOverrides);
-        return Envelope.Body.Data.Collection.Objects;
+        Envelope<ReturnObject>? Envelope = GetObjfromXml<Envelope<ReturnObject>>(Resxml, xmlAttributeOverrides);
+        return Envelope?.Body.Data.Collection?.Objects;
     }
 
     /// <summary>
@@ -618,10 +619,10 @@ public class Tally : IDisposable
     /// <returns>Returns instance of GroupType with data from tally</returns>
     public async Task<GroupType> GetGroup<GroupType>(string LookupValue,
                                                      MasterLookupField LookupField = MasterLookupField.Name,
-                                                     string company = null,
-                                                     string fromDate = null,
-                                                     string toDate = null,
-                                                     List<string> fetchList = null) where GroupType : Group
+                                                     string? company = null,
+                                                     string? fromDate = null,
+                                                     string? toDate = null,
+                                                     List<string>? fetchList = null) where GroupType : Group
     {
         try
         {
@@ -652,8 +653,8 @@ public class Tally : IDisposable
     /// Presult.result will be empty if sucess
     ///  </returns>
     public async Task<PResult> PostGroup<GroupType>(GroupType group,
-                                                    string company = null,
-                                                    XmlAttributeOverrides xmlAttributeOverrides = null) where GroupType : Group
+                                                    string? company = null,
+                                                    XmlAttributeOverrides? xmlAttributeOverrides = null) where GroupType : Group
     {
 
 
@@ -681,10 +682,10 @@ public class Tally : IDisposable
     /// <returns>Returns instance of LedgerType instance with data from tally</returns>
     public async Task<LedgerType> GetLedgerDynamic<LedgerType>(string LookupValue,
                                                                MasterLookupField LookupField = MasterLookupField.Name,
-                                                               string company = null,
-                                                               string fromDate = null,
-                                                               string toDate = null,
-                                                               List<string> fetchList = null) where LedgerType : Ledger
+                                                               string? company = null,
+                                                               string? fromDate = null,
+                                                               string? toDate = null,
+                                                               List<string>? fetchList = null) where LedgerType : Ledger
     {
         try
         {
@@ -713,8 +714,8 @@ public class Tally : IDisposable
     /// <returns>Returns instance of LedgerType instance with data from tally</returns>
     public async Task<LedgerType> GetLedger<LedgerType>(string LookupValue,
                                                     MasterLookupField LookupField = MasterLookupField.Name,
-                                                    string company = null,
-                                                    List<string> fetchList = null) where LedgerType : Ledger
+                                                    string? company = null,
+                                                    List<string>? fetchList = null) where LedgerType : Ledger
     {
         try
         {
@@ -742,8 +743,8 @@ public class Tally : IDisposable
     /// Presult.result will be empty if sucess
     ///  </returns>
     public async Task<PResult> PostLedger<LedgerType>(LedgerType ledger,
-                                          string company = null,
-                                          XmlAttributeOverrides xmlAttributeOverrides = null) where LedgerType : Ledger
+                                          string? company = null,
+                                          XmlAttributeOverrides? xmlAttributeOverrides = null) where LedgerType : Ledger
     {
 
         PResult result = await PostObjectToTally(Object: ledger,
@@ -765,10 +766,10 @@ public class Tally : IDisposable
     /// <returns>Returns instance of Models.CostCategory instance with data from tally</returns>
     public async Task<CostCategory> GetCostCategory<CostCategoryType>(string LookupValue,
                                                     MasterLookupField LookupField = MasterLookupField.Name,
-                                                    string company = null,
-                                                    string fromDate = null,
-                                                    string toDate = null,
-                                                    List<string> fetchList = null) where CostCategoryType : CostCategory
+                                                    string? company = null,
+                                                    string? fromDate = null,
+                                                    string? toDate = null,
+                                                    List<string>? fetchList = null) where CostCategoryType : CostCategory
     {
         try
         {
@@ -798,8 +799,8 @@ public class Tally : IDisposable
     ///  Presult.result will be empty if sucess 
     /// </returns>
     public async Task<PResult> PostCostCategory<CostCategoryType>(CostCategory CostCategory,
-                                                string company = null,
-                                                XmlAttributeOverrides xmlAttributeOverrides = null) where CostCategoryType : CostCategory
+                                                string? company = null,
+                                                XmlAttributeOverrides? xmlAttributeOverrides = null) where CostCategoryType : CostCategory
     {
         PResult result = await PostObjectToTally(Object: CostCategory,
                                                  company: company,
@@ -823,10 +824,10 @@ public class Tally : IDisposable
     /// <returns>Returns instance of Models.CostCenter instance with data from tally</returns>
     public async Task<CostCenter> GetCostCenter<CostCenterType>(string LookupValue,
                                                 MasterLookupField LookupField = MasterLookupField.Name,
-                                                string company = null,
-                                                string fromDate = null,
-                                                string toDate = null,
-                                                List<string> fetchList = null) where CostCenterType : CostCenter
+                                                string? company = null,
+                                                string? fromDate = null,
+                                                string? toDate = null,
+                                                List<string>? fetchList = null) where CostCenterType : CostCenter
     {
         try
         {
@@ -857,8 +858,8 @@ public class Tally : IDisposable
     ///  Presult.result will be empty if sucess 
     /// </returns>
     public async Task<PResult> PostCostCenter<CostCenterType>(CostCenter costCenter,
-                                              string company = null,
-                                              XmlAttributeOverrides xmlAttributeOverrides = null) where CostCenterType : CostCenter
+                                              string? company = null,
+                                              XmlAttributeOverrides? xmlAttributeOverrides = null) where CostCenterType : CostCenter
     {
 
 
@@ -883,10 +884,10 @@ public class Tally : IDisposable
     /// <returns>Returns instance of Models.StockGroup instance with data from tally</returns>
     public async Task<StockGroup> GetStockGroup<StockGroupType>(string LookupValue,
                                                 MasterLookupField LookupField = MasterLookupField.Name,
-                                                string company = null,
-                                                string fromDate = null,
-                                                string toDate = null,
-                                                List<string> fetchList = null) where StockGroupType : StockGroup
+                                                string? company = null,
+                                                string? fromDate = null,
+                                                string? toDate = null,
+                                                List<string>? fetchList = null) where StockGroupType : StockGroup
     {
         try
         {
@@ -917,8 +918,8 @@ public class Tally : IDisposable
     ///  Presult.result will be empty if sucess 
     /// </returns>
     public async Task<PResult> PostStockGroup<StockGroupType>(StockGroup stockGroup,
-                                              string company = null,
-                                              XmlAttributeOverrides xmlAttributeOverrides = null) where StockGroupType : StockGroup
+                                              string? company = null,
+                                              XmlAttributeOverrides? xmlAttributeOverrides = null) where StockGroupType : StockGroup
     {
 
         PResult result = await PostObjectToTally(Object: stockGroup,
@@ -942,10 +943,10 @@ public class Tally : IDisposable
     /// <returns>Returns instance of Models.StockCategory with data from tally</returns>
     public async Task<StockCategory> GetStockCategory<StockCategoryType>(string LookupValue,
                                                       MasterLookupField LookupField = MasterLookupField.Name,
-                                                      string company = null,
-                                                      string fromDate = null,
-                                                      string toDate = null,
-                                                      List<string> fetchList = null) where StockCategoryType : StockCategory
+                                                      string? company = null,
+                                                      string? fromDate = null,
+                                                      string? toDate = null,
+                                                      List<string>? fetchList = null) where StockCategoryType : StockCategory
     {
         try
         {
@@ -976,8 +977,8 @@ public class Tally : IDisposable
     ///  Presult.result will be empty if sucess 
     /// </returns>
     public async Task<PResult> PostStockCategory<StockCategoryType>(StockCategory stockCategory,
-                                                                    string company = null,
-                                                                    XmlAttributeOverrides xmlAttributeOverrides = null) where StockCategoryType : StockCategory
+                                                                    string? company = null,
+                                                                    XmlAttributeOverrides? xmlAttributeOverrides = null) where StockCategoryType : StockCategory
     {
         PResult result = await PostObjectToTally(Object: stockCategory,
                                                  company: company,
@@ -999,10 +1000,10 @@ public class Tally : IDisposable
     /// <returns>Returns instance of Models.StockItem  with data from tally</returns>
     public async Task<StockItem> GetStockItem<StockItemType>(string LookupValue,
                                                              MasterLookupField LookupField = MasterLookupField.Name,
-                                                             string company = null,
-                                                             string fromDate = null,
-                                                             string toDate = null,
-                                                             List<string> fetchList = null) where StockItemType : StockItem
+                                                             string? company = null,
+                                                             string? fromDate = null,
+                                                             string? toDate = null,
+                                                             List<string>? fetchList = null) where StockItemType : StockItem
     {
         try
         {
@@ -1032,8 +1033,8 @@ public class Tally : IDisposable
     ///  Presult.result will be empty if sucess 
     /// </returns>
     public async Task<PResult> PostStockItem<StockItemType>(StockItem stockItem,
-                                             string company = null,
-                                             XmlAttributeOverrides xmlAttributeOverrides = null) where StockItemType : StockItem
+                                             string? company = null,
+                                             XmlAttributeOverrides? xmlAttributeOverrides = null) where StockItemType : StockItem
     {
 
         PResult result = await PostObjectToTally(Object: stockItem,
@@ -1057,10 +1058,10 @@ public class Tally : IDisposable
     /// <returns>Returns instance of Models.Unit  with data from tally</returns>
     public async Task<Unit> GetUnit<UnitType>(string LookupValue,
                                               MasterLookupField LookupField = MasterLookupField.Name,
-                                              string company = null,
-                                              string fromDate = null,
-                                              string toDate = null,
-                                              List<string> fetchList = null) where UnitType : Unit
+                                              string? company = null,
+                                              string? fromDate = null,
+                                              string? toDate = null,
+                                              List<string>? fetchList = null) where UnitType : Unit
     {
         try
         {
@@ -1091,8 +1092,8 @@ public class Tally : IDisposable
     ///  Presult.result will be empty if sucess 
     /// </returns>
     public async Task<PResult> PostUnit<UnitType>(Unit unit,
-                                        string company = null,
-                                        XmlAttributeOverrides xmlAttributeOverrides = null) where UnitType : Unit
+                                        string? company = null,
+                                        XmlAttributeOverrides? xmlAttributeOverrides = null) where UnitType : Unit
     {
 
 
@@ -1116,10 +1117,10 @@ public class Tally : IDisposable
     /// <returns>Returns instance of Models.Godown  with data from tally</returns>
     public async Task<Godown> GetGodown<GodownType>(string LookupValue,
                                         MasterLookupField LookupField = MasterLookupField.Name,
-                                        string company = null,
-                                        string fromDate = null,
-                                        string toDate = null,
-                                        List<string> fetchList = null) where GodownType : Godown
+                                        string? company = null,
+                                        string? fromDate = null,
+                                        string? toDate = null,
+                                        List<string>? fetchList = null) where GodownType : Godown
     {
         try
         {
@@ -1149,8 +1150,8 @@ public class Tally : IDisposable
     ///  Presult.result will be empty if sucess 
     /// </returns>
     public async Task<PResult> PostGodown<GodownType>(Godown godown,
-                                          string company = null,
-                                          XmlAttributeOverrides xmlAttributeOverrides = null) where GodownType : Godown
+                                          string? company = null,
+                                          XmlAttributeOverrides? xmlAttributeOverrides = null) where GodownType : Godown
     {
         PResult result = await PostObjectToTally(Object: godown,
                                                  company: company,
@@ -1173,10 +1174,10 @@ public class Tally : IDisposable
     /// <returns>Returns instance of Models.VoucherType  with data from tally</returns>
     public async Task<VoucherType> GetVoucherType<VchrType>(string LookupValue,
                                                   MasterLookupField LookupField = MasterLookupField.Name,
-                                                  string company = null,
-                                                  string fromDate = null,
-                                                  string toDate = null,
-                                                  List<string> fetchList = null) where VchrType : VoucherType
+                                                  string? company = null,
+                                                  string? fromDate = null,
+                                                  string? toDate = null,
+                                                  List<string>? fetchList = null) where VchrType : VoucherType
     {
         try
         {
@@ -1207,8 +1208,8 @@ public class Tally : IDisposable
     ///  Presult.result will be empty if sucess 
     /// </returns>
     public async Task<PResult> PostVoucherType<VoucherTypType>(VoucherType voucherType,
-                                               string company = null,
-                                               XmlAttributeOverrides xmlAttributeOverrides = null) where VoucherTypType : VoucherType
+                                               string? company = null,
+                                               XmlAttributeOverrides? xmlAttributeOverrides = null) where VoucherTypType : VoucherType
     {
         PResult result = await PostObjectToTally(Object: voucherType,
                                                  company: company,
@@ -1230,10 +1231,10 @@ public class Tally : IDisposable
     /// <returns>Returns instance of Models.Currency  with data from tally</returns>
     public async Task<Currency> GetCurrency<CurrencyType>(string LookupValue,
                                             MasterLookupField LookupField = MasterLookupField.Name,
-                                            string company = null,
-                                            string fromDate = null,
-                                            string toDate = null,
-                                            List<string> fetchList = null) where CurrencyType : Currency
+                                            string? company = null,
+                                            string? fromDate = null,
+                                            string? toDate = null,
+                                            List<string>? fetchList = null) where CurrencyType : Currency
     {
         try
         {
@@ -1262,7 +1263,7 @@ public class Tally : IDisposable
     ///  Presult.result will be empty if sucess 
     /// </returns>
     public async Task<PResult> PostCurrency<CurrencyType>(Currency currency,
-                                        string company = null, XmlAttributeOverrides xmlAttributeOverrides = null) where CurrencyType : Currency
+                                        string? company = null, XmlAttributeOverrides? xmlAttributeOverrides = null) where CurrencyType : Currency
     {
         PResult result = await PostObjectToTally(Object: currency,
                                                  company: company,
@@ -1284,10 +1285,10 @@ public class Tally : IDisposable
     /// <returns>Returns instance of Models.AttendanceType  with data from tally</returns>
     public async Task<AttendanceType> GetAttendanceType<AttendnceType>(string LookupValue,
                                                         MasterLookupField LookupField = MasterLookupField.Name,
-                                                        string company = null,
-                                                        string fromDate = null,
-                                                        string toDate = null,
-                                                        List<string> fetchList = null) where AttendnceType : AttendanceType
+                                                        string? company = null,
+                                                        string? fromDate = null,
+                                                        string? toDate = null,
+                                                        List<string>? fetchList = null) where AttendnceType : AttendanceType
     {
         try
         {
@@ -1318,8 +1319,8 @@ public class Tally : IDisposable
     ///  Presult.result will be empty if sucess 
     /// </returns>
     public async Task<PResult> PostAttendanceType<AttendanceTypType>(AttendanceType AttendanceType,
-                                                                     string company = null,
-                                                                     XmlAttributeOverrides xmlAttributeOverrides = null) where AttendanceTypType : AttendanceType
+                                                                     string? company = null,
+                                                                     XmlAttributeOverrides? xmlAttributeOverrides = null) where AttendanceTypType : AttendanceType
     {
         PResult result = await PostObjectToTally(Object: AttendanceType,
                                                  company: company,
@@ -1343,10 +1344,10 @@ public class Tally : IDisposable
     /// <returns>Returns instance of Models.CostCenter instance with data from tally</returns>
     public async Task<EmployeeGroup> GetEmployeeGroup<EmployeeGroupType>(string LookupValue,
                                                       MasterLookupField LookupField = MasterLookupField.Name,
-                                                      string company = null,
-                                                      string fromDate = null,
-                                                      string toDate = null,
-                                                      List<string> fetchList = null) where EmployeeGroupType : EmployeeGroup
+                                                      string? company = null,
+                                                      string? fromDate = null,
+                                                      string? toDate = null,
+                                                      List<string>? fetchList = null) where EmployeeGroupType : EmployeeGroup
     {
         try
         {
@@ -1376,8 +1377,8 @@ public class Tally : IDisposable
     /////  Presult.result will be empty if sucess 
     ///// </returns>
     public async Task<PResult> PostEmployeeGroup<EmployeeGroupType>(EmployeeGroup EmployeeGroup,
-                                                                    string company = null,
-                                                                    XmlAttributeOverrides xmlAttributeOverrides = null) where EmployeeGroupType : EmployeeGroup
+                                                                    string? company = null,
+                                                                    XmlAttributeOverrides? xmlAttributeOverrides = null) where EmployeeGroupType : EmployeeGroup
     {
         PResult result = await PostObjectToTally(Object: EmployeeGroup,
                                                  company: company,
@@ -1399,10 +1400,10 @@ public class Tally : IDisposable
     /// <returns>Returns instance of Models.CostCenter instance with data from tally</returns>
     public async Task<Employee> GetEmployee<EmployeeType>(string LookupValue,
                                                           MasterLookupField LookupField = MasterLookupField.Name,
-                                                          string company = null,
-                                                          string fromDate = null,
-                                                          string toDate = null,
-                                                          List<string> fetchList = null) where EmployeeType : Employee
+                                                          string? company = null,
+                                                          string? fromDate = null,
+                                                          string? toDate = null,
+                                                          List<string>? fetchList = null) where EmployeeType : Employee
     {
         try
         {
@@ -1432,8 +1433,8 @@ public class Tally : IDisposable
     /////  Presult.result will be empty if sucess 
     ///// </returns>
     public async Task<PResult> PostEmployee<EmployeeType>(Employee Employee,
-                                                          string company = null,
-                                                          XmlAttributeOverrides xmlAttributeOverrides = null) where EmployeeType : Employee
+                                                          string? company = null,
+                                                          XmlAttributeOverrides? xmlAttributeOverrides = null) where EmployeeType : Employee
     {
         PResult result = await PostObjectToTally(Object: Employee,
                                                  company: company,
@@ -1456,9 +1457,8 @@ public class Tally : IDisposable
     /// <returns>Returns instance of Models.CostCenter instance with data from tally</returns>
     public async Task<Voucher> GetVoucher<VchType>(string LookupValue,
                                           VoucherLookupField LookupField = VoucherLookupField.VoucherNumber,
-                                          string company = null,
-                                          List<string> fetchList = null,
-                                          VoucherViewType viewName = VoucherViewType.AccountingVoucherView) where VchType : Voucher
+                                          string? company = null,
+                                          List<string>? fetchList = null) where VchType : Voucher
     {
         try
         {
@@ -1487,19 +1487,19 @@ public class Tally : IDisposable
     /// <returns>Returns instance of Models.Voucher with data from tally</returns>
     public async Task<Voucher> GetVoucherByVoucherNumber(string VoucherNumber,
                                                          string Date,
-                                                         string company = null,
-                                                         List<string> fetchList = null)
+                                                         string? company = null,
+                                                         List<string>? fetchList = null)
     {
         //If parameter is null Get value from instance
         company ??= Company;
 
-        VoucherEnvelope VchEnvelope = (await GetObjFromTally<VoucherEnvelope>(ObjName: $"Date: \'{Date}\' : VoucherNumber: \'{VoucherNumber}\'",
+        VoucherEnvelope? VchEnvelope = (await GetObjFromTally<VoucherEnvelope>(ObjName: $"Date: \'{Date}\' : VoucherNumber: \'{VoucherNumber}\'",
                                                                          ObjType: "Voucher",
                                                                          company: company,
                                                                          fetchList: fetchList,
                                                                          viewname: VoucherViewType.AccountingVoucherView));
 
-        if (VchEnvelope.Body.Data.Message.Voucher != null)
+        if (VchEnvelope?.Body.Data.Message.Voucher != null)
         {
             Voucher voucher = VchEnvelope.Body.Data.Message.Voucher;
             return voucher;
@@ -1522,8 +1522,8 @@ public class Tally : IDisposable
     ///  Presult.result will be Voucher masterID if sucess 
     /// </returns>
     public async Task<PResult> PostVoucher<TVoucher>(Voucher voucher,
-                                           string company = null,
-                                           XmlAttributeOverrides xmlAttributeOverrides = null) where TVoucher : Voucher
+                                           string? company = null,
+                                           XmlAttributeOverrides? xmlAttributeOverrides = null) where TVoucher : Voucher
     {
 
 
@@ -1593,19 +1593,19 @@ public class Tally : IDisposable
     /// </param>
     /// <param name="viewname">if getting voucher object specify view name else leave</param>
     /// <returns>Return object type provided in typeparam with data from tally</returns>
-    public async Task<T> GetObjFromTally<T>(string ObjName,
+    public async Task<T?> GetObjFromTally<T>(string ObjName,
                                             string ObjType,
-                                            string company = null,
-                                            string fromDate = null,
-                                            string toDate = null,
-                                            List<string> fetchList = null,
+                                            string? company = null,
+                                            string? fromDate = null,
+                                            string? toDate = null,
+                                            List<string>? fetchList = null,
                                             VoucherViewType viewname = VoucherViewType.AccountingVoucherView)
     {
         //If parameter is null Get value from instance
         company ??= Company;
         fromDate ??= FromDate;
         toDate ??= ToDate;
-        T Obj = default;
+        T? Obj = default;
         string ResXml = string.Empty;
         try
         {
@@ -1642,10 +1642,10 @@ public class Tally : IDisposable
     /// <returns>returns xml as string</returns>
     private string GetObjXML(string objType,
                              string ObjName,
-                             string company = null,
-                             string fromDate = null,
-                             string toDate = null,
-                             List<string> fetchList = null,
+                             string? company = null,
+                             string? fromDate = null,
+                             string? toDate = null,
+                             List<string>? fetchList = null,
                              VoucherViewType viewname = VoucherViewType.AccountingVoucherView)
     {
         //If parameter is null Get value from instance
@@ -1676,7 +1676,7 @@ public class Tally : IDisposable
     public PropertyInfo[] GetPropertyInfo(Type type)
     {
         PropertyInfo[] PropertyInfo;
-        PropertyInfoList.TryGetValue(type, out PropertyInfo);
+        _ = PropertyInfoList.TryGetValue(type, out PropertyInfo!);
         if (PropertyInfo == null)
         {
             PropertyInfo = type.GetProperties();
@@ -1714,15 +1714,15 @@ public class Tally : IDisposable
                 Type ChildType = Ctype.GetGenericArguments()[0];
                 if (!ChildType.IsPrimitive)
                 {
-                    string ColName = GetTDLCollectionName(propertyinfo);
-                    string xmlElem = GetXmlElement(propertyinfo);
+                    string ColName = GetTDLCollectionName(propertyinfo)!;
+                    string xmlElem = GetXmlElement(propertyinfo)!;
                     ReportField ChildreportField = new(xmlElem, ColName);
                     if (!IgnoreTypes.Contains(Ctype))
                     {
-                        ChildreportField.FieldName = $"{rootreportField.FieldName.Substring(0, 5)}_{ChildreportField.FieldName}";
+                        ChildreportField.FieldName = $"{rootreportField.FieldName?.Substring(0, 5)}_{ChildreportField.FieldName}";
                         GetTDLReport(ChildType, ChildreportField);
                     }
-                    rootreportField.SubFields.Add(ChildreportField);
+                    rootreportField.SubFields?.Add(ChildreportField);
                 }
 
             }
@@ -1742,14 +1742,14 @@ public class Tally : IDisposable
 
     private void GetChildReport(PropertyInfo propertyinfo, ReportField rootreportField)
     {
-        string xmlElem = GetXmlElement(propertyinfo);
+        string xmlElem = GetXmlElement(propertyinfo)!;
         if (xmlElem != null)
         {
-            string ColName = GetTDLCollectionName(propertyinfo);
+            string ColName = GetTDLCollectionName(propertyinfo) ?? rootreportField.FieldName!;
             ReportField ChildreportField = new(xmlElem, ColName);
-            ChildreportField.FieldName = $"{rootreportField.FieldName.Substring(0, 5)}_{ChildreportField.FieldName}";
+            ChildreportField.FieldName = $"{rootreportField.FieldName?.Substring(0, 5)}_{ChildreportField.FieldName}";
             GetTDLReport(propertyinfo.PropertyType, ChildreportField);
-            rootreportField.SubFields.Add(ChildreportField);
+            rootreportField.SubFields?.Add(ChildreportField);
         }
 
     }
@@ -1801,30 +1801,31 @@ public class Tally : IDisposable
 
     private static string GetRootTag(Type type)
     {
-        XmlRootAttribute Rootattribute = (XmlRootAttribute)Attribute.GetCustomAttribute(type, typeof(XmlRootAttribute));
-        string RootTag = Rootattribute?.ElementName;
+        XmlRootAttribute? Rootattribute = (XmlRootAttribute?)Attribute.GetCustomAttribute(type, typeof(XmlRootAttribute));
+        string RootTag = Rootattribute?.ElementName ?? string.Empty;
         return RootTag;
     }
-    private static string GetTDLCollectionName(Type type)
+    private static string? GetTDLCollectionName(Type type)
     {
-        TDLCollectionAttribute TDLColattribute = (TDLCollectionAttribute)Attribute.GetCustomAttribute(type, typeof(TDLCollectionAttribute));
-        string CollectionName = TDLColattribute?.CollectionName;
+        TDLCollectionAttribute? TDLColattribute = (TDLCollectionAttribute?)Attribute.GetCustomAttribute(type, typeof(TDLCollectionAttribute));
+        string? CollectionName = TDLColattribute?.CollectionName;
         return CollectionName;
     }
-    private string GetTDLCollectionName(PropertyInfo propertyinfo)
+
+    private string? GetTDLCollectionName(PropertyInfo propertyinfo)
     {
-        TDLCollectionAttribute TDLColattribute = (TDLCollectionAttribute)propertyinfo.GetCustomAttributes().FirstOrDefault(Attribute => Attribute.GetType() == typeof(TDLCollectionAttribute));
-        string CollectionName = TDLColattribute?.CollectionName;
+        TDLCollectionAttribute? TDLColattribute = (TDLCollectionAttribute?)propertyinfo.GetCustomAttributes().FirstOrDefault(Attribute => Attribute.GetType() == typeof(TDLCollectionAttribute));
+        string? CollectionName = TDLColattribute?.CollectionName;
         return CollectionName;
     }
     private static void GetReportFields(ReportField rootreportField, PropertyInfo propertyinfo)
     {
-        string xmlTag = GetXmlElement(propertyinfo);
+        string xmlTag = GetXmlElement(propertyinfo)!;
         if (xmlTag != null)
         {
-            rootreportField.SubFields.Add(new ReportField(xmlTag));
+            rootreportField.SubFields?.Add(new ReportField(xmlTag));
         }
-        string xmlAttr = GetXmlAttribute(propertyinfo);
+        string? xmlAttr = GetXmlAttribute(propertyinfo);
         if (xmlAttr != null)
         {
             rootreportField.Atrributes.Add(xmlAttr);
@@ -1832,15 +1833,15 @@ public class Tally : IDisposable
 
     }
 
-    private static string GetXmlAttribute(PropertyInfo propertyinfo)
+    private static string? GetXmlAttribute(PropertyInfo propertyinfo)
     {
-        XmlAttributeAttribute Cattribute = (XmlAttributeAttribute)Attribute.GetCustomAttribute(propertyinfo, typeof(XmlAttributeAttribute));//propertyinfo.CustomAttributes.FirstOrDefault(Attributedata => Attributedata.AttributeType == typeof(XmlAttributeAttribute));
+        XmlAttributeAttribute? Cattribute = (XmlAttributeAttribute?)Attribute.GetCustomAttribute(propertyinfo, typeof(XmlAttributeAttribute));//propertyinfo.CustomAttributes.FirstOrDefault(Attributedata => Attributedata.AttributeType == typeof(XmlAttributeAttribute));
 
-        string xmlAttr = Cattribute?.AttributeName;
+        string? xmlAttr = Cattribute?.AttributeName;
         return xmlAttr;
     }
 
-    private static string GetXmlElement(PropertyInfo propertyinfo)
+    private static string? GetXmlElement(PropertyInfo propertyinfo)
     {
         XmlElementAttribute[] CElement = (XmlElementAttribute[])Attribute.GetCustomAttributes(propertyinfo, typeof(XmlElementAttribute));//propertyinfo.CustomAttributes.FirstOrDefault(Attributedata => Attributedata.AttributeType == typeof(XmlAttributeAttribute));
         if (CElement.Length > 0)
@@ -1851,9 +1852,9 @@ public class Tally : IDisposable
         return null;
     }
 
-    public async Task<string> GetReportXML(string reportname, StaticVariables Sv = null)
+    public async Task<string?> GetReportXML(string reportname, StaticVariables? Sv = null)
     {
-        string Resxml = null;
+        string? Resxml = null;
         await Check();
         if (Status == "Running")
         {
@@ -1902,7 +1903,7 @@ public class Tally : IDisposable
     //Helper method to escape text for xml
     public static string ReplaceXML(string strText)
     {
-        string result = null;
+        string result = string.Empty;
         if (strText != null)
         {
             result = strText.Replace("\r", "&#13;");
@@ -1915,7 +1916,7 @@ public class Tally : IDisposable
     //Helper method to convert escaped characters to text
     public static string ReplaceXMLText(string strXmlText)
     {
-        string result = null;
+        string result = string.Empty;
         if (strXmlText != null)
         {
             result = strXmlText.Replace("&#x4;", "");
@@ -1929,7 +1930,7 @@ public class Tally : IDisposable
     }
 
     //Converts to given object from Xml
-    public T GetObjfromXml<T>(string Xml, XmlAttributeOverrides attrOverrides = null)
+    public T? GetObjfromXml<T>(string Xml, XmlAttributeOverrides? attrOverrides = null)
     {
         try
         {
@@ -1959,7 +1960,7 @@ public class Tally : IDisposable
                 xslTransform.Transform(rd, null, xmlwriter);
                 rd = XmlReader.Create(new StringReader(textWriter.ToString()), xset, context);
             }
-            T obj = (T)XMLSer.Deserialize(rd);
+            T? obj = (T?)XMLSer.Deserialize(rd);
 
             return obj;
         }
@@ -1984,7 +1985,7 @@ public class Tally : IDisposable
 
         foreach (PropertyInfo sourceProperty in sourceType.GetProperties())
         {
-            PropertyInfo destinationProperty = destinationType.GetProperty(sourceProperty.Name);
+            PropertyInfo? destinationProperty = destinationType.GetProperty(sourceProperty.Name);
             if (destinationProperty != null)
             {
                 destinationProperty.SetValue(Derieved, sourceProperty.GetValue(Base, null), null);
@@ -2000,14 +2001,14 @@ public class Tally : IDisposable
 
         if (!RespXml.Contains("RESPONSE")) //checks Unknown error
         {
-            ResponseEnvelope Resp = GetObjfromXml<ResponseEnvelope>(RespXml); //Response from tally on sucess
-            if (Resp.Body.Data.LineError != null)
+            ResponseEnvelope? Resp = GetObjfromXml<ResponseEnvelope>(RespXml); //Response from tally on sucess
+            if (Resp?.Body?.Data?.LineError != null)
             {
                 result.Status = RespStatus.Failure;
                 result.Result = Resp.Body.Data.LineError;
 
             }
-            if (Resp.Body.Data.ImportResult != null)
+            if (Resp?.Body?.Data?.ImportResult != null)
             {
                 if (Resp.Body.Data.ImportResult.LastVchId != null && Resp.Body.Data.ImportResult.LastVchId != 0)
                 {
@@ -2040,9 +2041,9 @@ public class Tally : IDisposable
         }
         else
         {
-            FailureResponse resp = GetObjfromXml<FailureResponse>(RespXml); //Response from tally on Failure
+            FailureResponse? resp = GetObjfromXml<FailureResponse>(RespXml); //Response from tally on Failure
             result.Status = RespStatus.Failure;
-            result.Result = resp.ToString();
+            result.Result = resp?.ToString();
         }
         return result;
     }

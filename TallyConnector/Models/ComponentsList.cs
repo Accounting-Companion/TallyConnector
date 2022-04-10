@@ -10,11 +10,11 @@ public class ComponentsList
     }
 
     [XmlElement(ElementName = "COMPONENTLISTNAME")]
-    public string Name { get; set; }
+    public string? Name { get; set; }
 
     [XmlElement(ElementName = "COMPONENTBASICQTY")]
     [MaxLength(50)]
-    public string BasicQuantity { get; set; }
+    public string? BasicQuantity { get; set; }
 
     [XmlElement(ElementName = "MULTICOMPONENTITEMLIST.LIST")]
     public List<ComponentsItem> ComponentsItems { get; set; }
@@ -29,17 +29,17 @@ public class ComponentsItem
     public ComponentType NatureOfItem { get; set; }
 
     [XmlElement(ElementName = "STOCKITEMNAME")]
-    public string StockItem { get; set; }
+    public string? StockItem { get; set; }
 
     [XmlElement(ElementName = "GODOWNNAME")]
-    public string Godown { get; set; }
+    public string? Godown { get; set; }
 
     //Percentage of Allocation in Voucher
     [XmlElement(ElementName = "ADDLCOSTALLOCPERC")]
-    public string CostAllocPercentage { get; set; }
+    public string? CostAllocPercentage { get; set; }
 
     [XmlElement(ElementName = "ACTUALQTY")]
-    public string ActualQuantity { get; set; }
+    public string? ActualQuantity { get; set; }
 }
 
 public enum ComponentType

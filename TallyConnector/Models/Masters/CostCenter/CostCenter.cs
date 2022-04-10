@@ -12,9 +12,9 @@ public class CostCenter : BasicTallyObject, ITallyObject
 
     [XmlAttribute(AttributeName = "NAME")]
     [JsonIgnore]
-    public string OldName { get; set; }
+    public string? OldName { get; set; }
 
-    private string name;
+    private string? name;
 
     [XmlElement(ElementName = "NAME")]
     [Required]
@@ -23,26 +23,26 @@ public class CostCenter : BasicTallyObject, ITallyObject
         get
         {
             name = (name == null || name == string.Empty) ? OldName : name;
-            return name;
+            return name!;
         }
         set => name = value;
     }
 
     [XmlElement(ElementName = "CATEGORY")]
-    public string Category { get; set; }
+    public string? Category { get; set; }
 
     [XmlElement(ElementName = "PARENT")]
-    public string Parent { get; set; }
+    public string? Parent { get; set; }
 
     [XmlElement(ElementName = "EMAILID")]
-    public string Emailid { get; set; }
+    public string? Emailid { get; set; }
 
     [XmlElement(ElementName = "REVENUELEDFOROPBAL")]
-    public string ShowOpeningBal { get; set; }
+    public string? ShowOpeningBal { get; set; }
 
 
     [XmlIgnore]
-    public string Alias { get; set; }
+    public string? Alias { get; set; }
 
     [JsonIgnore]
     [XmlElement(ElementName = "LANGUAGENAME.LIST")]
@@ -53,22 +53,22 @@ public class CostCenter : BasicTallyObject, ITallyObject
     /// </summary>
     [JsonIgnore]
     [XmlAttribute(AttributeName = "Action")]
-    public string Action { get; set; }
+    public string? Action { get; set; }
 
     public void CreateNamesList()
     {
         if (LanguageNameList.Count == 0)
         {
             LanguageNameList.Add(new LanguageNameList());
-            LanguageNameList[0].NameList.NAMES.Add(Name);
+            LanguageNameList[0].NameList?.NAMES?.Add(Name);
 
         }
         if (Alias != null && Alias != string.Empty)
         {
-            LanguageNameList[0].LanguageAlias = Alias;
+            LanguageNameList![0].LanguageAlias = Alias;
         }
     }
-    public new string GetXML(XmlAttributeOverrides attrOverrides = null)
+    public new string GetXML(XmlAttributeOverrides? attrOverrides = null)
     {
         if (Parent != null && Parent.Contains("Primary"))
         {
@@ -85,6 +85,6 @@ public class CostCenter : BasicTallyObject, ITallyObject
 
     public override string ToString()
     {
-        return $"{Name}";
+        return $"Cost Center - {Name}";
     }
 }

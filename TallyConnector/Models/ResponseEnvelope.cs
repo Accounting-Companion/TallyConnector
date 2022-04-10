@@ -7,10 +7,10 @@ public class ResponseEnvelope
 {
 
     [XmlElement(ElementName = "HEADER")]
-    public RHeader Header { get; set; }
+    public RHeader? Header { get; set; }
 
     [XmlElement(ElementName = "BODY")]
-    public RBody Body { get; set; }
+    public RBody? Body { get; set; }
 }
 
 
@@ -30,7 +30,7 @@ public class RBody
 {
 
     [XmlElement(ElementName = "DATA")]
-    public Rdata Data { get; set; }
+    public Rdata? Data { get; set; }
 
     //[XmlElement(ElementName = "DESC")]
     //public Desc Desc { get; set; }
@@ -40,10 +40,10 @@ public class RBody
 public class Rdata
 {
     [XmlElement(ElementName = "LINEERROR")]
-    public string LineError { get; set; }
+    public string? LineError { get; set; }
 
     [XmlElement(ElementName = "IMPORTRESULT")]
-    public ImportResult ImportResult { get; set; }
+    public ImportResult? ImportResult { get; set; }
 }
 
 [XmlRoot(ElementName = "IMPORTRESULT")]

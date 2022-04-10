@@ -2,7 +2,7 @@
 
 public class MastersMapping
 {
-    public MastersMapping(TallyObjectType masterType, string tallyMasterType, List<Filter> filters)
+    public MastersMapping(TallyObjectType masterType, string tallyMasterType, List<Filter>? filters)
     {
         MasterType = masterType;
         Filters = filters;
@@ -12,7 +12,7 @@ public class MastersMapping
     public TallyObjectType MasterType { get; set; }
     public string TallyMasterType { get; set; }
 
-    public List<Filter> Filters { get; set; }
+    public List<Filter>? Filters { get; set; }
 
     public static readonly List<MastersMapping> MastersMappings = new()
     {

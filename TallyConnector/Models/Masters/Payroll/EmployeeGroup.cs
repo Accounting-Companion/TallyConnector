@@ -6,10 +6,10 @@ namespace TallyConnector.Models.Masters.Payroll;
 public class EmployeeGroup : MCS.CostCenter
 {
     [XmlElement(ElementName = "FORPAYROLL")]
-    public string ForPayroll { get; set; }
+    public string? ForPayroll { get; set; }
 
     [XmlElement(ElementName = "ISEMPLOYEEGROUP")]
-    public string IsEmployeeGroup { get; set; }
+    public string? IsEmployeeGroup { get; set; }
 
 
 }

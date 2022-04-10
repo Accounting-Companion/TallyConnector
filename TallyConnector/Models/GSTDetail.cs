@@ -4,19 +4,19 @@
 public class GSTDetail : TallyBaseObject
 {
     [XmlElement(ElementName = "APPLICABLEFROM")]
-    public string ApplicableFrom { get; set; }
+    public string? ApplicableFrom { get; set; }
 
     [XmlElement(ElementName = "CALCULATIONTYPE")]
-    public string CalculationType { get; set; }
+    public string? CalculationType { get; set; }
 
     [XmlElement(ElementName = "HSNCODE")]
-    public string HSNCode { get; set; }
+    public string? HSNCode { get; set; }
 
     [XmlElement(ElementName = "HSN")]
-    public string HSNDescription { get; set; }
+    public string? HSNDescription { get; set; }
 
     [XmlElement(ElementName = "HSNMASTERNAME")]
-    public string HSNMasterName { get; set; }
+    public string? HSNMasterName { get; set; }
 
     [XmlElement(ElementName = "ISNONGSTGOODS")]
     public YesNo IsNonGSTGoods { get; set; }
@@ -34,17 +34,17 @@ public class GSTDetail : TallyBaseObject
     public YesNo IcludeExpForSlabCalc { get; set; }
 
     [XmlElement(ElementName = "STATEWISEDETAILS.LIST")]
-    public List<StateWiseDetail> StateWiseDetails { get; set; }
+    public List<StateWiseDetail>? StateWiseDetails { get; set; }
 }
 
 [XmlRoot(ElementName = "STATEWISEDETAILS.LIST")]
 public class StateWiseDetail
 {
     [XmlElement(ElementName = "STATENAME")]
-    public string StateName { get; set; }
+    public string? StateName { get; set; }
 
     [XmlElement(ElementName = "RATEDETAILS.LIST")]
-    public List<GSTRateDetail> GSTRateDetails { get; set; }
+    public List<GSTRateDetail>? GSTRateDetails { get; set; }
 
 
 }
@@ -53,10 +53,10 @@ public class StateWiseDetail
 public class GSTRateDetail
 {
     [XmlElement(ElementName = "GSTRATEDUTYHEAD")]
-    public string DutyHead { get; set; }
+    public string? DutyHead { get; set; }
 
     [XmlElement(ElementName = "GSTRATEVALUATIONTYPE")]
-    public string ValuationType { get; set; }
+    public string? ValuationType { get; set; }
 
     [XmlElement(ElementName = "GSTRATE")]
     public double GSTRate { get; set; }

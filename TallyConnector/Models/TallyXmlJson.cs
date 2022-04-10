@@ -5,12 +5,12 @@ public class TallyBaseObject
     [NotMapped]
     [JsonIgnore]
     [XmlAnyElement()]
-    public XmlElement[] OtherFields { get; set; }
+    public XmlElement[]? OtherFields { get; set; }
 
     [NotMapped]
     [JsonIgnore]
     [XmlAnyAttribute]
-    public XmlAttribute[] OtherAttributes { get; set; }
+    public XmlAttribute[]? OtherAttributes { get; set; }
 }
 
 public class TallyXmlJson : TallyBaseObject
@@ -26,7 +26,7 @@ public class TallyXmlJson : TallyBaseObject
         return Json;
     }
 
-    public string GetXML(XmlAttributeOverrides attrOverrides = null)
+    public string GetXML(XmlAttributeOverrides? attrOverrides = null)
     {
         TextWriter textWriter = new StringWriter();
         XmlWriterSettings settings = new()
@@ -45,7 +45,7 @@ public class TallyXmlJson : TallyBaseObject
         XmlSerializer xmlSerializer = attrOverrides == null ? new(this.GetType()) : new(this.GetType(), attrOverrides);
         var writer = XmlWriter.Create(textWriter, settings);
         xmlSerializer.Serialize(writer, this, ns);
-        return textWriter.ToString(); ;
+        return textWriter.ToString()!;
     }
 
 
@@ -60,7 +60,7 @@ public class BasicTallyObject : TallyXmlJson, ITallyObject, IBasicTallyObject
 
     [XmlElement(ElementName = "GUID")]
     [Column(TypeName = "nvarchar(100)")]
-    public string GUID { get; set; }
+    public string? GUID { get; set; }
 
     [XmlElement(ElementName = "ALTERID")]
     public int? AlterId { get; set; }

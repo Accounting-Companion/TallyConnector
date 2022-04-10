@@ -5,40 +5,62 @@
 [XmlType(AnonymousType = true)]
 public class Group : BasicTallyObject, ITallyObject
 {
-
-    [XmlAttribute(AttributeName = "NAME")]
-    [JsonIgnore]
-    [Column(TypeName = "nvarchar(60)")]
-    public string OldName { get; set; }
-
-    private string name;
+    private string? name;
 
     public Group()
     {
         LanguageNameList = new();
     }
 
+    /// <summary>
+    /// Create New Group Under Primary
+    /// </summary>
+    /// <param name="name">Name Of the Group</param>
+    public Group(string name)
+    {
+        Name = name;
+        LanguageNameList = new();
+    }
+
+    /// <summary>
+    /// Creates New Group under mention Parent group
+    /// </summary>
+    /// <param name="name">Name Of the Group</param>
+    /// <param name="Parent">Name of Base Group</param>
+    public Group(string name, string parent)
+    {
+        Name = name;
+        LanguageNameList = new();
+        Parent = parent;
+    }
+
+    [XmlAttribute(AttributeName = "NAME")]
+    [JsonIgnore]
+    [Column(TypeName = $"nvarchar({Constants.MaxNameLength})")]
+    public string? OldName { get; set; }
+
+
     [XmlElement(ElementName = "NAME")]
     [Required]
-    [Column(TypeName = "nvarchar(60)")]
+    [Column(TypeName = $"nvarchar({Constants.MaxNameLength})")]
     public string Name
     {
         get
         {
             name = (name == null || name == string.Empty) ? OldName : name;
-            return name;
+            return name!;
         }
         set => name = value;
     }
 
     [XmlElement(ElementName = "PARENT")]
-    [Column(TypeName = "nvarchar(60)")]
-    public string Parent { get; set; }
+    [Column(TypeName = $"nvarchar({Constants.MaxNameLength})")]
+    public string? Parent { get; set; }
 
 
     [XmlIgnore]
-    [Column(TypeName = "nvarchar(60)")]
-    public string Alias { get; set; }
+    [Column(TypeName = $"nvarchar({Constants.MaxNameLength})")]
+    public string? Alias { get; set; }
 
 
     /// <summary>
@@ -96,7 +118,7 @@ public class Group : BasicTallyObject, ITallyObject
         if (LanguageNameList.Count == 0)
         {
             LanguageNameList.Add(new LanguageNameList());
-            LanguageNameList[0].NameList.NAMES.Add(Name);
+            LanguageNameList[0].NameList?.NAMES?.Add(Name);
 
         }
         if (Alias != null && Alias != string.Empty)
@@ -105,7 +127,7 @@ public class Group : BasicTallyObject, ITallyObject
         }
     }
 
-    public new string GetXML(XmlAttributeOverrides attrOverrides = null)
+    public new string GetXML(XmlAttributeOverrides? attrOverrides = null)
     {
         CreateNamesList();
         return base.GetXML(attrOverrides);
@@ -115,11 +137,11 @@ public class Group : BasicTallyObject, ITallyObject
     {
         if (Parent != null && Parent.Contains("Primary"))
         {
-            Parent = null;
+            Parent = string.Empty;
         }
         if (Name == string.Empty || Name == null)
         {
-            Name = OldName;
+            Name = OldName!;
         }
         //Creates Names List if Not Exists
         CreateNamesList();
@@ -127,6 +149,6 @@ public class Group : BasicTallyObject, ITallyObject
 
     public override string ToString()
     {
-        return Name;
+        return $"Group - {Name}";
     }
 }

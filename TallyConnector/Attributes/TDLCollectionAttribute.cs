@@ -3,11 +3,11 @@
 [AttributeUsage(AttributeTargets.Class| AttributeTargets.Property)]
 public class TDLCollectionAttribute : Attribute
 {
-    private string _collectionName;
+    private string? _collectionName;
     private string? _type;
     public string CollectionName
     {
-        get { return _collectionName == null ? string.Empty : _collectionName; }
+        get { return _collectionName ?? string.Empty; }
         set { _collectionName = value; }
     }
     public TDLCollectionAttribute() { }

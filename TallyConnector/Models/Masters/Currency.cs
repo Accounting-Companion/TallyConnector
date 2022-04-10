@@ -4,40 +4,71 @@
 [XmlType(AnonymousType = true)]
 public class Currency : BasicTallyObject, ITallyObject
 {
-    [XmlElement(ElementName = "ORIGINALNAME")]
-    public string OriginalName { get; set; }
-
-    [XmlElement(ElementName = "MAILINGNAME")]
-    public string MailingName { get; set; }
-
-    [XmlElement(ElementName = "EXPANDEDSYMBOL")]
-    public string ExpandedSymbol { get; set; }
-
-    [XmlElement(ElementName = "DECIMALSYMBOL")]
-    public string DecimalSymbol { get; set; }
-
-    [XmlElement(ElementName = "DECIMALPLACES")]
-    public int DecimalPlaces { get; set; }
-
-    [XmlElement(ElementName = "INMILLIONS")]
-    public string InMilllions { get; set; }
-
-    [XmlElement(ElementName = "ISSUFFIX")]
-    public string IsSuffix { get; set; }
-
-    [XmlElement(ElementName = "HASSPACE")]
-    public string HasSpace { get; set; }
-
-    [XmlElement(ElementName = "DECIMALPLACESFORPRINTING")]
-    public int DecimalPlaces_Print { get; set; }
-
+    public Currency()
+    {
+        ExpandedSymbol = string.Empty;
+        OriginalName = string.Empty;
+    }
 
     /// <summary>
-    /// Accepted Values //Create, Alter, Delete
+    /// Create New Currency - Currency("$","USD")
     /// </summary>
+    /// <param name="originalName">Symbol For Currency</param>
+    /// <param name="expandedSymbol">Expanded Symbol(In Words) for Currency</param>
+    public Currency(string originalName, string expandedSymbol)
+    {
+        ExpandedSymbol = expandedSymbol;
+        OriginalName = originalName;
+    }
+
+
+    [XmlElement(ElementName = "ORIGINALNAME")]
+    [Column(TypeName = "nvarchar(5)")]
+    public string OriginalName { get; set; }
+
+    [XmlElement(ElementName = "EXPANDEDSYMBOL")]
+    [Column(TypeName = $"nvarchar({Constants.MaxNameLength})")]
+    public string ExpandedSymbol { get; set; }
+
+    [XmlElement(ElementName = "MAILINGNAME")]
+    [Column(TypeName = $"nvarchar({Constants.MaxNameLength})")]
+    public string? MailingName { get; set; }
+
+
+    [XmlElement(ElementName = "DECIMALSYMBOL")]
+    [Column(TypeName = "nvarchar(10)")]
+    public string? DecimalSymbol { get; set; }
+
+    [XmlElement(ElementName = "DECIMALPLACES")]
+    [MaxLength(1)]
+    [Range(1, 4)]
+
+    public int DecimalPlaces { get; set; }
+
+    /// <summary>
+    /// Tally Field - No.of Decimal Places for amount in Words
+    /// </summary>
+    [XmlElement(ElementName = "DECIMALPLACESFORPRINTING")]
+    [MaxLength(1)]
+    [Range(1, 4)]
+    public int DecimalPlaces_Print { get; set; }
+
+    [XmlElement(ElementName = "INMILLIONS")]
+    [Column(TypeName = "nvarchar(3)")]
+    public YesNo InMilllions { get; set; }
+
+    [XmlElement(ElementName = "ISSUFFIX")]
+    [Column(TypeName = "nvarchar(3)")]
+    public YesNo IsSuffix { get; set; }
+
+    [XmlElement(ElementName = "HASSPACE")]
+    [Column(TypeName = "nvarchar(3)")]
+    public YesNo HasSpace { get; set; }
+
+
     [JsonIgnore]
     [XmlAttribute(AttributeName = "Action")]
-    public string Action { get; set; }
+    public Action Action { get; set; }
 
 
     //[XmlElement(ElementName = "DAILYSTDRATES.LIST")]

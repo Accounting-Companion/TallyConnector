@@ -7,9 +7,9 @@ public class Unit : BasicTallyObject, ITallyObject
 {
     [XmlAttribute(AttributeName = "NAME")]
     [JsonIgnore]
-    public string OldName { get; set; }
+    public string? OldName { get; set; }
 
-    private string name;
+    private string? name;
 
     [XmlElement(ElementName = "NAME")]
     [Required]
@@ -18,39 +18,39 @@ public class Unit : BasicTallyObject, ITallyObject
         get
         {
             name = (name == null || name == string.Empty) ? OldName : name;
-            return name;
+            return name!;
         }
         set => name = value;
     }
 
 
     [XmlElement(ElementName = "ORIGINALNAME")]
-    public string OriginalName { get; set; }
+    public string? OriginalName { get; set; }
 
     [XmlElement(ElementName = "BASEUNITS")]
-    public string BaseUnit { get; set; }
+    public string? BaseUnit { get; set; }
 
     [XmlElement(ElementName = "ADDITIONALUNITS")]
-    public string AdditionalUnits { get; set; }
+    public string? AdditionalUnits { get; set; }
 
 
     [XmlElement(ElementName = "GSTREPUOM")]
-    public string UQC { get; set; }
+    public string? UQC { get; set; }
 
     [XmlElement(ElementName = "DECIMALPLACES")]
     public int DecimalPlaces { get; set; }
 
     [XmlElement(ElementName = "CANDELETE")]
-    public string CanDelete { get; set; }
+    public string? CanDelete { get; set; }
 
     /// <summary>
     /// Accepted Values //Create, Alter, Delete
     /// </summary>
     [JsonIgnore]
     [XmlAttribute(AttributeName = "Action")]
-    public string Action { get; set; }
+    public string? Action { get; set; }
 
-    private string _IsSimpleUnit;
+    private string? _IsSimpleUnit;
 
     [XmlElement(ElementName = "ISSIMPLEUNIT")]
     public string IsSimpleUnit
@@ -64,7 +64,7 @@ public class Unit : BasicTallyObject, ITallyObject
     }
 
     [XmlElement(ElementName = "ISGSTEXCLUDED")]
-    public string IsGstExcluded { get; set; }
+    public string? IsGstExcluded { get; set; }
 
     [XmlElement(ElementName = "CONVERSION")]
     public double Conversion { get; set; }
@@ -83,7 +83,7 @@ public class Unit : BasicTallyObject, ITallyObject
 
     public override string ToString()
     {
-        return $"{Name}";
+        return $"Unit - {Name}";
     }
 
 }

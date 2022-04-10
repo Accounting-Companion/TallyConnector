@@ -8,7 +8,7 @@ class ObjEnv
 public class ObjEnvelope : TallyXmlJson
 {
     [XmlElement(ElementName = "HEADER")]
-    public ObjHeader Header { get; set; }
+    public ObjHeader? Header { get; set; }
 
     [XmlElement(ElementName = "BODY")]
     public ObjBody Body { get; set; } = new();
@@ -27,19 +27,19 @@ public class ObjHeader
     }
     public ObjHeader() { }
     private int _version = 1;
-    private string _request;
-    private string _type;
+    private string? _request;
+    private string? _type;
     [XmlElement(ElementName = "VERSION")]
     public int Version { get { return _version; } set { _version = value; } }
 
     [XmlElement(ElementName = "TALLYREQUEST")]
-    public string Request { get { return _request; } set { _request = value; } }
+    public string? Request { get { return _request; } set { _request = value; } }
 
     [XmlElement(ElementName = "TYPE")]
-    public string Type { get { return _type; } set { _type = value; } }
+    public string? Type { get { return _type; } set { _type = value; } }
 
     [XmlElement(ElementName = "SUBTYPE")]
-    public string SubType { get; set; }
+    public string? SubType { get; set; }
 
     [XmlElement(ElementName = "ID")]
     public ID ID { get; set; } = new();
@@ -55,7 +55,7 @@ public class ID
     public string Type { get { return "Name"; } set { } }
 
     [XmlText]
-    public string Text { get; set; }
+    public string? Text { get; set; }
 }
 [XmlRoot(ElementName = "BODY")]
 public class ObjBody
@@ -72,7 +72,7 @@ public class ObjDescription
     public StaticVariables StaticVariables { get; set; } = new();
 
     [XmlElement(ElementName = "FETCHLIST")]
-    public FetchList FetchList { get; set; }
+    public FetchList? FetchList { get; set; }
 
 }
 [XmlRoot(ElementName = "FETCHLIST")]

@@ -11,48 +11,48 @@ public class Employee : MCS.CostCenter
     }
 
     [XmlElement(ElementName = "FORPAYROLL")]
-    public string ForPayroll { get; set; }
+    public string? ForPayroll { get; set; }
 
     [XmlElement(ElementName = "ISEMPLOYEEGROUP")]
-    public string IsEmployeeGroup { get; set; }
+    public string? IsEmployeeGroup { get; set; }
 
     [XmlElement(ElementName = "DATEOFJOIN")]
-    public string JoiningDate { get; set; }
+    public string? JoiningDate { get; set; }
 
     [XmlElement(ElementName = "DEACTIVATIONDATE")]
-    public string RelievingDate { get; set; }
+    public string? RelievingDate { get; set; }
 
     [XmlElement(ElementName = "REASONSFORLEAVING")]
-    public string RelievingReason { get; set; }
+    public string? RelievingReason { get; set; }
 
 
 
     [XmlElement(ElementName = "DESIGNATION")]
-    public string Designation { get; set; }
+    public string? Designation { get; set; }
 
     [XmlElement(ElementName = "FUNCTION")]
-    public string Function { get; set; }
+    public string? Function { get; set; }
 
     [XmlElement(ElementName = "LOCATION")]
-    public string Location { get; set; }
+    public string? Location { get; set; }
 
     [XmlElement(ElementName = "GENDER")]
-    public string Gender { get; set; }
+    public string? Gender { get; set; }
 
     [XmlElement(ElementName = "DATEOFBIRTH")]
-    public string DateOfBirth { get; set; }
+    public string? DateOfBirth { get; set; }
 
     [XmlElement(ElementName = "BLOODGROUP")]
-    public string BloodGroup { get; set; }
+    public string? BloodGroup { get; set; }
 
     [XmlElement(ElementName = "FATHERNAME")]
-    public string FatherName { get; set; }
+    public string? FatherName { get; set; }
 
     [XmlElement(ElementName = "SPOUSENAME")]
-    public string SpouseName { get; set; }
+    public string? SpouseName { get; set; }
 
     [XmlIgnore]
-    public string Address
+    public string? Address
     {
         get
         {
@@ -73,77 +73,77 @@ public class Employee : MCS.CostCenter
     }
 
     [XmlElement(ElementName = "CONTACTNUMBERS")]
-    public string PhoneNumber { get; set; }
+    public string? PhoneNumber { get; set; }
 
 
     [XmlElement(ElementName = "PANNUMBER")]
-    public string PANNumber { get; set; }
+    public string? PANNumber { get; set; }
 
     [XmlElement(ElementName = "AADHARNUMBER")]
-    public string AadhaarNumber { get; set; }
+    public string? AadhaarNumber { get; set; }
 
     [XmlElement(ElementName = "UANNUMBER")]
-    public string UAN { get; set; }
+    public string? UAN { get; set; }
 
     [XmlElement(ElementName = "PFACCOUNTNUMBER")]
-    public string PFAccountNumber { get; set; }
+    public string? PFAccountNumber { get; set; }
 
     [XmlElement(ElementName = "FPFACCOUNTNUMBER")]
-    public string EPSAccountNumber { get; set; }
+    public string? EPSAccountNumber { get; set; }
 
     [XmlElement(ElementName = "PFJOININGDATE")]
-    public string JoiningDate_PF { get; set; }
+    public string? JoiningDate_PF { get; set; }
 
     [XmlElement(ElementName = "PFRELIEVINGDATE")]
-    public string RelievingDate_PF { get; set; }
+    public string? RelievingDate_PF { get; set; }
 
     [XmlElement(ElementName = "PRACCOUNTNUMBER")]
-    public string PRAccountNumber { get; set; }
+    public string? PRAccountNumber { get; set; }
 
     [XmlElement(ElementName = "ESINUMBER")]
-    public string ESINumber { get; set; }
+    public string? ESINumber { get; set; }
 
     [XmlElement(ElementName = "ESIDISPENSARYNAME")]
-    public string ESIDispensaryName { get; set; }
+    public string? ESIDispensaryName { get; set; }
 
     [XmlElement(ElementName = "PASSPORTDETAILS")]
-    public string PassportNumber { get; set; }
+    public string? PassportNumber { get; set; }
 
     [XmlElement(ElementName = "COUNTRYOFISSUE")]
-    public string CountryofIssue { get; set; }
+    public string? CountryofIssue { get; set; }
 
     [XmlElement(ElementName = "PASSPORTEXPIRYDATE")]
-    public string PassportExpiryDate { get; set; }
+    public string? PassportExpiryDate { get; set; }
 
     [XmlElement(ElementName = "VISANUMBER")]
-    public string VisaNumber { get; set; }
+    public string? VisaNumber { get; set; }
 
     [XmlElement(ElementName = "VISAEXPIRYDATE")]
-    public string VisaExpiryDate { get; set; }
+    public string? VisaExpiryDate { get; set; }
 
     [XmlElement(ElementName = "WORKPERMITNUMBER")]
-    public string WorkPermitNumber { get; set; }
+    public string? WorkPermitNumber { get; set; }
 
     [XmlElement(ElementName = "CONTRACTSTARTDATE")]
-    public string Contract_StartDate { get; set; }
+    public string? Contract_StartDate { get; set; }
 
     [XmlElement(ElementName = "CONTRACTEXPIRYDATE")]
-    public string Contract_ExpiryDate { get; set; }
+    public string? Contract_ExpiryDate { get; set; }
 
     [XmlElement(ElementName = "NARRATION")]
-    public string Narration { get; set; }
+    public string? Narration { get; set; }
 
     [XmlElement(ElementName = "BANKDETAILS")]
-    public string BankName { get; set; }
+    public string? BankName { get; set; }
 
     [XmlElement(ElementName = "BANKACCOUNTNUMBER")]
-    public string BankAccountNo { get; set; }
+    public string? BankAccountNo { get; set; }
 
     [XmlElement(ElementName = "BANKBRANCH")]
-    public string BankBranch { get; set; }
+    public string? BankBranch { get; set; }
 
     [XmlElement(ElementName = "IFSCODE")]
-    public string IFSC { get; set; }
+    public string? IFSC { get; set; }
 
 
 
@@ -152,10 +152,10 @@ public class Employee : MCS.CostCenter
     public HAddress FAddress { get; set; }
 
     [XmlElement(ElementName = "TAXREGIMEDETAILS.LIST")]
-    public List<TaxRegimeDetails> TaxRegimeDetails { get; set; }
+    public List<TaxRegimeDetails>? TaxRegimeDetails { get; set; }
 
     [XmlElement(ElementName = "PAYMENTDETAILS.LIST")]
-    public List<PaymentDetails> PaymentDetails { get; set; }
+    public List<PaymentDetails>? PaymentDetails { get; set; }
 
     public  void CleanForExport()
     {
@@ -168,9 +168,9 @@ public class Employee : MCS.CostCenter
 public class TaxRegimeDetails
 {
     [XmlElement(ElementName = "APPLICABLEFROM")]
-    public string ApplicableFrom { get; set; }
+    public string? ApplicableFrom { get; set; }
 
     [XmlElement(ElementName = "TAXREGIME")]
-    public string TaxRegime { get; set; }
+    public string? TaxRegime { get; set; }
 
 }

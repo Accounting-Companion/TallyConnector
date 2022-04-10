@@ -5,7 +5,6 @@
 [XmlType(AnonymousType = true)]
 public class Godown : BasicTallyObject, ITallyObject
 {
-
     public Godown()
     {
         FAddress = new();
@@ -13,10 +12,11 @@ public class Godown : BasicTallyObject, ITallyObject
     }
 
 
-    [XmlAttribute(AttributeName = "NAME")]
-    public string OldName { get; set; }
 
-    private string name;
+    [XmlAttribute(AttributeName = "NAME")]
+    public string? OldName { get; set; }
+
+    private string? name;
 
     [XmlElement(ElementName = "NAME")]
     [Required]
@@ -25,21 +25,21 @@ public class Godown : BasicTallyObject, ITallyObject
         get
         {
             name = (name == null || name == string.Empty) ? OldName : name;
-            return name;
+            return name!;
         }
         set => name = value;
     }
 
 
     [XmlElement(ElementName = "PARENT")]
-    public string Parent { get; set; }
+    public string? Parent { get; set; }
     [JsonIgnore]
     [XmlElement(ElementName = "ADDRESS.LIST")]
     public HAddress FAddress { get; set; }
 
 
     [XmlIgnore]
-    public string Address
+    public string? Address
     {
         get
         {
@@ -56,24 +56,24 @@ public class Godown : BasicTallyObject, ITallyObject
     }
 
     [XmlElement(ElementName = "PINCODE")]
-    public string PinCode { get; set; }
+    public string? PinCode { get; set; }
 
     [XmlElement(ElementName = "PHONENUMBER")]
-    public string PhoneNumber { get; set; }
+    public string? PhoneNumber { get; set; }
 
     [XmlElement(ElementName = "ISEXTERNAL")]
-    public string IsExternal { get; set; } // ThirdParty Stock with Us
+    public string? IsExternal { get; set; } // ThirdParty Stock with Us
 
     [XmlElement(ElementName = "ISINTERNAL")]
-    public string IsInternal { get; set; } // Our Stock With Third Party
+    public string? IsInternal { get; set; } // Our Stock With Third Party
 
     [XmlElement(ElementName = "CANDELETE")]
-    public string CanDelete { get; set; }
+    public string? CanDelete { get; set; }
 
 
     [XmlIgnore]
     [Column(TypeName = "nvarchar(60)")]
-    public string Alias { get; set; }
+    public string? Alias { get; set; }
 
 
     [JsonIgnore]
@@ -92,7 +92,7 @@ public class Godown : BasicTallyObject, ITallyObject
         if (LanguageNameList.Count == 0)
         {
             LanguageNameList.Add(new LanguageNameList());
-            LanguageNameList[0].NameList.NAMES.Add(Name);
+            LanguageNameList[0].NameList?.NAMES?.Add(Name);
 
         }
         if (Alias != null && Alias != string.Empty)
@@ -100,7 +100,7 @@ public class Godown : BasicTallyObject, ITallyObject
             LanguageNameList[0].LanguageAlias = Alias;
         }
     }
-    public new string GetXML(XmlAttributeOverrides attrOverrides = null)
+    public new string GetXML(XmlAttributeOverrides? attrOverrides = null)
     {
         CreateNamesList();
         return base.GetXML(attrOverrides);
@@ -117,6 +117,6 @@ public class Godown : BasicTallyObject, ITallyObject
 
     public override string ToString()
     {
-        return $"{Name}";
+        return $"Godown - {Name}";
     }
 }

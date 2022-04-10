@@ -2,7 +2,7 @@
 
 public interface ITallyObject
 {
-    string GUID { get; set; }
+    string? GUID { get; set; }
     int? MasterId { get; set; }
 
     public void PrepareForExport();

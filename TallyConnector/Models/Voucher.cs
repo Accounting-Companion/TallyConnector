@@ -13,82 +13,82 @@ public class Voucher : BasicTallyObject, ITallyObject
     }
 
     [XmlElement(ElementName = "DATE")]
-    public string Date { get; set; }
+    public string? Date { get; set; }
 
     [XmlElement(ElementName = "REFERENCEDATE")]
-    public string ReferenceDate { get; set; }
+    public string? ReferenceDate { get; set; }
 
     [XmlElement(ElementName = "REFERENCE")]
-    public string Reference { get; set; }
+    public string? Reference { get; set; }
 
 
     [XmlElement(ElementName = "VOUCHERTYPENAME")]
-    public string VoucherType { get; set; }
+    public string? VoucherType { get; set; }
 
 
     [XmlElement(ElementName = "PERSISTEDVIEW")]
     public VoucherViewType View { get; set; }
 
     [XmlElement(ElementName = "VOUCHERNUMBER")]
-    public string VoucherNumber { get; set; }
+    public string? VoucherNumber { get; set; }
 
     [XmlElement(ElementName = "ISOPTIONAL")]
-    public string IsOptional { get; set; }
+    public string? IsOptional { get; set; }
 
     [XmlElement(ElementName = "EFFECTIVEDATE")]
-    public string EffectiveDate { get; set; }
+    public string? EffectiveDate { get; set; }
 
     [XmlElement(ElementName = "NARRATION")]
-    public string Narration { get; set; }
+    public string? Narration { get; set; }
 
     [XmlElement(ElementName = "PRICELEVEL")]
-    public string PriceLevel { get; set; }
+    public string? PriceLevel { get; set; }
 
     //E-Invoice Details
     [TallyCategory("E-InvoiceDetails")]
     [XmlElement(ElementName = "BILLTOPLACE")]
-    public string BillToPlace { get; set; }
+    public string? BillToPlace { get; set; }
 
     [TallyCategory("E-InvoiceDetails")]
     [XmlElement(ElementName = "IRN")]
-    public string IRN { get; set; }
+    public string? IRN { get; set; }
 
     [TallyCategory("E-InvoiceDetails")]
     [XmlElement(ElementName = "IRNACKNO")]
-    public string IRNAckNo { get; set; }
+    public string? IRNAckNo { get; set; }
 
     [TallyCategory("E-InvoiceDetails")]
     [XmlElement(ElementName = "IRNACKDATE")]
-    public string IRNAckDate { get; set; }
+    public string? IRNAckDate { get; set; }
 
 
 
     //Dispatch Details
     [TallyCategory("DispatchDetails")]
     [XmlIgnore]
-    public string DeliveryNoteNo { get; set; }
+    public string? DeliveryNoteNo { get; set; }
 
     [TallyCategory("DispatchDetails")]
     [XmlIgnore]
-    public string ShippingDate { get; set; }
+    public string? ShippingDate { get; set; }
 
     private DeliveryNotes _DeliveryNotes;
 
     [TallyCategory("DispatchDetails")]
     [XmlElement(ElementName = "DISPATCHFROMNAME")]
-    public string DispatchFromName { get; set; }
+    public string? DispatchFromName { get; set; }
 
     [TallyCategory("DispatchDetails")]
     [XmlElement(ElementName = "DISPATCHFROMSTATENAME")]
-    public string DispatchFromStateName { get; set; }
+    public string? DispatchFromStateName { get; set; }
 
     [TallyCategory("DispatchDetails")]
     [XmlElement(ElementName = "DISPATCHFROMPINCODE")]
-    public string DispatchFromPinCode { get; set; }
+    public string? DispatchFromPinCode { get; set; }
 
     [TallyCategory("DispatchDetails")]
     [XmlElement(ElementName = "DISPATCHFROMPLACE")]
-    public string DispatchFromPlace { get; set; }
+    public string? DispatchFromPlace { get; set; }
 
     //Shipping Details
     [TallyCategory("ShippingDetails")]
@@ -112,173 +112,173 @@ public class Voucher : BasicTallyObject, ITallyObject
 
     [TallyCategory("ShippingDetails")]
     [XmlElement(ElementName = "BASICSHIPDOCUMENTNO")]
-    public string DispatchDocNo { get; set; }
+    public string? DispatchDocNo { get; set; }
     [TallyCategory("ShippingDetails")]
     [XmlElement(ElementName = "BASICSHIPPEDBY")]
-    public string BasicShippedBy { get; set; }
+    public string? BasicShippedBy { get; set; }
     [TallyCategory("ShippingDetails")]
     [XmlElement(ElementName = "BASICFINALDESTINATION")]
-    public string Destination { get; set; }
+    public string? Destination { get; set; }
 
     [TallyCategory("ShippingDetails")]
     [XmlElement(ElementName = "EICHECKPOST")]
-    public string CarrierName { get; set; }
+    public string? CarrierName { get; set; }
 
     [TallyCategory("ShippingDetails")]
     [XmlElement(ElementName = "BILLOFLADINGNO")]
-    public string BillofLandingNo { get; set; }
+    public string? BillofLandingNo { get; set; }
 
     [TallyCategory("ShippingDetails")]
     [XmlElement(ElementName = "BILLOFLADINGDATE")]
-    public string BillofLandingDate { get; set; }
+    public string? BillofLandingDate { get; set; }
 
 
     //Export Shipping Details
     [TallyCategory("ExportShippingDetails")]
     [XmlElement(ElementName = "BASICPLACEOFRECEIPT")]
-    public string PlaceOfReceipt { get; set; }
+    public string? PlaceOfReceipt { get; set; }
 
     /// <summary>
     /// Vehicle or Ship or Flight Number
     /// </summary>
     [TallyCategory("ExportShippingDetails")]
     [XmlElement(ElementName = "BASICSHIPVESSELNO")]
-    public string ShipOrFlightNo { get; set; }
+    public string? ShipOrFlightNo { get; set; }
 
     [TallyCategory("ExportShippingDetails")]
     [XmlElement(ElementName = "BASICPORTOFLOADING")]
-    public string LandingPort { get; set; }
+    public string? LandingPort { get; set; }
 
     [TallyCategory("ExportShippingDetails")]
     [XmlElement(ElementName = "BASICPORTOFDISCHARGE")]
-    public string DischargePort { get; set; }
+    public string? DischargePort { get; set; }
 
     [TallyCategory("ExportShippingDetails")]
     [XmlElement(ElementName = "BASICDESTINATIONCOUNTRY")]
-    public string DesktinationCountry { get; set; }
+    public string? DesktinationCountry { get; set; }
 
     [TallyCategory("ExportShippingDetails")]
     [XmlElement(ElementName = "SHIPPINGBILLNO")]
-    public string ShippingBillNo { get; set; }
+    public string? ShippingBillNo { get; set; }
 
     [TallyCategory("ExportShippingDetails")]
     [XmlElement(ElementName = "SHIPPINGBILLDATE")]
-    public string ShippingBillDate { get; set; }
+    public string? ShippingBillDate { get; set; }
 
     [TallyCategory("ExportShippingDetails")]
     [XmlElement(ElementName = "PORTCODE")]
-    public string PortCode { get; set; }
+    public string? PortCode { get; set; }
 
     //OrderDetails
     [TallyCategory("OrderDetails")]
     [XmlElement(ElementName = "BASICDUEDATEOFPYMT")]
-    public string BasicDueDateofPayment { get; set; }
+    public string? BasicDueDateofPayment { get; set; }
 
     [TallyCategory("OrderDetails")]
     [XmlElement(ElementName = "BASICORDERREF")]
-    public string OrderReference { get; set; }
+    public string? OrderReference { get; set; }
 
 
 
     //Party Details
     [TallyCategory("PartyDetails")]
     [XmlElement(ElementName = "PARTYNAME")]
-    public string PartyName { get; set; }
+    public string? PartyName { get; set; }
 
     [TallyCategory("PartyDetails")]
     [XmlElement(ElementName = "PARTYLEDGERNAME")]
-    public string PartyLedgerName { get; set; }
+    public string? PartyLedgerName { get; set; }
 
     [TallyCategory("PartyDetails")]
     [XmlElement(ElementName = "PARTYMAILINGNAME")]
-    public string PartyMailingName { get; set; }
+    public string? PartyMailingName { get; set; }
 
     [TallyCategory("PartyDetails")]
     [XmlElement(ElementName = "STATENAME")]
-    public string State { get; set; }
+    public string? State { get; set; }
 
     [TallyCategory("PartyDetails")]
     [XmlElement(ElementName = "COUNTRYOFRESIDENCE")]
-    public string Country { get; set; }
+    public string? Country { get; set; }
 
     [TallyCategory("PartyDetails")]
     [XmlElement(ElementName = "GSTREGISTRATIONTYPE")]
-    public string RegistrationType { get; set; }
+    public string? RegistrationType { get; set; }
 
     [TallyCategory("PartyDetails")]
     [XmlElement(ElementName = "PARTYGSTIN")]
-    public string PartyGSTIN { get; set; }
+    public string? PartyGSTIN { get; set; }
 
     [TallyCategory("PartyDetails")]
     [XmlElement(ElementName = "PLACEOFSUPPLY")]
-    public string PlaceOfSupply { get; set; }
+    public string? PlaceOfSupply { get; set; }
 
     [TallyCategory("PartyDetails")]
     [XmlElement(ElementName = "PARTYPINCODE")]
-    public string PINCode { get; set; }
+    public string? PINCode { get; set; }
 
     //Consignee Details
     [TallyCategory("ConsigneeDetails")]
     [XmlElement(ElementName = "BASICBUYERNAME")]
-    public string ConsigneeName { get; set; }
+    public string? ConsigneeName { get; set; }
 
     [TallyCategory("ConsigneeDetails")]
     [XmlElement(ElementName = "CONSIGNEEMAILINGNAME")]
-    public string ConsigneeMailingName { get; set; }
+    public string? ConsigneeMailingName { get; set; }
 
     [TallyCategory("ConsigneeDetails")]
     [XmlElement(ElementName = "CONSIGNEESTATENAME")]
-    public string ConsigneeState { get; set; }
+    public string? ConsigneeState { get; set; }
 
     [TallyCategory("ConsigneeDetails")]
     [XmlElement(ElementName = "CONSIGNEECOUNTRYNAME")]
-    public string ConsigneeCountry { get; set; }
+    public string? ConsigneeCountry { get; set; }
 
     [TallyCategory("ConsigneeDetails")]
     [XmlElement(ElementName = "CONSIGNEEGSTIN")]
-    public string ConsigneeGSTIN { get; set; }
+    public string? ConsigneeGSTIN { get; set; }
 
     [TallyCategory("ConsigneeDetails")]
     [XmlElement(ElementName = "CONSIGNEEPINCODE")]
-    public string ConsigneePinCode { get; set; }
+    public string? ConsigneePinCode { get; set; }
 
 
 
 
 
     [XmlElement(ElementName = "ISCANCELLED")]
-    public string IsCancelled { get; set; }
+    public string? IsCancelled { get; set; }
 
     //EWAY Details
     [XmlElement(ElementName = "OVRDNEWAYBILLAPPLICABILITY")]
     public YesNo OverrideEWayBillApplicability { get; set; }
 
     [XmlElement(ElementName = "EWAYBILLDETAILS.LIST")]
-    public List<EwayBillDetail> EWayBillDetails { get; set; }
+    public List<EwayBillDetail>? EWayBillDetails { get; set; }
 
     [XmlElement(ElementName = "ALLLEDGERENTRIES.LIST", Type = typeof(VoucherLedger))]
     [XmlElement(ElementName = "LEDGERENTRIES.LIST", Type = typeof(EVoucherLedger))]
-    public List<VoucherLedger> Ledgers { get; set; }
+    public List<VoucherLedger>? Ledgers { get; set; }
 
 
     [XmlElement(ElementName = "ALLINVENTORYENTRIES.LIST", Type = typeof(AllInventoryAllocations))]
     [XmlElement(ElementName = "INVENTORYENTRIES.LIST", Type = typeof(InventoryEntries))]
-    public List<AllInventoryAllocations> InventoryAllocations { get; set; }
+    public List<AllInventoryAllocations>? InventoryAllocations { get; set; }
 
     [XmlElement(ElementName = "INVENTORYENTRIESOUT.LIST")]
-    public List<InventoryoutAllocations> InventoriesOut { get; set; }
+    public List<InventoryoutAllocations>? InventoriesOut { get; set; }
 
     [XmlElement(ElementName = "INVENTORYENTRIESIN.LIST")]
-    public List<InventoryinAllocations> InventoriesIn { get; set; }
+    public List<InventoryinAllocations>? InventoriesIn { get; set; }
 
 
 
     [XmlElement(ElementName = "ATTENDANCEENTRIES.LIST")]
-    public List<AttendanceEntry> AttendanceEntries { get; set; }
+    public List<AttendanceEntry>? AttendanceEntries { get; set; }
 
     [JsonIgnore]
     [XmlAttribute(AttributeName = "DATE")]
-    public string Dt
+    public string? Dt
     {
         get
         {
@@ -301,7 +301,7 @@ public class Voucher : BasicTallyObject, ITallyObject
 
     [JsonIgnore]
     [XmlAttribute(AttributeName = "VCHTYPE")]
-    public string VchType
+    public string? VchType
     {
         get
         {
@@ -319,44 +319,44 @@ public class Voucher : BasicTallyObject, ITallyObject
     {
         if (VchType != "Contra" && VchType != "Purchase" && VchType != "Receipt" && VchType != "Credit Note")
         {
-            Ledgers?.Sort((x, y) => y.LedgerName.CompareTo(x.LedgerName));//First Sort Ledger list Using Ledger Names
-            Ledgers?.Sort((x, y) => y.Amount.CompareTo(x.Amount)); //Next sort Ledger List Using Ledger Amounts
+            Ledgers?.Sort((x, y) => y.LedgerName!.CompareTo(x.LedgerName));//First Sort Ledger list Using Ledger Names
+            Ledgers?.Sort((x, y) => y.Amount!.CompareTo(x.Amount)); //Next sort Ledger List Using Ledger Amounts
 
         }
         else
         {
-            Ledgers?.Sort((x, y) => x.LedgerName.CompareTo(y.LedgerName));//First Sort Ledger list Using Ledger Names
-            Ledgers?.Sort((x, y) => x.Amount.CompareTo(y.Amount)); //Next sort Ledger List Using Ledger Amounts
+            Ledgers?.Sort((x, y) => x.LedgerName!.CompareTo(y.LedgerName));//First Sort Ledger list Using Ledger Names
+            Ledgers?.Sort((x, y) => x.Amount!.CompareTo(y.Amount)); //Next sort Ledger List Using Ledger Amounts
         }
 
         //Looop Through all Ledgers
         Ledgers?.ForEach(c =>
         {
             //Sort Bill Allocations
-            c.BillAllocations?.Sort((x, y) => x.Name.CompareTo(y.Name)); //First Sort BillAllocations Using Bill Numbers
-            c.BillAllocations?.Sort((x, y) => x.Amount.CompareTo(y.Amount));//Next sort BillAllocationst Using  Amounts
+            c.BillAllocations?.Sort((x, y) => x.Name!.CompareTo(y.Name)); //First Sort BillAllocations Using Bill Numbers
+            c.BillAllocations?.Sort((x, y) => x.Amount!.CompareTo(y.Amount));//Next sort BillAllocationst Using  Amounts
 
-            c.CostCategoryAllocations?.Sort((x, y) => x.CostCategoryName.CompareTo(y.CostCategoryName));
+            c.CostCategoryAllocations?.Sort((x, y) => x.CostCategoryName!.CompareTo(y.CostCategoryName));
 
             c.CostCategoryAllocations?.ForEach(cc =>
             {
-                cc.CostCenterAllocations?.Sort((x, y) => x.Name.CompareTo(y.Name));
+                cc.CostCenterAllocations?.Sort((x, y) => x.Name!.CompareTo(y.Name));
                 cc.CostCenterAllocations?.Sort((x, y) => x.Amount.CompareTo(y.Amount));
             });
             //sort Inventory Allocations
-            c.InventoryAllocations?.Sort((x, y) => x.ActualQuantity.CompareTo(y.ActualQuantity));
-            c.InventoryAllocations?.Sort((x, y) => x.Amount.CompareTo(y.Amount));
+            c.InventoryAllocations?.Sort((x, y) => x.ActualQuantity!.CompareTo(y.ActualQuantity));
+            c.InventoryAllocations?.Sort((x, y) => x.Amount!.CompareTo(y.Amount));
 
             c.InventoryAllocations?.ForEach(inv =>
             {
-                inv.BatchAllocations?.Sort((x, y) => x.GodownName.CompareTo(y.GodownName));
-                inv.BatchAllocations?.Sort((x, y) => x.Amount.CompareTo(y.Amount));
+                inv.BatchAllocations?.Sort((x, y) => x.GodownName!.CompareTo(y.GodownName));
+                inv.BatchAllocations?.Sort((x, y) => x.Amount!.CompareTo(y.Amount));
 
-                inv.CostCategoryAllocations?.Sort((x, y) => x.CostCategoryName.CompareTo(y.CostCategoryName));
+                inv.CostCategoryAllocations?.Sort((x, y) => x.CostCategoryName!.CompareTo(y.CostCategoryName));
 
                 inv.CostCategoryAllocations?.ForEach(cc =>
                 {
-                    cc.CostCenterAllocations?.Sort((x, y) => x.Name.CompareTo(y.Name));
+                    cc.CostCenterAllocations?.Sort((x, y) => x.Name!.CompareTo(y.Name));
                     cc.CostCenterAllocations?.Sort((x, y) => x.Amount.CompareTo(y.Amount));
                 });
             });
@@ -371,7 +371,7 @@ public class Voucher : BasicTallyObject, ITallyObject
         return base.GetJson(Indented);
     }
 
-    public new string GetXML(XmlAttributeOverrides attrOverrides = null)
+    public new string GetXML(XmlAttributeOverrides? attrOverrides = null)
     {
         OrderLedgers();
         GetJulianday();
@@ -386,7 +386,7 @@ public class Voucher : BasicTallyObject, ITallyObject
                 if (billalloc.BillCreditPeriod != null)
                 {
                     EffectiveDate ??= Date;
-                    DateTime dateTime = DateTime.ParseExact(EffectiveDate, "yyyyMMdd", CultureInfo.InvariantCulture);
+                    DateTime dateTime = DateTime.ParseExact(EffectiveDate!, "yyyyMMdd", CultureInfo.InvariantCulture);
                     double days = dateTime.Subtract(new DateTime(1900, 1, 1)).TotalDays + 1;
                     billalloc.BillCP.JD = days.ToString();
                 }
@@ -423,11 +423,11 @@ public class VoucherLedger : TallyBaseObject
 
 
     [XmlElement(ElementName = "LEDGERNAME")]
-    public string LedgerName { get; set; }
+    public string? LedgerName { get; set; }
 
 
     [XmlElement(ElementName = "ISDEEMEDPOSITIVE")]
-    public string IsDeemedPositive
+    public string? IsDeemedPositive
     {
         get
         {
@@ -448,11 +448,11 @@ public class VoucherLedger : TallyBaseObject
         set { }
     }
 
-    private string _Amount;
+    private string? _Amount;
 
-    public string ForexAmount { get; set; }
+    public string? ForexAmount { get; set; }
 
-    public string RateofExchange { get; set; }
+    public string? RateofExchange { get; set; }
 
     [XmlElement(ElementName = "AMOUNT")]
     public string Amount
@@ -467,7 +467,7 @@ public class VoucherLedger : TallyBaseObject
             {
                 _Amount = ForexAmount;
             }
-            return _Amount;
+            return _Amount!;
         }
         set
         {
@@ -488,8 +488,7 @@ public class VoucherLedger : TallyBaseObject
                 }
                 else
                 {
-                    double.TryParse(value, out t_amount);
-                    CleanedAmount = t_amount;
+                    CleanedAmount = double.TryParse(value, out t_amount) ? t_amount : 0;
                     _Amount = value;
                 }
             }
@@ -506,13 +505,13 @@ public class VoucherLedger : TallyBaseObject
 
 
     [XmlElement(ElementName = "BILLALLOCATIONS.LIST")]
-    public List<BillAllocations> BillAllocations { get; set; }
+    public List<BillAllocations>? BillAllocations { get; set; }
 
     [XmlElement(ElementName = "INVENTORYALLOCATIONS.LIST")]
-    public List<InventoryAllocations> InventoryAllocations { get; set; }
+    public List<InventoryAllocations>? InventoryAllocations { get; set; }
 
     [XmlElement(ElementName = "CATEGORYALLOCATIONS.LIST")]
-    public List<CostCategoryAllocations> CostCategoryAllocations { get; set; }
+    public List<CostCategoryAllocations>? CostCategoryAllocations { get; set; }
 
 
 
@@ -527,14 +526,14 @@ public class BillAllocations : TallyBaseObject
     }
 
     [XmlElement(ElementName = "BILLTYPE")]
-    public string BillType { get; set; }
+    public string? BillType { get; set; }
 
     [XmlElement(ElementName = "NAME")]
-    public string Name { get; set; }
+    public string? Name { get; set; }
 
-    private string _Amount;
+    private string? _Amount;
 
-    public string ForexAmount { get; set; }
+    public string? ForexAmount { get; set; }
 
     private BillCP _BillCP;
 
@@ -552,19 +551,19 @@ public class BillAllocations : TallyBaseObject
         }
     }
 
-    private string _billCreditPeriod;
+    private string? _billCreditPeriod;
 
     [XmlIgnore]
-    public string BillCreditPeriod
+    public string? BillCreditPeriod
     {
         get { return _billCreditPeriod; }
         set { _billCreditPeriod = value; }
     }
 
-    public string RateofExchange { get; set; }
+    public string? RateofExchange { get; set; }
 
     [XmlElement(ElementName = "AMOUNT")]
-    public string Amount
+    public string? Amount
     {
         get
         {
@@ -608,18 +607,18 @@ public class BillAllocations : TallyBaseObject
 public class BillCP
 {
     [XmlAttribute(AttributeName = "JD")]
-    public string JD { get; set; }
+    public string? JD { get; set; }
 
-    private string _days;
+    private string? _days;
     [XmlAttribute(AttributeName = "Days")]
-    public string Days
+    public string? Days
     {
         get { return _days; }
         set { _days = value; }
     }
 
     [XmlText]
-    public string TextValue
+    public string? TextValue
     {
         get { return _days; }
         set { _days = value; }
@@ -658,35 +657,35 @@ public class InventoryAllocations : TallyBaseObject
 
 
     [XmlElement(ElementName = "STOCKITEMNAME")]
-    public string StockItemName { get; set; }
+    public string? StockItemName { get; set; }
 
     [XmlElement(ElementName = "BOMNAME")]
-    public string BOMName { get; set; }
+    public string? BOMName { get; set; }
 
     [XmlElement(ElementName = "ISSCRAP")]
-    public string IsScrap { get; set; }
+    public string? IsScrap { get; set; }
 
     [XmlElement(ElementName = "ISDEEMEDPOSITIVE")]
-    public string DeemedPositive { get; set; }
+    public string? DeemedPositive { get; set; }
 
     [XmlElement(ElementName = "RATE")]
-    public string Rate { get; set; }
+    public string? Rate { get; set; }
 
     [XmlElement(ElementName = "ACTUALQTY")]
-    public string ActualQuantity { get; set; }
+    public string? ActualQuantity { get; set; }
 
     [XmlElement(ElementName = "BILLEDQTY")]
-    public string BilledQuantity { get; set; }
+    public string? BilledQuantity { get; set; }
 
-    private string _Amount;
+    private string? _Amount;
 
 
-    public string ForexAmount { get; set; }
+    public string? ForexAmount { get; set; }
 
-    public string RateofExchange { get; set; }
+    public string? RateofExchange { get; set; }
 
     [XmlElement(ElementName = "AMOUNT")]
-    public string Amount
+    public string? Amount
     {
         get
         {
@@ -726,10 +725,10 @@ public class InventoryAllocations : TallyBaseObject
     }
 
     [XmlElement(ElementName = "BATCHALLOCATIONS.LIST")]
-    public List<BatchAllocations> BatchAllocations { get; set; }
+    public List<BatchAllocations>? BatchAllocations { get; set; }
 
     [XmlElement(ElementName = "CATEGORYALLOCATIONS.LIST")]
-    public List<CostCategoryAllocations> CostCategoryAllocations { get; set; }
+    public List<CostCategoryAllocations>? CostCategoryAllocations { get; set; }
 
 }
 
@@ -738,26 +737,26 @@ public class BatchAllocations : TallyBaseObject//Godown Allocations
 {
 
     [XmlElement(ElementName = "TRACKINGNUMBER")]
-    public string TrackingNo { get; set; }
+    public string? TrackingNo { get; set; }
 
     [XmlElement(ElementName = "ORDERNO")]
-    public string OrderNo { get; set; }
+    public string? OrderNo { get; set; }
 
     [XmlElement(ElementName = "GODOWNNAME")]
-    public string GodownName { get; set; }
+    public string? GodownName { get; set; }
 
     [XmlElement(ElementName = "BATCHNAME")]
-    public string BatchName { get; set; }
+    public string? BatchName { get; set; }
 
 
-    private string _Amount;
+    private string? _Amount;
 
-    public string ForexAmount { get; set; }
+    public string? ForexAmount { get; set; }
 
-    public string RateofExchange { get; set; }
+    public string? RateofExchange { get; set; }
 
     [XmlElement(ElementName = "AMOUNT")]
-    public string Amount
+    public string? Amount
     {
         get
         {
@@ -797,10 +796,10 @@ public class BatchAllocations : TallyBaseObject//Godown Allocations
     }
 
     [XmlElement(ElementName = "ACTUALQTY")]
-    public string ActualQuantity { get; set; }
+    public string? ActualQuantity { get; set; }
 
     [XmlElement(ElementName = "BILLEDQTY")]
-    public string BilledQuantity { get; set; }
+    public string? BilledQuantity { get; set; }
 }
 
 [XmlRoot(ElementName = "CATEGORYALLOCATIONS.LIST")]
@@ -811,23 +810,23 @@ public class CostCategoryAllocations : TallyBaseObject
     }
 
     [XmlElement(ElementName = "CATEGORY")]
-    public string CostCategoryName { get; set; }
+    public string? CostCategoryName { get; set; }
 
     [XmlElement(ElementName = "COSTCENTREALLOCATIONS.LIST")]
-    public List<CostCenterAllocations> CostCenterAllocations { get; set; }
+    public List<CostCenterAllocations>? CostCenterAllocations { get; set; }
 
 }
 [XmlRoot(ElementName = "COSTCENTREALLOCATIONS.LIST")]
 public class CostCenterAllocations : TallyBaseObject
 {
     [XmlElement(ElementName = "NAME")]
-    public string Name { get; set; }
+    public string? Name { get; set; }
 
-    private string _Amount;
+    private string? _Amount;
 
-    public string ForexAmount { get; set; }
+    public string? ForexAmount { get; set; }
 
-    public string RateofExchange { get; set; }
+    public string? RateofExchange { get; set; }
 
     [XmlElement(ElementName = "AMOUNT")]
     public string Amount
@@ -842,7 +841,7 @@ public class CostCenterAllocations : TallyBaseObject
             {
                 _Amount = ForexAmount;
             }
-            return _Amount;
+            return _Amount!;
         }
         set
         {
@@ -878,22 +877,22 @@ public class AttendanceEntry
 {
 
     [XmlIgnore]
-    public string AttdTypeId { get; set; }
+    public string? AttdTypeId { get; set; }
 
 
 
     [XmlElement(ElementName = "NAME")]
-    public string Name { get; set; }
+    public string? Name { get; set; }
 
 
     [XmlElement(ElementName = "ATTENDANCETYPE")]
-    public string AttdType { get; set; }
+    public string? AttdType { get; set; }
 
     [XmlElement(ElementName = "ATTDTYPETIMEVALUE")]
-    public string AttdTypeTimeValue { get; set; }
+    public string? AttdTypeTimeValue { get; set; }
 
     [XmlElement(ElementName = "ATTDTYPEVALUE")]
-    public string AttdTypeValue { get; set; }
+    public string? AttdTypeValue { get; set; }
 
 }
 
@@ -901,10 +900,10 @@ public class AttendanceEntry
 public class DeliveryNotes
 {
     [XmlElement(ElementName = "BASICSHIPPINGDATE")]
-    public string ShippingDate { get; set; }
+    public string? ShippingDate { get; set; }
 
     [XmlElement(ElementName = "BASICSHIPDELIVERYNOTE")]
-    public string DeliveryNote { get; set; }
+    public string? DeliveryNote { get; set; }
 }
 
 
@@ -912,16 +911,16 @@ public class DeliveryNotes
 public class EwayBillDetail : TallyBaseObject
 {
     [XmlElement(ElementName = "BILLDATE")]
-    public string BillDate { get; set; }
+    public string? BillDate { get; set; }
 
     [XmlElement(ElementName = "CONSOLIDATEDBILLDATE")]
-    public string ConsolidatedBillDate { get; set; }
+    public string? ConsolidatedBillDate { get; set; }
 
     [XmlElement(ElementName = "BILLNUMBER")]
-    public string BillNumber { get; set; }
+    public string? BillNumber { get; set; }
 
     [XmlElement(ElementName = "CONSOLIDATEDBILLNUMBER")]
-    public string ConsolidatedBillNumber { get; set; }
+    public string? ConsolidatedBillNumber { get; set; }
 
     [XmlElement(ElementName = "SUBTYPE")]
     public SubSupplyType SubType { get; set; }
@@ -930,19 +929,19 @@ public class EwayBillDetail : TallyBaseObject
     public DocumentType DocumentType { get; set; }
 
     [XmlElement(ElementName = "CONSIGNORPLACE")]
-    public string DispatchFrom { get; set; }
+    public string? DispatchFrom { get; set; }
 
     [XmlElement(ElementName = "CONSIGNEEPLACE")]
-    public string DispatchTo { get; set; }
+    public string? DispatchTo { get; set; }
 
     [XmlElement(ElementName = "ISCANCELLED")]
-    public string IsCancelled { get; set; }
+    public string? IsCancelled { get; set; }
 
     [XmlElement(ElementName = "ISCANCELPENDING")]
-    public string IsCancelledPending { get; set; }
+    public string? IsCancelledPending { get; set; }
 
     [XmlElement(ElementName = "TRANSPORTDETAILS.LIST")]
-    public List<TransporterDetail> TransporterDetails { get; set; }
+    public List<TransporterDetail>? TransporterDetails { get; set; }
 
 
 
@@ -952,13 +951,13 @@ public class EwayBillDetail : TallyBaseObject
 public class TransporterDetail : TallyBaseObject
 {
     [XmlElement(ElementName = "DISTANCE")]
-    public string Distance { get; set; }
+    public string? Distance { get; set; }
 
     [XmlElement(ElementName = "TRANSPORTERNAME")]
-    public string TransporterName { get; set; }
+    public string? TransporterName { get; set; }
 
     [XmlElement(ElementName = "TRANSPORTERID")]
-    public string TransporterId { get; set; }
+    public string? TransporterId { get; set; }
 
     [XmlElement(ElementName = "TRANSPORTMODE")]
     public TransportMode TransportMode { get; set; }
@@ -967,13 +966,13 @@ public class TransporterDetail : TallyBaseObject
     /// Document/Landing/RR/Airway Number/ 
     /// </summary>
     [XmlElement(ElementName = "DOCUMENTNUMBER")]
-    public string DocumentNumber { get; set; }
+    public string? DocumentNumber { get; set; }
 
     [XmlElement(ElementName = "DOCUMENTDATE")]
-    public string DocumentDate { get; set; }
+    public string? DocumentDate { get; set; }
 
     [XmlElement(ElementName = "VEHICLENUMBER")]
-    public string VehicleNumber { get; set; }
+    public string? VehicleNumber { get; set; }
 
     [XmlElement(ElementName = "VEHICLETYPE")]
     public VehicleType VehicleType { get; set; }
@@ -991,7 +990,7 @@ public class VoucherEnvelope : TallyXmlJson
 {
 
     [XmlElement(ElementName = "HEADER")]
-    public Header Header { get; set; }
+    public Header? Header { get; set; }
 
     [XmlElement(ElementName = "BODY")]
     public VBody Body { get; set; } = new VBody();
@@ -1021,14 +1020,14 @@ public class VData
 public class VouchColl
 {
     [XmlElement(ElementName = "VOUCHER")]
-    public List<Voucher> Vouchers { get; set; }
+    public List<Voucher>? Vouchers { get; set; }
 }
 
 [XmlRoot(ElementName = "TALLYMESSAGE")]
 public class VoucherMessage
 {
     [XmlElement(ElementName = "VOUCHER")]
-    public Voucher Voucher { get; set; }
+    public Voucher? Voucher { get; set; }
 }
 
 public enum VoucherLookupField

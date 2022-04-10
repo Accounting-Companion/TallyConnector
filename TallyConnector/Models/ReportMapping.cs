@@ -7,7 +7,7 @@ public class ReportField
         FieldName = XmlTag;
         XMLTag = $"{XmlTag}";
     }
-    public ReportField(string XmlTag, List<ReportField> subFields = null)
+    public ReportField(string XmlTag, List<ReportField>? subFields = null)
     {
         SubFields = subFields;
         XMLTag = XmlTag;
@@ -24,15 +24,15 @@ public class ReportField
     }
 
     public string XMLTag { get; set; }
-    public string FieldName { get; set; }
+    public string? FieldName { get; set; }
 
-    public List<ReportField> SubFields { get; set; } = new();
+    public List<ReportField>? SubFields { get; set; } = new();
 
     public List<string> Atrributes { get; set; } = new();
 
-    public string CollectionName { get; set; }
+    public string? CollectionName { get; set; }
 
-    public string CollectionType { get; set; }
+    public string? CollectionType { get; set; }
 }
 
 

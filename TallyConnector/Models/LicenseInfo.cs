@@ -4,52 +4,52 @@
 public class LicenseInfo : TallyXmlJson
 {
     [XmlElement(ElementName = "SERIALNUMBER")]
-    public string SerialNumber { get; set; }
+    public string? SerialNumber { get; set; }
 
     [XmlElement(ElementName = "REMOTESERIALNUMBER")]
-    public string RemoteSerialNumber { get; set; }
+    public string? RemoteSerialNumber { get; set; }
 
     [XmlElement(ElementName = "ACCOUNTID")]
-    public string AccountId { get; set; }
+    public string? AccountId { get; set; }
 
     [XmlElement(ElementName = "ADMINMAILID")]
-    public string AdminMailId { get; set; }
+    public string? AdminMailId { get; set; }
 
     [XmlElement(ElementName = "ISADMIN")]
-    public string IsAdmin { get; set; }
+    public string? IsAdmin { get; set; }
 
     [XmlElement(ElementName = "ISEDUCATIONALMODE")]
-    public string IsEducationalMode { get; set; }
+    public string? IsEducationalMode { get; set; }
 
     [XmlElement(ElementName = "ISSILVER")]
-    public string IsSilver { get; set; }
+    public string? IsSilver { get; set; }
 
     [XmlElement(ElementName = "ISGOLD")]
-    public string IsGold { get; set; }
+    public string? IsGold { get; set; }
 
     [XmlElement(ElementName = "PLANNAME")]
-    public string PlanName { get; set; }
+    public string? PlanName { get; set; }
 
     [XmlElement(ElementName = "ISINDIAN")]
-    public string IsIndian { get; set; }
+    public string? IsIndian { get; set; }
 
     [XmlElement(ElementName = "ISREMOTEACCESSMODE")]
-    public string IsRemoteAccessMode { get; set; }
+    public string? IsRemoteAccessMode { get; set; }
 
     [XmlElement(ElementName = "ISLICCLIENTMODE")]
-    public string IsLicenseClientMode { get; set; }
+    public string? IsLicenseClientMode { get; set; }
 
     [XmlElement(ElementName = "APPLICATIONPATH")]
-    public string ApplicationPath { get; set; }
+    public string? ApplicationPath { get; set; }
 
     [XmlElement(ElementName = "DATAPATH")]
-    public string DataPath { get; set; }
+    public string? DataPath { get; set; }
 
     [XmlElement(ElementName = "USERLEVEL")]
-    public string UserLevel { get; set; }
+    public string? UserLevel { get; set; }
 
     [XmlElement(ElementName = "USERNAME")]
-    public string UserName { get; set; }
+    public string? UserName { get; set; }
 
 }
 
@@ -59,7 +59,7 @@ public class LicInfoEnvelope : TallyXmlJson
 {
 
     [XmlElement(ElementName = "HEADER")]
-    public Header Header { get; set; }
+    public Header? Header { get; set; }
 
     [XmlElement(ElementName = "BODY")]
     public LicInfoBody Body { get; set; } = new LicInfoBody();
@@ -86,6 +86,6 @@ public class LicInfoData
 public class LicInfoColloction
 {
     [XmlElement(ElementName = "LICENSEINFO")]
-    public LicenseInfo LicenseInfo { get; set; }
+    public LicenseInfo? LicenseInfo { get; set; }
 
 }

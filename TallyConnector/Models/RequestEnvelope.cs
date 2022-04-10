@@ -12,7 +12,7 @@ public class RequestEnvelope : TallyXmlJson
         Header = new(Request: RequestTye.Export, Type: Type, ID: iD); //Configuring Header To get Export data
     }
 
-    public RequestEnvelope(HType Type, string iD, StaticVariables sv) : this(Type, iD)
+    public RequestEnvelope(HType Type, string iD, StaticVariables? sv) : this(Type, iD)
     {
         Body.Desc.StaticVariables = sv;
     }
@@ -23,7 +23,7 @@ public class RequestEnvelope : TallyXmlJson
     }
 
     [XmlElement(ElementName = "HEADER")]
-    public Header Header { get; set; }
+    public Header? Header { get; set; }
 
     [XmlElement(ElementName = "BODY")]
     public RequestBody Body { get; set; } = new();
@@ -41,13 +41,13 @@ public class ReqDescription
 {
 
     [XmlElement(ElementName = "STATICVARIABLES")]
-    public StaticVariables StaticVariables { get; set; } = new();
+    public StaticVariables? StaticVariables { get; set; } = new();
 
     [XmlElement(ElementName = "TDL")]
     public ReqTDL TDL { get; set; } = new();
 
     [XmlElement(ElementName = "FUNCPARAMLIST")]
-    public FunctionParam FunctionParams { get; set; }
+    public FunctionParam? FunctionParams { get; set; }
 
 
 }
@@ -63,7 +63,7 @@ public class FunctionParam
         Param = param;
     }
     [XmlElement(ElementName = "PARAM")]
-    public List<string> Param { get; set; }
+    public List<string>? Param { get; set; }
 
 
 }
@@ -83,20 +83,20 @@ public class TDLMessage
     }
     public TDLMessage(string colName,
                       string colType,
-                      string childof,
-                      List<string> nativeFields,
-                      List<Filter> filters,
+                      string? childof,
+                      List<string>? nativeFields,
+                      List<Filter>? filters,
                       YesNo isInitialize)
     {
         Collection.Add(new(colName: colName,
                            colType: colType,
                            childOf: childof,
                            nativeFields: nativeFields,
-                           filters: filters?.Select(c => c.FilterName).ToList(),
+                           filters: filters?.Select(c => c.FilterName).ToList()!,
                            Isintialize: isInitialize));
 
-        filters?.ForEach(filter => System.Add(new(name: filter.FilterName,
-                                                 text: filter.FilterFormulae)));
+        filters?.ForEach(filter => System.Add(new(name: filter.FilterName!,
+                                                 text: filter.FilterFormulae!)));
     }
 
 
@@ -109,59 +109,69 @@ public class TDLMessage
                          objects: ObjNames));
     }
 
-    public TDLMessage(ReportField rootreportField, List<Filter> filters = null)
+    public TDLMessage(ReportField rootreportField, List<Filter>? filters = null)
     {
         string rName = $"LISTOF{rootreportField.FieldName}";
-        string CollectionName = rootreportField.CollectionName;
+        string CollectionName = rootreportField.CollectionName!;
         Report = new() { new(rName) };
         Form = new() { new(rName) };
         Part = new() { new(rName, CollectionName) };
         List<string> rootlinefields = new();
-        Line RootLine = new(rName, new(), rootreportField.FieldName);
+        Line RootLine = new(rName, new(), rootreportField.FieldName!);
         Line = new() { RootLine };
         Dictionary<string, string> Repeatfields = new();
         List<string> Fetchlist = new();
 
         GenerateFields(rootreportField, rootlinefields, Repeatfields, Fetchlist);
-        RootLine.Fields.Add(string.Join(",", rootlinefields));
+        RootLine.Fields?.Add(string.Join(",", rootlinefields));
         foreach (var key in Repeatfields.Keys)
         {
             var value = Repeatfields[key];
             RootLine.Option.Add($"{value}:$$NumItems:{key} > 0");
             Line.Add(new Line(lineName: value, CollectionName: key));
         }
-        Collection = new() { new(CollectionName, rootreportField.CollectionType, null, new() { string.Join(",", Fetchlist) }, filters?.Select(c => c.FilterName).ToList()) };
+        Collection = new()
+        {
+            new(CollectionName,
+                                 rootreportField.CollectionType!,
+                                 null,
+                                 new() { string.Join(",", Fetchlist) },
+                                 filters?.Select(c => c.FilterName).ToList()!)
+        };
 
     }
 
-    private void GenerateFields(ReportField rootreportField, List<string> Tfields, Dictionary<string, string> Repeatfields, List<string> fetchlist = null)
+    private void GenerateFields(ReportField rootreportField,
+                                List<string> Tfields,
+                                Dictionary<string, string> Repeatfields,
+                                List<string>? fetchlist = null)
     {
 
         rootreportField.SubFields?.ForEach(field =>
         {
             List<string> TSfields = new();
             Dictionary<string, string> TSRepeatfields = new();
-            if (field.SubFields.Count > 0)
+            if (field.SubFields?.Count > 0)
             {
                 if (field.CollectionName != null)
                 {
-                    Repeatfields[field.CollectionName] = field.FieldName;
+                    Repeatfields[field.CollectionName] = field.FieldName!;
                     //Tfields.Add(field.FieldName);
                     fetchlist?.Add(field.XMLTag);
                     GenerateFields(field, TSfields, TSRepeatfields);
 
                     //Field Newf = new(new List<string>() { field.FieldName }, Repeatfields, $"C{field.FieldName}");
                     //Newf.XMLTag = string.Empty;
-                    Field.Add(new(TSfields, TSRepeatfields, field.FieldName, field.XMLTag));
+                    Field?.Add(new(TSfields, TSRepeatfields, field.FieldName!, field.XMLTag));
                     //Fields.Add(Newf);
                 }
                 else
                 {
-                    Tfields.Add(field.FieldName);
+                    Tfields.Add(field.FieldName!);
                     fetchlist?.Add(field.XMLTag);
                     GenerateFields(field, TSfields, TSRepeatfields);
 
-                    Field.Add(new(TSfields, TSRepeatfields, field.FieldName, field.XMLTag));
+                    Field?.Add(new(TSfields, TSRepeatfields, field.FieldName!, field.XMLTag));
 
                 }
 
@@ -171,18 +181,18 @@ public class TDLMessage
 
                 if (field.CollectionName != null)
                 {
-                    Repeatfields[field.CollectionName] = field.FieldName;
+                    Repeatfields[field.CollectionName] = field.FieldName!;
                     //Tfields.Add(field.FieldName);
                     fetchlist?.Add(field.XMLTag);
                     //Fields.Add(new(TSfields, Repeatfields, field.XMLTag));
-                    Field.Add(new(field.FieldName, field.XMLTag));
+                    Field?.Add(new(field.FieldName!, field.XMLTag));
                 }
                 else
                 {
-                    Tfields.Add(field.FieldName);
+                    Tfields.Add(field.FieldName!);
                     fetchlist?.Add(field.XMLTag);
-                    Field Newf = new(field.FieldName, field.XMLTag);
-                    Field.Add(Newf);
+                    Field Newf = new(field.FieldName!, field.XMLTag);
+                    Field?.Add(Newf);
                 }
 
             }
@@ -191,28 +201,28 @@ public class TDLMessage
     }
 
     [XmlElement(ElementName = "REPORT")]
-    public List<Report> Report { get; set; }
+    public List<Report>? Report { get; set; }
 
     [XmlElement(ElementName = "FORM")]
-    public List<Form> Form { get; set; }
+    public List<Form>? Form { get; set; }
 
     [XmlElement(ElementName = "PART")]
-    public List<Part> Part { get; set; }
+    public List<Part>? Part { get; set; }
 
     [XmlElement(ElementName = "LINE")]
-    public List<Line> Line { get; set; }
+    public List<Line>? Line { get; set; }
 
     [XmlElement(ElementName = "FIELD")]
-    public List<Field> Field { get; set; } = new();
+    public List<Field>? Field { get; set; } = new();
 
     [XmlElement(ElementName = "OBJECT")]
-    public List<TallyCustomObject> Object { get; set; }
+    public List<TallyCustomObject>? Object { get; set; }
 
     [XmlElement(ElementName = "COLLECTION")]
     public List<Collection> Collection { get; set; } = new();
 
     [XmlElement(ElementName = "SYSTEM")]
-    public List<System> System { get; set; } = new();
+    public List<System>? System { get; set; } = new();
 
 }
 
@@ -227,23 +237,24 @@ public class Report : DCollection
         SetAttributes();
     }
 
+
     [XmlAttribute(AttributeName = "NAME")]
-    public string AttrName { get; set; }
+    public string? AttrName { get; set; }
 
     [XmlElement(ElementName = "FORMS")]
-    public string FormName { get; set; }
+    public string? FormName { get; set; }
 
     [XmlElement(ElementName = "USE")]
-    public List<string> Use { get; set; }
+    public List<string>? Use { get; set; }
 
     [XmlElement(ElementName = "VARIABLE")]
-    public List<string> Variable { get; set; }
+    public List<string>? Variable { get; set; }
 
     [XmlElement(ElementName = "REPEAT")]
-    public List<string> Repeat { get; set; }
+    public List<string>? Repeat { get; set; }
 
     [XmlElement(ElementName = "SET")]
-    public List<string> Set { get; set; }
+    public List<string>? Set { get; set; }
 }
 
 [XmlRoot(ElementName = "FORM")]
@@ -259,22 +270,22 @@ public class Form : DCollection
     }
 
     [XmlElement(ElementName = "TOPPARTS")]
-    public string PartName { get; set; }
+    public string? PartName { get; set; }
 
     [XmlElement(ElementName = "XMLTAG")]
-    public string ReportTag { get; set; }
+    public string? ReportTag { get; set; }
 
     [XmlAttribute(AttributeName = "NAME")]
-    public string Name { get; set; } //Should match with FormName in Report
+    public string? Name { get; set; } //Should match with FormName in Report
 
     [XmlElement(ElementName = "USE")]
-    public List<string> Use { get; set; }
+    public List<string>? Use { get; set; }
 
     [XmlElement(ElementName = "PARTS")]
-    public List<string> Parts { get; set; }
+    public List<string>? Parts { get; set; }
 
     [XmlElement(ElementName = "SET")]
-    public List<string> Set { get; set; }
+    public List<string>? Set { get; set; }
 
 }
 
@@ -282,7 +293,7 @@ public class Form : DCollection
 [XmlRoot(ElementName = "PART")]
 public class Part : DCollection
 {
-    private string _Repeat;
+    private string? _Repeat;
     public Part(string topPartName, string colName, string lineName)
     {
         Name = topPartName;
@@ -304,16 +315,16 @@ public class Part : DCollection
     }
 
     [XmlElement(ElementName = "TOPLINES")]
-    public List<string> Lines { get; set; } //MustMatch with LineName
+    public List<string>? Lines { get; set; } //MustMatch with LineName
 
     [XmlElement(ElementName = "REPEAT")]
-    public string Repeat { get { return _Repeat; } set { } }
+    public string? Repeat { get { return _Repeat; } set { } }
 
     [XmlElement(ElementName = "SCROLLED")]
-    public string Scrolled { get { return "Vertical"; } set { } }
+    public string? Scrolled { get { return Repeat is null ? null : "Vertical"; } set { } }
 
     [XmlAttribute(AttributeName = "NAME")]
-    public string Name { get; set; }
+    public string? Name { get; set; }
 
 }
 
@@ -322,7 +333,6 @@ public class Part : DCollection
 [XmlRoot(ElementName = "LINE")]
 public class Line : DCollection
 {
-    private bool _IsVerticleVisible => Repeat is null;
     public Line(string lineName, List<string> fields, string xmlTag)
     {
         Name = lineName;
@@ -344,23 +354,23 @@ public class Line : DCollection
     }
 
     [XmlElement(ElementName = "FIELDS")]
-    public List<string> Fields { get; set; }
+    public List<string>? Fields { get; set; }
 
     [XmlAttribute(AttributeName = "NAME")]
-    public string Name { get; set; }
+    public string? Name { get; set; }
 
     [XmlElement(ElementName = "XMLTAG")]
-    public string XMLTag { get; set; }
+    public string? XMLTag { get; set; }
 
     [XmlElement(ElementName = "OPTION")]
     public List<string> Option { get; set; } = new();
 
 
     [XmlElement(ElementName = "REPEAT")]
-    public string Repeat { get; set; }
+    public string? Repeat { get; set; }
 
     [XmlElement(ElementName = "SCROLLED")]
-    public string Scrolled { get { return _IsVerticleVisible ? "Vertical" : null; } set { } }
+    public string? Scrolled => Repeat is null ? null : "Vertical";
 
 }
 
@@ -399,32 +409,31 @@ public class Field : DCollection
     {
 
     }
-    private bool _IsVerticleVisible => Repeat is null;
 
     [XmlElement(ElementName = "SET")]
-    public string Set { get; set; } //TallyFields Like $Name
+    public string? Set { get; set; } //TallyFields Like $Name
 
     [XmlElement(ElementName = "XMLTAG")]
-    public string XMLTag { get; set; }  //Desired XML Tag
+    public string? XMLTag { get; set; }  //Desired XML Tag
 
     [XmlAttribute(AttributeName = "NAME")]
-    public string Name { get; set; }
+    public string? Name { get; set; }
 
     [XmlElement(ElementName = "FIELDS")]
-    public string Fields { get; set; }
+    public string? Fields { get; set; }
 
     [XmlElement(ElementName = "XMLATTR")]
-    public string XMLAttr { get; set; }
+    public string? XMLAttr { get; set; }
 
 
     [XmlElement(ElementName = "REPEAT")]
-    public string Repeat { get; set; }
+    public string? Repeat { get; set; }
 
     [XmlElement(ElementName = "SCROLLED")]
-    public string Scrolled { get { return _IsVerticleVisible ? "Vertical" : null; } set { } }
+    public string? Scrolled => Repeat is null ? null : "Vertical";
 
     [XmlElement(ElementName = "OPTION")]
-    public List<string> Option { get; set; }
+    public List<string>? Option { get; set; }
 }
 
 
@@ -435,9 +444,9 @@ public class Collection : DCollection
 {
     public Collection(string colName,
                       string colType,
-                      string childOf,
-                      List<string> nativeFields = null,
-                      List<string> filters = null,
+                      string? childOf,
+                      List<string>? nativeFields = null,
+                      List<string>? filters = null,
                       YesNo Isintialize = YesNo.No)
     {
         Name = colName;
@@ -466,25 +475,26 @@ public class Collection : DCollection
         this.Objects = objects;
     }
 
+
     [XmlElement(ElementName = "TYPE")]
-    public string Type { get; set; }    //Tally Table Name like - Company,Ledger ..etc;
+    public string? Type { get; set; }    //Tally Table Name like - Company,Ledger ..etc;
 
     [XmlElement(ElementName = "CHILDOF")]
-    public string Childof { get; set; }
+    public string? Childof { get; set; }
 
     [XmlElement(ElementName = "NATIVEMETHOD")]
-    public List<string> NativeFields { get; set; }
+    public List<string>? NativeFields { get; set; }
 
     [XmlElement(ElementName = "FILTERS")]
-    public List<string> Filters { get; set; }
+    public List<string>? Filters { get; set; }
     /// <summary>
     /// Name of Single or Multiple Custom objects Seperated by (,)
     /// </summary>
     [XmlElement(ElementName = "OBJECTS")]
-    public string Objects { get; set; }
+    public string? Objects { get; set; }
 
     [XmlAttribute(AttributeName = "NAME")]
-    public string Name { get; set; }
+    public string? Name { get; set; }
 
 
 }
@@ -493,7 +503,11 @@ public class Collection : DCollection
 [XmlRoot(ElementName = "SYSTEM")]
 public class System
 {
-    public System() { }
+    public System()
+    {
+        Name = string.Empty;
+        Text = string.Empty;
+    }
     public System(string name, string text)
     {
         Name = name;
@@ -556,7 +570,7 @@ public class TallyCustomObject : DCollection
         LocalFormulas = formulas;
     }
     [XmlAttribute(AttributeName = "NAME")]
-    public string Name { get; set; }
+    public string? Name { get; set; }
 
     [XmlElement(ElementName = "LOCALFORMULA")]
     public List<string> LocalFormulas { get; set; }
@@ -572,9 +586,9 @@ public class PResult
 {
     public RespStatus Status { get; set; }
 
-    public String Result { get; set; }
+    public String? Result { get; set; }
 
-    public string VoucherMasterId { get; set; }
+    public string? VoucherMasterId { get; set; }
 }
 
 public enum RespStatus

@@ -6,103 +6,103 @@ public class Company : TallyXmlJson
 {
 
     [XmlElement(ElementName = "NAME")]
-    public string Name { get; set; }
+    public string? Name { get; set; }
 
     [XmlElement(ElementName = "GUID")]
     [Column(TypeName = "nvarchar(100)")]
-    public string GUID { get; set; }
+    public string? GUID { get; set; }
 
     [XmlElement(ElementName = "BASICCOMPANYFORMALNAME")]
-    public string MailingName { get; set; }
+    public string? FormalName { get; set; }
 
     [XmlElement(ElementName = "STATENAME")]
-    public string State { get; set; }
+    public string? State { get; set; }
 
     [XmlElement(ElementName = "COUNTRYNAME")]
-    public string Country { get; set; }
+    public string? Country { get; set; }
 
     [XmlElement(ElementName = "PINCODE")]
-    public string PinCode { get; set; }
+    public string? PinCode { get; set; }
 
     [XmlElement(ElementName = "PHONENUMBER")]
-    public string PhoneNumber { get; set; }
+    public string? PhoneNumber { get; set; }
 
     [XmlElement(ElementName = "MOBILENO")]
-    public string MobileNumber { get; set; }
+    public string? MobileNumber { get; set; }
 
     [XmlElement(ElementName = "REMOTEFULLLISTNAME")]
-    public string Address { get; set; }
+    public string? Address { get; set; }
 
     [XmlElement(ElementName = "FAXNUMBER")]
-    public string FaxNumber { get; set; }
+    public string? FaxNumber { get; set; }
 
     [XmlElement(ElementName = "EMAIL")]
-    public string Email { get; set; }
+    public string? Email { get; set; }
 
 
     [XmlElement(ElementName = "WEBSITE")]
-    public string Website { get; set; }
+    public string? Website { get; set; }
 
     [XmlElement(ElementName = "TANUMBER")]
-    public string TANNumber { get; set; }
+    public string? TANNumber { get; set; }
 
     [XmlElement(ElementName = "TANREGNO")]
-    public string TANRegNumber { get; set; }
+    public string? TANRegNumber { get; set; }
 
     [XmlElement(ElementName = "TDSDEDUCTORTYPE")]
-    public string TDSDeductorType { get; set; }
+    public string? TDSDeductorType { get; set; }
 
     [XmlElement(ElementName = "DEDUCTORBRANCH")]
-    public string TDSDeductorBranch { get; set; }
+    public string? TDSDeductorBranch { get; set; }
 
 
     [XmlElement(ElementName = "BOOKSFROM")]
-    public string BooksFrom { get; set; }
+    public string? BooksFrom { get; set; }
 
     [XmlElement(ElementName = "STARTINGFROM")]
-    public string StartingFrom { get; set; }
+    public string? StartingFrom { get; set; }
 
     [XmlElement(ElementName = "ENDINGAT")]
-    public string EndDate { get; set; }
+    public string? EndDate { get; set; }
 
     [XmlElement(ElementName = "COMPANYNUMBER")]
-    public string CompNum { get; set; }
+    public string? CompNum { get; set; }
 
 
     //Settings
 
     [XmlElement(ElementName = "ISINVENTORYON")]
-    public string IsInventoryOn { get; set; }
+    public string? IsInventoryOn { get; set; }
 
     [XmlElement(ElementName = "ISINTEGRATED")]
-    public string IntegrateAccountswithInventory { get; set; }
+    public string? IntegrateAccountswithInventory { get; set; }
 
     [XmlElement(ElementName = "ISBILLWISEON")]
-    public string IsBillWiseOn { get; set; }
+    public string? IsBillWiseOn { get; set; }
 
     [XmlElement(ElementName = "ISCOSTCENTRESON")]
-    public string IsCostCentersOn { get; set; }
+    public string? IsCostCentersOn { get; set; }
 
     [XmlElement(ElementName = "ISTDSON")]
-    public string IsTDSon { get; set; }
+    public string? IsTDSon { get; set; }
 
 
     [XmlElement(ElementName = "ISTCSON")]
-    public string IsTCSon { get; set; }
+    public string? IsTCSon { get; set; }
 
     [XmlElement(ElementName = "ISGSTON")]
-    public string IsGSTon { get; set; }
+    public string? IsGSTon { get; set; }
 
 
     [XmlElement(ElementName = "ISPAYROLLON")]
-    public string IsPayrollOn { get; set; }
+    public string? IsPayrollOn { get; set; }
 
     [XmlElement(ElementName = "ISINTERESTON")]
-    public string Isintereston { get; set; }
+    public string? Isintereston { get; set; }
 
     public override string ToString()
     {
-        return Name;
+        return $"Company - {Name}";
     }
 
 
@@ -112,20 +112,20 @@ public class Company : TallyXmlJson
 public class CompanyOnDisk : TallyXmlJson
 {
     [XmlElement(ElementName = "NAME")]
-    public string Name { get; set; }
+    public string? Name { get; set; }
 
     [XmlElement(ElementName = "STARTINGFROM")]
-    public string StartDate { get; set; }
+    public string? StartDate { get; set; }
 
     [XmlElement(ElementName = "ENDINGAT")]
-    public string EndDate { get; set; }
+    public string? EndDate { get; set; }
 
     [XmlElement(ElementName = "COMPANYNUMBER")]
-    public string CompNum { get; set; }
+    public string? CompNum { get; set; }
 
     public override string ToString()
     {
-        return Name;
+        return $"Company - {Name}";
     }
 }
 

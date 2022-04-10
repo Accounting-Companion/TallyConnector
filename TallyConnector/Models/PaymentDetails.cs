@@ -4,28 +4,28 @@
 public class PaymentDetails
 {
     [XmlElement(ElementName = "DEFAULTTRANSACTIONTYPE")]
-    public string DefaultTransactionType { get; set; }
+    public string? DefaultTransactionType { get; set; }
 
 
     [XmlElement(ElementName = "PAYMENTFAVOURING")]
-    public string InFavour { get; set; }
+    public string? InFavour { get; set; }
 
     [XmlElement(ElementName = "TRANSACTIONNAME")]
-    public string TransactionName { get; set; }
+    public string? TransactionName { get; set; }
 
     [XmlElement(ElementName = "CHEQUECROSSCOMMENT")]
-    public string ChequeCrossComment { get; set; }
+    public string? ChequeCrossComment { get; set; }
 
     [XmlElement(ElementName = "SETASDEFAULT")]
-    public string SetasDefault { get; set; }
+    public string? SetasDefault { get; set; }
 
     [XmlElement(ElementName = "ACCOUNTNUMBER")]
-    public string BankAccountNo { get; set; }
+    public string? BankAccountNo { get; set; }
 
     [XmlElement(ElementName = "BANKBRANCH")]
-    public string BankBranch { get; set; }
+    public string? BankBranch { get; set; }
 
     [XmlElement(ElementName = "IFSCODE")]
-    public string IFSC { get; set; }
+    public string? IFSC { get; set; }
 
 }

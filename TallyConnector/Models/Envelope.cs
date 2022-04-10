@@ -24,18 +24,18 @@ public class Envelope<T> : TallyXmlJson
 
 
     [XmlElement(ElementName = "HEADER")]
-    public Header Header { get; set; }
+    public Header? Header { get; set; }
 
     [XmlElement(ElementName = "BODY")]
     public Body<T> Body { get; set; } = new();
 
 
-    public new string GetXML(XmlAttributeOverrides attrOverrides = null)
+    public new string GetXML(XmlAttributeOverrides? attrOverrides = null)
     {
         //Gets Root attribute of ReturnObject
-        XmlRootAttribute RootAttribute = (XmlRootAttribute)Attribute.GetCustomAttribute(typeof(T), typeof(XmlRootAttribute));
+        XmlRootAttribute? RootAttribute = (XmlRootAttribute?)Attribute.GetCustomAttribute(typeof(T), typeof(XmlRootAttribute));
         //ElementName of ReturnObject will match with TallyType
-        string TallyType = RootAttribute.ElementName;
+        string? TallyType = RootAttribute?.ElementName;
 
         //Adding xmlelement name according to RootElement name of ReturnObject
         attrOverrides ??= new();
@@ -63,17 +63,17 @@ public class Data<T>
     public Message<T> Message { get; set; } = new();
 
     [XmlElement(ElementName = "COLLECTION")]
-    public Colllection<T> Collection { get; set; }
+    public Colllection<T>? Collection { get; set; }
 
     [XmlElement(ElementName = "RESULT")]
-    public FunctionResult FuncResult { get; set; }
+    public FunctionResult? FuncResult { get; set; }
 
 }
 
 [XmlRoot(ElementName = "COLLECTION")]
 public class Colllection<T>
 {
-    public List<T> Objects { get; set; }
+    public List<T>? Objects { get; set; }
 }
 
 [XmlRoot(ElementName = "TALLYMESSAGE")]
@@ -97,7 +97,7 @@ public class Header
     private int _version = 1;
     private RequestTye _request;
     private HType _type;
-    private string _Id;
+    private string? _Id;
     [XmlElement(ElementName = "VERSION")]
     public int Version { get { return _version; } set { _version = value; } }
 
@@ -108,7 +108,7 @@ public class Header
     public HType Type { get { return _type; } set { _type = value; } }
 
     [XmlElement(ElementName = "ID")]
-    public string ID { get { return _Id; } set { _Id = value; } }
+    public string? ID { get { return _Id; } set { _Id = value; } }
 }
 
 
@@ -123,7 +123,7 @@ public class Description
 [XmlRoot(ElementName = "STATICVARIABLES")]
 public class StaticVariables : TallyBaseObject
 {
-    private string _ExportFormat;
+    private string? _ExportFormat;
 
     public StaticVariables()
     {
@@ -131,48 +131,65 @@ public class StaticVariables : TallyBaseObject
     }
 
     [XmlElement(ElementName = "SVEXPORTFORMAT")]
-    public string SVExportFormat { get { return _ExportFormat; } set { _ExportFormat = $"$$SysName:{value}"; } }
+    public string SVExportFormat { get { return _ExportFormat!; } set { _ExportFormat = $"$$SysName:{value}"; } }
 
     [XmlElement(ElementName = "SVCURRENTCOMPANY")]
-    public string SVCompany { get; set; }
+    public string? SVCompany { get; set; }
 
     [XmlIgnore]
-    public string SVFromDate { get { return SVFrom.Text; } set { SVFrom = new(); SVFrom.Text = value; } }
+    public string? SVFromDate { get { return SVFrom?.Text; } set { SVFrom = new(value); } }
 
     [XmlElement(ElementName = "SVFROMDATE")]
-    public SVFrom SVFrom { get; set; }
+    public SVFrom? SVFrom { get; set; }
 
     [XmlIgnore]
-    public string SVToDate { get { return SVTo.Text; } set { SVTo = new(); SVTo.Text = value; } }
+    public string? SVToDate { get { return SVTo?.Text; } set { SVTo = new(value); } }
 
     [XmlElement(ElementName = "SVTODATE")]
-    public SVTo SVTo { get; set; }
+    public SVTo? SVTo { get; set; }
 
     [XmlElement(ElementName = "SVViewName")]
     public VoucherViewType ViewName { get; set; }
 
     [XmlElement(ElementName = "EXPLODEFLAG")]
-    public string ExplodeFlag { get; set; }
+    public string? ExplodeFlag { get; set; }
 
 
 }
 [XmlRoot(ElementName = "SVFROMDATE")]
 public class SVFrom
 {
+    public SVFrom()
+    {
+        Text = string.Empty;
+    }
+    public SVFrom(string? text)
+    {
+        Text = text;
+    }
+
     [XmlAttribute(AttributeName = "TYPE")]
     public string Type { get; set; } = "Date";
 
     [XmlText]
-    public string Text { get; set; }
+    public string? Text { get; set; }
 }
 [XmlRoot(ElementName = "SVTODATE")]
 public class SVTo
 {
+    public SVTo()
+    {
+    }
+    public SVTo(string? text)
+    {
+        Text = text;
+    }
+
     [XmlAttribute(AttributeName = "TYPE")]
     public string Type { get; set; } = "Date";
 
     [XmlText]
-    public string Text { get; set; }
+    public string? Text { get; set; }
 }
 
 public enum RequestTye
@@ -200,11 +217,11 @@ public class FunctionResult
 {
 
     [XmlText]
-    public string Result { get; set; }
+    public string? Result { get; set; }
 }
 
 [XmlRoot(ElementName = "ENVELOPE")]
 public class CustomReportEnvelope<T>
 {
-    public List<T> Objects { get; set; }
+    public List<T>? Objects { get; set; }
 }

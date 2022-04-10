@@ -6,7 +6,7 @@ public class CLogger
 {
     private ILogger Logger;
 
-    public CLogger(ILogger logger = null)
+    public CLogger(ILogger? logger = null)
     {
         this.Logger = logger ?? NullLogger.Instance;
     }

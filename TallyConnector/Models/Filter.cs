@@ -12,7 +12,7 @@ public class Filter
         FilterFormulae = filterFormulae;
     }
 
-    public string FilterName { get; set; }
+    public string? FilterName { get; set; }
 
-    public string FilterFormulae { get; set; }
+    public string? FilterFormulae { get; set; }
 }

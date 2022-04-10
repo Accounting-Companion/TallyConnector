@@ -7,57 +7,72 @@ namespace TallyConnector.Models.Masters;
 [XmlType(AnonymousType = true)]
 public class Ledger : BasicTallyObject, ITallyObject
 {
+    private string? name;
     public Ledger()
     {
         LanguageNameList = new();
         FAddress = new HAddress();
+        Group = string.Empty;
     }
 
+    /// <summary>
+    /// Create Ledger under Specified Group
+    /// </summary>
+    /// <param name="name"></param>
+    /// <param name="group"></param>
+    public Ledger(string name, string group)
+    {
+        LanguageNameList = new();
+        FAddress = new HAddress();
+        Group = group;
+        this.name = name;
+    }
 
     [XmlAttribute(AttributeName = "NAME")]
     [JsonIgnore]
-    [Column(TypeName = "nvarchar(60)")]
-    public string OldName { get; set; }
+    [Column(TypeName = $"nvarchar({Constants.MaxNameLength})")]
+    public string? OldName { get; set; }
 
-    private string name;
     [XmlElement(ElementName = "NAME")]
-    [Column(TypeName = "nvarchar(60)")]
+    [Column(TypeName = $"nvarchar({Constants.MaxNameLength})")]
     public string Name
     {
         get
         {
             name = (name == null || name == string.Empty) ? OldName : name;
-            return name;
+            return name!;
         }
         set => name = value;
     }
 
     [XmlElement(ElementName = "PARENT")]
-    [Column(TypeName = "nvarchar(60)")]
+    [Column(TypeName = $"nvarchar({Constants.MaxNameLength})")]
     [Required]
     public string Group { get; set; }
 
 
     [XmlIgnore]
-    [Column(TypeName = "nvarchar(60)")]
-    public string Alias { get; set; }
+    [Column(TypeName = $"nvarchar({Constants.MaxNameLength})")]
+    public string? Alias { get; set; }
 
     [XmlElement(ElementName = "ISDEEMEDPOSITIVE")]
     [Column(TypeName = "nvarchar(3)")]
     public YesNo DeemedPositive { get; set; }
+
     [XmlIgnore]
-    [Column(TypeName = "nvarchar(20)")]
-    public string ForexAmount { get; set; }
+    [Column(TypeName = $"nvarchar({Constants.MaxAmountLength})")]
+    public string? ForexAmount { get; set; }
+
     [XmlIgnore]
-    [Column(TypeName = "nvarchar(20)")]
-    public string RateofExchange { get; set; }
+    [Column(TypeName = $"nvarchar({Constants.MaxRateLength})")]
+    public string? RateofExchange { get; set; }
 
 
-    private string _OpeningBal;
+    private string? _OpeningBal;
 
     [XmlElement(ElementName = "OPENINGBALANCE")]
-    [Column(TypeName = "nvarchar(20)")]
-    public string OpeningBal
+    [Column(TypeName = $"nvarchar({Constants.MaxAmountLength})")]
+    public string? OpeningBal
     {
         get
         {
@@ -90,8 +105,7 @@ public class Ledger : BasicTallyObject, ITallyObject
                 }
                 else
                 {
-                    double.TryParse(value, out t_opbal);
-                    CleanedOpeningBal = t_opbal;
+                    CleanedOpeningBal = double.TryParse(value, out t_opbal) ? t_opbal : 0;
                     _OpeningBal = value;
                 }
             }
@@ -104,24 +118,24 @@ public class Ledger : BasicTallyObject, ITallyObject
         }
     }
     [XmlIgnore]
-    [MaxLength(20)]
+    [MaxLength(Constants.IMaxAmountLength)]
     public double? CleanedOpeningBal { get; set; }
 
     [XmlIgnore]
-    [Column(TypeName = "nvarchar(60)")]
-    public string ClosingForexAmount { get; set; }
+    [Column(TypeName = $"nvarchar({Constants.MaxAmountLength})")]
+    public string? ClosingForexAmount { get; set; }
     [XmlIgnore]
-    [Column(TypeName = "nvarchar(60)")]
-    public string ClosingRateofExchange { get; set; }
+    [Column(TypeName = $"nvarchar({Constants.MaxRateLength})")]
+    public string? ClosingRateofExchange { get; set; }
     [XmlIgnore]
-    [MaxLength(20)]
+    [MaxLength(Constants.IMaxAmountLength)]
     public double? CleanedClosingBal { get; set; }
 
-    private string _ClosingBal;
+    private string? _ClosingBal;
 
     [XmlElement(ElementName = "CLOSINGBALANCE")]
-    [Column(TypeName = "nvarchar(60)")]
-    public string ClosingBal
+    [Column(TypeName = $"nvarchar({Constants.MaxAmountLength})")]
+    public string? ClosingBal
     {
         get
         {
@@ -153,8 +167,7 @@ public class Ledger : BasicTallyObject, ITallyObject
                 }
                 else
                 {
-                    double.TryParse(value, out t_opbal);
-                    CleanedClosingBal = t_opbal;
+                    CleanedClosingBal = double.TryParse(value, out t_opbal) ? t_opbal : 0;
                     _ClosingBal = value;
                 }
             }
@@ -167,10 +180,10 @@ public class Ledger : BasicTallyObject, ITallyObject
     }
 
 
-    private string _Currency;
+    private string? _Currency;
     [XmlElement(ElementName = "CURRENCYNAME")]
     [Column(TypeName = "nvarchar(5)")]
-    public string Currency
+    public string? Currency
     {
         get { return _Currency; }
         set
@@ -204,7 +217,7 @@ public class Ledger : BasicTallyObject, ITallyObject
 
     [XmlElement(ElementName = "BILLCREDITPERIOD")]
     [Column(TypeName = "nvarchar(10)")]
-    public string CreditPeriod { get; set; }
+    public string? CreditPeriod { get; set; }
 
     [XmlElement(ElementName = "ISCREDITDAYSCHKON")]
     [Column(TypeName = "nvarchar(3)")]
@@ -213,16 +226,16 @@ public class Ledger : BasicTallyObject, ITallyObject
 
     [XmlElement(ElementName = "CREDITLIMIT", IsNullable = true)]
     [MaxLength(20)]
-    public string CreditLimit { get; set; }
+    public string? CreditLimit { get; set; }
 
 
     [XmlElement(ElementName = "MAILINGNAME")]
-    [Column(TypeName = "nvarchar(60)")]
-    public string MailingName { get; set; }
+    [Column(TypeName = $"nvarchar({Constants.MaxNameLength})")]
+    public string? MailingName { get; set; }
 
 
     [XmlIgnore]
-    public string Address
+    public string? Address
     {
         get
         {
@@ -243,48 +256,48 @@ public class Ledger : BasicTallyObject, ITallyObject
     }
 
     [XmlElement(ElementName = "COUNTRYNAME")]
-    [Column(TypeName = "nvarchar(60)")]
-    public string Country { get; set; }
+    [Column(TypeName = $"nvarchar({Constants.MaxNameLength})")]
+    public string? Country { get; set; }
 
     [XmlElement(ElementName = "LEDSTATENAME")]
-    [Column(TypeName = "nvarchar(100)")]
-    public string State { get; set; }
+    [Column(TypeName = $"nvarchar({Constants.MaxAmountLength})")]
+    public string? State { get; set; }
 
     [XmlElement(ElementName = "PINCODE")]
-    [Column(TypeName = "nvarchar(15)")]
-    public string PinCode { get; set; }
+    [Column(TypeName = $"nvarchar({Constants.MaxAmountLength})")]
+    public string? PinCode { get; set; }
 
     [XmlElement(ElementName = "LEDGERCONTACT")]
-    [Column(TypeName = "nvarchar(20)")]
-    public string ContactPerson { get; set; }
+    [Column(TypeName = $"nvarchar({Constants.MaxAmountLength})")]
+    public string? ContactPerson { get; set; }
 
     [XmlElement(ElementName = "LEDGERPHONE")]
     [Column(TypeName = "nvarchar(20)")]
-    public string LandlineNo { get; set; }
+    public string? LandlineNo { get; set; }
 
     [XmlElement(ElementName = "LEDGERMOBILE")]
     [Column(TypeName = "nvarchar(20)")]
-    public string MobileNo { get; set; }
+    public string? MobileNo { get; set; }
 
     [XmlElement(ElementName = "LEDGERFAX")]
     [Column(TypeName = "nvarchar(20)")]
-    public string FaxNo { get; set; }
+    public string? FaxNo { get; set; }
 
     [XmlElement(ElementName = "EMAIL")]
-    [Column(TypeName = "nvarchar(60)")]
-    public string Email { get; set; }
+    [Column(TypeName = $"nvarchar({Constants.MaxNameLength})")]
+    public string? Email { get; set; }
 
     [XmlElement(ElementName = "EMAILCC")]
-    [Column(TypeName = "nvarchar(60)")]
-    public string Emailcc { get; set; }
+    [Column(TypeName = $"nvarchar({Constants.MaxNameLength})")]
+    public string? Emailcc { get; set; }
 
     [XmlElement(ElementName = "WEBSITE")]
-    [Column(TypeName = "nvarchar(60)")]
-    public string Website { get; set; }
+    [Column(TypeName = $"nvarchar({Constants.MaxNameLength})")]
+    public string? Website { get; set; }
 
     [XmlElement(ElementName = "INCOMETAXNUMBER")]
     [Column(TypeName = "nvarchar(12)")]
-    public string PANNumber { get; set; }
+    public string? PANNumber { get; set; }
 
     [XmlElement(ElementName = "GSTREGISTRATIONTYPE")]
     [Column(TypeName = "nvarchar(15)")]
@@ -296,7 +309,7 @@ public class Ledger : BasicTallyObject, ITallyObject
 
     [XmlElement(ElementName = "PARTYGSTIN")]
     [Column(TypeName = "nvarchar(17)")]
-    public string GSTIN { get; set; }
+    public string? GSTIN { get; set; }
 
     [XmlElement(ElementName = "ISECOMMOPERATOR")]
     [Column(TypeName = "nvarchar(3)")]
@@ -316,7 +329,7 @@ public class Ledger : BasicTallyObject, ITallyObject
 
     [XmlElement(ElementName = "TRANSPORTERID")]
     [Column(TypeName = "nvarchar(20)")]
-    public string TransporterID { get; set; }
+    public string? TransporterID { get; set; }
 
 
     [XmlElement(ElementName = "AFFECTSSTOCK")]
@@ -358,7 +371,7 @@ public class Ledger : BasicTallyObject, ITallyObject
 
     [XmlElement(ElementName = "INTERESTCOLLECTION.LIST")]
     [TDLCollection(CollectionName = "Interest Collection")]
-    public List<InterestList> InterestList { get; set; }
+    public List<InterestList>? InterestList { get; set; }
 
 
     [XmlElement(ElementName = "FORPAYROLL")]
@@ -367,10 +380,12 @@ public class Ledger : BasicTallyObject, ITallyObject
 
 
     [XmlElement(ElementName = "DESCRIPTION")]
-    public string Description { get; set; }
+    [Column(TypeName = $"nvarchar({Constants.MaxNarrLength})")]
+    public string? Description { get; set; }
 
     [XmlElement(ElementName = "NARRATION")]
-    public string Notes { get; set; }
+    [Column(TypeName = $"nvarchar({Constants.MaxNarrLength})")]
+    public string? Notes { get; set; }
 
     [JsonIgnore]
     [XmlElement(ElementName = "ADDRESS.LIST")]
@@ -383,11 +398,11 @@ public class Ledger : BasicTallyObject, ITallyObject
     public List<LanguageNameList> LanguageNameList { get; set; }
 
     [XmlElement(ElementName = "LEDMULTIADDRESSLIST.LIST")]
-    public List<MultiAddress> MultipleAddresses { get; set; }
+    public List<MultiAddress>? MultipleAddresses { get; set; }
 
 
     [XmlElement(ElementName = "LEDGERCLOSINGVALUES.LIST")]
-    public List<ClosingBalances> ClosingBalances { get; set; }
+    public List<ClosingBalances>? ClosingBalances { get; set; }
 
 
 
@@ -409,15 +424,15 @@ public class Ledger : BasicTallyObject, ITallyObject
         if (LanguageNameList.Count == 0)
         {
             LanguageNameList.Add(new LanguageNameList());
-            LanguageNameList[0].NameList.NAMES.Add(Name);
+            LanguageNameList?[0]?.NameList?.NAMES?.Add(Name);
 
         }
         if (Alias != null && Alias != string.Empty)
         {
-            LanguageNameList[0].LanguageAlias = Alias;
+            LanguageNameList![0].LanguageAlias = Alias;
         }
     }
-    public new string GetXML(XmlAttributeOverrides attrOverrides = null)
+    public new string GetXML(XmlAttributeOverrides? attrOverrides = null)
     {
         CreateNamesList();
         return base.GetXML(attrOverrides);
@@ -427,14 +442,14 @@ public class Ledger : BasicTallyObject, ITallyObject
     {
         if (Group != null && Group.Contains("Primary"))
         {
-            Group = null;
+            Group = string.Empty;
         }
         CreateNamesList();
     }
 
     public override string ToString()
     {
-        return Name;
+        return $"Ledger - {Name}";
     }
 }
 
@@ -443,11 +458,11 @@ public class InterestList
 {
     [XmlElement(ElementName = "INTERESTFROMDATE")]
     [Column(TypeName = "nvarchar(10)")]
-    public string FromDate { get; set; }
+    public string? FromDate { get; set; }
 
     [XmlElement(ElementName = "INTERESTTODATE")]
     [Column(TypeName = "nvarchar(10)")]
-    public string ToDate { get; set; }
+    public string? ToDate { get; set; }
 
     [XmlElement(ElementName = "INTERESTSTYLE")]
     [Column(TypeName = "nvarchar(20)")]
@@ -491,10 +506,10 @@ public class ClosingBalances
 
     [XmlElement(ElementName = "DATE")]
     [Column(TypeName = "nvarchar(10)")]
-    public string Date { get; set; }
+    public string? Date { get; set; }
 
     [XmlElement(ElementName = "AMOUNT")]
     [Column(TypeName = "nvarchar(20)")]
-    public string Amount { get; set; }
+    public string? Amount { get; set; }
 
 }
