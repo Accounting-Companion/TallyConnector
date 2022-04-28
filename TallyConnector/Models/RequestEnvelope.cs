@@ -133,10 +133,10 @@ public class TDLMessage
         Collection = new()
         {
             new(CollectionName,
-                                 rootreportField.CollectionType!,
-                                 null,
-                                 new() { string.Join(",", Fetchlist) },
-                                 filters?.Select(c => c.FilterName).ToList()!)
+                rootreportField.CollectionType!,
+                null,
+                new() { string.Join(",", Fetchlist) },
+                filters?.Select(c => c.FilterName).ToList()!)
         };
 
     }

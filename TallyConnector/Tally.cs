@@ -305,6 +305,73 @@ public class Tally : IDisposable
     }
 
     /// <summary>
+    /// Get Statistics of Company,
+    /// from date and to date has no impact on master statistics
+    /// </summary>
+    /// <param name="company">Specify Company if not specified in Setup</param>
+    /// <param name="fromDate">Specify fromDate if not specified in Setup</param>
+    /// <param name="toDate">Specify toDate if not specified in Setup</param>
+    /// <returns></returns>
+    public async Task<Statistics?> GetStatistics(string? company = null,
+                                    string? fromDate = null,
+                                    string? toDate = null)
+    {
+        company ??= Company;
+        fromDate ??= FromDate;
+        toDate ??= ToDate;
+        StaticVariables sv = new() { SVCompany = company, SVFromDate = fromDate, SVToDate = toDate, SVExportFormat = "XML" };
+        RequestEnvelope CusColEnvelope = new(HType.Data, "CustomStatistics", sv);
+
+        CusColEnvelope.Body.Desc.TDL.TDLMessage = new()
+        {
+            Report = new() { new("CustomStatistics") },
+            Form = new()
+            {
+                new("CustomStatistics")
+                {
+                    PartName = "CustVchStatistics,CustMstrStatistics",
+                    ReportTag = "STATISTICS",
+                }
+
+            },
+            Part = new()
+            {
+                new("CustVchStatistics", "STATVchType", "VchStatistics"),
+                new("CustMstrStatistics", "STATObjects", "MstrStatistics")
+            },
+            Line = new()
+            {
+                new()
+                {
+                    Name = "VchStatistics",
+                    Fields = new() { "Name,Count,CancelledCount" },
+                    XMLTag = "VoucherType"
+                },
+                new()
+                {
+                    Name = "MstrStatistics",
+                    Fields = new() { "Name,Count" },
+                    XMLTag = "MasterType"
+                }
+            },
+            Field = new()
+            {
+                new("Name", "Name"),
+                new("CancelledCount", "CancVal") { XMLTag = "CancelledCount" },
+                new("Count", "StatVal") { XMLTag = "Count" },
+            }
+        };
+
+        string Reqxml = CusColEnvelope.GetXML();
+        string Resxml = await SendRequest(Reqxml);
+
+        Statistics? statistics = GetObjfromXml<Statistics>(Resxml);
+        statistics?.CalculateTotals();
+        return statistics;
+
+    }
+
+    /// <summary>
     /// Get Basic Object data for Given Type - TallyId,GUID,AlterId
     /// fromDate and toDate has no effect unless ObjectType is Voucher
     /// </summary>
@@ -330,7 +397,7 @@ public class Tally : IDisposable
 
         GetTDLReport(typeof(BasicTallyObject), rootreportField);
 
-        RequestEnvelope CusColEnvelope = new(HType.Data, $"LISTOF{ObjectType}".ToUpper());
+        RequestEnvelope CusColEnvelope = new(HType.Data, $"LISTOF{ObjectType}".ToUpper(), sv);
 
         CusColEnvelope.Body.Desc.TDL.TDLMessage = new(rootreportField, filters);
 
@@ -355,18 +422,20 @@ public class Tally : IDisposable
 
 
     public async Task<List<ReturnObjectType>?> GetObjectsfromTally<ReturnObjectType>(string? company = null,
-                                                                                    string? ColType = null,
-                                                                                    string? childof = null,
-                                                                                    List<string>? fetchList = null,
-                                                                                    List<Filter>? filters = null,
-                                                                                    YesNo isInitialize = YesNo.No,
-                                                                                    XmlAttributeOverrides? xmlAttributeOverrides = null) where ReturnObjectType : BasicTallyObject
+                                                                                     string? fromDate = null,
+                                                                                     string? toDate = null,
+                                                                                     string? ColType = null,
+                                                                                     string? childof = null,
+                                                                                     List<string>? fetchList = null,
+                                                                                     List<Filter>? filters = null,
+                                                                                     YesNo isInitialize = YesNo.No,
+                                                                                     XmlAttributeOverrides? xmlAttributeOverrides = null) where ReturnObjectType : BasicTallyObject
     {
         //If parameter is null Get value from instance
         company ??= Company;
         fetchList ??= new() { "GUID", "Masterid" };
 
-        StaticVariables sv = new() { SVCompany = company, SVExportFormat = "XML" };
+        StaticVariables sv = new() { SVCompany = company, SVExportFormat = "XML", SVFromDate = fromDate, SVToDate = toDate };
 
 
         List<ReturnObjectType>? basicObjects = await GetNativeCollectionXML<ReturnObjectType>(Sv: sv,
@@ -379,19 +448,31 @@ public class Tally : IDisposable
                                                                                              xmlAttributeOverrides: xmlAttributeOverrides);
         basicObjects?.ForEach(Object =>
         {
-            PropertyInfo? Aliasinfo = typeof(ReturnObjectType).GetProperty("Alias");
-            if (Aliasinfo != null)
+            try
             {
-                List<LanguageNameList>? languageNameLists = (List<LanguageNameList>?)typeof(ReturnObjectType).GetProperty("LanguageNameList")?.GetValue(Object);
-                Aliasinfo.SetValue(Object, languageNameLists?[0].LanguageAlias);
+                PropertyInfo? Aliasinfo = typeof(ReturnObjectType).GetProperty("Alias");
+                if (Aliasinfo != null)
+                {
+                    List<LanguageNameList>? languageNameLists = (List<LanguageNameList>?)typeof(ReturnObjectType).GetProperty("LanguageNameList")?.GetValue(Object);
+                    if (languageNameLists is not null && languageNameLists.Count > 0)
+                    {
+                        Aliasinfo.SetValue(Object, languageNameLists[0].LanguageAlias);
+                    }
+                }
+                //Name
+                PropertyInfo? NamePropertyinfo = typeof(ReturnObjectType).GetProperty("Name");
+                var name = NamePropertyinfo?.GetValue(Object);
+                if (name is null && NamePropertyinfo != null)
+                {
+                    NamePropertyinfo.SetValue(Object, typeof(ReturnObjectType).GetProperty("OldName")?.GetValue(Object));
+                }
             }
-            //Name
-            PropertyInfo? NamePropertyinfo = typeof(ReturnObjectType).GetProperty("Name");
-            var name = NamePropertyinfo?.GetValue(Object);
-            if (name is null && NamePropertyinfo != null)
+            catch (Exception exc)
             {
-                NamePropertyinfo.SetValue(Object, typeof(ReturnObjectType).GetProperty("OldName")?.GetValue(Object));
+
+                throw;
             }
+
         });
         return basicObjects;
     }
@@ -413,18 +494,14 @@ public class Tally : IDisposable
                                                                  VoucherLookupField LookupField = VoucherLookupField.MasterId,
                                                                  bool Isinventory = false,
                                                                  string? company = null,
-                                                                 string? fromDate = null,
-                                                                 string? toDate = null,
                                                                  List<string>? fetchList = null,
                                                                  XmlAttributeOverrides? xmlAttributeOverrides = null) where ReturnType : Voucher
     {
         //If parameter is null Get value from instance
         company ??= Company;
-        fromDate ??= FromDate;
-        toDate ??= ToDate;
         fetchList ??= new() { "MasterId", "*", "AllledgerEntries", "ledgerEntries", "Allinventoryenntries", "InventoryEntries", "InventoryEntriesIn", "InventoryEntriesOut" };
 
-        StaticVariables sv = new() { SVCompany = company, SVFromDate = fromDate, SVToDate = toDate };
+        StaticVariables sv = new() { SVCompany = company };
         sv.ViewName = Isinventory ? VoucherViewType.None : VoucherViewType.AccountingVoucherView;
         string filterformulae;
         if (LookupField is VoucherLookupField.MasterId or VoucherLookupField.AlterId)
