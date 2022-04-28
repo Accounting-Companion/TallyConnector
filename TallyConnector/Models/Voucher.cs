@@ -13,51 +13,62 @@ public class Voucher : BasicTallyObject, ITallyObject
     }
 
     [XmlElement(ElementName = "DATE")]
+    [Column(TypeName = $"nvarchar({Constants.MaxDateLength})")]
     public string? Date { get; set; }
 
     [XmlElement(ElementName = "REFERENCEDATE")]
+    [Column(TypeName = $"nvarchar({Constants.MaxDateLength})")]
     public string? ReferenceDate { get; set; }
 
     [XmlElement(ElementName = "REFERENCE")]
+    [Column(TypeName = $"nvarchar({Constants.MaxNameLength})")]
     public string? Reference { get; set; }
 
 
     [XmlElement(ElementName = "VOUCHERTYPENAME")]
+    [Column(TypeName = $"nvarchar({Constants.MaxNameLength})")]
     public string? VoucherType { get; set; }
 
 
     [XmlElement(ElementName = "PERSISTEDVIEW")]
+    [Column(TypeName = $"nvarchar(30)")]
     public VoucherViewType View { get; set; }
 
     [XmlElement(ElementName = "VOUCHERNUMBER")]
+    [Column(TypeName = $"nvarchar({Constants.MaxNameLength})")]
     public string? VoucherNumber { get; set; }
 
     [XmlElement(ElementName = "ISOPTIONAL")]
-    public string? IsOptional { get; set; }
+    [Column(TypeName = "nvarchar(3)")]
+    public YesNo? IsOptional { get; set; }
 
     [XmlElement(ElementName = "EFFECTIVEDATE")]
+    [Column(TypeName = $"nvarchar({Constants.MaxDateLength})")]
     public string? EffectiveDate { get; set; }
 
     [XmlElement(ElementName = "NARRATION")]
+    [Column(TypeName = $"nvarchar({Constants.MaxNarrLength})")]
     public string? Narration { get; set; }
 
     [XmlElement(ElementName = "PRICELEVEL")]
+    [Column(TypeName = $"nvarchar({Constants.MaxNarrLength})")]
     public string? PriceLevel { get; set; }
 
     //E-Invoice Details
-    [TallyCategory("E-InvoiceDetails")]
+    [TallyCategory(Constants.VoucherCategory.EInvoiceDetails)]
     [XmlElement(ElementName = "BILLTOPLACE")]
+    [Column(TypeName = $"nvarchar({Constants.MaxNarrLength})")]
     public string? BillToPlace { get; set; }
 
-    [TallyCategory("E-InvoiceDetails")]
+    [TallyCategory(Constants.VoucherCategory.EInvoiceDetails)]
     [XmlElement(ElementName = "IRN")]
     public string? IRN { get; set; }
 
-    [TallyCategory("E-InvoiceDetails")]
+    [TallyCategory(Constants.VoucherCategory.EInvoiceDetails)]
     [XmlElement(ElementName = "IRNACKNO")]
     public string? IRNAckNo { get; set; }
 
-    [TallyCategory("E-InvoiceDetails")]
+    [TallyCategory(Constants.VoucherCategory.EInvoiceDetails)]
     [XmlElement(ElementName = "IRNACKDATE")]
     public string? IRNAckDate { get; set; }
 
@@ -455,7 +466,7 @@ public class VoucherLedger : TallyBaseObject
     public string? RateofExchange { get; set; }
 
     [XmlElement(ElementName = "AMOUNT")]
-    public string Amount
+    public string? Amount
     {
         get
         {
@@ -467,7 +478,7 @@ public class VoucherLedger : TallyBaseObject
             {
                 _Amount = ForexAmount;
             }
-            return _Amount!;
+            return _Amount;
         }
         set
         {
@@ -1160,7 +1171,6 @@ public enum VehicleType
     OverDimensionalCargo = 2,
 
 }
-
 
 
 

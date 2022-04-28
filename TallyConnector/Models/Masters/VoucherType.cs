@@ -21,12 +21,14 @@ public class VoucherType : BasicTallyObject, ITallyObject
 
     [XmlAttribute(AttributeName = "NAME")]
     [JsonIgnore]
+    [Column(TypeName = $"nvarchar({Constants.MaxNameLength})")]
     public string? OldName { get; set; }
 
     private string? name;
 
     [XmlElement(ElementName = "NAME")]
     [Required]
+    [Column(TypeName = $"nvarchar({Constants.MaxNameLength})")]
     public string Name
     {
         get
@@ -37,6 +39,7 @@ public class VoucherType : BasicTallyObject, ITallyObject
         set => name = value;
     }
 
+    [Column(TypeName = $"nvarchar({Constants.MaxNameLength})")]
     public string? Alias { get; set; }
 
     [JsonIgnore]
@@ -45,22 +48,23 @@ public class VoucherType : BasicTallyObject, ITallyObject
     public List<LanguageNameList> LanguageNameList { get; set; }
 
     [XmlElement(ElementName = "PARENT")]
+    [Column(TypeName = $"nvarchar({Constants.MaxNameLength})")]
     public string Parent { get; set; }
 
     [XmlElement(ElementName = "NUMBERINGMETHOD")]
     public string? NumberingMethod { get; set; }
 
     [XmlElement(ElementName = "USEZEROENTRIES")]
-    public string? UseZeroEntries { get; set; }
+    public YesNo UseZeroEntries { get; set; }
 
     [XmlElement(ElementName = "ISACTIVE")]
-    public string? IsActive { get; set; }
+    public YesNo IsActive { get; set; }
 
     [XmlElement(ElementName = "PRINTAFTERSAVE")]
-    public string? PrintAfterSave { get; set; }
+    public YesNo PrintAfterSave { get; set; }
 
     [XmlElement(ElementName = "USEFORPOSINVOICE")]
-    public string? UseforPOSInvoice { get; set; }
+    public YesNo UseforPOSInvoice { get; set; }
 
     [XmlElement(ElementName = "VCHPRINTBANKNAME")]
     public string? VchPrintBankName { get; set; }
@@ -72,32 +76,32 @@ public class VoucherType : BasicTallyObject, ITallyObject
     public string? VchPrintJurisdiction { get; set; }
 
     [XmlElement(ElementName = "ISOPTIONAL")]
-    public string? IsOptional { get; set; }
+    public YesNo IsOptional { get; set; }
 
     [XmlElement(ElementName = "COMMONNARRATION")]
-    public string? CommonNarration { get; set; }
+    public YesNo CommonNarration { get; set; }
 
     [XmlElement(ElementName = "MULTINARRATION")]
-    public string? MultiNarration { get; set; }  //Narration for each Ledger
+    public YesNo MultiNarration { get; set; }  //Narration for each Ledger
 
     [XmlElement(ElementName = "ISDEFAULTALLOCENABLED")]
-    public string? IsDefaultAllocationEnabled { get; set; }
+    public YesNo IsDefaultAllocationEnabled { get; set; }
 
     [XmlElement(ElementName = "AFFECTSSTOCK")]
-    public string? EffectStock { get; set; }
+    public YesNo EffectStock { get; set; }
 
     [XmlElement(ElementName = "ASMFGJRNL")]
-    public string? AsMfgJrnl { get; set; }
+    public YesNo AsMfgJrnl { get; set; }
 
     [XmlElement(ElementName = "USEFORJOBWORK")]
-    public string? UseforJobwork { get; set; }
+    public YesNo UseforJobwork { get; set; }
 
     [XmlElement(ElementName = "ISFORJOBWORKIN")]
-    public string? IsforJobworkIn { get; set; }
+    public YesNo IsforJobworkIn { get; set; }
 
 
     [XmlElement(ElementName = "CANDELETE")]
-    public string? CanDelete { get; set; }
+    public YesNo CanDelete { get; set; }
 
 
     /// <summary>
@@ -105,7 +109,7 @@ public class VoucherType : BasicTallyObject, ITallyObject
     /// </summary>
     [JsonIgnore]
     [XmlAttribute(AttributeName = "Action")]
-    public string? Action { get; set; }
+    public Action Action { get; set; }
 
     public void CreateNamesList()
     {
