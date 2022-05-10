@@ -7,6 +7,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TallyConnector", "TallyConn
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tests", "Tests\Tests.csproj", "{91A58EB6-2C23-4AF2-B3BA-3834EA55CAA4}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TallyConnector.Core", "TallyConnector.Core\TallyConnector.Core.csproj", "{4918484F-DD27-4B7C-AA6B-93485B94A135}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +23,10 @@ Global
 		{91A58EB6-2C23-4AF2-B3BA-3834EA55CAA4}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{91A58EB6-2C23-4AF2-B3BA-3834EA55CAA4}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{91A58EB6-2C23-4AF2-B3BA-3834EA55CAA4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4918484F-DD27-4B7C-AA6B-93485B94A135}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4918484F-DD27-4B7C-AA6B-93485B94A135}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4918484F-DD27-4B7C-AA6B-93485B94A135}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4918484F-DD27-4B7C-AA6B-93485B94A135}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

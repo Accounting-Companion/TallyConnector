@@ -20,7 +20,7 @@
 		
 		<RepositoryType>git</RepositoryType>
 		
-		<VersionPrefix>1.0.3</VersionPrefix>
+		<VersionPrefix>1.0.4</VersionPrefix>
 		
 		<Nullable>enable</Nullable>
 	</PropertyGroup>
@@ -32,23 +32,9 @@
 
 	<ItemGroup>
 		<PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="6.0.1" />
-
-	</ItemGroup>
-
-	<ItemGroup Condition=" '$(TargetFramework)' == 'net48' or '$(TargetFramework)' == 'net3.0'">
-		
-		
-		<PackageReference Include="System.Text.Json" Version="6.0.2" />
-	</ItemGroup>
-	<ItemGroup Condition=" '$(TargetFramework)' == 'net48'">
-		<Reference Include="Microsoft.CSharp" />
-		<Reference Include="System.ComponentModel.DataAnnotations" />
-		<PackageReference Include="System.Net.Http" Version="4.3.4" />
-	</ItemGroup>
+	</ItemGroup>	
+	
 	<ItemGroup>
-	  <Folder Include="Properties\" />
+	  <ProjectReference Include="..\TallyConnector.Core\TallyConnector.Core.csproj" />
 	</ItemGroup>
-
-
-
 </Project>

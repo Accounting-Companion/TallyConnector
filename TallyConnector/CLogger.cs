@@ -8,7 +8,7 @@ public class CLogger
 
     public CLogger(ILogger? logger = null)
     {
-        this.Logger = logger ?? NullLogger.Instance;
+        Logger = logger ?? NullLogger.Instance;
     }
 
     public void SetupLog(string company, string fromDate, string toDate)

@@ -1,10 +1,11 @@
-﻿global using System.ComponentModel.DataAnnotations;
-global using System.ComponentModel.DataAnnotations.Schema;
-global using System.Text;
-global using System.Text.Json;
-global using System.Text.Json.Serialization;
+﻿global using System.Text;
 global using System.Xml;
 global using System.Xml.Serialization;
-global using TallyConnector.Attributes;
 global using Microsoft.Extensions.Logging;
+global using TallyConnector.Core.Models;
+global using TallyConnector.Core.Models.Masters;
+global using TallyConnector.Core.Models.Masters.CostCenter;
+global using TallyConnector.Core.Models.Masters.Inventory;
+global using TallyConnector.Core.Models.Masters.Payroll;
+global using TallyConnector.Core.Attributes;
 

@@ -1,11 +1,11 @@
 using NUnit.Framework;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using TallyConnector.Models;
-using TallyConnector.Models.Masters;
-using TallyConnector.Models.Masters.CostCenter;
-using TallyConnector.Models.Masters.Inventory;
-using TallyConnector.Models.Masters.Payroll;
+using TallyConnector.Core.Models;
+using TallyConnector.Core.Models.Masters;
+using TallyConnector.Core.Models.Masters.CostCenter;
+using TallyConnector.Core.Models.Masters.Inventory;
+using TallyConnector.Core.Models.Masters.Payroll;
 
 namespace Tests;
 
@@ -223,7 +223,7 @@ public class TallyTests
     public async Task CheckGetCurrency()
     {
         await TTally.Check();
-        Currency Currency = await TTally.GetCurrency<Currency>("$");
+        Currency Currency = await TTally.GetCurrency<Currency>("5243",MasterLookupField.AlterId );
         Assert.NotNull(Currency);
     }
 

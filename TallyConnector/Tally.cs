@@ -1,12 +1,7 @@
 ﻿using Microsoft.Extensions.Logging.Abstractions;
 using System.Reflection;
 using System.Xml.Xsl;
-using TallyConnector.Exceptions;
-using TallyConnector.Models;
-using TallyConnector.Models.Masters;
-using TallyConnector.Models.Masters.CostCenter;
-using TallyConnector.Models.Masters.Inventory;
-using TallyConnector.Models.Masters.Payroll;
+using TallyConnector.Core.Exceptions;
 
 namespace TallyConnector;
 
@@ -1962,8 +1957,11 @@ public class Tally : IDisposable
             StringContent TXML = new(SXml, Encoding.UTF8, "application/xml");
             HttpResponseMessage Res = await client.PostAsync(FullURL, TXML);
             Res.EnsureSuccessStatusCode();
-            var byteArray = await Res.Content.ReadAsByteArrayAsync();
-            Resxml = Encoding.UTF8.GetString(byteArray, 0, byteArray.Length); ;
+            var resp = await Res.Content.ReadAsStreamAsync();
+            using StreamReader streamReader = new StreamReader(resp, Encoding.UTF8);
+            Resxml = streamReader.ReadToEnd();
+            //var byteArray = await Res.Content.ReadAsByteArrayAsync();
+            //Resxml = Encoding.UTF8.GetString(byteArray, 0, byteArray.Length); ;
             Resxml = ReplaceXMLText(Resxml);
             CLogger.TallyResponse(Resxml);
             return Resxml;
