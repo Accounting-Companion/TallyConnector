@@ -43,13 +43,6 @@ public class Unit : BasicTallyObject, ITallyObject
     [XmlElement(ElementName = "CANDELETE")]
     public string? CanDelete { get; set; }
 
-    /// <summary>
-    /// Accepted Values //Create, Alter, Delete
-    /// </summary>
-    [JsonIgnore]
-    [XmlAttribute(AttributeName = "Action")]
-    public string? Action { get; set; }
-
     private string? _IsSimpleUnit;
 
     [XmlElement(ElementName = "ISSIMPLEUNIT")]

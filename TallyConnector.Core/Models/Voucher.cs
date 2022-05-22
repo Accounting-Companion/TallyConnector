@@ -302,14 +302,6 @@ public class Voucher : BasicTallyObject, ITallyObject
     }
 
 
-    /// <summary>
-    /// Accepted Values //Create, Alter, Delete
-    /// </summary>
-    [JsonIgnore]
-    [XmlAttribute(AttributeName = "Action")]
-    public Action Action { get; set; }
-
-
     [JsonIgnore]
     [XmlAttribute(AttributeName = "VCHTYPE")]
     public string? VchType

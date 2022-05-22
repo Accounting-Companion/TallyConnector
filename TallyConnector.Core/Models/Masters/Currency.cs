@@ -42,7 +42,6 @@ public class Currency : BasicTallyObject, ITallyObject
     public string? DecimalSymbol { get; set; }
 
     [XmlElement(ElementName = "DECIMALPLACES")]
-    [MaxLength(1)]
     [Range(1, 4)]
 
     public int DecimalPlaces { get; set; }
@@ -51,7 +50,6 @@ public class Currency : BasicTallyObject, ITallyObject
     /// Tally Field - No.of Decimal Places for amount in Words
     /// </summary>
     [XmlElement(ElementName = "DECIMALPLACESFORPRINTING")]
-    [MaxLength(1)]
     [Range(1, 4)]
     public int DecimalPlaces_Print { get; set; }
 
@@ -67,10 +65,6 @@ public class Currency : BasicTallyObject, ITallyObject
     [Column(TypeName = "nvarchar(3)")]
     public YesNo HasSpace { get; set; }
 
-
-    [JsonIgnore]
-    [XmlAttribute(AttributeName = "Action")]
-    public Action Action { get; set; }
 
 
     //[XmlElement(ElementName = "DAILYSTDRATES.LIST")]

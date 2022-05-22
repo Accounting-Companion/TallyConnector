@@ -119,7 +119,6 @@ public class Ledger : BasicTallyObject, ITallyObject
         }
     }
     [XmlIgnore]
-    [MaxLength(Constants.IMaxAmountLength)]
     public double? CleanedOpeningBal { get; set; }
 
     [XmlIgnore]
@@ -129,7 +128,6 @@ public class Ledger : BasicTallyObject, ITallyObject
     [Column(TypeName = $"nvarchar({Constants.MaxRateLength})")]
     public string? ClosingRateofExchange { get; set; }
     [XmlIgnore]
-    [MaxLength(Constants.IMaxAmountLength)]
     public double? CleanedClosingBal { get; set; }
 
     private string? _ClosingBal;
@@ -209,7 +207,6 @@ public class Ledger : BasicTallyObject, ITallyObject
     public GSTTaxType GSTTaxType { get; set; }
 
     [XmlElement(ElementName = "RATEOFTAXCALCULATION")]
-    [MaxLength(3)]
     public double? RateofTax { get; set; }
 
     [XmlElement(ElementName = "ISBILLWISEON")]
@@ -411,12 +408,6 @@ public class Ledger : BasicTallyObject, ITallyObject
     [Column(TypeName = "nvarchar(3)")]
     public YesNo CanDelete { get; set; }
 
-    /// <summary>
-    /// Accepted Values //Create, Alter, Delete
-    /// </summary>
-    [JsonIgnore]
-    [XmlAttribute(AttributeName = "Action")]
-    public Action Action { get; set; }
 
 
 
@@ -486,15 +477,12 @@ public class InterestList
     public RoundType RoundType { get; set; }
 
     [XmlElement(ElementName = "INTERESTRATE")]
-    [MaxLength(3)]
     public double? InterestRate { get; set; }
 
     [XmlElement(ElementName = "INTERESTAPPLFROM")]
-    [MaxLength(3)]
     public double? Interestappliedfrom { get; set; }
 
     [XmlElement(ElementName = "ROUNDLIMIT")]
-    [MaxLength(3)]
     public double? RoundLimit { get; set; }
 
 }

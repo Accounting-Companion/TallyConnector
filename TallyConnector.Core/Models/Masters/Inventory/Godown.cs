@@ -80,12 +80,7 @@ public class Godown : BasicTallyObject, ITallyObject
     [XmlElement(ElementName = "LANGUAGENAME.LIST")]
     [TDLCollection(CollectionName = "LanguageName")]
     public List<LanguageNameList> LanguageNameList { get; set; }
-    /// <summary>
-    /// Accepted Values //Create, Alter, Delete
-    /// </summary>
-    [JsonIgnore]
-    [XmlAttribute(AttributeName = "Action")]
-    public YesNo Action { get; set; }
+   
 
     public void CreateNamesList()
     {

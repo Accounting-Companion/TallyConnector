@@ -84,21 +84,21 @@ public class Company : TallyXmlJson
     public string? IsCostCentersOn { get; set; }
 
     [XmlElement(ElementName = "ISTDSON")]
-    public string? IsTDSon { get; set; }
+    public string? IsTDSOn { get; set; }
 
 
     [XmlElement(ElementName = "ISTCSON")]
-    public string? IsTCSon { get; set; }
+    public string? IsTCSOn { get; set; }
 
     [XmlElement(ElementName = "ISGSTON")]
-    public string? IsGSTon { get; set; }
+    public string? IsGSTOn { get; set; }
 
 
     [XmlElement(ElementName = "ISPAYROLLON")]
     public string? IsPayrollOn { get; set; }
 
     [XmlElement(ElementName = "ISINTERESTON")]
-    public string? Isintereston { get; set; }
+    public string? IsInterestOn { get; set; }
 
     public override string ToString()
     {

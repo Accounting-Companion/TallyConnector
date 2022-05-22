@@ -105,13 +105,6 @@ public class VoucherType : BasicTallyObject, ITallyObject
     public YesNo CanDelete { get; set; }
 
 
-    /// <summary>
-    /// Accepted Values //Create, Alter, Delete
-    /// </summary>
-    [JsonIgnore]
-    [XmlAttribute(AttributeName = "Action")]
-    public Action Action { get; set; }
-
     public void CreateNamesList()
     {
         if (LanguageNameList.Count == 0)

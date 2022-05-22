@@ -82,7 +82,7 @@ public class Group : BasicTallyObject, ITallyObject
     /// </summary>
     [XmlElement(ElementName = "ADDLALLOCTYPE")]
     [Column(TypeName = "nvarchar(25)")]
-    public AdAllocType AddLAllocType { get; set; }
+    public AdAllocType AddlAllocType { get; set; }
 
     [XmlElement(ElementName = "ISSUBLEDGER")]
     [Column(TypeName = "nvarchar(3)")]
@@ -106,12 +106,6 @@ public class Group : BasicTallyObject, ITallyObject
     [TDLCollection(CollectionName = "LanguageName")]
     public List<LanguageNameList> LanguageNameList { get; set; }
 
-    /// <summary>
-    /// Accepted Values //Create, Alter, Delete
-    /// </summary>
-    [JsonIgnore]
-    [XmlAttribute(AttributeName = "Action")]
-    public Action Action { get; set; }
 
     public void CreateNamesList()
     {

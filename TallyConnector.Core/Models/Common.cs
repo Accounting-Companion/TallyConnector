@@ -25,6 +25,7 @@ public enum Action
 /// </summary>
 public enum YesNo
 {
+
     [XmlEnum(Name = "")]
     None,
     [XmlEnum(Name = "Yes")]

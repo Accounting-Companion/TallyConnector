@@ -55,13 +55,6 @@ public class AttendanceType : BasicTallyObject, ITallyObject
     [TDLCollection(CollectionName = "LanguageName")]
     public List<LanguageNameList> LanguageNameList { get; set; }
 
-    /// <summary>
-    /// Accepted Values //Create, Alter, Delete
-    /// </summary>
-    [JsonIgnore]
-    [XmlAttribute(AttributeName = "Action")]
-    public string? Action { get; set; }
-
     public void CreateNamesList()
     {
         if (LanguageNameList.Count == 0)

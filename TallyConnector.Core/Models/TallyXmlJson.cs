@@ -15,6 +15,12 @@ public class TallyBaseObject
 
 public class TallyXmlJson : TallyBaseObject
 {
+    /// <summary>
+    /// Accepted Values //Create, Alter, Delete
+    /// </summary>
+    [JsonIgnore]
+    [XmlAttribute(AttributeName = "Action")]
+    public Action Action { get; set; }
 
     public string GetJson(bool Indented = false)
     {
@@ -55,7 +61,6 @@ public class TallyXmlJson : TallyBaseObject
 public class BasicTallyObject : TallyXmlJson, ITallyObject, IBasicTallyObject
 {
     [XmlElement(ElementName = "MASTERID")]
-    [MaxLength(20)]
     public int? MasterId { get; set; }
 
     [XmlElement(ElementName = "GUID")]
