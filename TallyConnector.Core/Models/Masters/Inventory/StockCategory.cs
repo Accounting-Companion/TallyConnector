@@ -37,6 +37,10 @@ public class StockCategory : BasicTallyObject, ITallyObject
     [XmlElement(ElementName = "PARENT")]
     public string? Parent { get; set; }
 
+    [XmlElement(ElementName = "PARENTID")]
+    [Column(TypeName = $"nvarchar({Constants.GUIDLength})")]
+    public string? ParentId { get; set; }
+
     [XmlIgnore]
     public string? Alias { get; set; }
 

@@ -6,7 +6,7 @@ public class StockGroup : BasicTallyObject, ITallyObject
 {
     public StockGroup()
     {
-        BaseUnit = "";
+        //BaseUnit = "";
         LanguageNameList = new();
     }
 
@@ -31,16 +31,18 @@ public class StockGroup : BasicTallyObject, ITallyObject
     [XmlElement(ElementName = "PARENT")]
     public string? Parent { get; set; }
 
+    [XmlElement(ElementName = "PARENTID")]
+    [Column(TypeName = $"nvarchar({Constants.GUIDLength})")]
+    public string? ParentId { get; set; }
 
     [XmlElement(ElementName = "ISADDABLE")]
-    public string? IsAddable { get; set; }  //Should Quantities of Items be Added
+    public YesNo? IsAddable { get; set; }  //Should Quantities of Items be Added
 
     [XmlElement(ElementName = "GSTAPPLICABLE")]
     public string? GSTApplicability { get; set; }
 
-    [XmlElement(ElementName = "BASEUNITS")]
-    public string? BaseUnit { get; set; }
-
+    //[XmlElement(ElementName = "BASEUNITS")]
+    //public string? BaseUnit { get; set; }
 
     [XmlIgnore]
     public string? Alias { get; set; }

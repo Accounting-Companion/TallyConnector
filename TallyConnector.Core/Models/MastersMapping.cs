@@ -1,11 +1,15 @@
 ﻿namespace TallyConnector.Core.Models;
 
-public class MastersMapping
+public class TallyObjectMapping
 {
-    public MastersMapping(TallyObjectType masterType, string tallyMasterType, List<Filter>? filters)
+    public TallyObjectMapping(TallyObjectType masterType,
+                              string tallyMasterType,
+                              List<Filter>? filters,
+                              List<string>? computeFields = null)
     {
         MasterType = masterType;
         Filters = filters;
+        ComputeFields = computeFields;
         TallyMasterType = tallyMasterType;
     }
 
@@ -13,40 +17,114 @@ public class MastersMapping
     public string TallyMasterType { get; set; }
 
     public List<Filter>? Filters { get; set; }
+    public List<string>? ComputeFields { get; set; }
 
-    public static readonly List<MastersMapping> MastersMappings = new()
+    public static readonly List<TallyObjectMapping> MastersMappings = new()
     {
-        new MastersMapping(TallyObjectType.Currencies, "Currency", null),
+        new TallyObjectMapping(
+            masterType: TallyObjectType.Currencies, tallyMasterType: "Currency", filters: null),
 
-        new MastersMapping(TallyObjectType.Groups, "Group", null),
-        new MastersMapping(TallyObjectType.Ledgers, "Ledger", null),
+        new TallyObjectMapping(
+            masterType: TallyObjectType.Groups,
+            tallyMasterType: "Group", filters: null,
+            computeFields: new(){"PARENTID:$GUID:Group:$Parent"}),
 
-        new MastersMapping(TallyObjectType.CostCategories, "CostCategory", null),
-        new MastersMapping(TallyObjectType.CostCenters, "CostCentre",
+        new TallyObjectMapping(
+            TallyObjectType.Ledgers, "Ledger", null,
+            new()
+            {
+                "PARENTID:$GUID:Group:$Parent",
+                "CURRENCYID:$GUID:Currency:$CURRENCYNAME"
+            }),
+
+        new TallyObjectMapping(TallyObjectType.CostCategories, "CostCategory", null),
+        new TallyObjectMapping(TallyObjectType.CostCenters, "CostCentre",
             new List<Filter>()
             {
                 new Filter("IsEmployeeGroup", "Not $ISEMPLOYEEGROUP"),
                 new Filter("IsPayroll", "Not $FORPAYROLL")
+            },
+            new()
+            {
+                "CATEGORYID:$GUID:COSTCATEGORY:$CATEGORY",
+                "PARENTID:$GUID:COSTCENTER:$Parent"
             }),
 
-        new MastersMapping(TallyObjectType.Units, "Unit", null),
-        new MastersMapping(TallyObjectType.Godowns, "Godown", null),
-        new MastersMapping(TallyObjectType.StockCategories, "StockCategory", null),
-        new MastersMapping(TallyObjectType.StockGroups, "StockGroup", null),
-        new MastersMapping(TallyObjectType.StockItems, "StockItem", null),
+        new TallyObjectMapping(
+            TallyObjectType.Units, "Unit", null,
+            new()
+            {
+                "BASEUNITID:$GUID:Unit:$BaseUnits",
+                "ADDITIONALUNITID:$GUID:Unit:$AdditionalUnits"
+            }),
+        new TallyObjectMapping(
+            TallyObjectType.Godowns, "Godown", null,
+            new()
+            {
+                "PARENTID:$GUID:Godown:$Parent"
+            }),
+        new TallyObjectMapping(
+            TallyObjectType.StockCategories, "StockCategory", null,
+            new()
+            {
+                "PARENTID:$GUID:StockCategory:$Parent"
+            }),
+        new TallyObjectMapping(
+            TallyObjectType.StockGroups, "StockGroup", null,new()
+            {
+                "PARENTID:$GUID:StockGroup:$Parent"
+            }),
+        new TallyObjectMapping(
+            TallyObjectType.StockItems, "StockItem", null,new()
+            {
+                "PARENTID:$GUID:StockGroup:$Parent",
+                "CATEGORYID:$GUID:StockCategory:$Category",
+                "BASEUNITID:$GUID:Unit:$BaseUnits",
+                "ADDITIONALUNITID:$GUID:Unit:$AdditionalUnits",
+            }),
 
-        new MastersMapping(TallyObjectType.AttendanceTypes, "AttendanceType", null),
-        new MastersMapping(TallyObjectType.EmployeeGroups, "CostCentre", new List<Filter>()
+        new TallyObjectMapping(
+            TallyObjectType.AttendanceTypes, "AttendanceType", null,
+            new()
+            {
+                "PARENTID:$GUID:AttendanceType:$Parent",
+            }),
+        new TallyObjectMapping(TallyObjectType.EmployeeGroups, "CostCentre", new List<Filter>()
             {
                 new Filter("IsEmployeeGroup", "$ISEMPLOYEEGROUP"),
+            },
+            new()
+            {
+                "CATEGORYID:$GUID:COSTCATEGORY:$CATEGORY",
+                "PARENTID:$GUID:COSTCENTER:$Parent"
             }),
-        new MastersMapping(TallyObjectType.Employees, "CostCentre", new List<Filter>()
+        new TallyObjectMapping(TallyObjectType.Employees, "CostCentre", new List<Filter>()
             {
                 new Filter("IsEmployeeGroup", "Not $ISEMPLOYEEGROUP"),
                 new Filter("IsPayroll", "$FORPAYROLL")
+            },
+            new()
+            {
+                "CATEGORYID:$GUID:COSTCATEGORY:$CATEGORY",
+                "PARENTID:$GUID:COSTCENTER:$Parent"
             }),
 
-        new MastersMapping(TallyObjectType.VoucherTypes, "VoucherType", null),
+        new TallyObjectMapping(
+            TallyObjectType.VoucherTypes, "VoucherType", null,
+            new()
+            {
+                 "PARENTID:$GUID:VoucherType:$Parent"
+            }),
+    };
+
+    public static readonly List<TallyObjectMapping> TallyObjectMappings = new(MastersMappings)
+    {
+        new TallyObjectMapping(TallyObjectType.Vouchers, "Voucher", null,
+            new()
+            {
+                 "VOUCHERTYPEID:$GUID:VoucherType:$VOUCHERTYPENAME",
+                 "PARTYLEDGERID:$GUID:Ledger:$PARTYLEDGERNAMEs"
+            }),
     };
 }
 

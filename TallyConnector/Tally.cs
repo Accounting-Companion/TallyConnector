@@ -131,7 +131,7 @@ public class Tally : IDisposable
         {
             HttpRequestException e = ex;
             CLogger.TallyNotRunning(FullURL);
-            Status = $"Tally is not opened \n or Tally is not running in given port - { Port} )\n or Given URL - {BaseURL} \n" +
+            Status = $"Tally is not opened \n or Tally is not running in given port - {Port} )\n or Given URL - {BaseURL} \n" +
                 e.Message;
             //throw new TallyConnectivityException("Tally is not running", FullURL);
         }
@@ -267,7 +267,7 @@ public class Tally : IDisposable
 
         Masters = new();
         List<Task> tasks = new();
-        foreach (var mapping in MastersMapping.MastersMappings)
+        foreach (var mapping in TallyObjectMapping.MastersMappings)
         {
             tasks.Add(GetBasicMasterInfo(mapping));
 
@@ -276,7 +276,7 @@ public class Tally : IDisposable
         CLogger.TallyReqCompleted(ReqType);
     }
 
-    private async Task GetBasicMasterInfo(MastersMapping mapping)
+    private async Task GetBasicMasterInfo(TallyObjectMapping mapping)
     {
         List<BasicTallyObject>? basicTallyObjects = await GetBasicObjectData(ObjectType: mapping.TallyMasterType, filters: mapping.Filters);
         Masters?.Add(new MastersBasicInfo<BasicTallyObject>(mapping.MasterType, basicTallyObjects!));
@@ -639,6 +639,8 @@ public class Tally : IDisposable
                                                                                 string? childof = null,
                                                                                 List<string>? NativeFields = null,
                                                                                 List<Filter>? filters = null,
+                                                                                List<string>? computevar = null,
+                                                                                List<string>? compute = null,
                                                                                 YesNo isInitialize = YesNo.No,
                                                                                 string? TallyType = null,
                                                                                 XmlAttributeOverrides? xmlAttributeOverrides = null) where ReturnObject : TallyXmlJson
@@ -648,18 +650,25 @@ public class Tally : IDisposable
         //Gets Root attribute of ReturnObject
         XmlRootAttribute RootAttribute = (XmlRootAttribute)Attribute.GetCustomAttribute(typeof(ReturnObject), typeof(XmlRootAttribute))!;
         //ElementName of ReturnObject will match with TallyType
-        TallyType ??= RootAttribute?.ElementName;
+        TallyType ??= RootAttribute.ElementName;
         //ColType = CollectionMapping[typeof(ReturnObject).Name];
         string ColName = $"CUSTOM{TallyType}";
 
         RequestEnvelope ColEnvelope = new(HType.Collection, ColName, Sv); //Collection Envelope
 
-
+        compute ??= new() { };
+        var mapping = TallyObjectMapping.TallyObjectMappings.FirstOrDefault(map => map.TallyMasterType.Equals(TallyType, StringComparison.OrdinalIgnoreCase));
+        if (mapping != null && mapping.ComputeFields != null)
+        {
+            compute.AddRange(mapping.ComputeFields);
+        }
         ColEnvelope.Body.Desc.TDL.TDLMessage = new(colName: ColName,
-                                                   colType: ColType ?? TallyType!,
+                                                   colType: ColType ?? TallyType,
                                                    childof: childof,
                                                    nativeFields: NativeFields,
                                                    filters: filters,
+                                                   computevar: computevar,
+                                                   compute: compute,
                                                    isInitialize);
 
 

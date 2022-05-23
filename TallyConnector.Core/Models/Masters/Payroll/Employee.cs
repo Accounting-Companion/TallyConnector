@@ -11,8 +11,6 @@ public class Employee : CostCenter.CostCenter
     [XmlElement(ElementName = "FORPAYROLL")]
     public string? ForPayroll { get; set; }
 
-    [XmlElement(ElementName = "ISEMPLOYEEGROUP")]
-    public string? IsEmployeeGroup { get; set; }
 
     [XmlElement(ElementName = "DATEOFJOIN")]
     public string? JoiningDate { get; set; }

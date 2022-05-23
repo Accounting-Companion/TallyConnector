@@ -33,6 +33,10 @@ public class Godown : BasicTallyObject, ITallyObject
 
     [XmlElement(ElementName = "PARENT")]
     public string? Parent { get; set; }
+
+    [XmlElement(ElementName = "PARENTID")]
+    [Column(TypeName = $"nvarchar({Constants.GUIDLength})")]
+    public string? ParentId { get; set; }
     [JsonIgnore]
     [XmlElement(ElementName = "ADDRESS.LIST")]
     public HAddress FAddress { get; set; }
@@ -62,13 +66,13 @@ public class Godown : BasicTallyObject, ITallyObject
     public string? PhoneNumber { get; set; }
 
     [XmlElement(ElementName = "ISEXTERNAL")]
-    public string? IsExternal { get; set; } // ThirdParty Stock with Us
+    public YesNo IsExternal { get; set; } // ThirdParty Stock with Us
 
     [XmlElement(ElementName = "ISINTERNAL")]
-    public string? IsInternal { get; set; } // Our Stock With Third Party
+    public YesNo IsInternal { get; set; } // Our Stock With Third Party
 
     [XmlElement(ElementName = "CANDELETE")]
-    public string? CanDelete { get; set; }
+    public YesNo CanDelete { get; set; }
 
 
     [XmlIgnore]

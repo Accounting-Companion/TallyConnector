@@ -83,7 +83,7 @@ public class TallyTests
         {
             Name = "TestGroup2345",
             Parent = "Primary",
-            AddLAllocType = AdAllocType.AppropriateByValue,
+            AddlAllocType = AdAllocType.AppropriateByValue,
         });
         Assert.IsTrue(result.Status == RespStatus.Sucess);
     }
@@ -95,7 +95,7 @@ public class TallyTests
         {
             OldName = "TestGroup",
             Parent = "Sundry Debtors",
-            AddLAllocType = AdAllocType.NotApplicable,
+            AddlAllocType = AdAllocType.NotApplicable,
         }); ;
         Assert.IsTrue(result.Status == RespStatus.Sucess);
     }
@@ -114,10 +114,8 @@ public class TallyTests
     public async Task CheckGetLedger()
     {
         await TTally.Check();
-        Ledger ledger = await TTally.GetLedger<Ledger>("Profit  &  Loss A/c");
-        ledger.OtherAttributes = null;
-        ledger.OtherFields = null;
-        await TTally.PostLedger(ledger);
+        Ledger ledger = await TTally.GetLedger<Ledger>("TestLedger12345");
+     
         Assert.NotNull(ledger);
     }
 
@@ -126,7 +124,7 @@ public class TallyTests
     {
         if (await TTally.Check())
         {
-            Ledger nledger = new() { Name = "TestLedger", Alias = "gjknndnk", Group = "Sundry Debtors" };
+            Ledger nledger = new() { Name = "TestLedger12345", Alias = "gj2345knndnk", Group = "Sundry Debtors" };
             PResult pResult = await TTally.PostLedger(nledger);
             Assert.IsTrue(pResult.Status == RespStatus.Sucess);
         }
@@ -172,7 +170,7 @@ public class TallyTests
     public async Task CheckGetStockGroup()
     {
         await TTally.Check();
-        StockGroup stockGroup = await TTally.GetStockGroup<StockGroup>("Accessories");
+        StockGroup stockGroup = await TTally.GetStockGroup<StockGroup>("HCL");
         Assert.NotNull(stockGroup);
     }
 
@@ -180,7 +178,7 @@ public class TallyTests
     public async Task CheckGetStockCategory()
     {
         await TTally.Check();
-        StockCategory stockCategory = await TTally.GetStockCategory<StockCategory>("Accessories");
+        StockCategory stockCategory = await TTally.GetStockCategory<StockCategory>("Asdrt");
         Assert.NotNull(stockCategory);
     }
 
@@ -188,10 +186,8 @@ public class TallyTests
     public async Task CheckGetStockItem()
     {
         await TTally.Check();
-        StockItem stockItem = await TTally.GetStockItem<StockItem>("CDROM Disks 100s");
-        stockItem.OtherFields = null;
-        stockItem.OtherAttributes = null;
-        await TTally.PostStockItem<StockItem>(stockItem);
+        StockItem stockItem = await TTally.GetStockItem<StockItem>("Test Unit");
+        
         Assert.NotNull(stockItem);
     }
 
@@ -199,7 +195,7 @@ public class TallyTests
     public async Task CheckGetGodown()
     {
         await TTally.Check();
-        Godown godown = await TTally.GetGodown<Godown>("Assembly Floor");
+        Godown godown = await TTally.GetGodown<Godown>("ASadf");
         Assert.NotNull(godown);
     }
 
@@ -207,7 +203,7 @@ public class TallyTests
     public async Task CheckGetVoucherType()
     {
         await TTally.Check();
-        VoucherType voucherType = await TTally.GetVoucherType<VoucherType>("Attendance");
+        VoucherType voucherType = await TTally.GetVoucherType<VoucherType>("POS Sales");
         Assert.NotNull(voucherType);
     }
 
@@ -215,7 +211,7 @@ public class TallyTests
     public async Task CheckGetUnits()
     {
         await TTally.Check();
-        Unit unit = await TTally.GetUnit<Unit>("Box");
+        Unit unit = await TTally.GetUnit<Unit>("Box of 100 strips of 10 tablets");
         Assert.NotNull(unit);
     }
 
@@ -228,10 +224,18 @@ public class TallyTests
     }
 
     [Test]
+    public async Task CheckGetAttendanceType()
+    {
+        await TTally.Check();
+        AttendanceType attendanceType = await TTally.GetAttendanceType<AttendanceType>("TEST");
+        Assert.NotNull(attendanceType);
+    }
+    
+    [Test]
     public async Task CheckGetEmployeeGroup()
     {
         await TTally.Check();
-        EmployeeGroup EmpGrp = await TTally.GetEmployeeGroup<EmployeeGroup>("Accounts");
+        EmployeeGroup EmpGrp = await TTally.GetEmployeeGroup<EmployeeGroup>("Sales");
         Assert.NotNull(EmpGrp);
     }
 
@@ -239,7 +243,7 @@ public class TallyTests
     public async Task CheckGetEmployee()
     {
         await TTally.Check();
-        Employee Employee = await TTally.GetEmployee<Employee>("Rahul");
+        Employee Employee = await TTally.GetEmployee<Employee>("Ajay");
         Assert.NotNull(Employee);
     }
 
@@ -249,7 +253,7 @@ public class TallyTests
     public async Task CheckGetVoucher()
     {
         await TTally.Check();
-        Voucher voucher = await TTally.GetVoucher<Voucher>("1", VoucherLookupField.MasterId);
+        Voucher voucher = await TTally.GetVoucher<Voucher>("1", VoucherLookupField.VoucherNumber);
         Assert.NotNull(voucher);
     }
 

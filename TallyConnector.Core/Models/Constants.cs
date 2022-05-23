@@ -15,6 +15,7 @@ public static class Constants
     public const string MaxNameLength = "51";
     public const string MaxDateLength = "13";
     public const string MaxParticularsLength = "30";
+    public const string GUIDLength = "100";
 
     public static class VoucherCategory
     {

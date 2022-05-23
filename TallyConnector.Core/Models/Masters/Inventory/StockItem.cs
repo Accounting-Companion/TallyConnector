@@ -30,8 +30,16 @@ public class StockItem : BasicTallyObject, ITallyObject
     [XmlElement(ElementName = "PARENT")]
     public string? StockGroup { get; set; }
 
+    [XmlElement(ElementName = "PARENTID")]
+    [Column(TypeName = $"nvarchar({Constants.GUIDLength})")]
+    public string? StockGroupId { get; set; }
+
     [XmlElement(ElementName = "CATEGORY")]
     public string? Category { get; set; }
+
+    [XmlElement(ElementName = "CATEGORYID")]
+    [Column(TypeName = $"nvarchar({Constants.GUIDLength})")]
+    public string? CategoryId { get; set; }
 
     [XmlElement(ElementName = "GSTAPPLICABLE")]
     public string? GSTApplicable { get; set; }
@@ -69,8 +77,16 @@ public class StockItem : BasicTallyObject, ITallyObject
     [XmlElement(ElementName = "BASEUNITS")]
     public string? BaseUnit { get; set; }
 
+    [XmlElement(ElementName = "BASEUNITID")]
+    [Column(TypeName = $"nvarchar({Constants.GUIDLength})")]
+    public string? BaseUnitId { get; set; }
+
     [XmlElement(ElementName = "ADDITIONALUNITS")]
     public string? AdditionalUnits { get; set; }
+
+    [XmlElement(ElementName = "ADDITIONALUNITID")]
+    [Column(TypeName = $"nvarchar({Constants.GUIDLength})")]
+    public string? AdditionalUnitsId { get; set; }
 
     [XmlElement(ElementName = "INCLUSIVETAX")]
     public string? InclusiveOfTax { get; set; }

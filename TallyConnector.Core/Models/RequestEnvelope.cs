@@ -86,6 +86,8 @@ public class TDLMessage
                       string? childof,
                       List<string>? nativeFields,
                       List<Filter>? filters,
+                      List<string>? computevar,
+                      List<string>? compute,
                       YesNo isInitialize)
     {
         Collection.Add(new(colName: colName,
@@ -93,6 +95,8 @@ public class TDLMessage
                            childOf: childof,
                            nativeFields: nativeFields,
                            filters: filters?.Select(c => c.FilterName).ToList()!,
+                           computevar: computevar,
+                           compute: compute,
                            Isintialize: isInitialize));
 
         filters?.ForEach(filter => System.Add(new(name: filter.FilterName!,
@@ -447,6 +451,8 @@ public class Collection : DCollection
                       string? childOf,
                       List<string>? nativeFields = null,
                       List<string>? filters = null,
+                      List<string>? computevar = null,
+                      List<string>? compute = null,
                       YesNo Isintialize = YesNo.No)
     {
         Name = colName;
@@ -460,6 +466,17 @@ public class Collection : DCollection
         {
             Filters = filters;
         }
+        ComputeVar = new() { "vLineIndex: Number : IF $$IsEmpty:##vLineIndex THEN 1 ELSE ##vLineIndex + 1" };
+        if (computevar != null)
+        {
+            ComputeVar.AddRange(computevar);
+        }
+        Compute = new() { "LineIndex : ##vLineIndex" };
+        if (compute != null)
+        {
+            Compute.AddRange(compute);
+        }
+
         SetAttributes(isInitialize: Isintialize);
 
 
@@ -484,6 +501,13 @@ public class Collection : DCollection
 
     [XmlElement(ElementName = "NATIVEMETHOD")]
     public List<string>? NativeFields { get; set; }
+
+    [XmlElement(ElementName = "COMPUTE")]
+    public List<string>? Compute { get; set; }
+
+    [XmlElement(ElementName = "COMPUTEVAR")]
+    public List<string>? ComputeVar { get; set; }
+
 
     [XmlElement(ElementName = "FILTERS")]
     public List<string>? Filters { get; set; }

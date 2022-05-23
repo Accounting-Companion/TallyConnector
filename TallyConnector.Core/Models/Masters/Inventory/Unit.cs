@@ -30,8 +30,16 @@ public class Unit : BasicTallyObject, ITallyObject
     [XmlElement(ElementName = "BASEUNITS")]
     public string? BaseUnit { get; set; }
 
+    [XmlElement(ElementName = "BASEUNITID")]
+    [Column(TypeName = $"nvarchar({Constants.GUIDLength})")]
+    public string? BaseUnitId { get; set; }
+
     [XmlElement(ElementName = "ADDITIONALUNITS")]
     public string? AdditionalUnits { get; set; }
+
+    [XmlElement(ElementName = "ADDITIONALUNITID")]
+    [Column(TypeName = $"nvarchar({Constants.GUIDLength})")]
+    public string? AdditionalUnitId { get; set; }
 
 
     [XmlElement(ElementName = "GSTREPUOM")]

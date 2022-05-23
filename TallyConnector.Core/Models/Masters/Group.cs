@@ -34,6 +34,7 @@ public class Group : BasicTallyObject, ITallyObject
         Parent = parent;
     }
 
+    //Use Old Name Only When you are altering Existing Group
     [XmlAttribute(AttributeName = "NAME")]
     [JsonIgnore]
     [Column(TypeName = $"nvarchar({Constants.MaxNameLength})")]
@@ -57,6 +58,9 @@ public class Group : BasicTallyObject, ITallyObject
     [Column(TypeName = $"nvarchar({Constants.MaxNameLength})")]
     public string? Parent { get; set; }
 
+    [XmlElement(ElementName = "PARENTID")]
+    [Column(TypeName = $"nvarchar({Constants.GUIDLength})")]
+    public string? ParentId { get; set; }
 
     [XmlIgnore]
     [Column(TypeName = $"nvarchar({Constants.MaxNameLength})")]

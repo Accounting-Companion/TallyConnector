@@ -20,7 +20,7 @@ ___
 ## Getting Started
 
 ```shell
-Install-Package TallyConnector -Version 1.0.1 
+Install-Package TallyConnector
 ```
 
 Intiate Tally in your Project

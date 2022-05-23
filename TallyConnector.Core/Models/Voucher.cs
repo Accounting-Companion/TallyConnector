@@ -29,6 +29,10 @@ public class Voucher : BasicTallyObject, ITallyObject
     [Column(TypeName = $"nvarchar({Constants.MaxNameLength})")]
     public string? VoucherType { get; set; }
 
+    [XmlElement(ElementName = "VOUCHERTYPEID")]
+    [Column(TypeName = $"nvarchar({Constants.GUIDLength})")]
+    public string? VoucherTypeId { get; set; }
+
 
     [XmlElement(ElementName = "PERSISTEDVIEW")]
     [Column(TypeName = $"nvarchar(30)")]
@@ -196,9 +200,9 @@ public class Voucher : BasicTallyObject, ITallyObject
     [XmlElement(ElementName = "PARTYNAME")]
     public string? PartyName { get; set; }
 
-    [TallyCategory("PartyDetails")]
-    [XmlElement(ElementName = "PARTYLEDGERNAME")]
-    public string? PartyLedgerName { get; set; }
+    [XmlElement(ElementName = "PARTYLEDGERID")]
+    [Column(TypeName = $"nvarchar({Constants.GUIDLength})")]
+    public string? PartyLedgerId { get; set; }
 
     [TallyCategory("PartyDetails")]
     [XmlElement(ElementName = "PARTYMAILINGNAME")]

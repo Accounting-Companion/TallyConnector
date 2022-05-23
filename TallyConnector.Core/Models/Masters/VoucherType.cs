@@ -52,6 +52,10 @@ public class VoucherType : BasicTallyObject, ITallyObject
     [Column(TypeName = $"nvarchar({Constants.MaxNameLength})")]
     public string Parent { get; set; }
 
+    [XmlElement(ElementName = "PARENTID")]
+    [Column(TypeName = $"nvarchar({Constants.GUIDLength})")]
+    public string? ParentId { get; set; }
+
     [XmlElement(ElementName = "NUMBERINGMETHOD")]
     public string? NumberingMethod { get; set; }
 

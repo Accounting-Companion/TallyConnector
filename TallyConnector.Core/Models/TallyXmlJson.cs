@@ -64,7 +64,7 @@ public class BasicTallyObject : TallyXmlJson, ITallyObject, IBasicTallyObject
     public int? MasterId { get; set; }
 
     [XmlElement(ElementName = "GUID")]
-    [Column(TypeName = "nvarchar(100)")]
+    [Column(TypeName = $"nvarchar({Constants.GUIDLength})")]
     public string? GUID { get; set; }
 
     [XmlElement(ElementName = "ALTERID")]

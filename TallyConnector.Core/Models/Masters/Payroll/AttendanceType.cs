@@ -39,6 +39,10 @@ public class AttendanceType : BasicTallyObject, ITallyObject
     [XmlElement(ElementName = "PARENT")]
     public string? Parent { get; set; }
 
+    [XmlElement(ElementName = "PARENTID")]
+    [Column(TypeName = $"nvarchar({Constants.GUIDLength})")]
+    public string? ParentId { get; set; }
+
     [XmlElement(ElementName = "BASEUNITS")]
     public string? BaseUnit { get; set; }
 

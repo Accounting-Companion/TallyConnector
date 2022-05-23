@@ -51,6 +51,10 @@ public class Ledger : BasicTallyObject, ITallyObject
     [Required]
     public string Group { get; set; }
 
+    [XmlElement(ElementName = "PARENTID")]
+    [Column(TypeName = $"nvarchar({Constants.GUIDLength})")]
+    public string? GroupId { get; set; }
+
 
     [XmlIgnore]
     [Column(TypeName = $"nvarchar({Constants.MaxNameLength})")]
@@ -197,6 +201,10 @@ public class Ledger : BasicTallyObject, ITallyObject
             }
         }
     }
+
+    [XmlElement(ElementName = "CURRENCYID")]
+    [Column(TypeName = $"nvarchar({Constants.GUIDLength})")]
+    public string? CurrencyId { get; set; }
 
     [XmlElement(ElementName = "TAXTYPE")]
     [Column(TypeName = "nvarchar(20)")]

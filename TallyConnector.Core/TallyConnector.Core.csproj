@@ -6,6 +6,19 @@
 		<Nullable>enable</Nullable>
 		<AssemblyName>TallyConnector.Core</AssemblyName>
 		<LangVersion>latest</LangVersion>
+		<PackageTags>tally,xml,tallyprime,tallyerp9</PackageTags>
+
+		<PackageLicenseExpression>MIT</PackageLicenseExpression>
+		<Authors>saivineeth</Authors>
+		<PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
+		<RepositoryUrl>https://github.com/Accounting-Companion/TallyConnector.git</RepositoryUrl>
+		<PackageProjectUrl>https://github.com/Accounting-Companion/TallyConnector</PackageProjectUrl>
+		<Description>
+			This library provides models and other core things for TallyConnector
+		</Description>
+		<RepositoryType>git</RepositoryType>
+		<VersionPrefix>1.0.5</VersionPrefix>
+		<GeneratePackageOnBuild>True</GeneratePackageOnBuild>
 	</PropertyGroup>
 	<ItemGroup Condition=" '$(TargetFramework)' == 'net48'">
 		<PackageReference Include="System.Text.Json" Version="6.0.3" />

@@ -8,6 +8,8 @@ public class CostCenter : BasicTallyObject, ITallyObject
     public CostCenter()
     {
         LanguageNameList = new();
+        CategoryId = string.Empty;
+        Category = string.Empty;
     }
 
     [XmlAttribute(AttributeName = "NAME")]
@@ -32,8 +34,16 @@ public class CostCenter : BasicTallyObject, ITallyObject
     [Required]
     public string Category { get; set; }
 
+    [XmlElement(ElementName = "CATEGORYID")]
+    [Column(TypeName = $"nvarchar({Constants.GUIDLength})")]
+    public string CategoryId { get; set; }
+
     [XmlElement(ElementName = "PARENT")]
     public string? Parent { get; set; }
+
+    [XmlElement(ElementName = "PARENTID")]
+    [Column(TypeName = $"nvarchar({Constants.GUIDLength})")]
+    public string? ParentId { get; set; }
 
     [XmlElement(ElementName = "EMAILID")]
     public string? Emailid { get; set; }
@@ -49,7 +59,7 @@ public class CostCenter : BasicTallyObject, ITallyObject
     [XmlElement(ElementName = "LANGUAGENAME.LIST")]
     [TDLCollection(CollectionName = "LanguageName")]
     public List<LanguageNameList> LanguageNameList { get; set; }
-    
+
 
     public void CreateNamesList()
     {
