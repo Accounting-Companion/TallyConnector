@@ -1,6 +1,7 @@
 ﻿namespace TallyConnector.Core.Models;
 
 [XmlRoot(ElementName = "LANGUAGENAME.LIST")]
+[TDLCollection(CollectionName = "LanguageName")]
 public class LanguageNameList
 {
     public LanguageNameList()

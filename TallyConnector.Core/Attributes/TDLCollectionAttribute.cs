@@ -17,10 +17,30 @@ public class TDLCollectionAttribute : Attribute
         _collectionName = collectionName;
         _type = type;
     }
+    public TDLCollectionAttribute(string? collectionName, string? type, bool include)
+    {
+        _collectionName = collectionName;
+        _type = type;
+        Include = include;
+    }
+    public TDLCollectionAttribute(string? collectionName, bool include)
+    {
+        _collectionName = collectionName;
+        Include = include;
+    }
 
     public string? Type
     {
         get { return _type; }
         set { _type = value; }
     }
+
+    private bool _include;
+
+    public bool Include
+    {
+        get { return _include; }
+        set { _include = value; }
+    }
+
 }

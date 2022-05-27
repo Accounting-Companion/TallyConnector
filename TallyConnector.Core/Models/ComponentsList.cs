@@ -10,6 +10,7 @@ public class ComponentsList
     }
 
     [XmlElement(ElementName = "COMPONENTLISTNAME")]
+    [Column(TypeName = $"nvarchar({Constants.MaxNameLength})")]
     public string? Name { get; set; }
 
     [XmlElement(ElementName = "COMPONENTBASICQTY")]
@@ -29,9 +30,11 @@ public class ComponentsItem
     public ComponentType NatureOfItem { get; set; }
 
     [XmlElement(ElementName = "STOCKITEMNAME")]
+    [Column(TypeName = $"nvarchar({Constants.MaxNameLength})")]
     public string? StockItem { get; set; }
 
     [XmlElement(ElementName = "GODOWNNAME")]
+    [Column(TypeName = $"nvarchar({Constants.MaxNameLength})")]
     public string? Godown { get; set; }
 
     //Percentage of Allocation in Voucher

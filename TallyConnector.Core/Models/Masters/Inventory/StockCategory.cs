@@ -17,12 +17,14 @@ public class StockCategory : BasicTallyObject, ITallyObject
 
 
     [XmlAttribute(AttributeName = "NAME")]
+    [Column(TypeName = $"nvarchar({Constants.MaxNameLength})")]
     [JsonIgnore]
     public string? OldName { get; set; }
 
     private string? name;
 
     [XmlElement(ElementName = "NAME")]
+    [Column(TypeName = $"nvarchar({Constants.MaxNameLength})")]
     [Required]
     public string Name
     {
@@ -35,6 +37,7 @@ public class StockCategory : BasicTallyObject, ITallyObject
     }
 
     [XmlElement(ElementName = "PARENT")]
+    [Column(TypeName = $"nvarchar({Constants.MaxNameLength})")]
     public string? Parent { get; set; }
 
     [XmlElement(ElementName = "PARENTID")]

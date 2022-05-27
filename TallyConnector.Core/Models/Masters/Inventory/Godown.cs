@@ -14,11 +14,13 @@ public class Godown : BasicTallyObject, ITallyObject
 
 
     [XmlAttribute(AttributeName = "NAME")]
+    [Column(TypeName = $"nvarchar({Constants.MaxNameLength})")]
     public string? OldName { get; set; }
 
     private string? name;
 
     [XmlElement(ElementName = "NAME")]
+    [Column(TypeName = $"nvarchar({Constants.MaxNameLength})")]
     [Required]
     public string Name
     {
@@ -32,6 +34,7 @@ public class Godown : BasicTallyObject, ITallyObject
 
 
     [XmlElement(ElementName = "PARENT")]
+    [Column(TypeName = $"nvarchar({Constants.MaxNameLength})")]
     public string? Parent { get; set; }
 
     [XmlElement(ElementName = "PARENTID")]
@@ -66,13 +69,14 @@ public class Godown : BasicTallyObject, ITallyObject
     public string? PhoneNumber { get; set; }
 
     [XmlElement(ElementName = "ISEXTERNAL")]
-    public YesNo IsExternal { get; set; } // ThirdParty Stock with Us
+    [Column(TypeName = "nvarchar(3)")]
+    public TallyYesNo? IsExternal { get; set; } // ThirdParty Stock with Us
 
     [XmlElement(ElementName = "ISINTERNAL")]
-    public YesNo IsInternal { get; set; } // Our Stock With Third Party
+    public TallyYesNo? IsInternal { get; set; } // Our Stock With Third Party
 
     [XmlElement(ElementName = "CANDELETE")]
-    public YesNo CanDelete { get; set; }
+    public TallyYesNo? CanDelete { get; set; }
 
 
     [XmlIgnore]
@@ -84,7 +88,7 @@ public class Godown : BasicTallyObject, ITallyObject
     [XmlElement(ElementName = "LANGUAGENAME.LIST")]
     [TDLCollection(CollectionName = "LanguageName")]
     public List<LanguageNameList> LanguageNameList { get; set; }
-   
+
 
     public void CreateNamesList()
     {

@@ -1,4 +1,5 @@
 ﻿using System.Text.RegularExpressions;
+using TallyConnector.Core.Converters.XMLConverterHelpers;
 
 namespace TallyConnector.Core.Models.Masters;
 
@@ -62,7 +63,7 @@ public class Ledger : BasicTallyObject, ITallyObject
 
     [XmlElement(ElementName = "ISDEEMEDPOSITIVE")]
     [Column(TypeName = "nvarchar(3)")]
-    public YesNo DeemedPositive { get; set; }
+    public TallyYesNo? DeemedPositive { get; set; }
 
     [XmlIgnore]
     [Column(TypeName = $"nvarchar({Constants.MaxAmountLength})")]
@@ -219,7 +220,7 @@ public class Ledger : BasicTallyObject, ITallyObject
 
     [XmlElement(ElementName = "ISBILLWISEON")]
     [Column(TypeName = "nvarchar(3)")]
-    public YesNo IsBillwise { get; set; }
+    public TallyYesNo? IsBillwise { get; set; }
 
     [XmlElement(ElementName = "BILLCREDITPERIOD")]
     [Column(TypeName = "nvarchar(10)")]
@@ -227,10 +228,10 @@ public class Ledger : BasicTallyObject, ITallyObject
 
     [XmlElement(ElementName = "ISCREDITDAYSCHKON")]
     [Column(TypeName = "nvarchar(3)")]
-    public YesNo IsCreditCheck { get; set; }
+    public TallyYesNo? IsCreditCheck { get; set; }
 
 
-    [XmlElement(ElementName = "CREDITLIMIT", IsNullable = true)]
+    [XmlElement(ElementName = "CREDITLIMIT")]
     [MaxLength(20)]
     public string? CreditLimit { get; set; }
 
@@ -311,7 +312,7 @@ public class Ledger : BasicTallyObject, ITallyObject
 
     [XmlElement(ElementName = "ISOTHTERRITORYASSESSEE")]
     [Column(TypeName = "nvarchar(3)")]
-    public YesNo IsOtherTerritoryAssessee { get; set; }
+    public TallyYesNo? IsOtherTerritoryAssessee { get; set; }
 
     [XmlElement(ElementName = "PARTYGSTIN")]
     [Column(TypeName = "nvarchar(17)")]
@@ -319,11 +320,11 @@ public class Ledger : BasicTallyObject, ITallyObject
 
     [XmlElement(ElementName = "ISECOMMOPERATOR")]
     [Column(TypeName = "nvarchar(3)")]
-    public YesNo IsECommerceOperator { get; set; }
+    public TallyYesNo? IsECommerceOperator { get; set; }
 
     [XmlElement(ElementName = "CONSIDERPURCHASEFOREXPORT")]
     [Column(TypeName = "nvarchar(3)")]
-    public YesNo DeemedExport { get; set; }
+    public TallyYesNo? DeemedExport { get; set; }
 
     [XmlElement(ElementName = "GSTNATUREOFSUPPLY")]
     [Column(TypeName = "nvarchar(20)")]
@@ -331,7 +332,7 @@ public class Ledger : BasicTallyObject, ITallyObject
 
     [XmlElement(ElementName = "ISTRANSPORTER")]
     [Column(TypeName = "nvarchar(3)")]
-    public YesNo IsTransporter { get; set; }
+    public TallyYesNo? IsTransporter { get; set; }
 
     [XmlElement(ElementName = "TRANSPORTERID")]
     [Column(TypeName = "nvarchar(20)")]
@@ -340,39 +341,39 @@ public class Ledger : BasicTallyObject, ITallyObject
 
     [XmlElement(ElementName = "AFFECTSSTOCK")]
     [Column(TypeName = "nvarchar(3)")]
-    public YesNo AffectStock { get; set; }
+    public TallyYesNo? AffectStock { get; set; }
 
     [XmlElement(ElementName = "ISCOSTCENTRESON")]
     [Column(TypeName = "nvarchar(3)")]
-    public YesNo IsCostcenter { get; set; }
+    public TallyYesNo? IsCostCenter { get; set; }
 
     [XmlElement(ElementName = "ISREVENUE")]
     [Column(TypeName = "nvarchar(3)")]
-    public YesNo Isrevenue { get; set; }
+    public TallyYesNo? IsRevenue { get; set; }
 
     [XmlElement(ElementName = "ISINTERESTON")]
     [Column(TypeName = "nvarchar(3)")]
-    public YesNo Isintereston { get; set; }
+    public TallyYesNo? IsInterestOn { get; set; }
 
     [XmlElement(ElementName = "INTERESTONBILLWISE")]
     [Column(TypeName = "nvarchar(3)")]
-    public YesNo IsinterestonBillWise { get; set; }
+    public TallyYesNo? IsInterestOnBillWise { get; set; }
 
     [XmlElement(ElementName = "OVERRIDEINTEREST")]
     [Column(TypeName = "nvarchar(3)")]
-    public YesNo OverrideInterest { get; set; }
+    public TallyYesNo? OverrideInterest { get; set; }
 
     [XmlElement(ElementName = "OVERRIDEADVINTEREST")]
     [Column(TypeName = "nvarchar(3)")]
-    public YesNo OverrideAdvanceInterest { get; set; }
+    public TallyYesNo? OverrideAdvanceInterest { get; set; }
 
     [XmlElement(ElementName = "INTERESTINCLDAYOFADDITION")]
     [Column(TypeName = "nvarchar(3)")]
-    public YesNo InterestIncludeForAmountsAdded { get; set; }
+    public TallyYesNo? InterestIncludeForAmountsAdded { get; set; }
 
     [XmlElement(ElementName = "INTERESTINCLDAYOFDEDUCTION")]
     [Column(TypeName = "nvarchar(3)")]
-    public YesNo InterestIncludeForAmountsDeducted { get; set; }
+    public TallyYesNo? InterestIncludeForAmountsDeducted { get; set; }
 
 
     [XmlElement(ElementName = "INTERESTCOLLECTION.LIST")]
@@ -382,7 +383,7 @@ public class Ledger : BasicTallyObject, ITallyObject
 
     [XmlElement(ElementName = "FORPAYROLL")]
     [Column(TypeName = "nvarchar(3)")]
-    public YesNo Forpayroll { get; set; }
+    public TallyYesNo? ForPayroll { get; set; }
 
 
     [XmlElement(ElementName = "DESCRIPTION")]
@@ -414,7 +415,7 @@ public class Ledger : BasicTallyObject, ITallyObject
 
     [XmlElement(ElementName = "CANDELETE")]
     [Column(TypeName = "nvarchar(3)")]
-    public YesNo CanDelete { get; set; }
+    public TallyYesNo? CanDelete { get; set; }
 
 
 
@@ -457,12 +458,12 @@ public class Ledger : BasicTallyObject, ITallyObject
 public class InterestList
 {
     [XmlElement(ElementName = "INTERESTFROMDATE")]
-    [Column(TypeName = "nvarchar(10)")]
-    public string? FromDate { get; set; }
+    [Column(TypeName = $"nvarchar({Constants.MaxDateLength})")]
+    public TallyDate? FromDate { get; set; }
 
     [XmlElement(ElementName = "INTERESTTODATE")]
-    [Column(TypeName = "nvarchar(10)")]
-    public string? ToDate { get; set; }
+    [Column(TypeName = $"nvarchar({Constants.MaxDateLength})")]
+    public TallyDate? ToDate { get; set; }
 
     [XmlElement(ElementName = "INTERESTSTYLE")]
     [Column(TypeName = "nvarchar(20)")]
@@ -470,15 +471,15 @@ public class InterestList
 
     [XmlElement(ElementName = "INTERESTBALANCETYPE")]
     [Column(TypeName = "nvarchar(25)")]
-    public InterestBalanceType InterestBalancetype { get; set; }
+    public InterestBalanceType InterestBalanceType { get; set; }
 
     [XmlElement(ElementName = "INTERESTAPPLON")]
     [Column(TypeName = "nvarchar(20)")]
-    public InterestAppliedOn Interestappliedon { get; set; }
+    public InterestAppliedOn InterestAppliedOn { get; set; }
 
     [XmlElement(ElementName = "INTERESTFROMTYPE")]
     [Column(TypeName = "nvarchar(30)")]
-    public InterestFromType Interestfromtype { get; set; }
+    public InterestFromType InterestFromType { get; set; }
 
     [XmlElement(ElementName = "ROUNDTYPE")]
     [Column(TypeName = "nvarchar(25)")]
@@ -488,7 +489,7 @@ public class InterestList
     public double? InterestRate { get; set; }
 
     [XmlElement(ElementName = "INTERESTAPPLFROM")]
-    public double? Interestappliedfrom { get; set; }
+    public double? InterestAppliedFrom { get; set; }
 
     [XmlElement(ElementName = "ROUNDLIMIT")]
     public double? RoundLimit { get; set; }
@@ -502,11 +503,11 @@ public class ClosingBalances
 {
 
     [XmlElement(ElementName = "DATE")]
-    [Column(TypeName = "nvarchar(10)")]
-    public string? Date { get; set; }
+    [Column(TypeName = $"nvarchar({Constants.MaxDateLength})")]
+    public TallyDate? Date { get; set; }
 
     [XmlElement(ElementName = "AMOUNT")]
     [Column(TypeName = "nvarchar(20)")]
-    public string? Amount { get; set; }
+    public decimal? Amount { get; set; }
 
 }

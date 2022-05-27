@@ -6,3 +6,5 @@ global using System.Text.Json.Serialization;
 global using System.Xml;
 global using System.Xml.Serialization;
 global using TallyConnector.Core.Attributes;
+global using TallyConnector.Core.Converters.XMLConverterHelpers;
+global using TallyConnector.Core.Converters.JSONConverters;

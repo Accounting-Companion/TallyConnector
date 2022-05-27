@@ -13,12 +13,14 @@ public class CostCenter : BasicTallyObject, ITallyObject
     }
 
     [XmlAttribute(AttributeName = "NAME")]
+    [Column(TypeName = $"nvarchar({Constants.MaxNameLength})")]
     [JsonIgnore]
     public string? OldName { get; set; }
 
     private string? name;
 
     [XmlElement(ElementName = "NAME")]
+    [Column(TypeName = $"nvarchar({Constants.MaxNameLength})")]
     [Required]
     public string Name
     {
@@ -31,6 +33,7 @@ public class CostCenter : BasicTallyObject, ITallyObject
     }
 
     [XmlElement(ElementName = "CATEGORY")]
+    [Column(TypeName = $"nvarchar({Constants.MaxNameLength})")]
     [Required]
     public string Category { get; set; }
 
@@ -39,6 +42,7 @@ public class CostCenter : BasicTallyObject, ITallyObject
     public string CategoryId { get; set; }
 
     [XmlElement(ElementName = "PARENT")]
+    [Column(TypeName = $"nvarchar({Constants.MaxNameLength})")]
     public string? Parent { get; set; }
 
     [XmlElement(ElementName = "PARENTID")]
@@ -46,10 +50,12 @@ public class CostCenter : BasicTallyObject, ITallyObject
     public string? ParentId { get; set; }
 
     [XmlElement(ElementName = "EMAILID")]
-    public string? Emailid { get; set; }
+    [Column(TypeName = $"nvarchar({Constants.MaxNameLength})")]
+    public string? EmailId { get; set; }
 
     [XmlElement(ElementName = "REVENUELEDFOROPBAL")]
-    public string? ShowOpeningBal { get; set; }
+    [Column(TypeName = "nvarchar(3)")]
+    public TallyYesNo? ShowOpeningBal { get; set; }
 
 
     [XmlIgnore]

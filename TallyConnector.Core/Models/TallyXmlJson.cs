@@ -1,4 +1,6 @@
-﻿namespace TallyConnector.Core.Models;
+﻿
+
+namespace TallyConnector.Core.Models;
 
 public class TallyBaseObject
 {
@@ -27,7 +29,7 @@ public class TallyXmlJson : TallyBaseObject
         string Json = JsonSerializer.Serialize(this, GetType(), new JsonSerializerOptions()
         {
             WriteIndented = Indented,
-            Converters = { new JsonStringEnumConverter() }
+            Converters = { new JsonStringEnumConverter(),new TallyDateJsonConverter() }
         });
         return Json;
     }

@@ -16,12 +16,14 @@ public class CostCategory : BasicTallyObject, ITallyObject
     }
 
     [XmlAttribute(AttributeName = "NAME")]
+    [Column(TypeName = $"nvarchar({Constants.MaxNameLength})")]
     [JsonIgnore]
     public string? OldName { get; set; }
 
     private string? name;
 
     [XmlElement(ElementName = "NAME")]
+    [Column(TypeName = $"nvarchar({Constants.MaxNameLength})")]
     [Required]
     public string Name
     {
@@ -34,10 +36,12 @@ public class CostCategory : BasicTallyObject, ITallyObject
     }
 
     [XmlElement(ElementName = "ALLOCATEREVENUE")]
-    public YesNo AllocateRevenue { get; set; }
+    [Column(TypeName = "nvarchar(3)")]
+    public TallyYesNo? AllocateRevenue { get; set; }
 
     [XmlElement(ElementName = "ALLOCATENONREVENUE")]
-    public YesNo AllocateNonRevenue { get; set; }
+    [Column(TypeName = "nvarchar(3)")]
+    public TallyYesNo? AllocateNonRevenue { get; set; }
 
     [XmlIgnore]
     public string? Alias { get; set; }
@@ -46,7 +50,7 @@ public class CostCategory : BasicTallyObject, ITallyObject
     [XmlElement(ElementName = "LANGUAGENAME.LIST")]
     [TDLCollection(CollectionName = "LanguageName")]
     public List<LanguageNameList> LanguageNameList { get; set; }
-    
+
 
     public void CreateNamesList()
     {

@@ -6,12 +6,14 @@
 public class Unit : BasicTallyObject, ITallyObject
 {
     [XmlAttribute(AttributeName = "NAME")]
+    [Column(TypeName = $"nvarchar({Constants.MaxNameLength})")]
     [JsonIgnore]
     public string? OldName { get; set; }
 
     private string? name;
 
     [XmlElement(ElementName = "NAME")]
+    [Column(TypeName = $"nvarchar({Constants.MaxNameLength})")]
     [Required]
     public string Name
     {
@@ -25,9 +27,11 @@ public class Unit : BasicTallyObject, ITallyObject
 
 
     [XmlElement(ElementName = "ORIGINALNAME")]
+    [Column(TypeName = $"nvarchar({Constants.MaxNameLength})")]
     public string? OriginalName { get; set; }
 
     [XmlElement(ElementName = "BASEUNITS")]
+    [Column(TypeName = $"nvarchar({Constants.MaxNameLength})")]
     public string? BaseUnit { get; set; }
 
     [XmlElement(ElementName = "BASEUNITID")]
@@ -49,12 +53,12 @@ public class Unit : BasicTallyObject, ITallyObject
     public int DecimalPlaces { get; set; }
 
     [XmlElement(ElementName = "CANDELETE")]
-    public string? CanDelete { get; set; }
+    public TallyYesNo? CanDelete { get; set; }
 
-    private string? _IsSimpleUnit;
+    private bool? _IsSimpleUnit;
 
     [XmlElement(ElementName = "ISSIMPLEUNIT")]
-    public string IsSimpleUnit
+    public TallyYesNo IsSimpleUnit
     {
         get
         {
@@ -65,17 +69,17 @@ public class Unit : BasicTallyObject, ITallyObject
     }
 
     [XmlElement(ElementName = "ISGSTEXCLUDED")]
-    public string? IsGstExcluded { get; set; }
+    public TallyYesNo? IsGstExcluded { get; set; }
 
     [XmlElement(ElementName = "CONVERSION")]
     public double Conversion { get; set; }
-    public string IssimpleUnit()
+    public bool IssimpleUnit()
     {
         if (AdditionalUnits is null || BaseUnit is null || AdditionalUnits == string.Empty || BaseUnit == string.Empty)
         {
-            return "YES";
+            return true;
         }
-        return "NO";
+        return false;
     }
 
     public new void PrepareForExport()

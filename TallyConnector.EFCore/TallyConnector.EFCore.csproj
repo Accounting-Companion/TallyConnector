@@ -1,0 +1,32 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+	  <TargetFrameworks>net6.0;net5.0;net48</TargetFrameworks>
+	  <OutputType>Library</OutputType>
+	  <LangVersion>latest</LangVersion>
+	  <Authors>saivineeth</Authors>
+	  <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
+	  <RepositoryUrl>https://github.com/Accounting-Companion/TallyConnector.git</RepositoryUrl>
+	  <PackageProjectUrl>https://github.com/Accounting-Companion/TallyConnector</PackageProjectUrl>
+	  <Description>This library has conversions for custom types used in TallyConnector</Description>
+
+	  <ImplicitUsings>enable</ImplicitUsings>
+
+	  <PackageTags>tally,xml,tallyprime,tallyerp9</PackageTags>
+
+	  <PackageLicenseExpression>MIT</PackageLicenseExpression>
+
+	  <RepositoryType>git</RepositoryType>
+
+	  <VersionPrefix>1.0.5</VersionPrefix>
+
+	  <Nullable>enable</Nullable>
+
+	  <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\TallyConnector.Core\TallyConnector.Core.csproj" />
+  </ItemGroup>
+
+</Project>

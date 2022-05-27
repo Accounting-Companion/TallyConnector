@@ -60,16 +60,20 @@ public class VoucherType : BasicTallyObject, ITallyObject
     public string? NumberingMethod { get; set; }
 
     [XmlElement(ElementName = "USEZEROENTRIES")]
-    public YesNo UseZeroEntries { get; set; }
+    [Column(TypeName = "nvarchar(3)")]
+    public TallyYesNo? UseZeroEntries { get; set; }
 
     [XmlElement(ElementName = "ISACTIVE")]
-    public YesNo IsActive { get; set; }
+    [Column(TypeName = "nvarchar(3)")]
+    public TallyYesNo? IsActive { get; set; }
 
     [XmlElement(ElementName = "PRINTAFTERSAVE")]
-    public YesNo PrintAfterSave { get; set; }
+    [Column(TypeName = "nvarchar(3)")]
+    public TallyYesNo? PrintAfterSave { get; set; }
 
     [XmlElement(ElementName = "USEFORPOSINVOICE")]
-    public YesNo UseforPOSInvoice { get; set; }
+    [Column(TypeName = "nvarchar(3)")]
+    public TallyYesNo? UseforPOSInvoice { get; set; }
 
     [XmlElement(ElementName = "VCHPRINTBANKNAME")]
     public string? VchPrintBankName { get; set; }
@@ -81,32 +85,41 @@ public class VoucherType : BasicTallyObject, ITallyObject
     public string? VchPrintJurisdiction { get; set; }
 
     [XmlElement(ElementName = "ISOPTIONAL")]
-    public YesNo IsOptional { get; set; }
+    [Column(TypeName = "nvarchar(3)")]
+    public TallyYesNo? IsOptional { get; set; }
 
     [XmlElement(ElementName = "COMMONNARRATION")]
-    public YesNo CommonNarration { get; set; }
+    [Column(TypeName = "nvarchar(3)")]
+    public TallyYesNo? CommonNarration { get; set; }
 
     [XmlElement(ElementName = "MULTINARRATION")]
-    public YesNo MultiNarration { get; set; }  //Narration for each Ledger
+    [Column(TypeName = "nvarchar(3)")]
+    public TallyYesNo? MultiNarration { get; set; }  //Narration for each Ledger
 
     [XmlElement(ElementName = "ISDEFAULTALLOCENABLED")]
-    public YesNo IsDefaultAllocationEnabled { get; set; }
+    [Column(TypeName = "nvarchar(3)")]
+    public TallyYesNo? IsDefaultAllocationEnabled { get; set; }
 
     [XmlElement(ElementName = "AFFECTSSTOCK")]
-    public YesNo EffectStock { get; set; }
+    [Column(TypeName = "nvarchar(3)")]
+    public TallyYesNo? EffectStock { get; set; }
 
     [XmlElement(ElementName = "ASMFGJRNL")]
-    public YesNo AsMfgJrnl { get; set; }
+    [Column(TypeName = "nvarchar(3)")]
+    public TallyYesNo? AsMfgJrnl { get; set; }
 
     [XmlElement(ElementName = "USEFORJOBWORK")]
-    public YesNo UseforJobwork { get; set; }
+    [Column(TypeName = "nvarchar(3)")]
+    public TallyYesNo? UseforJobwork { get; set; }
 
     [XmlElement(ElementName = "ISFORJOBWORKIN")]
-    public YesNo IsforJobworkIn { get; set; }
+    [Column(TypeName = "nvarchar(3)")]
+    public TallyYesNo? IsforJobworkIn { get; set; }
 
 
     [XmlElement(ElementName = "CANDELETE")]
-    public YesNo CanDelete { get; set; }
+    [Column(TypeName = "nvarchar(3)")]
+    public TallyYesNo? CanDelete { get; set; }
 
 
     public void CreateNamesList()

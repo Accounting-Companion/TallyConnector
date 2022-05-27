@@ -10,12 +10,14 @@ public class StockItem : BasicTallyObject, ITallyObject
     }
 
     [XmlAttribute(AttributeName = "NAME")]
+    [Column(TypeName = $"nvarchar({Constants.MaxNameLength})")]
     [JsonIgnore]
     public string? OldName { get; set; }
 
     private string? name;
 
     [XmlElement(ElementName = "NAME")]
+    [Column(TypeName = $"nvarchar({Constants.MaxNameLength})")]
     [Required]
     public string Name
     {
@@ -28,6 +30,7 @@ public class StockItem : BasicTallyObject, ITallyObject
     }
 
     [XmlElement(ElementName = "PARENT")]
+    [Column(TypeName = $"nvarchar({Constants.MaxNameLength})")]
     public string? StockGroup { get; set; }
 
     [XmlElement(ElementName = "PARENTID")]
@@ -35,6 +38,7 @@ public class StockItem : BasicTallyObject, ITallyObject
     public string? StockGroupId { get; set; }
 
     [XmlElement(ElementName = "CATEGORY")]
+    [Column(TypeName = $"nvarchar({Constants.MaxNameLength})")]
     public string? Category { get; set; }
 
     [XmlElement(ElementName = "CATEGORYID")]
@@ -62,19 +66,27 @@ public class StockItem : BasicTallyObject, ITallyObject
     [XmlElement(ElementName = "VALUATIONMETHOD")]
     public string? ValuationMethod { get; set; }
 
+    [XmlElement(ElementName = "ISCOSTTRACKINGON")]
+    [Column(TypeName = "nvarchar(3)")]
+    public TallyYesNo? IsCostTracking { get; set; }
+
     [XmlElement(ElementName = "ISCOSTCENTRESON")]
-    public string? IsCostTracking { get; set; }
+    [Column(TypeName = "nvarchar(3)")]
+    public TallyYesNo? IsCostCentresOn { get; set; }
 
     [XmlElement(ElementName = "ISBATCHWISEON")]
-    public string? MaintainInBranches { get; set; }
+    [Column(TypeName = "nvarchar(3)")]
+    public TallyYesNo? MaintainInBranches { get; set; }
 
     [XmlElement(ElementName = "ISPERISHABLEON")]
-    public string? UseExpiryDates { get; set; }
+    [Column(TypeName = "nvarchar(3)")]
+    public TallyYesNo? UseExpiryDates { get; set; }
 
     [XmlElement(ElementName = "HASMFGDATE")]
-    public string? TrackDateOfManufacturing { get; set; }
+    public TallyYesNo? TrackDateOfManufacturing { get; set; }
 
     [XmlElement(ElementName = "BASEUNITS")]
+    [Column(TypeName = $"nvarchar({Constants.MaxNameLength})")]
     public string? BaseUnit { get; set; }
 
     [XmlElement(ElementName = "BASEUNITID")]
@@ -82,6 +94,7 @@ public class StockItem : BasicTallyObject, ITallyObject
     public string? BaseUnitId { get; set; }
 
     [XmlElement(ElementName = "ADDITIONALUNITS")]
+    [Column(TypeName = $"nvarchar({Constants.MaxNameLength})")]
     public string? AdditionalUnits { get; set; }
 
     [XmlElement(ElementName = "ADDITIONALUNITID")]
@@ -89,7 +102,7 @@ public class StockItem : BasicTallyObject, ITallyObject
     public string? AdditionalUnitsId { get; set; }
 
     [XmlElement(ElementName = "INCLUSIVETAX")]
-    public string? InclusiveOfTax { get; set; }
+    public TallyYesNo? InclusiveOfTax { get; set; }
 
 
     [XmlElement(ElementName = "CONVERSION")]

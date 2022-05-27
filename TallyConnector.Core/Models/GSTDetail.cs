@@ -19,19 +19,19 @@ public class GSTDetail : TallyBaseObject
     public string? HSNMasterName { get; set; }
 
     [XmlElement(ElementName = "ISNONGSTGOODS")]
-    public YesNo IsNonGSTGoods { get; set; }
+    public TallyYesNo? IsNonGSTGoods { get; set; }
 
     [XmlElement(ElementName = "TAXABILITY")]
     public GSTTaxabilityType Taxability { get; set; }
 
     [XmlElement(ElementName = "ISREVERSECHARGEAPPLICABLE")]
-    public YesNo IsReverseChargeApplicable { get; set; }
+    public TallyYesNo? IsReverseChargeApplicable { get; set; }
 
     [XmlElement(ElementName = "GSTINELIGIBLEITC")]
-    public YesNo IsInEligibleforITC { get; set; }
+    public TallyYesNo? IsInEligibleforITC { get; set; }
 
     [XmlElement(ElementName = "INCLUDEEXPFORSLABCALC")]
-    public YesNo IcludeExpForSlabCalc { get; set; }
+    public TallyYesNo? IcludeExpForSlabCalc { get; set; }
 
     [XmlElement(ElementName = "STATEWISEDETAILS.LIST")]
     public List<StateWiseDetail>? StateWiseDetails { get; set; }

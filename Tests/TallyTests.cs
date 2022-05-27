@@ -1,5 +1,6 @@
 using NUnit.Framework;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using TallyConnector.Core.Models;
 using TallyConnector.Core.Models.Masters;
@@ -53,14 +54,14 @@ public class TallyTests
         List<BasicTallyObject> LedgerMasters = TTally.Masters.Find(master => master.MasterType == TallyObjectType.Ledgers).Masters;
         Assert.IsNotNull(LedgerMasters);
     }
-    
+
     [Test]
     public async Task CheckGetActiveCompany()
     {
         string test = await TTally.GetActiveTallyCompany();
         Assert.IsNotNull(test);
     }
-    
+
     [Test]
     public void CheckGetObject()
     {
@@ -72,7 +73,10 @@ public class TallyTests
     {
         await TTally.Check();
         //Group group = await TTally.GetGroup("Sundry Debtors");
-        Group group = await TTally.GetObjectfromTally<Group>("Sundry Debtors");
+        Group group = await TTally.GetObjectfromTally<Group>("Sales Tax Payable");        
+        group.OtherAttributes = null;
+        group.OtherFields = null;
+        string grp = group.GetXML();
         Assert.NotNull(group);
     }
     [Test]
@@ -114,8 +118,8 @@ public class TallyTests
     public async Task CheckGetLedger()
     {
         await TTally.Check();
-        Ledger ledger = await TTally.GetLedger<Ledger>("TestLedger12345");
-     
+        Ledger ledger = await TTally.GetLedger<Ledger>("Stock");
+        string json = ledger.GetJson();
         Assert.NotNull(ledger);
     }
 
@@ -187,7 +191,7 @@ public class TallyTests
     {
         await TTally.Check();
         StockItem stockItem = await TTally.GetStockItem<StockItem>("Test Unit");
-        
+
         Assert.NotNull(stockItem);
     }
 
@@ -219,7 +223,7 @@ public class TallyTests
     public async Task CheckGetCurrency()
     {
         await TTally.Check();
-        Currency Currency = await TTally.GetCurrency<Currency>("5243",MasterLookupField.AlterId );
+        Currency Currency = await TTally.GetCurrency<Currency>("5243", MasterLookupField.AlterId);
         Assert.NotNull(Currency);
     }
 
@@ -230,7 +234,7 @@ public class TallyTests
         AttendanceType attendanceType = await TTally.GetAttendanceType<AttendanceType>("TEST");
         Assert.NotNull(attendanceType);
     }
-    
+
     [Test]
     public async Task CheckGetEmployeeGroup()
     {
@@ -261,7 +265,7 @@ public class TallyTests
     public async Task CheckGetBasicVoucher()
     {
         await TTally.Check();
-        var BasicData =  await TTally.GetBasicObjectData("VOUCHER");
+        var BasicData = await TTally.GetBasicObjectData("VOUCHER");
 
         Assert.NotZero(BasicData.Count);
     }

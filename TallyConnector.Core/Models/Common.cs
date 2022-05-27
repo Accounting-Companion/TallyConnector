@@ -10,14 +10,16 @@ public enum MasterLookupField
 
 public enum Action
 {
+    [XmlEnum(Name = "")]
+    None,
     [XmlEnum(Name = "Create")]
-    Create = 0,
+    Create,
     [XmlEnum(Name = "Alter")]
-    Alter = 1,
+    Alter,
     [XmlEnum(Name = "Delete")]
-    Delete = 2,
+    Delete,
     [XmlEnum(Name = "Cancel")]
-    Cancel = 3,
+    Cancel,
 }
 
 /// <summary>

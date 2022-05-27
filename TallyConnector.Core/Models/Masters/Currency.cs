@@ -51,19 +51,19 @@ public class Currency : BasicTallyObject, ITallyObject
     /// </summary>
     [XmlElement(ElementName = "DECIMALPLACESFORPRINTING")]
     [Range(1, 4)]
-    public int DecimalPlaces_Print { get; set; }
+    public int DecimalPlacesPrint { get; set; }
 
     [XmlElement(ElementName = "INMILLIONS")]
     [Column(TypeName = "nvarchar(3)")]
-    public YesNo InMilllions { get; set; }
+    public TallyYesNo? InMilllions { get; set; }
 
     [XmlElement(ElementName = "ISSUFFIX")]
     [Column(TypeName = "nvarchar(3)")]
-    public YesNo IsSuffix { get; set; }
+    public TallyYesNo? IsSuffix { get; set; }
 
     [XmlElement(ElementName = "HASSPACE")]
     [Column(TypeName = "nvarchar(3)")]
-    public YesNo HasSpace { get; set; }
+    public TallyYesNo? HasSpace { get; set; }
 
 
 

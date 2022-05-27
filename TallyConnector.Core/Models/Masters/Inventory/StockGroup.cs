@@ -11,12 +11,14 @@ public class StockGroup : BasicTallyObject, ITallyObject
     }
 
     [XmlAttribute(AttributeName = "NAME")]
+    [Column(TypeName = $"nvarchar({Constants.MaxNameLength})")]
     [JsonIgnore]
     public string? OldName { get; set; }
 
     private string? name;
 
     [XmlElement(ElementName = "NAME")]
+    [Column(TypeName = $"nvarchar({Constants.MaxNameLength})")]
     [Required]
     public string Name
     {
@@ -29,6 +31,7 @@ public class StockGroup : BasicTallyObject, ITallyObject
     }
 
     [XmlElement(ElementName = "PARENT")]
+    [Column(TypeName = $"nvarchar({Constants.MaxNameLength})")]
     public string? Parent { get; set; }
 
     [XmlElement(ElementName = "PARENTID")]
@@ -36,13 +39,13 @@ public class StockGroup : BasicTallyObject, ITallyObject
     public string? ParentId { get; set; }
 
     [XmlElement(ElementName = "ISADDABLE")]
-    public YesNo? IsAddable { get; set; }  //Should Quantities of Items be Added
+    public TallyYesNo? IsAddable { get; set; }  //Should Quantities of Items be Added
 
     [XmlElement(ElementName = "GSTAPPLICABLE")]
     public string? GSTApplicability { get; set; }
 
-    //[XmlElement(ElementName = "BASEUNITS")]
-    //public string? BaseUnit { get; set; }
+    [XmlElement(ElementName = "BASEUNITS")]
+    public string? BaseUnit { get; set; }
 
     [XmlIgnore]
     public string? Alias { get; set; }

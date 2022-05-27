@@ -14,11 +14,11 @@ public class Voucher : BasicTallyObject, ITallyObject
 
     [XmlElement(ElementName = "DATE")]
     [Column(TypeName = $"nvarchar({Constants.MaxDateLength})")]
-    public string? Date { get; set; }
+    public TallyDate? Date { get; set; }
 
     [XmlElement(ElementName = "REFERENCEDATE")]
     [Column(TypeName = $"nvarchar({Constants.MaxDateLength})")]
-    public string? ReferenceDate { get; set; }
+    public TallyDate? ReferenceDate { get; set; }
 
     [XmlElement(ElementName = "REFERENCE")]
     [Column(TypeName = $"nvarchar({Constants.MaxNameLength})")]
@@ -44,11 +44,11 @@ public class Voucher : BasicTallyObject, ITallyObject
 
     [XmlElement(ElementName = "ISOPTIONAL")]
     [Column(TypeName = "nvarchar(3)")]
-    public YesNo? IsOptional { get; set; }
+    public TallyYesNo? IsOptional { get; set; }
 
     [XmlElement(ElementName = "EFFECTIVEDATE")]
     [Column(TypeName = $"nvarchar({Constants.MaxDateLength})")]
-    public string? EffectiveDate { get; set; }
+    public TallyDate? EffectiveDate { get; set; }
 
     [XmlElement(ElementName = "NARRATION")]
     [Column(TypeName = $"nvarchar({Constants.MaxNarrLength})")]
@@ -85,7 +85,7 @@ public class Voucher : BasicTallyObject, ITallyObject
 
     [TallyCategory("DispatchDetails")]
     [XmlIgnore]
-    public string? ShippingDate { get; set; }
+    public TallyDate? ShippingDate { get; set; }
 
     private DeliveryNotes _DeliveryNotes;
 
@@ -262,11 +262,11 @@ public class Voucher : BasicTallyObject, ITallyObject
 
 
     [XmlElement(ElementName = "ISCANCELLED")]
-    public string? IsCancelled { get; set; }
+    public TallyYesNo? IsCancelled { get; set; }
 
     //EWAY Details
     [XmlElement(ElementName = "OVRDNEWAYBILLAPPLICABILITY")]
-    public YesNo OverrideEWayBillApplicability { get; set; }
+    public TallyYesNo OverrideEWayBillApplicability { get; set; }
 
     [XmlElement(ElementName = "EWAYBILLDETAILS.LIST")]
     public List<EwayBillDetail>? EWayBillDetails { get; set; }
@@ -297,7 +297,11 @@ public class Voucher : BasicTallyObject, ITallyObject
     {
         get
         {
-            return Date;
+            if (Date != null)
+            {
+                return ((DateTime)Date!).ToString("yyyMMdd");
+            }
+            else { return null; }
         }
         set
         {
@@ -393,7 +397,7 @@ public class Voucher : BasicTallyObject, ITallyObject
                 if (billalloc.BillCreditPeriod != null)
                 {
                     EffectiveDate ??= Date;
-                    DateTime dateTime = DateTime.ParseExact(EffectiveDate!, "yyyyMMdd", CultureInfo.InvariantCulture);
+                    DateTime dateTime = (DateTime)EffectiveDate!;
                     double days = dateTime.Subtract(new DateTime(1900, 1, 1)).TotalDays + 1;
                     billalloc.BillCP.JD = days.ToString();
                 }
@@ -430,11 +434,12 @@ public class VoucherLedger : TallyBaseObject
 
 
     [XmlElement(ElementName = "LEDGERNAME")]
+    [Column(TypeName = $"nvarchar({Constants.MaxNameLength})")]
     public string? LedgerName { get; set; }
 
 
     [XmlElement(ElementName = "ISDEEMEDPOSITIVE")]
-    public string? IsDeemedPositive
+    public TallyYesNo? IsDeemedPositive
     {
         get
         {
@@ -442,11 +447,11 @@ public class VoucherLedger : TallyBaseObject
             {
                 if (!_Amount.Contains('-'))
                 {
-                    return "No";
+                    return false;
                 }
                 else
                 {
-                    return "Yes";
+                    return true;
                 }
             }
             return null;
@@ -664,16 +669,18 @@ public class InventoryAllocations : TallyBaseObject
 
 
     [XmlElement(ElementName = "STOCKITEMNAME")]
+    [Column(TypeName = $"nvarchar({Constants.MaxNameLength})")]
     public string? StockItemName { get; set; }
 
     [XmlElement(ElementName = "BOMNAME")]
+    [Column(TypeName = $"nvarchar({Constants.MaxNameLength})")]
     public string? BOMName { get; set; }
 
     [XmlElement(ElementName = "ISSCRAP")]
-    public string? IsScrap { get; set; }
+    public TallyYesNo? IsScrap { get; set; }
 
     [XmlElement(ElementName = "ISDEEMEDPOSITIVE")]
-    public string? DeemedPositive { get; set; }
+    public TallyYesNo? DeemedPositive { get; set; }
 
     [XmlElement(ElementName = "RATE")]
     public string? Rate { get; set; }
@@ -750,9 +757,11 @@ public class BatchAllocations : TallyBaseObject//Godown Allocations
     public string? OrderNo { get; set; }
 
     [XmlElement(ElementName = "GODOWNNAME")]
+    [Column(TypeName = $"nvarchar({Constants.MaxNameLength})")]
     public string? GodownName { get; set; }
 
     [XmlElement(ElementName = "BATCHNAME")]
+    [Column(TypeName = $"nvarchar({Constants.MaxNameLength})")]
     public string? BatchName { get; set; }
 
 
@@ -817,6 +826,7 @@ public class CostCategoryAllocations : TallyBaseObject
     }
 
     [XmlElement(ElementName = "CATEGORY")]
+    [Column(TypeName = $"nvarchar({Constants.MaxNameLength})")]
     public string? CostCategoryName { get; set; }
 
     [XmlElement(ElementName = "COSTCENTREALLOCATIONS.LIST")]
@@ -827,6 +837,7 @@ public class CostCategoryAllocations : TallyBaseObject
 public class CostCenterAllocations : TallyBaseObject
 {
     [XmlElement(ElementName = "NAME")]
+    [Column(TypeName = $"nvarchar({Constants.MaxNameLength})")]
     public string? Name { get; set; }
 
     private string? _Amount;
@@ -836,6 +847,7 @@ public class CostCenterAllocations : TallyBaseObject
     public string? RateofExchange { get; set; }
 
     [XmlElement(ElementName = "AMOUNT")]
+
     public string Amount
     {
         get
@@ -887,12 +899,13 @@ public class AttendanceEntry
     public string? AttdTypeId { get; set; }
 
 
-
     [XmlElement(ElementName = "NAME")]
+    [Column(TypeName = $"nvarchar({Constants.MaxNameLength})")]
     public string? Name { get; set; }
 
 
     [XmlElement(ElementName = "ATTENDANCETYPE")]
+    [Column(TypeName = $"nvarchar({Constants.MaxNameLength})")]
     public string? AttdType { get; set; }
 
     [XmlElement(ElementName = "ATTDTYPETIMEVALUE")]
@@ -907,7 +920,7 @@ public class AttendanceEntry
 public class DeliveryNotes
 {
     [XmlElement(ElementName = "BASICSHIPPINGDATE")]
-    public string? ShippingDate { get; set; }
+    public TallyDate? ShippingDate { get; set; }
 
     [XmlElement(ElementName = "BASICSHIPDELIVERYNOTE")]
     public string? DeliveryNote { get; set; }
@@ -918,10 +931,10 @@ public class DeliveryNotes
 public class EwayBillDetail : TallyBaseObject
 {
     [XmlElement(ElementName = "BILLDATE")]
-    public string? BillDate { get; set; }
+    public TallyDate? BillDate { get; set; }
 
     [XmlElement(ElementName = "CONSOLIDATEDBILLDATE")]
-    public string? ConsolidatedBillDate { get; set; }
+    public TallyDate? ConsolidatedBillDate { get; set; }
 
     [XmlElement(ElementName = "BILLNUMBER")]
     public string? BillNumber { get; set; }
@@ -961,6 +974,7 @@ public class TransporterDetail : TallyBaseObject
     public string? Distance { get; set; }
 
     [XmlElement(ElementName = "TRANSPORTERNAME")]
+    [Column(TypeName = $"nvarchar({Constants.MaxNameLength})")]
     public string? TransporterName { get; set; }
 
     [XmlElement(ElementName = "TRANSPORTERID")]
@@ -983,58 +997,6 @@ public class TransporterDetail : TallyBaseObject
 
     [XmlElement(ElementName = "VEHICLETYPE")]
     public VehicleType VehicleType { get; set; }
-}
-
-/// <summary>
-/// Voucher Message
-/// </summary>
-
-
-
-
-[XmlRoot(ElementName = "ENVELOPE")]
-public class VoucherEnvelope : TallyXmlJson
-{
-
-    [XmlElement(ElementName = "HEADER")]
-    public Header? Header { get; set; }
-
-    [XmlElement(ElementName = "BODY")]
-    public VBody Body { get; set; } = new VBody();
-}
-
-[XmlRoot(ElementName = "BODY")]
-public class VBody
-{
-    [XmlElement(ElementName = "DESC")]
-    public Description Desc { get; set; } = new Description();
-
-    [XmlElement(ElementName = "DATA")]
-    public VData Data { get; set; } = new VData();
-}
-
-[XmlRoot(ElementName = "DATA")]
-public class VData
-{
-    [XmlElement(ElementName = "TALLYMESSAGE")]
-    public VoucherMessage Message { get; set; } = new VoucherMessage();
-
-    [XmlElement(ElementName = "COLLECTION")]
-    public VouchColl Collection { get; set; } = new VouchColl();
-}
-
-[XmlRoot(ElementName = "COLLECTION")]
-public class VouchColl
-{
-    [XmlElement(ElementName = "VOUCHER")]
-    public List<Voucher>? Vouchers { get; set; }
-}
-
-[XmlRoot(ElementName = "TALLYMESSAGE")]
-public class VoucherMessage
-{
-    [XmlElement(ElementName = "VOUCHER")]
-    public Voucher? Voucher { get; set; }
 }
 
 public enum VoucherLookupField

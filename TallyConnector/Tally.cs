@@ -25,6 +25,7 @@ public class Tally : IDisposable
     public List<MastersBasicInfo<BasicTallyObject>>? Masters { get; private set; }
 
     private Dictionary<Type, PropertyInfo[]> PropertyInfoList { get; set; } = new();
+    private Dictionary<Type, List<ReportField>> SubFieldsList { get; set; } = new();
 
     private bool disposedValue;
 
@@ -556,7 +557,7 @@ public class Tally : IDisposable
         company ??= Company;
         fromDate ??= FromDate;
         toDate ??= ToDate;
-        fetchList ??= new() { "MasterId", "*" };
+        fetchList ??= new() { "MasterId", "CanDelete", "*" };
 
         StaticVariables sv = new() { SVCompany = company, SVFromDate = fromDate, SVToDate = toDate };
         string filterformulae;
@@ -1557,41 +1558,7 @@ public class Tally : IDisposable
     }
 
 
-    /// <summary>
-    /// Gets Voucher based on <strong>Voucher number and Date</strong>
-    /// </summary>
-    /// <param name="VoucherNumber">Specify MasterID based on which vouchers to be fetched</param>
-    /// <param name="Date">Specify voucher Date</param>
-    /// <param name="company">Specify Company if not specified in Setup</param>
-    /// <param name="fetchList">You can select the list of fields to be fetched from tally if nothing specified it pulls all fields availaible in Tally
-    /// </param>
-    /// <returns>Returns instance of Models.Voucher with data from tally</returns>
-    public async Task<Voucher> GetVoucherByVoucherNumber(string VoucherNumber,
-                                                         string Date,
-                                                         string? company = null,
-                                                         List<string>? fetchList = null)
-    {
-        //If parameter is null Get value from instance
-        company ??= Company;
-
-        VoucherEnvelope? VchEnvelope = (await GetObjFromTally<VoucherEnvelope>(ObjName: $"Date: \'{Date}\' : VoucherNumber: \'{VoucherNumber}\'",
-                                                                         ObjType: "Voucher",
-                                                                         company: company,
-                                                                         fetchList: fetchList,
-                                                                         viewname: VoucherViewType.AccountingVoucherView));
-
-        if (VchEnvelope?.Body.Data.Message.Voucher != null)
-        {
-            Voucher voucher = VchEnvelope.Body.Data.Message.Voucher;
-            return voucher;
-        }
-        else
-        {
-            throw new ObjectDoesNotExist("Voucher");
-        }
-    }
-
-
+  
     /// <summary>
     /// Create/Alter/Delete voucher in Tally,
     /// To Alter/Delete existing voucher set voucher.Action to Alter/Delete
@@ -1782,6 +1749,131 @@ public class Tally : IDisposable
 
     }
 
+    public ReportField CrateTDLReport(Type type, ReportField? reportField = null, bool ReturnList = false)
+    {
+        reportField ??= new(type.Name, $"Cus{type.Name}Coll".ToUpper());
+        TDLCollectionAttribute? tDLCollectionAttribute = GetTDLCollectionAttributeValue(type);
+        if (tDLCollectionAttribute == null)
+        {
+            reportField.CollectionType = type.Name;
+        }
+        else
+        {
+            reportField.CollectionName = tDLCollectionAttribute.CollectionName;
+            reportField.CollectionType = tDLCollectionAttribute.Type ?? tDLCollectionAttribute.CollectionName;
+        }
+        reportField.CreateCollectionTag = true;
+        reportField.ReturList = ReturnList;
+        GenerateSubFields(type, reportField);
+        return reportField;
+    }
+
+    private void GenerateSubFields(Type type, ReportField reportField)
+    {
+        var HaveSubfields = SubFieldsList.TryGetValue(type, out List<ReportField>? SubFields);
+        if (HaveSubfields && SubFields != null)
+        {
+            reportField.SubFields = SubFields;
+        }
+        else
+        {
+            PropertyInfo[] propertyInfoList = GetPropertyInfo(type);
+            //For Caching
+            List<ReportField> reportFields = new();
+            foreach (PropertyInfo propertyInfo in propertyInfoList)
+            {
+                Type propertyType = propertyInfo.PropertyType;
+
+                //Check whether property is type generic list
+                //else check whether object is of complex type
+                if (propertyType.IsGenericType && (propertyType.GetGenericTypeDefinition() == typeof(List<>)))
+                {
+                    Type ChildType = propertyType.GetGenericArguments()[0];
+                    if (IsComplexType(ChildType))
+                    {
+                        GenerateFieldsForComplexProperty(reportField, ChildType);
+                    }
+                    else
+                    {
+                        TDLCollectionAttribute? childCollectionAttribute = GetTDLCollectionAttributeValue(propertyInfo);
+                        string elemName = GetXmlElement(propertyInfo)!;
+                        ReportField ChildreportField = new(elemName);
+
+                        ChildreportField.CollectionName = childCollectionAttribute?.CollectionName;
+                        reportField.SubFields.Add(ChildreportField);
+                        GenerateReportField(propertyInfo, ChildreportField);
+                    }
+
+
+                }
+                else if (IsComplexType(propertyType) && propertyType != typeof(XmlElement[]) && propertyType != typeof(XmlAttribute[]))
+                {
+                    GenerateFieldsForComplexProperty(reportField, propertyType);
+                }
+                else
+                {
+                    ReportField? childReportField = GenerateReportField(propertyInfo, reportField);
+                    if (childReportField != null)
+                    {
+                        reportFields.Add(childReportField);
+                    }
+                }
+            }
+
+            SubFieldsList[type] = reportFields;
+
+        }
+
+    }
+
+    private void GenerateFieldsForComplexProperty(ReportField reportField, Type ChildType)
+    {
+        ReportField ChildreportField = new(ChildType.Name);
+        TDLCollectionAttribute? childCollectionAttribute = GetTDLCollectionAttributeValue(ChildType);
+        if (childCollectionAttribute == null)
+        {
+            ChildreportField.CollectionName = ChildType.Name;
+        }
+        else
+        {
+            ChildreportField.CollectionName = childCollectionAttribute.CollectionName;
+        }
+        reportField.SubFields.Add(ChildreportField);
+        GenerateSubFields(ChildType, ChildreportField);
+    }
+
+    public ReportField? GenerateReportField(PropertyInfo propertyInfo,
+                                            ReportField reportField)
+    {
+        //Gets Xml Tag from Property Info if Exists
+        string? xmlTag = GetXmlElement(propertyInfo);
+        if (xmlTag != null)
+        {
+            ReportField ChildField = new(xmlTag);
+            TDLXMLSetAttribute? tDLXMLSet = GetTDLXMLSetAttributeValue(propertyInfo);
+            if (tDLXMLSet != null)
+            {
+                if (tDLXMLSet.Set != string.Empty)
+                {
+                    ChildField.SetExp = tDLXMLSet.Set;
+                }
+                ChildField.IncludeinFetch = tDLXMLSet.IncludeInFetch;
+
+            }
+
+            reportField.SubFields.Add(ChildField);
+            return ChildField;
+
+        }
+        return null;
+    }
+
+    public static bool IsComplexType(Type propertyType)
+    {
+        List<Type> IgnoreTypes = new() { typeof(string), typeof(int), typeof(int?) };
+        return !propertyType.IsEnum && !propertyType.IsPrimitive && !IgnoreTypes.Contains(propertyType);
+    }
+
     public void GetTDLReport(Type type, ReportField rootreportField)
     {
         List<Type> IgnoreTypes = new() { typeof(string), typeof(int), typeof(int?) };
@@ -1818,8 +1910,6 @@ public class Tally : IDisposable
 
         }
     }
-
-
 
     private void GetChildReport(PropertyInfo propertyinfo, ReportField rootreportField)
     {
@@ -1886,11 +1976,14 @@ public class Tally : IDisposable
         string RootTag = Rootattribute?.ElementName ?? string.Empty;
         return RootTag;
     }
-    private static string? GetTDLCollectionName(Type type)
+    private static TDLCollectionAttribute? GetTDLCollectionAttributeValue(Type type)
     {
-        TDLCollectionAttribute? TDLColattribute = (TDLCollectionAttribute?)Attribute.GetCustomAttribute(type, typeof(TDLCollectionAttribute));
-        string? CollectionName = TDLColattribute?.CollectionName;
-        return CollectionName;
+        TDLCollectionAttribute[] TDLColattribute = (TDLCollectionAttribute[])Attribute.GetCustomAttributes(type, typeof(TDLCollectionAttribute));
+        if (TDLColattribute.Length > 0)
+        {
+            return TDLColattribute[0];
+        }
+        return null;
     }
 
     private string? GetTDLCollectionName(PropertyInfo propertyinfo)
@@ -1899,6 +1992,7 @@ public class Tally : IDisposable
         string? CollectionName = TDLColattribute?.CollectionName;
         return CollectionName;
     }
+
     private static void GetReportFields(ReportField rootreportField, PropertyInfo propertyinfo)
     {
         string xmlTag = GetXmlElement(propertyinfo)!;
@@ -1922,6 +2016,7 @@ public class Tally : IDisposable
         return xmlAttr;
     }
 
+
     private static string? GetXmlElement(PropertyInfo propertyinfo)
     {
         XmlElementAttribute[] CElement = (XmlElementAttribute[])Attribute.GetCustomAttributes(propertyinfo, typeof(XmlElementAttribute));//propertyinfo.CustomAttributes.FirstOrDefault(Attributedata => Attributedata.AttributeType == typeof(XmlAttributeAttribute));
@@ -1929,6 +2024,24 @@ public class Tally : IDisposable
         {
             string xmlTag = CElement[0].ElementName;
             return xmlTag;
+        }
+        return null;
+    }
+    private static TDLXMLSetAttribute? GetTDLXMLSetAttributeValue(PropertyInfo propertyinfo)
+    {
+        TDLXMLSetAttribute[] CElement = (TDLXMLSetAttribute[])Attribute.GetCustomAttributes(propertyinfo, typeof(TDLXMLSetAttribute));//propertyinfo.CustomAttributes.FirstOrDefault(Attributedata => Attributedata.AttributeType == typeof(XmlAttributeAttribute));
+        if (CElement.Length > 0)
+        {
+            return CElement[0];
+        }
+        return null;
+    }
+    private static TDLCollectionAttribute? GetTDLCollectionAttributeValue(PropertyInfo propertyinfo)
+    {
+        TDLCollectionAttribute[] CElement = (TDLCollectionAttribute[])Attribute.GetCustomAttributes(propertyinfo, typeof(TDLCollectionAttribute));//propertyinfo.CustomAttributes.FirstOrDefault(Attributedata => Attributedata.AttributeType == typeof(XmlAttributeAttribute));
+        if (CElement.Length > 0)
+        {
+            return CElement[0];
         }
         return null;
     }

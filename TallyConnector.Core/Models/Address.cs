@@ -129,7 +129,7 @@ public class MultiAddress
 
     [XmlElement(ElementName = "ISOTHTERRITORYASSESSEE")]
     [Column(TypeName = "nvarchar(3)")]
-    public YesNo IsOtherTerritoryAssessee { get; set; }
+    public TallyYesNo IsOtherTerritoryAssessee { get; set; }
 
     [XmlElement(ElementName = "PARTYGSTIN")]
     [Column(TypeName = "nvarchar(17)")]
@@ -142,8 +142,8 @@ public class MultiAddress
 public class ExciseJurisdiction
 {
     [XmlElement(ElementName = "APPLICABLEFROM")]
-    [Column(TypeName = "nvarchar(10)")]
-    public string? ApplicableFrom { get; set; }
+    [Column(TypeName = $"nvarchar({Constants.MaxDateLength})")]
+    public TallyDate? ApplicableFrom { get; set; }
 
     [XmlElement(ElementName = "RANGE")]
     [Column(TypeName = "nvarchar(20)")]

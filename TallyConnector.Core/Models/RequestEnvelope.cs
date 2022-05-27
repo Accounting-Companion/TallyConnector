@@ -17,11 +17,21 @@ public class RequestEnvelope : TallyXmlJson
         Body.Desc.StaticVariables = sv;
     }
 
+
+
     public RequestEnvelope(HType Type, string iD, StaticVariables sv, ReportField rootreportfield) : this(Type, iD, sv)
     {
         Body.Desc.TDL.TDLMessage = new(rootreportfield);
     }
+    public RequestEnvelope(ReportField rootreportfield, StaticVariables? sv = null)
+    {
+        string ReportName = $"Custom{rootreportfield.FieldName}".ToUpper();
+        rootreportfield.FieldName = ReportName;
+        Header = new(Request: RequestTye.Export, HType.Data, ReportName);
+        Body.Desc.StaticVariables = sv;
+        Body.Desc.TDL = new(rootreportfield);
 
+    }
     [XmlElement(ElementName = "HEADER")]
     public Header? Header { get; set; }
 
@@ -70,6 +80,14 @@ public class FunctionParam
 [XmlRoot(ElementName = "TDL")]
 public class ReqTDL
 {
+    public ReqTDL()
+    {
+    }
+
+    public ReqTDL(ReportField rootreportfield)
+    {
+        TDLMessage = new(rootreportfield);
+    }
 
     [XmlElement(ElementName = "TDLMESSAGE")]
     public TDLMessage TDLMessage { get; set; } = new();
@@ -111,6 +129,62 @@ public class TDLMessage
         Object = tallyCustomObjects;
         Collection.Add(new(objcollectionName: objCollectionName,
                          objects: ObjNames));
+    }
+
+    public TDLMessage(ReportField rootreportField)
+    {
+        Report = new() { new(rootreportField.FieldName!) };
+        Form = new() { new(rootreportField.FieldName!) };
+        Part = new()
+        {
+            new(rootreportField.FieldName!,rootreportField.CollectionName!)
+        };
+        List<string> rootlinefields = new();
+
+        Line RootLine = new(rootreportField.FieldName!,
+                            rootlinefields,
+                            rootreportField.CollectionType!);
+        Line = new()
+        {
+            RootLine
+        };
+        Field = new();
+        List<string> fetchlist = new();
+        Collection = new() { new(rootreportField.CollectionName!, rootreportField.CollectionType!, nativeFields: fetchlist) };
+        GenerateTDLFields(rootreportField,
+                          rootlinefields,
+                          RootLine);
+    }
+
+    private void GenerateTDLFields(ReportField rootreportField,
+                                   List<string> tfields,
+                                   Line rootLine)
+    {
+        rootreportField.SubFields.ForEach(subField =>
+        {
+            if (subField.SubFields.Count > 0)
+            {
+                if (subField.CollectionName != null)
+                {
+                    rootLine.Option.Add("");
+                }
+                List<string> fields = new();
+                Line optLine = new(subField.FieldName!,
+                                   fields,
+                                   subField.FieldName!)
+                {
+                    IsOption = YesNo.Yes
+                };
+                Line?.Add(optLine);
+                GenerateTDLFields(subField, fields, optLine);
+            }
+            else
+            {
+                var FieldName = subField.FieldName! ;
+                tfields.Add(FieldName);
+                Field?.Add(new(FieldName, FieldName, subField.SetExp));
+            }
+        });
     }
 
     public TDLMessage(ReportField rootreportField, List<Filter>? filters = null)
@@ -161,21 +235,21 @@ public class TDLMessage
                 {
                     Repeatfields[field.CollectionName] = field.FieldName!;
                     //Tfields.Add(field.FieldName);
-                    fetchlist?.Add(field.XMLTag);
+                    fetchlist?.Add(field.SetExp);
                     GenerateFields(field, TSfields, TSRepeatfields);
 
                     //Field Newf = new(new List<string>() { field.FieldName }, Repeatfields, $"C{field.FieldName}");
                     //Newf.XMLTag = string.Empty;
-                    Field?.Add(new(TSfields, TSRepeatfields, field.FieldName!, field.XMLTag));
+                    Field?.Add(new(TSfields, TSRepeatfields, field.FieldName!, field.SetExp));
                     //Fields.Add(Newf);
                 }
                 else
                 {
                     Tfields.Add(field.FieldName!);
-                    fetchlist?.Add(field.XMLTag);
+                    fetchlist?.Add(field.SetExp);
                     GenerateFields(field, TSfields, TSRepeatfields);
 
-                    Field?.Add(new(TSfields, TSRepeatfields, field.FieldName!, field.XMLTag));
+                    Field?.Add(new(TSfields, TSRepeatfields, field.FieldName!, field.SetExp));
 
                 }
 
@@ -187,15 +261,15 @@ public class TDLMessage
                 {
                     Repeatfields[field.CollectionName] = field.FieldName!;
                     //Tfields.Add(field.FieldName);
-                    fetchlist?.Add(field.XMLTag);
+                    fetchlist?.Add(field.SetExp);
                     //Fields.Add(new(TSfields, Repeatfields, field.XMLTag));
-                    Field?.Add(new(field.FieldName!, field.XMLTag));
+                    Field?.Add(new(field.FieldName!, field.SetExp));
                 }
                 else
                 {
                     Tfields.Add(field.FieldName!);
-                    fetchlist?.Add(field.XMLTag);
-                    Field Newf = new(field.FieldName!, field.XMLTag);
+                    fetchlist?.Add(field.SetExp);
+                    Field Newf = new(field.FieldName!, field.SetExp);
                     Field?.Add(Newf);
                 }
 
@@ -392,6 +466,13 @@ public class Field : DCollection
         Name = name;
         SetAttributes();
     }
+    public Field(string name, string xMLTag, string set)
+    {
+        XMLTag = xMLTag;
+        Set = set;
+        Name = name;
+        SetAttributes();
+    }
 
     public Field(List<string> fields, Dictionary<string, string> repeatFields, string fieldName, string xmlTag)
     {
@@ -448,7 +529,7 @@ public class Collection : DCollection
 {
     public Collection(string colName,
                       string colType,
-                      string? childOf,
+                      string? childOf = null,
                       List<string>? nativeFields = null,
                       List<string>? filters = null,
                       List<string>? computevar = null,

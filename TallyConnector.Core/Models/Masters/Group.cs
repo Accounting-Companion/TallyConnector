@@ -1,8 +1,12 @@
-﻿namespace TallyConnector.Core.Models.Masters;
+﻿
+using System.Xml.Schema;
+using TallyConnector.Core.Converters.XMLConverterHelpers;
+
+namespace TallyConnector.Core.Models.Masters;
 
 
-[XmlRoot(ElementName = "GROUP")]
-[XmlType(AnonymousType = true)]
+[XmlRoot("GROUP")]
+
 public class Group : BasicTallyObject, ITallyObject
 {
     private string? name;
@@ -40,7 +44,6 @@ public class Group : BasicTallyObject, ITallyObject
     [Column(TypeName = $"nvarchar({Constants.MaxNameLength})")]
     public string? OldName { get; set; }
 
-
     [XmlElement(ElementName = "NAME")]
     [Required]
     [Column(TypeName = $"nvarchar({Constants.MaxNameLength})")]
@@ -60,6 +63,7 @@ public class Group : BasicTallyObject, ITallyObject
 
     [XmlElement(ElementName = "PARENTID")]
     [Column(TypeName = $"nvarchar({Constants.GUIDLength})")]
+    [TDLXMLSet(Set = "$GUID:Group:$Parent")]
     public string? ParentId { get; set; }
 
     [XmlIgnore]
@@ -72,38 +76,38 @@ public class Group : BasicTallyObject, ITallyObject
     /// </summary>
     [XmlElement(ElementName = "BASICGROUPISCALCULABLE")]
     [Column(TypeName = "nvarchar(3)")]
-    public YesNo IsCalculable { get; set; }
+    public TallyYesNo? IsCalculable { get; set; }
 
     /// <summary>
     /// Tally Field - Net Debit/Credit Balances for Reporting 
     /// </summary>
     [XmlElement(ElementName = "ISADDABLE")]
     [Column(TypeName = "nvarchar(3)")]
-    public YesNo IsAddable { get; set; }
+    public TallyYesNo? IsAddable { get; set; }
 
     /// <summary>
     /// Tally Field - Method to Allocate when used in purchase invoice
     /// </summary>
     [XmlElement(ElementName = "ADDLALLOCTYPE")]
     [Column(TypeName = "nvarchar(25)")]
-    public AdAllocType AddlAllocType { get; set; }
+    public AdAllocType? AddlAllocType { get; set; }
 
     [XmlElement(ElementName = "ISSUBLEDGER")]
     [Column(TypeName = "nvarchar(3)")]
-    public YesNo IsSubledger { get; set; }
+    public TallyYesNo? IsSubledger { get; set; }
 
     [XmlElement(ElementName = "ISREVENUE")]
     [Column(TypeName = "nvarchar(3)")]
-    public YesNo IsRevenue { get; set; }
+    public TallyYesNo? IsRevenue { get; set; }
 
     [XmlElement(ElementName = "AFFECTSGROSSPROFIT")]
     [Column(TypeName = "nvarchar(3)")]
-    public YesNo AffectGrossProfit { get; set; }
+    public TallyYesNo? AffectGrossProfit { get; set; }
 
 
     [XmlElement(ElementName = "CANDELETE")]
     [Column(TypeName = "nvarchar(3)")]
-    public YesNo CanDelete { get; set; }
+    public TallyYesNo? CanDelete { get; set; }
 
     [JsonIgnore]
     [XmlElement(ElementName = "LANGUAGENAME.LIST")]
@@ -145,8 +149,11 @@ public class Group : BasicTallyObject, ITallyObject
         CreateNamesList();
     }
 
+   
     public override string ToString()
     {
         return $"Group - {Name}";
     }
+
+    
 }

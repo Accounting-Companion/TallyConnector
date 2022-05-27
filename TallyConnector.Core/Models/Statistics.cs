@@ -2,10 +2,12 @@
 
 
 [XmlRoot(ElementName = "VOUCHERTYPE")]
+[TDLCollection(CollectionName = "STATVchType")]
 public class VoucherTypeStat : BaseStatistics
 {
 
     [XmlElement(ElementName = "CANCELLEDCOUNT")]
+    [TDLXMLSet(Set = "$CancVal")]
     public int CancelledCount { get; set; }
 
     public int TotalCount => CancelledCount + Count;
@@ -13,6 +15,7 @@ public class VoucherTypeStat : BaseStatistics
 }
 
 [XmlRoot(ElementName = "MASTERTYPE")]
+[TDLCollection(CollectionName = "STATObjects")]
 public class MasterTypeStat : BaseStatistics
 {
 
@@ -24,6 +27,7 @@ public class BaseStatistics
     public string Name { get; set; }
 
     [XmlElement(ElementName = "COUNT")]
+    [TDLXMLSet(Set = "$StatVal")]
     public int Count { get; set; }
 }
 
@@ -33,11 +37,11 @@ public class Statistics
 
     [XmlElement(ElementName = "VOUCHERTYPE")]
     [TDLCollection(CollectionName = "STATVchType")]
-    public List<VoucherTypeStat> VoucherTypeStats { get; set; }
+    public List<VoucherTypeStat>? VoucherTypeStats { get; set; }
 
     [XmlElement(ElementName = "MASTERTYPE")]
     [TDLCollection(CollectionName = "STATObjects")]
-    public List<MasterTypeStat> MasterStats { get; set; }
+    public List<MasterTypeStat>? MasterStats { get; set; }
 
     [XmlIgnore]
     public int TotalVouchersCount { get; private set; }
