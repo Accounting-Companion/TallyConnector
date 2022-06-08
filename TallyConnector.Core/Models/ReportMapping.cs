@@ -37,7 +37,6 @@ public class ReportField
 
     public string? CollectionType { get; set; }
 
-    public bool ReturList { get; set; }
 }
 
 

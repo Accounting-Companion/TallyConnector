@@ -3,6 +3,7 @@ using System;
 using System.IO;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using System.Threading.Tasks;
 using System.Xml;
 using System.Xml.Schema;
 using System.Xml.Serialization;
@@ -24,22 +25,26 @@ internal class GroupTest
     [Test]
     public void CheckGetReportforGroup()
     {
-        //ReportField reportField = Tally.CrateTDLReport(typeof(Group));
+        ReportField reportField = Tally.CrateTDLReport(typeof(Group));
 
-        //RequestEnvelope requestEnvelope = new(reportField);
-        //var xml = requestEnvelope.GetXML();
-        Group group = new("Trst", "Parent");
-        string xml = group.GetXML();
-        JsonSerializerOptions jsonSerializerOptions = new JsonSerializerOptions()
-        {
-            Converters =
-            {
-                new TallyYesNoValueConverter(),
-                new TallyDateJsonConverter(),
-            }
-        };
-        string json = JsonSerializer.Serialize(group, jsonSerializerOptions);
+        RequestEnvelope requestEnvelope = new(reportField);
+        var xml = requestEnvelope.GetXML();
+
         Assert.IsNotNull(xml);
+    }
+    [Test]
+    public async Task CheckGetVoucherStats()
+    {
+        var Stat = await Tally.GetVoucherStatistics();
+
+        Assert.IsNotNull(Stat);
+    } 
+    [Test]
+    public async Task CheckGetMasterStats()
+    {
+        var Stat = await Tally.GetMasterStatistics();
+
+        Assert.IsNotNull(Stat);
     }
 }
 

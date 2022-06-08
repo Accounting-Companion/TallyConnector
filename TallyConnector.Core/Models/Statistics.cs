@@ -2,7 +2,7 @@
 
 
 [XmlRoot(ElementName = "VOUCHERTYPE")]
-[TDLCollection(CollectionName = "STATVchType")]
+[TDLCollection(CollectionName = "STATVchType",Include =false)]
 public class VoucherTypeStat : BaseStatistics
 {
 
@@ -30,6 +30,22 @@ public class BaseStatistics
     [TDLXMLSet(Set = "$StatVal")]
     public int Count { get; set; }
 }
+
+
+[XmlRoot(ElementName = "CUSTOMVOUCHERTYPESTAT.LIST")]
+public class VchStatistics
+{
+    [XmlElement(ElementName = "STATVCHTYPE")]
+    public List<VoucherTypeStat>? VoucherTypeStats { get; set; }
+}
+
+[XmlRoot(ElementName = "CUSTOMMASTERTYPESTAT.LIST")]
+public class MasterStatistics
+{
+    [XmlElement(ElementName = "STATOBJECTS")]
+    public List<MasterTypeStat>? VoucherTypeStats { get; set; }
+}
+
 
 [XmlRoot(ElementName = "STATISTICS")]
 public class Statistics

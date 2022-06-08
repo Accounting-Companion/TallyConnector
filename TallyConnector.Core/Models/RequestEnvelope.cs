@@ -84,7 +84,7 @@ public class ReqTDL
     {
     }
 
-    public ReqTDL(ReportField rootreportfield)
+    public ReqTDL(ReportField rootreportfield, List<Filter>? filters = null)
     {
         TDLMessage = new(rootreportfield);
     }
@@ -134,7 +134,7 @@ public class TDLMessage
     public TDLMessage(ReportField rootreportField)
     {
         Report = new() { new(rootreportField.FieldName!) };
-        Form = new() { new(rootreportField.FieldName!) };
+        Form = new() { new(rootreportField.FieldName!) { ReportTag = rootreportField.FieldName + ".LIST"} };
         Part = new()
         {
             new(rootreportField.FieldName!,rootreportField.CollectionName!)
@@ -150,7 +150,13 @@ public class TDLMessage
         };
         Field = new();
         List<string> fetchlist = new();
-        Collection = new() { new(rootreportField.CollectionName!, rootreportField.CollectionType!, nativeFields: fetchlist) };
+        Collection = new();
+        if (rootreportField.CreateCollectionTag)
+        {
+            Collection.Add(new(rootreportField.CollectionName!,
+                                 rootreportField.CollectionType!,
+                                 nativeFields: fetchlist));
+        }
         GenerateTDLFields(rootreportField,
                           rootlinefields,
                           RootLine);
@@ -166,21 +172,21 @@ public class TDLMessage
             {
                 if (subField.CollectionName != null)
                 {
-                    rootLine.Option.Add("");
+                    rootLine.Explode.Add($"{subField.FieldName}:Yes");
+                    Part part = new(subField.FieldName!, subField.CollectionName);
+                    Part?.Add(part);
                 }
                 List<string> fields = new();
-                Line optLine = new(subField.FieldName!,
-                                   fields,
-                                   subField.FieldName!)
-                {
-                    IsOption = YesNo.Yes
-                };
+                Line optLine = new() { Name = subField.FieldName!, Fields = new() { $"ROOT{subField.FieldName!}" } };
+                optLine.SetAttributes();
+                Field NSField = new(fields, $"ROOT{subField.FieldName!}", subField.FieldName!);
+                Field?.Add(NSField);
                 Line?.Add(optLine);
                 GenerateTDLFields(subField, fields, optLine);
             }
             else
             {
-                var FieldName = subField.FieldName! ;
+                var FieldName = subField.FieldName!;
                 tfields.Add(FieldName);
                 Field?.Add(new(FieldName, FieldName, subField.SetExp));
             }
@@ -263,13 +269,13 @@ public class TDLMessage
                     //Tfields.Add(field.FieldName);
                     fetchlist?.Add(field.SetExp);
                     //Fields.Add(new(TSfields, Repeatfields, field.XMLTag));
-                    Field?.Add(new(field.FieldName!, field.SetExp));
+                    Field?.Add(new(field.FieldName!, field.FieldName!, field.SetExp));
                 }
                 else
                 {
                     Tfields.Add(field.FieldName!);
                     fetchlist?.Add(field.SetExp);
-                    Field Newf = new(field.FieldName!, field.SetExp);
+                    Field Newf = new(field.FieldName!, field.FieldName!, field.SetExp);
                     Field?.Add(Newf);
                 }
 
@@ -443,6 +449,9 @@ public class Line : DCollection
     [XmlElement(ElementName = "OPTION")]
     public List<string> Option { get; set; } = new();
 
+    [XmlElement(ElementName = "EXPLODE")]
+    public List<string> Explode { get; set; } = new();
+
 
     [XmlElement(ElementName = "REPEAT")]
     public string? Repeat { get; set; }
@@ -462,7 +471,7 @@ public class Field : DCollection
     public Field(string name, string xMLTag)
     {
         XMLTag = xMLTag;
-        Set = $"${xMLTag}";
+        Set = $"{xMLTag}";
         Name = name;
         SetAttributes();
     }

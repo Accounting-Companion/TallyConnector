@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.Logging.Abstractions;
 using System.Reflection;
 using System.Xml.Xsl;
+using TallyConnector.Core.Converters.XMLConverterHelpers;
 using TallyConnector.Core.Exceptions;
 
 namespace TallyConnector;
@@ -8,7 +9,6 @@ namespace TallyConnector;
 public class Tally : IDisposable
 {
     private readonly HttpClient client = new();
-
     private ILogger Logger { get; }
     private CLogger CLogger { get; }
 
@@ -301,68 +301,56 @@ public class Tally : IDisposable
     }
 
     /// <summary>
-    /// Get Statistics of Company,
-    /// from date and to date has no impact on master statistics
+    /// Get Voucher Statistics of Company
     /// </summary>
     /// <param name="company">Specify Company if not specified in Setup</param>
     /// <param name="fromDate">Specify fromDate if not specified in Setup</param>
     /// <param name="toDate">Specify toDate if not specified in Setup</param>
     /// <returns></returns>
-    public async Task<Statistics?> GetStatistics(string? company = null,
-                                    string? fromDate = null,
-                                    string? toDate = null)
+    public async Task<List<VoucherTypeStat>?> GetVoucherStatistics(string? company = null,
+                                                                   string? fromDate = null,
+                                                                   string? toDate = null)
     {
         company ??= Company;
         fromDate ??= FromDate;
         toDate ??= ToDate;
         StaticVariables sv = new() { SVCompany = company, SVFromDate = fromDate, SVToDate = toDate, SVExportFormat = "XML" };
-        RequestEnvelope CusColEnvelope = new(HType.Data, "CustomStatistics", sv);
 
-        CusColEnvelope.Body.Desc.TDL.TDLMessage = new()
-        {
-            Report = new() { new("CustomStatistics") },
-            Form = new()
-            {
-                new("CustomStatistics")
-                {
-                    PartName = "CustVchStatistics,CustMstrStatistics",
-                    ReportTag = "STATISTICS",
-                }
+        ReportField reportField = CrateTDLReport(typeof(VoucherTypeStat));
 
-            },
-            Part = new()
-            {
-                new("CustVchStatistics", "STATVchType", "VchStatistics"),
-                new("CustMstrStatistics", "STATObjects", "MstrStatistics")
-            },
-            Line = new()
-            {
-                new()
-                {
-                    Name = "VchStatistics",
-                    Fields = new() { "Name,Count,CancelledCount" },
-                    XMLTag = "VoucherType"
-                },
-                new()
-                {
-                    Name = "MstrStatistics",
-                    Fields = new() { "Name,Count" },
-                    XMLTag = "MasterType"
-                }
-            },
-            Field = new()
-            {
-                new("Name", "Name"),
-                new("CancelledCount", "CancVal") { XMLTag = "CancelledCount" },
-                new("Count", "StatVal") { XMLTag = "Count" },
-            }
-        };
+        RequestEnvelope requestEnvelope = new(reportField, sv);
 
-        string Reqxml = CusColEnvelope.GetXML();
+        var xml = requestEnvelope.GetXML();
+
+        string Reqxml = requestEnvelope.GetXML();
         string Resxml = await SendRequest(Reqxml);
 
-        Statistics? statistics = GetObjfromXml<Statistics>(Resxml);
-        statistics?.CalculateTotals();
+        List<VoucherTypeStat>? statistics = GetObjfromXml<VchStatistics>(Resxml)?.VoucherTypeStats;
+        return statistics;
+
+    }/// <summary>
+     /// Get Statistics of Company,
+     /// from date and to date has no impact on master statistics
+     /// </summary>
+     /// <param name="company">Specify Company if not specified in Setup</param>
+     /// <param name="fromDate">Specify fromDate if not specified in Setup</param>
+     /// <param name="toDate">Specify toDate if not specified in Setup</param>
+     /// <returns></returns>
+    public async Task<List<MasterTypeStat>?> GetMasterStatistics(string? company = null)
+    {
+        company ??= Company;
+        StaticVariables sv = new() { SVCompany = company, SVExportFormat = "XML" };
+
+        ReportField reportField = CrateTDLReport(typeof(MasterTypeStat));
+
+        RequestEnvelope requestEnvelope = new(reportField, sv);
+
+        var xml = requestEnvelope.GetXML();
+
+        string Reqxml = requestEnvelope.GetXML();
+        string Resxml = await SendRequest(Reqxml);
+
+        List<MasterTypeStat>? statistics = GetObjfromXml<MasterStatistics>(Resxml)?.VoucherTypeStats;
         return statistics;
 
     }
@@ -1558,7 +1546,7 @@ public class Tally : IDisposable
     }
 
 
-  
+
     /// <summary>
     /// Create/Alter/Delete voucher in Tally,
     /// To Alter/Delete existing voucher set voucher.Action to Alter/Delete
@@ -1749,7 +1737,7 @@ public class Tally : IDisposable
 
     }
 
-    public ReportField CrateTDLReport(Type type, ReportField? reportField = null, bool ReturnList = false)
+    public ReportField CrateTDLReport(Type type, ReportField? reportField = null)
     {
         reportField ??= new(type.Name, $"Cus{type.Name}Coll".ToUpper());
         TDLCollectionAttribute? tDLCollectionAttribute = GetTDLCollectionAttributeValue(type);
@@ -1761,9 +1749,9 @@ public class Tally : IDisposable
         {
             reportField.CollectionName = tDLCollectionAttribute.CollectionName;
             reportField.CollectionType = tDLCollectionAttribute.Type ?? tDLCollectionAttribute.CollectionName;
+
+            reportField.CreateCollectionTag = tDLCollectionAttribute.Include;
         }
-        reportField.CreateCollectionTag = true;
-        reportField.ReturList = ReturnList;
         GenerateSubFields(type, reportField);
         return reportField;
     }
@@ -1870,8 +1858,8 @@ public class Tally : IDisposable
 
     public static bool IsComplexType(Type propertyType)
     {
-        List<Type> IgnoreTypes = new() { typeof(string), typeof(int), typeof(int?) };
-        return !propertyType.IsEnum && !propertyType.IsPrimitive && !IgnoreTypes.Contains(propertyType);
+        List<Type> NonPrmitiveSimpleTypes = new() { typeof(string), typeof(int), typeof(int?), typeof(TallyYesNo), typeof(TallyDate) };
+        return !propertyType.IsEnum && !propertyType.IsPrimitive && !NonPrmitiveSimpleTypes.Contains(propertyType);
     }
 
     public void GetTDLReport(Type type, ReportField rootreportField)
