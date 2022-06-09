@@ -1,6 +1,13 @@
 ﻿namespace TallyConnector.Core.Converters.JSONConverters;
 public class TallyAmountJsonConverter : JsonConverter<TallyAmount>
 {
+    private readonly bool _alllowSimple;
+
+    public TallyAmountJsonConverter(bool alllowSimple = false)
+    {
+        _alllowSimple = alllowSimple;
+    }
+
     public override TallyAmount? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
     {
         if (reader.TokenType != JsonTokenType.StartObject && reader.TokenType == JsonTokenType.Number)
@@ -49,7 +56,7 @@ public class TallyAmountJsonConverter : JsonConverter<TallyAmount>
 
     public override void Write(Utf8JsonWriter writer, TallyAmount value, JsonSerializerOptions options)
     {
-        if (value.ForexAmount != null
+        if (!_alllowSimple || value.ForexAmount != null
             && value.ForexAmount != 0
             && value.RateOfExchange != null
             && value.RateOfExchange != 0
@@ -58,8 +65,22 @@ public class TallyAmountJsonConverter : JsonConverter<TallyAmount>
         {
             writer.WriteStartObject();
             writer.WriteNumber("Amount", value.Amount);
-            writer.WriteNumber("ForexAmount", (decimal)value.ForexAmount);
-            writer.WriteNumber("RateOfExchange", (decimal)value.RateOfExchange);
+            if (value.ForexAmount !=null)
+            {
+                writer.WriteNumber("ForexAmount", (decimal)value.ForexAmount);
+            }
+            else
+            {
+                writer.WriteNull("ForexAmount");
+            }
+            if (value.RateOfExchange !=null)
+            {
+                writer.WriteNumber("RateOfExchange", (decimal)value.RateOfExchange);
+            }
+            else
+            {
+                writer.WriteNull("RateOfExchange");
+            }
             writer.WriteString("Currency", value.Currency);
             writer.WriteBoolean("IsDebit", value.IsDebit);
             writer.WriteEndObject();

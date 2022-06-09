@@ -24,7 +24,7 @@ public class TallyDate : IXmlSerializable
         return tallyDate.Date;
     }
 
-    public static implicit operator TallyDate?(string? v)
+    public static implicit operator TallyDate?(string v)
     {
         bool IsSucess = DateTime.TryParseExact(v, "yyyyMMdd", CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime date);
         if (IsSucess)
@@ -34,6 +34,7 @@ public class TallyDate : IXmlSerializable
         else return null;
 
     }
+
 
     public XmlSchema? GetSchema()
     {
@@ -64,5 +65,14 @@ public class TallyDate : IXmlSerializable
         {
             writer.WriteString(this.Date?.ToString("yyyyMMdd"));
         }
+    }
+
+    public override string? ToString()
+    {
+        return Date?.ToString("dd-MM-yyyy");
+    }
+    public string? ToString(string? format)
+    {
+        return Date?.ToString(format);
     }
 }
