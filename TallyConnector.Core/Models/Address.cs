@@ -27,7 +27,7 @@ public class HAddress
 
 }
 [XmlRoot(ElementName = "LEDMULTIADDRESSLIST.LIST")]
-public class MultiAddress
+public class MultiAddress : ICheckNull
 {
 
     public MultiAddress()
@@ -129,7 +129,7 @@ public class MultiAddress
 
     [XmlElement(ElementName = "ISOTHTERRITORYASSESSEE")]
     [Column(TypeName = "nvarchar(3)")]
-    public TallyYesNo IsOtherTerritoryAssessee { get; set; }
+    public TallyYesNo? IsOtherTerritoryAssessee { get; set; }
 
     [XmlElement(ElementName = "PARTYGSTIN")]
     [Column(TypeName = "nvarchar(17)")]
@@ -137,9 +137,25 @@ public class MultiAddress
 
     [XmlElement(ElementName = "EXCISEJURISDICTIONDETAILS.LIST")]
     public List<ExciseJurisdiction>? ExciseJurisdictions { get; set; }
+
+
+    public bool IsNull()
+    {
+        ExciseJurisdictions = ExciseJurisdictions?.Where(ExcJur => ExcJur.IsNull()).ToList();
+        if (ExciseJurisdictions?.Count == 0)
+        {
+            ExciseJurisdictions = null;
+        }
+        if (ExciseJurisdictions?.Count == 0 || ExciseJurisdictions == null
+            )
+        {
+
+        }
+        return false;
+    }
 }
 [XmlRoot(ElementName = "EXCISEJURISDICTIONDETAILS.LIST")]
-public class ExciseJurisdiction
+public class ExciseJurisdiction : ICheckNull
 {
     [XmlElement(ElementName = "APPLICABLEFROM")]
     [Column(TypeName = $"nvarchar({Constants.MaxDateLength})")]
@@ -156,5 +172,10 @@ public class ExciseJurisdiction
     [XmlElement(ElementName = "COMMISSIONERATE")]
     [Column(TypeName = "nvarchar(20)")]
     public string? Commissionerate { get; set; }
+
+    public bool IsNull()
+    {
+        return false;
+    }
 }
 

@@ -17,7 +17,7 @@
 			This library provides models and other core things for TallyConnector
 		</Description>
 		<RepositoryType>git</RepositoryType>
-		<VersionPrefix>1.0.7</VersionPrefix>
+		<VersionPrefix>1.0.8</VersionPrefix>
 		<GeneratePackageOnBuild>True</GeneratePackageOnBuild>
 	</PropertyGroup>
 	<ItemGroup Condition=" '$(TargetFramework)' == 'net48'">

@@ -1,7 +1,4 @@
-﻿using System.Globalization;
-using System.Text.RegularExpressions;
-
-namespace TallyConnector.Core.Models;
+﻿namespace TallyConnector.Core.Models;
 
 [Serializable]
 [XmlRoot(ElementName = "VOUCHER", Namespace = "")]
@@ -331,13 +328,13 @@ public class Voucher : BasicTallyObject, ITallyObject
         if (VchType != "Contra" && VchType != "Purchase" && VchType != "Receipt" && VchType != "Credit Note")
         {
             Ledgers?.Sort((x, y) => y.LedgerName!.CompareTo(x.LedgerName));//First Sort Ledger list Using Ledger Names
-            Ledgers?.Sort((x, y) => y.Amount!.CompareTo(x.Amount)); //Next sort Ledger List Using Ledger Amounts
+            Ledgers?.Sort((x, y) => y.Amount!.Amount!.CompareTo(x.Amount!.Amount)); //Next sort Ledger List Using Ledger Amounts
 
         }
         else
         {
             Ledgers?.Sort((x, y) => x.LedgerName!.CompareTo(y.LedgerName));//First Sort Ledger list Using Ledger Names
-            Ledgers?.Sort((x, y) => x.Amount!.CompareTo(y.Amount)); //Next sort Ledger List Using Ledger Amounts
+            Ledgers?.Sort((x, y) => x.Amount!.Amount.CompareTo(y.Amount!.Amount)); //Next sort Ledger List Using Ledger Amounts
         }
 
         //Looop Through all Ledgers
@@ -345,30 +342,30 @@ public class Voucher : BasicTallyObject, ITallyObject
         {
             //Sort Bill Allocations
             c.BillAllocations?.Sort((x, y) => x.Name!.CompareTo(y.Name)); //First Sort BillAllocations Using Bill Numbers
-            c.BillAllocations?.Sort((x, y) => x.Amount!.CompareTo(y.Amount));//Next sort BillAllocationst Using  Amounts
+            c.BillAllocations?.Sort((x, y) => x.Amount!.Amount.CompareTo(y.Amount!.Amount));//Next sort BillAllocationst Using  Amounts
 
             c.CostCategoryAllocations?.Sort((x, y) => x.CostCategoryName!.CompareTo(y.CostCategoryName));
 
             c.CostCategoryAllocations?.ForEach(cc =>
             {
                 cc.CostCenterAllocations?.Sort((x, y) => x.Name!.CompareTo(y.Name));
-                cc.CostCenterAllocations?.Sort((x, y) => x.Amount.CompareTo(y.Amount));
+                cc.CostCenterAllocations?.Sort((x, y) => x.Amount!.Amount.CompareTo(y.Amount!.Amount));
             });
             //sort Inventory Allocations
             c.InventoryAllocations?.Sort((x, y) => x.ActualQuantity!.CompareTo(y.ActualQuantity));
-            c.InventoryAllocations?.Sort((x, y) => x.Amount!.CompareTo(y.Amount));
+            c.InventoryAllocations?.Sort((x, y) => x.Amount!.Amount.CompareTo(y.Amount!.Amount));
 
             c.InventoryAllocations?.ForEach(inv =>
             {
                 inv.BatchAllocations?.Sort((x, y) => x.GodownName!.CompareTo(y.GodownName));
-                inv.BatchAllocations?.Sort((x, y) => x.Amount!.CompareTo(y.Amount));
+                inv.BatchAllocations?.Sort((x, y) => x.Amount!.Amount.CompareTo(y.Amount!.Amount));
 
                 inv.CostCategoryAllocations?.Sort((x, y) => x.CostCategoryName!.CompareTo(y.CostCategoryName));
 
                 inv.CostCategoryAllocations?.ForEach(cc =>
                 {
                     cc.CostCenterAllocations?.Sort((x, y) => x.Name!.CompareTo(y.Name));
-                    cc.CostCenterAllocations?.Sort((x, y) => x.Amount.CompareTo(y.Amount));
+                    cc.CostCenterAllocations?.Sort((x, y) => x.Amount!.Amount.CompareTo(y.Amount!.Amount));
                 });
             });
 
@@ -443,16 +440,9 @@ public class VoucherLedger : TallyBaseObject
     {
         get
         {
-            if (_Amount != null)
+            if (Amount != null)
             {
-                if (!_Amount.Contains('-'))
-                {
-                    return false;
-                }
-                else
-                {
-                    return true;
-                }
+                IsDeemedPositive = Amount.IsDebit;
             }
             return null;
 
@@ -460,60 +450,10 @@ public class VoucherLedger : TallyBaseObject
         set { }
     }
 
-    private string? _Amount;
-
-    public string? ForexAmount { get; set; }
-
-    public string? RateofExchange { get; set; }
 
     [XmlElement(ElementName = "AMOUNT")]
-    public string? Amount
-    {
-        get
-        {
-            if (ForexAmount != null && RateofExchange != null)
-            {
-                _Amount = $"{ForexAmount} @ {RateofExchange}";
-            }
-            else if (ForexAmount != null)
-            {
-                _Amount = ForexAmount;
-            }
-            return _Amount;
-        }
-        set
-        {
-            if (value != null)
-            {
-                double t_amount;
-                if (value.ToString().Contains('='))
-                {
+    public TallyAmount? Amount { get; set; }
 
-                    List<string> SplittedValues = value.ToString().Split('=').ToList();
-                    var CleanedAmounts = Regex.Match(SplittedValues[1], @"[0-9.]+");
-                    bool Isnegative = SplittedValues[1].Contains('-');
-                    bool sucess = Isnegative ? double.TryParse('-' + CleanedAmounts.Value, out t_amount) : double.TryParse(CleanedAmounts.ToString(), out t_amount);
-                    CleanedAmount = sucess ? t_amount : null;
-                    var ForexInfo = SplittedValues[0].Split('@');
-                    ForexAmount = ForexInfo[0].Trim();
-                    RateofExchange = Regex.Match(ForexInfo[1], @"[0-9.]+").Value;
-                }
-                else
-                {
-                    CleanedAmount = double.TryParse(value, out t_amount) ? t_amount : 0;
-                    _Amount = value;
-                }
-            }
-            else
-            {
-                _Amount = value;
-            }
-
-        }
-
-    }
-    [XmlIgnore]
-    public double? CleanedAmount { get; set; }
 
 
     [XmlElement(ElementName = "BILLALLOCATIONS.LIST")]
@@ -543,13 +483,7 @@ public class BillAllocations : TallyBaseObject
     [XmlElement(ElementName = "NAME")]
     public string? Name { get; set; }
 
-    private string? _Amount;
-
-    public string? ForexAmount { get; set; }
-
     private BillCP _BillCP;
-
-
 
     [JsonIgnore]
     [XmlElement(ElementName = "BILLCREDITPERIOD")]
@@ -572,47 +506,10 @@ public class BillAllocations : TallyBaseObject
         set { _billCreditPeriod = value; }
     }
 
-    public string? RateofExchange { get; set; }
 
     [XmlElement(ElementName = "AMOUNT")]
-    public string? Amount
-    {
-        get
-        {
-            if (ForexAmount != null && RateofExchange != null)
-            {
-                _Amount = $"{ForexAmount} @ {RateofExchange}";
-            }
-            else if (ForexAmount != null)
-            {
-                _Amount = ForexAmount;
-            }
-            return _Amount;
-        }
-        set
-        {
-            if (value != null)
-            {
-                if (value.ToString().Contains('='))
-                {
-                    var s = value.ToString().Split('=');
-                    var k = s[0].Split('@');
-                    ForexAmount = k[0];
-                    RateofExchange = k[1].Split()[2].Split('/')[0];
-                    _Amount = s[1].Split()[2];
-                }
-                else
-                {
-                    _Amount = value;
-                }
-            }
-            else
-            {
-                _Amount = value;
-            }
+    public TallyAmount? Amount { get; set; }
 
-        }
-    }
 
 }
 [XmlRoot(ElementName = "BILLCREDITPERIOD")]
@@ -691,52 +588,9 @@ public class InventoryAllocations : TallyBaseObject
     [XmlElement(ElementName = "BILLEDQTY")]
     public string? BilledQuantity { get; set; }
 
-    private string? _Amount;
-
-
-    public string? ForexAmount { get; set; }
-
-    public string? RateofExchange { get; set; }
 
     [XmlElement(ElementName = "AMOUNT")]
-    public string? Amount
-    {
-        get
-        {
-            if (ForexAmount != null && RateofExchange != null)
-            {
-                _Amount = $"{ForexAmount} @ {RateofExchange}";
-            }
-            else if (ForexAmount != null)
-            {
-                _Amount = ForexAmount;
-            }
-            return _Amount;
-        }
-        set
-        {
-            if (value != null)
-            {
-                if (value.ToString().Contains('='))
-                {
-                    var s = value.ToString().Split('=');
-                    var k = s[0].Split('@');
-                    ForexAmount = k[0];
-                    RateofExchange = k[1].Split()[2].Split('/')[0];
-                    _Amount = s[1].Split()[2];
-                }
-                else
-                {
-                    _Amount = value;
-                }
-            }
-            else
-            {
-                _Amount = value;
-            }
-
-        }
-    }
+    public TallyAmount? Amount { get; set; }
 
     [XmlElement(ElementName = "BATCHALLOCATIONS.LIST")]
     public List<BatchAllocations>? BatchAllocations { get; set; }
@@ -764,52 +618,8 @@ public class BatchAllocations : TallyBaseObject//Godown Allocations
     [Column(TypeName = $"nvarchar({Constants.MaxNameLength})")]
     public string? BatchName { get; set; }
 
-
-    private string? _Amount;
-
-    public string? ForexAmount { get; set; }
-
-    public string? RateofExchange { get; set; }
-
     [XmlElement(ElementName = "AMOUNT")]
-    public string? Amount
-    {
-        get
-        {
-            if (ForexAmount != null && RateofExchange != null)
-            {
-                _Amount = $"{ForexAmount} @ {RateofExchange}";
-            }
-            else if (ForexAmount != null)
-            {
-                _Amount = ForexAmount;
-            }
-            return _Amount;
-        }
-        set
-        {
-            if (value != null)
-            {
-                if (value.ToString().Contains('='))
-                {
-                    var s = value.ToString().Split('=');
-                    var k = s[0].Split('@');
-                    ForexAmount = k[0];
-                    RateofExchange = k[1].Split()[2].Split('/')[0];
-                    _Amount = s[1].Split()[2];
-                }
-                else
-                {
-                    _Amount = value;
-                }
-            }
-            else
-            {
-                _Amount = value;
-            }
-
-        }
-    }
+    public TallyAmount? Amount { get; set; }
 
     [XmlElement(ElementName = "ACTUALQTY")]
     public string? ActualQuantity { get; set; }
@@ -840,52 +650,9 @@ public class CostCenterAllocations : TallyBaseObject
     [Column(TypeName = $"nvarchar({Constants.MaxNameLength})")]
     public string? Name { get; set; }
 
-    private string? _Amount;
-
-    public string? ForexAmount { get; set; }
-
-    public string? RateofExchange { get; set; }
-
     [XmlElement(ElementName = "AMOUNT")]
 
-    public string Amount
-    {
-        get
-        {
-            if (ForexAmount != null && RateofExchange != null)
-            {
-                _Amount = $"{ForexAmount} @ {RateofExchange}";
-            }
-            else if (ForexAmount != null)
-            {
-                _Amount = ForexAmount;
-            }
-            return _Amount!;
-        }
-        set
-        {
-            if (value != null)
-            {
-                if (value.ToString().Contains('='))
-                {
-                    var s = value.ToString().Split('=');
-                    var k = s[0].Split('@');
-                    ForexAmount = k[0];
-                    RateofExchange = k[1].Split()[2].Split('/')[0];
-                    _Amount = s[1].Split()[2];
-                }
-                else
-                {
-                    _Amount = value;
-                }
-            }
-            else
-            {
-                _Amount = value;
-            }
-
-        }
-    }
+    public TallyAmount? Amount { get; set; }
 
 
 }

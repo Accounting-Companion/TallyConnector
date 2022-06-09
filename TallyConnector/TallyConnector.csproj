@@ -20,7 +20,7 @@
 
 		<RepositoryType>git</RepositoryType>
 
-		<VersionPrefix>1.0.7</VersionPrefix>
+		<VersionPrefix>1.0.8</VersionPrefix>
 
 		<Nullable>enable</Nullable>
 

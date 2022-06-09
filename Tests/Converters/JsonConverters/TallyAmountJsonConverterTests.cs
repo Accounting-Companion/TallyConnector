@@ -1,0 +1,69 @@
+﻿namespace Tests.Converters.JsonConverters;
+public class TallyAmountJsonConverterTests
+{
+    JsonSerializerOptions jsonSerializerOptions;
+    public TallyAmountJsonConverterTests()
+    {
+        jsonSerializerOptions = new();
+        jsonSerializerOptions.Converters.Add(new TallyAmountJsonConverter());
+    }
+
+    
+    [Test]
+    public void TestSerializeComplexObject()
+    {
+        TallyAmount tallyAmount = new(5000, 20, "$");
+        var json = JsonSerializer.Serialize(tallyAmount, jsonSerializerOptions);
+        Assert.AreEqual(json,
+            "{\"Amount\":0,\"ForexAmount\":5000,\"RateOfExchange\":20," +
+            "\"Currency\":\"$\",\"IsDebit\":false}");
+    }
+    
+    [Test]
+    public void TestSerializeSimpleNumber()
+    {
+        TallyAmount tallyAmount = new() { Amount = 5000 };
+        var json = JsonSerializer.Serialize(tallyAmount, jsonSerializerOptions);
+        Assert.AreEqual(json, "5000");
+    }
+    [Test]
+    public void TestSimpleAmount()
+    {
+        string json = "-5000";
+        var tallyAmount = JsonSerializer.Deserialize<TallyAmount>(json, jsonSerializerOptions);
+        Assert.AreEqual(tallyAmount.Amount, -5000);
+    }
+
+    [Test]
+    public void ParseCompleAmount()
+    {
+        string inputJson = "{\"Amount\":0,\"ForexAmount\":5000," +
+            "\"RateOfExchange\":20," +
+            "\"Currency\":\"$\",\"IsDebit\":false}";
+
+        var amount = JsonSerializer.Deserialize<TallyAmount>(inputJson, jsonSerializerOptions);
+        Assert.AreEqual(amount.Amount, 0);
+        Assert.AreEqual(amount.RateOfExchange, 20);
+        Assert.AreEqual(amount.ForexAmount, 5000);
+        Assert.AreEqual(amount.Currency, "$");
+    }
+    
+    [Test]
+    public void ParseCompleAmountvariant2()
+    {
+        string inputJson = "{\"Amount\":0," +
+            "\"RateOfExchange\":20," +
+            "\"Currency\":\"$\",\"IsDebit\":false}";
+
+        var amount = JsonSerializer.Deserialize<TallyAmount>(inputJson, jsonSerializerOptions);
+        Assert.AreEqual(amount.Amount, 0);
+        Assert.AreEqual(amount.RateOfExchange, 20);
+        Assert.AreEqual(amount.Currency, "$");
+
+    }
+
+
+}
+
+
+

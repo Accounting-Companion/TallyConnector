@@ -6,4 +6,11 @@ public interface ITallyObject
     int? MasterId { get; set; }
 
     public void PrepareForExport();
+
+    public void RemoveNullChilds();
+}
+
+public interface ICheckNull
+{
+    public bool IsNull();
 }

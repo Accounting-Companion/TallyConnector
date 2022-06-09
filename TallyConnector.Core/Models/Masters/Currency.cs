@@ -7,7 +7,7 @@ public class Currency : BasicTallyObject, ITallyObject
     public Currency()
     {
         ExpandedSymbol = string.Empty;
-        OriginalName = string.Empty;
+        Name = string.Empty;
     }
 
     /// <summary>
@@ -18,14 +18,14 @@ public class Currency : BasicTallyObject, ITallyObject
     public Currency(string originalName, string expandedSymbol)
     {
         ExpandedSymbol = expandedSymbol;
-        OriginalName = originalName;
+        Name = originalName;
     }
 
 
     [XmlElement(ElementName = "ORIGINALNAME")]
     [Required]
     [Column(TypeName = "nvarchar(5)")]
-    public string OriginalName { get; set; }
+    public string Name { get; set; }
 
     [XmlElement(ElementName = "EXPANDEDSYMBOL")]
     [Required]
@@ -83,7 +83,7 @@ public class Currency : BasicTallyObject, ITallyObject
 
     public override string ToString()
     {
-        return $"{OriginalName} - {ExpandedSymbol}";
+        return $"{Name} - {ExpandedSymbol}";
     }
 }
 //[XmlRoot(ElementName = "DAILYSTDRATES.LIST")]

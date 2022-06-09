@@ -29,7 +29,7 @@ public class TallyXmlJson : TallyBaseObject
         string Json = JsonSerializer.Serialize(this, GetType(), new JsonSerializerOptions()
         {
             WriteIndented = Indented,
-            Converters = { new JsonStringEnumConverter(),new TallyDateJsonConverter() }
+            Converters = { new JsonStringEnumConverter(), new TallyDateJsonConverter() }
         });
         return Json;
     }
@@ -42,10 +42,8 @@ public class TallyXmlJson : TallyBaseObject
             OmitXmlDeclaration = true,
             NewLineChars = "&#13;&#10;", //If /r/n in Xml replace
                                          //NewLineHandling = NewLineHandling.Entitize,
-            Encoding = Encoding.UTF8,
+            Encoding = Encoding.Unicode,
             CheckCharacters = false,
-
-
         };
         XmlSerializerNamespaces ns = new(
                      new[] { XmlQualifiedName.Empty });
@@ -74,6 +72,11 @@ public class BasicTallyObject : TallyXmlJson, ITallyObject, IBasicTallyObject
 
     public void PrepareForExport()
     {
+    }
+
+    public void RemoveNullChilds()
+    {
+       
     }
 
     public override string ToString()

@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Xml.Schema;
+﻿using System.Xml.Schema;
 
 namespace TallyConnector.Core.Converters.XMLConverterHelpers;
 public class TallyYesNo : IXmlSerializable
@@ -63,7 +58,7 @@ public class TallyYesNo : IXmlSerializable
 
     public static implicit operator bool(TallyYesNo tallyYesNo)
     {
-        return tallyYesNo ?? false;
+        return tallyYesNo.Value;
     }
     public static implicit operator bool?(TallyYesNo tallyYesNo)
     {
@@ -72,7 +67,7 @@ public class TallyYesNo : IXmlSerializable
 
     //public override string ToString()
     //{
-    //    return this ? "yes" : "no";
+    //    return Value ? "yes" : "no";
     //}
 }
 

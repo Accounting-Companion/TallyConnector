@@ -1,8 +1,4 @@
-﻿
-using System.Xml.Schema;
-using TallyConnector.Core.Converters.XMLConverterHelpers;
-
-namespace TallyConnector.Core.Models.Masters;
+﻿namespace TallyConnector.Core.Models.Masters;
 
 
 [XmlRoot("GROUP")]

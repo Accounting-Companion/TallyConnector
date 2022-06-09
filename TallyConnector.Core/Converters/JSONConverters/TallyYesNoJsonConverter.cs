@@ -1,12 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using TallyConnector.Core.Converters.XMLConverterHelpers;
-
-namespace TallyConnector.Core.Converters.JSONConverters;
-public class TallyYesNoValueConverter : JsonConverter<TallyYesNo>
+﻿namespace TallyConnector.Core.Converters.JSONConverters;
+public class TallyYesNoJsonConverter : JsonConverter<TallyYesNo>
 {
     public override TallyYesNo Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
     {
@@ -21,7 +14,8 @@ public class TallyYesNoValueConverter : JsonConverter<TallyYesNo>
         }
         else
         {
-            writer.WriteBooleanValue(value);
+            bool boolvalue = value;
+            writer.WriteBooleanValue(boolvalue);
         }
     }
 }

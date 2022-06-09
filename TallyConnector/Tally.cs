@@ -326,6 +326,7 @@ public class Tally : IDisposable
         string Resxml = await SendRequest(Reqxml);
 
         List<VoucherTypeStat>? statistics = GetObjfromXml<VchStatistics>(Resxml)?.VoucherTypeStats;
+       
         return statistics;
 
     }/// <summary>
@@ -417,7 +418,7 @@ public class Tally : IDisposable
     {
         //If parameter is null Get value from instance
         company ??= Company;
-        fetchList ??= new() { "GUID", "Masterid" };
+        fetchList ??= new() { "GUID", "Masterid", "*" };
 
         StaticVariables sv = new() { SVCompany = company, SVExportFormat = "XML", SVFromDate = fromDate, SVToDate = toDate };
 
@@ -430,10 +431,12 @@ public class Tally : IDisposable
                                                                                              isInitialize: isInitialize,
                                                                                              TallyType: ColType?.ToUpper(),
                                                                                              xmlAttributeOverrides: xmlAttributeOverrides);
+
         basicObjects?.ForEach(Object =>
         {
             try
             {
+                Object.RemoveNullChilds();
                 PropertyInfo? Aliasinfo = typeof(ReturnObjectType).GetProperty("Alias");
                 if (Aliasinfo != null)
                 {
@@ -502,6 +505,7 @@ public class Tally : IDisposable
                                                                             NativeFields: fetchList,
                                                                             filters: filters,
                                                                             xmlAttributeOverrides: xmlAttributeOverrides);
+        objects?.ForEach(obj => obj.RemoveNullChilds());
         if (objects?.Count > 0)
         {
             var TallyObject = objects[0];
@@ -569,10 +573,12 @@ public class Tally : IDisposable
         List<ReturnType>? objects = await GetNativeCollectionXML<ReturnType>(Sv: sv,
                                                                             NativeFields: fetchList,
                                                                             filters: filters,
-                                                                            xmlAttributeOverrides: xmlAttributeOverrides);
+                                                                          xmlAttributeOverrides: xmlAttributeOverrides);
+        objects?.ForEach(obj => obj.RemoveNullChilds());
         if (objects?.Count > 0)
         {
             var TallyMaster = objects[0];
+
             //Alias
             PropertyInfo? Aliasinfo = typeof(ReturnType).GetProperty("Alias");
             if (Aliasinfo != null)
@@ -2064,11 +2070,11 @@ public class Tally : IDisposable
         {
             CLogger.TallyRequest(SXml);
             SXml = SXml.Replace("\t", "&#09;");
-            StringContent TXML = new(SXml, Encoding.UTF8, "application/xml");
+            StringContent TXML = new(SXml, Encoding.Unicode, "application/xml");
             HttpResponseMessage Res = await client.PostAsync(FullURL, TXML);
             Res.EnsureSuccessStatusCode();
             var resp = await Res.Content.ReadAsStreamAsync();
-            using StreamReader streamReader = new StreamReader(resp, Encoding.UTF8);
+            using StreamReader streamReader = new StreamReader(resp, Encoding.Unicode);
             Resxml = streamReader.ReadToEnd();
             //var byteArray = await Res.Content.ReadAsByteArrayAsync();
             //Resxml = Encoding.UTF8.GetString(byteArray, 0, byteArray.Length); ;
@@ -2104,11 +2110,11 @@ public class Tally : IDisposable
         string result = string.Empty;
         if (strXmlText != null)
         {
-            result = strXmlText.Replace("&#x4;", "");
-            result = result.Replace("&#4;", "");
-            //result = strXmlText.Replace("&amp;", "&");
-            //result = result.Replace( "&apos;", "'");
-            //result = result.Replace("&quot;","\"\"");
+            result = strXmlText.Replace("&#4;", "");
+            //result = result.Replace("0x20B9", "");
+            //result = result.Replace("&amp;", "&");
+            //result = result.Replace("&apos;", "'");
+            //result = result.Replace("&quot;", "\"\"");
             //result = result.Replace("&gt;", ">");
         }
         return result;
@@ -2119,7 +2125,8 @@ public class Tally : IDisposable
     {
         try
         {
-            string re = @"[^\x09\x0A\x0D\x20-\xD7FF\xE000-\xFFFD\x10000-x10FFFF]";
+            string re = @"(?!₹)[^\x09\x0A\x0D\x20-\xD7FF\xE000-\xFFFD\x10000-x10FFFF]";
+            //string re = @"[^\x0\]";
             Xml = System.Text.RegularExpressions.Regex.Replace(Xml, re, "");
             XmlSerializer XMLSer = attrOverrides == null ? new(typeof(T)) : new(typeof(T), attrOverrides);
 

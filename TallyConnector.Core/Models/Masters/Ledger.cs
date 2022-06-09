@@ -1,7 +1,4 @@
-﻿using System.Text.RegularExpressions;
-using TallyConnector.Core.Converters.XMLConverterHelpers;
-
-namespace TallyConnector.Core.Models.Masters;
+﻿namespace TallyConnector.Core.Models.Masters;
 
 [Serializable]
 [XmlRoot("LEDGER")]
@@ -65,123 +62,65 @@ public class Ledger : BasicTallyObject, ITallyObject
     [Column(TypeName = "nvarchar(3)")]
     public TallyYesNo? DeemedPositive { get; set; }
 
-    [XmlIgnore]
-    [Column(TypeName = $"nvarchar({Constants.MaxAmountLength})")]
-    public string? ForexAmount { get; set; }
-
-    [XmlIgnore]
-    [Column(TypeName = $"nvarchar({Constants.MaxRateLength})")]
-    public string? RateofExchange { get; set; }
-
-
-    private string? _OpeningBal;
-
     [XmlElement(ElementName = "OPENINGBALANCE")]
-    [Column(TypeName = $"nvarchar({Constants.MaxAmountLength})")]
-    public string? OpeningBal
-    {
-        get
-        {
-            if (ForexAmount != null && RateofExchange != null)
-            {
-                _OpeningBal = $"{ForexAmount} @ {RateofExchange}";
-            }
-            else if (ForexAmount != null)
-            {
-                _OpeningBal = ForexAmount;
-            }
-            return _OpeningBal;
-        }
-        set
-        {
-            if (value != null)
-            {
-                double t_opbal;
-                Match CleanedAmount;
-                if (value.ToString().Contains('='))
-                {
-                    List<string> SplittedValues = value.ToString().Split('=').ToList();
-                    CleanedAmount = Regex.Match(SplittedValues[1], @"[0-9.]+");
-                    bool Isnegative = SplittedValues[1].Contains('-');
-                    bool sucess = Isnegative ? double.TryParse('-' + CleanedAmount.Value, out t_opbal) : double.TryParse(CleanedAmount.ToString(), out t_opbal);
-                    CleanedOpeningBal = t_opbal;
-                    var ForexInfo = SplittedValues[0].Split('@');
-                    ForexAmount = ForexInfo[0].Trim();
-                    RateofExchange = Regex.Match(ForexInfo[1], @"[0-9.]+").Value;
-                }
-                else
-                {
-                    CleanedOpeningBal = double.TryParse(value, out t_opbal) ? t_opbal : 0;
-                    _OpeningBal = value;
-                }
-            }
-            else
-            {
-                _OpeningBal = value;
-            }
+    public TallyAmount? OpeningBal { get; set; }
 
+    //[XmlIgnore]
+    //[Column(TypeName = $"nvarchar({Constants.MaxAmountLength})")]
+    //public string? ClosingForexAmount { get; set; }
+    //[XmlIgnore]
+    //[Column(TypeName = $"nvarchar({Constants.MaxRateLength})")]
+    //public string? ClosingRateofExchange { get; set; }
+    //[XmlIgnore]
+    //public double? CleanedClosingBal { get; set; }
 
-        }
-    }
-    [XmlIgnore]
-    public double? CleanedOpeningBal { get; set; }
+    //private string? _ClosingBal;
 
-    [XmlIgnore]
-    [Column(TypeName = $"nvarchar({Constants.MaxAmountLength})")]
-    public string? ClosingForexAmount { get; set; }
-    [XmlIgnore]
-    [Column(TypeName = $"nvarchar({Constants.MaxRateLength})")]
-    public string? ClosingRateofExchange { get; set; }
-    [XmlIgnore]
-    public double? CleanedClosingBal { get; set; }
+    //[XmlElement(ElementName = "CLOSINGBALANCE")]
+    //[Column(TypeName = $"nvarchar({Constants.MaxAmountLength})")]
+    //public string? ClosingBal
+    //{
+    //    get
+    //    {
+    //        if (ClosingForexAmount != null && ClosingRateofExchange != null)
+    //        {
+    //            _OpeningBal = $"{ClosingForexAmount} @ {ClosingRateofExchange}";
+    //        }
+    //        else if (ClosingForexAmount != null)
+    //        {
+    //            _ClosingBal = ClosingForexAmount;
+    //        }
+    //        return _ClosingBal;
+    //    }
+    //    set
+    //    {
+    //        if (value != null)
+    //        {
+    //            double t_opbal;
+    //            if (value.ToString().Contains('='))
+    //            {
+    //                List<string> SplittedValues = value.ToString().Split('=').ToList();
+    //                var CleanedAmount = Regex.Match(SplittedValues[1], @"[0-9.]+");
+    //                bool Isnegative = SplittedValues[1].Contains('-');
+    //                bool sucess = Isnegative ? double.TryParse('-' + CleanedAmount.Value, out t_opbal) : double.TryParse(CleanedAmount.ToString(), out t_opbal);
+    //                CleanedClosingBal = t_opbal;
+    //                var ForexInfo = SplittedValues[0].Split('@');
+    //                ClosingForexAmount = ForexInfo[0].Trim();
+    //                ClosingRateofExchange = Regex.Match(ForexInfo[1], @"[0-9.]+").Value;
+    //            }
+    //            else
+    //            {
+    //                CleanedClosingBal = double.TryParse(value, out t_opbal) ? t_opbal : 0;
+    //                _ClosingBal = value;
+    //            }
+    //        }
+    //        else
+    //        {
+    //            _ClosingBal = value;
+    //        }
+    //    }
 
-    private string? _ClosingBal;
-
-    [XmlElement(ElementName = "CLOSINGBALANCE")]
-    [Column(TypeName = $"nvarchar({Constants.MaxAmountLength})")]
-    public string? ClosingBal
-    {
-        get
-        {
-            if (ClosingForexAmount != null && ClosingRateofExchange != null)
-            {
-                _OpeningBal = $"{ClosingForexAmount} @ {ClosingRateofExchange}";
-            }
-            else if (ClosingForexAmount != null)
-            {
-                _ClosingBal = ClosingForexAmount;
-            }
-            return _ClosingBal;
-        }
-        set
-        {
-            if (value != null)
-            {
-                double t_opbal;
-                if (value.ToString().Contains('='))
-                {
-                    List<string> SplittedValues = value.ToString().Split('=').ToList();
-                    var CleanedAmount = Regex.Match(SplittedValues[1], @"[0-9.]+");
-                    bool Isnegative = SplittedValues[1].Contains('-');
-                    bool sucess = Isnegative ? double.TryParse('-' + CleanedAmount.Value, out t_opbal) : double.TryParse(CleanedAmount.ToString(), out t_opbal);
-                    CleanedClosingBal = t_opbal;
-                    var ForexInfo = SplittedValues[0].Split('@');
-                    ClosingForexAmount = ForexInfo[0].Trim();
-                    ClosingRateofExchange = Regex.Match(ForexInfo[1], @"[0-9.]+").Value;
-                }
-                else
-                {
-                    CleanedClosingBal = double.TryParse(value, out t_opbal) ? t_opbal : 0;
-                    _ClosingBal = value;
-                }
-            }
-            else
-            {
-                _ClosingBal = value;
-            }
-        }
-
-    }
+    //}
 
 
     private string? _Currency;
@@ -376,7 +315,7 @@ public class Ledger : BasicTallyObject, ITallyObject
     public TallyYesNo? InterestIncludeForAmountsDeducted { get; set; }
 
 
-    [XmlElement(ElementName = "INTERESTCOLLECTION.LIST")]
+    [XmlElement(ElementName = "INTERESTCOLLECTION.LIST", IsNullable = true)]
     [TDLCollection(CollectionName = "Interest Collection")]
     public List<InterestList>? InterestList { get; set; }
 
@@ -418,8 +357,6 @@ public class Ledger : BasicTallyObject, ITallyObject
     public TallyYesNo? CanDelete { get; set; }
 
 
-
-
     public void CreateNamesList()
     {
         if (LanguageNameList.Count == 0)
@@ -433,6 +370,7 @@ public class Ledger : BasicTallyObject, ITallyObject
             LanguageNameList![0].LanguageAlias = Alias;
         }
     }
+
     public new string GetXML(XmlAttributeOverrides? attrOverrides = null)
     {
         CreateNamesList();
@@ -452,11 +390,35 @@ public class Ledger : BasicTallyObject, ITallyObject
     {
         return $"Ledger - {Name}";
     }
+
+    public new void RemoveNullChilds()
+    {
+        InterestList = InterestList?.Where(IntList => IntList.IsNull())?.ToList();
+        if (InterestList?.Count == 0)
+        {
+            InterestList = null;
+        }
+        ClosingBalances = ClosingBalances?.Where(ClsBal => ClsBal.IsNull())?.ToList();
+        if (ClosingBalances?.Count == 0)
+        {
+            ClosingBalances = null;
+        }
+
+        MultipleAddresses = MultipleAddresses?.Where(MulAdress => MulAdress.IsNull())?.ToList();
+        if (MultipleAddresses?.Count == 0)
+        {
+            MultipleAddresses = null;
+        }
+    }
 }
 
-[XmlRoot(ElementName = "INTERESTCOLLECTION.LIST")]
-public class InterestList
+[XmlRoot(ElementName = "INTERESTCOLLECTION.LIST", IsNullable = true)]
+public class InterestList : ICheckNull
 {
+    public InterestList()
+    {
+    }
+
     [XmlElement(ElementName = "INTERESTFROMDATE")]
     [Column(TypeName = $"nvarchar({Constants.MaxDateLength})")]
     public TallyDate? FromDate { get; set; }
@@ -467,23 +429,23 @@ public class InterestList
 
     [XmlElement(ElementName = "INTERESTSTYLE")]
     [Column(TypeName = "nvarchar(20)")]
-    public InterestStyle InterestStyle { get; set; }
+    public InterestStyle? InterestStyle { get; set; }
 
     [XmlElement(ElementName = "INTERESTBALANCETYPE")]
     [Column(TypeName = "nvarchar(25)")]
-    public InterestBalanceType InterestBalanceType { get; set; }
+    public InterestBalanceType? InterestBalanceType { get; set; }
 
     [XmlElement(ElementName = "INTERESTAPPLON")]
     [Column(TypeName = "nvarchar(20)")]
-    public InterestAppliedOn InterestAppliedOn { get; set; }
+    public InterestAppliedOn? InterestAppliedOn { get; set; }
 
     [XmlElement(ElementName = "INTERESTFROMTYPE")]
     [Column(TypeName = "nvarchar(30)")]
-    public InterestFromType InterestFromType { get; set; }
+    public InterestFromType? InterestFromType { get; set; }
 
     [XmlElement(ElementName = "ROUNDTYPE")]
     [Column(TypeName = "nvarchar(25)")]
-    public RoundType RoundType { get; set; }
+    public RoundType? RoundType { get; set; }
 
     [XmlElement(ElementName = "INTERESTRATE")]
     public double? InterestRate { get; set; }
@@ -494,12 +456,29 @@ public class InterestList
     [XmlElement(ElementName = "ROUNDLIMIT")]
     public double? RoundLimit { get; set; }
 
+    public bool IsNull()
+    {
+        if (FromDate is null
+            && ToDate is null
+            && InterestStyle is null || InterestStyle is Models.InterestStyle.None
+            && InterestBalanceType is null || InterestBalanceType is Models.InterestBalanceType.None
+            && InterestAppliedOn is null || InterestAppliedOn is Models.InterestAppliedOn.None
+            && InterestFromType is null || InterestFromType is Models.InterestFromType.None
+            && RoundType is null || RoundType is Models.RoundType.None
+            && InterestRate is null || InterestRate is 0
+            && InterestAppliedFrom is null || InterestAppliedFrom is 0
+            && RoundLimit is null || RoundLimit is 0)
+        {
+            return true;
+        }
+        return false;
+    }
 }
 
 
 
 [XmlRoot(ElementName = "LEDGERCLOSINGVALUES.LIST")]
-public class ClosingBalances
+public class ClosingBalances : ICheckNull
 {
 
     [XmlElement(ElementName = "DATE")]
@@ -507,7 +486,15 @@ public class ClosingBalances
     public TallyDate? Date { get; set; }
 
     [XmlElement(ElementName = "AMOUNT")]
-    [Column(TypeName = "nvarchar(20)")]
-    public decimal? Amount { get; set; }
+    public TallyAmount? Amount { get; set; }
 
+    public bool IsNull()
+    {
+        if (Date is null
+            && Amount is null || Amount?.Amount == 0)
+        {
+            return true;
+        }
+        return false;
+    }
 }

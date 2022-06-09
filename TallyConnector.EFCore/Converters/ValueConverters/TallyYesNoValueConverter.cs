@@ -1,11 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
+using TallyConnector.Core.Converters.XMLConverterHelpers;
 
 namespace TallyConnector.EFCore.Converters.ValueConverters;
-public class TallyYesNoValueConverter
+public class TallyYesNoValueConverter : ValueConverter<TallyYesNo, bool?>
 {
-
+    public TallyYesNoValueConverter()
+       : base(
+           v => (bool?)v,
+           v => v)
+    {
+    }
 }

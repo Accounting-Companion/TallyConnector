@@ -1,6 +1,4 @@
-using NUnit.Framework;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using TallyConnector.Core.Models;
 using TallyConnector.Core.Models.Masters;
@@ -73,7 +71,7 @@ public class TallyTests
     {
         await TTally.Check();
         //Group group = await TTally.GetGroup("Sundry Debtors");
-        Group group = await TTally.GetObjectfromTally<Group>("Sales Tax Payable");        
+        Group group = await TTally.GetObjectfromTally<Group>("Sales Tax Payable");
         group.OtherAttributes = null;
         group.OtherFields = null;
         string grp = group.GetXML();
@@ -118,9 +116,17 @@ public class TallyTests
     public async Task CheckGetLedger()
     {
         await TTally.Check();
-        Ledger ledger = await TTally.GetLedger<Ledger>("Stock");
-        string json = ledger.GetJson();
+        Ledger ledger = await TTally.GetLedger<Ledger>("abc India Pvt. Ltd.");
+
+        //ledger.OtherAttributes = null;
+        //ledger.OtherFields = null;
+        //ledger.OpeningBal.ForexAmount = 200;
+        //ledger.OpeningBal.RateOfExchange = 55;
+
+        //await TTally.PostLedger<Ledger>(ledger);
+        //string json = ledger.GetJson();
         Assert.NotNull(ledger);
+        Assert.NotNull(ledger.Name, "abc India Pvt. Ltd.");
     }
 
     [Test]
@@ -223,7 +229,7 @@ public class TallyTests
     public async Task CheckGetCurrency()
     {
         await TTally.Check();
-        Currency Currency = await TTally.GetCurrency<Currency>("5243", MasterLookupField.AlterId);
+        Currency Currency = await TTally.GetCurrency<Currency>("5344", MasterLookupField.AlterId);
         Assert.NotNull(Currency);
     }
 

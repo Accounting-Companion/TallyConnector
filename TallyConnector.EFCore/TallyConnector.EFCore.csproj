@@ -1,32 +1,48 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
-  <PropertyGroup>
-	  <TargetFrameworks>net6.0;net5.0;net48</TargetFrameworks>
-	  <OutputType>Library</OutputType>
-	  <LangVersion>latest</LangVersion>
-	  <Authors>saivineeth</Authors>
-	  <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
-	  <RepositoryUrl>https://github.com/Accounting-Companion/TallyConnector.git</RepositoryUrl>
-	  <PackageProjectUrl>https://github.com/Accounting-Companion/TallyConnector</PackageProjectUrl>
-	  <Description>This library has conversions for custom types used in TallyConnector</Description>
+	<PropertyGroup>
+		<TargetFrameworks>net6.0;net5.0</TargetFrameworks>
+		<OutputType>Library</OutputType>
+		<LangVersion>latest</LangVersion>
+		<Authors>saivineeth</Authors>
+		<PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
+		<RepositoryUrl>https://github.com/Accounting-Companion/TallyConnector.git</RepositoryUrl>
+		<PackageProjectUrl>https://github.com/Accounting-Companion/TallyConnector</PackageProjectUrl>
+		<Description>This library has conversions for custom types used in TallyConnector</Description>
 
-	  <ImplicitUsings>enable</ImplicitUsings>
+		<ImplicitUsings>enable</ImplicitUsings>
 
-	  <PackageTags>tally,xml,tallyprime,tallyerp9</PackageTags>
+		<PackageTags>tally,xml,tallyprime,tallyerp9</PackageTags>
 
-	  <PackageLicenseExpression>MIT</PackageLicenseExpression>
+		<PackageLicenseExpression>MIT</PackageLicenseExpression>
 
-	  <RepositoryType>git</RepositoryType>
+		<RepositoryType>git</RepositoryType>
 
-	  <VersionPrefix>1.0.7</VersionPrefix>
+		<VersionPrefix>1.0.8</VersionPrefix>
 
-	  <Nullable>enable</Nullable>
+		<Nullable>enable</Nullable>
 
-	  <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
-  </PropertyGroup>
+		<GeneratePackageOnBuild>True</GeneratePackageOnBuild>
+	</PropertyGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\TallyConnector.Core\TallyConnector.Core.csproj" />
-  </ItemGroup>
+
+
+	<ItemGroup>
+		<ProjectReference Include="..\TallyConnector.Core\TallyConnector.Core.csproj" />
+	</ItemGroup>
+
+	<ItemGroup Condition="'$(TargetFramework)' == 'net6.0'">
+		<PackageReference Include="Microsoft.EntityFrameworkCore">
+			<Version>6.0.5</Version>
+		</PackageReference>
+	</ItemGroup>
+
+	<ItemGroup Condition="'$(TargetFramework)' == 'net5.0'">
+		<PackageReference Include="Microsoft.EntityFrameworkCore">
+			<Version>5.0.17</Version>
+		</PackageReference>
+	</ItemGroup>
+
+
 
 </Project>
