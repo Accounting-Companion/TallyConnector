@@ -65,7 +65,7 @@ public class TallyAmountJsonConverter : JsonConverter<TallyAmount>
         {
             writer.WriteStartObject();
             writer.WriteNumber("Amount", value.Amount);
-            if (value.ForexAmount !=null)
+            if (value.ForexAmount != null)
             {
                 writer.WriteNumber("ForexAmount", (decimal)value.ForexAmount);
             }
@@ -73,7 +73,7 @@ public class TallyAmountJsonConverter : JsonConverter<TallyAmount>
             {
                 writer.WriteNull("ForexAmount");
             }
-            if (value.RateOfExchange !=null)
+            if (value.RateOfExchange != null)
             {
                 writer.WriteNumber("RateOfExchange", (decimal)value.RateOfExchange);
             }
@@ -88,7 +88,14 @@ public class TallyAmountJsonConverter : JsonConverter<TallyAmount>
         }
         else
         {
-            writer.WriteNumberValue(value.Amount);
+            if (value.IsDebit)
+            {
+                writer.WriteNumberValue(value.Amount * -1);
+            }
+            else
+            {
+                writer.WriteNumberValue(value.Amount);
+            }
         }
     }
 }

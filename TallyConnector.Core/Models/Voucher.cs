@@ -329,12 +329,13 @@ public class Voucher : BasicTallyObject, ITallyObject
         {
             Ledgers?.Sort((x, y) => y.LedgerName!.CompareTo(x.LedgerName));//First Sort Ledger list Using Ledger Names
             Ledgers?.Sort((x, y) => y.Amount!.Amount!.CompareTo(x.Amount!.Amount)); //Next sort Ledger List Using Ledger Amounts
-
+            Ledgers?.Sort((x, y) => y.Amount!.IsDebit.CompareTo(x.Amount!.IsDebit));
         }
         else
         {
             Ledgers?.Sort((x, y) => x.LedgerName!.CompareTo(y.LedgerName));//First Sort Ledger list Using Ledger Names
             Ledgers?.Sort((x, y) => x.Amount!.Amount.CompareTo(y.Amount!.Amount)); //Next sort Ledger List Using Ledger Amounts
+            Ledgers?.Sort((x, y) => x.Amount!.IsDebit.CompareTo(y.Amount!.IsDebit));
         }
 
         //Looop Through all Ledgers
@@ -352,7 +353,7 @@ public class Voucher : BasicTallyObject, ITallyObject
                 cc.CostCenterAllocations?.Sort((x, y) => x.Amount!.Amount.CompareTo(y.Amount!.Amount));
             });
             //sort Inventory Allocations
-            c.InventoryAllocations?.Sort((x, y) => x.ActualQuantity!.CompareTo(y.ActualQuantity));
+            c.InventoryAllocations?.Sort((x, y) => x.ActualQuantity!.Number.CompareTo(y.ActualQuantity.Number));
             c.InventoryAllocations?.Sort((x, y) => x.Amount!.Amount.CompareTo(y.Amount!.Amount));
 
             c.InventoryAllocations?.ForEach(inv =>
@@ -442,7 +443,7 @@ public class VoucherLedger : TallyBaseObject
         {
             if (Amount != null)
             {
-                IsDeemedPositive = Amount.IsDebit;
+                return Amount.IsDebit;
             }
             return null;
 
@@ -580,13 +581,13 @@ public class InventoryAllocations : TallyBaseObject
     public TallyYesNo? DeemedPositive { get; set; }
 
     [XmlElement(ElementName = "RATE")]
-    public string? Rate { get; set; }
+    public TallyRate? Rate { get; set; }
 
     [XmlElement(ElementName = "ACTUALQTY")]
-    public string? ActualQuantity { get; set; }
+    public TallyQuantity? ActualQuantity { get; set; }
 
     [XmlElement(ElementName = "BILLEDQTY")]
-    public string? BilledQuantity { get; set; }
+    public TallyQuantity? BilledQuantity { get; set; }
 
 
     [XmlElement(ElementName = "AMOUNT")]
@@ -622,10 +623,10 @@ public class BatchAllocations : TallyBaseObject//Godown Allocations
     public TallyAmount? Amount { get; set; }
 
     [XmlElement(ElementName = "ACTUALQTY")]
-    public string? ActualQuantity { get; set; }
+    public TallyQuantity? ActualQuantity { get; set; }
 
     [XmlElement(ElementName = "BILLEDQTY")]
-    public string? BilledQuantity { get; set; }
+    public TallyQuantity? BilledQuantity { get; set; }
 }
 
 [XmlRoot(ElementName = "CATEGORYALLOCATIONS.LIST")]

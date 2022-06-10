@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using TallyConnector.Core.Models;
 using TallyConnector.Core.Models.Masters;
 using TallyConnector.Core.Models.Masters.CostCenter;
 using TallyConnector.Core.Models.Masters.Inventory;
@@ -38,7 +37,7 @@ public class TallyTests
     public async Task TallyCheckCopaniesondisk()
     {
         await TTally.Check();
-        List<CompanyOnDisk> companies = await TTally.GetCompaniesListinPath();
+        List<TCM.CompanyOnDisk> companies = await TTally.GetCompaniesListinPath();
         Assert.IsNotNull(companies);
 
     }
@@ -49,7 +48,7 @@ public class TallyTests
     {
         await TTally.Check();
         await TTally.FetchAllTallyData();
-        List<BasicTallyObject> LedgerMasters = TTally.Masters.Find(master => master.MasterType == TallyObjectType.Ledgers).Masters;
+        List<TCM.BasicTallyObject> LedgerMasters = TTally.Masters.Find(master => master.MasterType == TCM.TallyObjectType.Ledgers).Masters;
         Assert.IsNotNull(LedgerMasters);
     }
 
@@ -81,36 +80,36 @@ public class TallyTests
     public async Task CheckCreateGroup()
     {
         await TTally.Check();
-        PResult result = await TTally.PostGroup(new Group()
+        TCM.PResult result = await TTally.PostGroup(new Group()
         {
             Name = "TestGroup2345",
             Parent = "Primary",
-            AddlAllocType = AdAllocType.AppropriateByValue,
+            AddlAllocType = TCM.AdAllocType.AppropriateByValue,
         });
-        Assert.IsTrue(result.Status == RespStatus.Sucess);
+        Assert.IsTrue(result.Status == TCM.RespStatus.Sucess);
     }
     [Test]
     public async Task CheckAlterGroup()
     {
         await TTally.Check();
-        PResult result = await TTally.PostGroup(new Group()
+        TCM.PResult result = await TTally.PostGroup(new Group()
         {
             OldName = "TestGroup",
             Parent = "Sundry Debtors",
-            AddlAllocType = AdAllocType.NotApplicable,
+            AddlAllocType = TCM.AdAllocType.NotApplicable,
         }); ;
-        Assert.IsTrue(result.Status == RespStatus.Sucess);
+        Assert.IsTrue(result.Status == TCM.RespStatus.Sucess);
     }
     [Test]
     public async Task CheckDeleteGroup()
     {
         await TTally.Check();
-        PResult result = await TTally.PostGroup(new Group()
+        TCM.PResult result = await TTally.PostGroup(new Group()
         {
             OldName = "TestGroup",
-            Action = Action.Delete,
+            Action = TCM.Action.Delete,
         });
-        Assert.IsTrue(result.Status == RespStatus.Sucess);
+        Assert.IsTrue(result.Status == TCM.RespStatus.Sucess);
     }
     [Test]
     public async Task CheckGetLedger()
@@ -135,8 +134,8 @@ public class TallyTests
         if (await TTally.Check())
         {
             Ledger nledger = new() { Name = "TestLedger12345", Alias = "gj2345knndnk", Group = "Sundry Debtors" };
-            PResult pResult = await TTally.PostLedger(nledger);
-            Assert.IsTrue(pResult.Status == RespStatus.Sucess);
+            TCM.PResult pResult = await TTally.PostLedger(nledger);
+            Assert.IsTrue(pResult.Status == TCM.RespStatus.Sucess);
         }
     }
 
@@ -146,8 +145,8 @@ public class TallyTests
         if (await TTally.Check())
         {
             Ledger nledger = new() { OldName = "TestLedger", Name = "TestLedgeediteddd", Group = "Sundry Debtors" };
-            PResult pResult = await TTally.PostLedger(nledger);
-            Assert.IsTrue(pResult.Status == RespStatus.Sucess);
+            TCM.PResult pResult = await TTally.PostLedger(nledger);
+            Assert.IsTrue(pResult.Status == TCM.RespStatus.Sucess);
         }
     }
     [Test]
@@ -229,7 +228,7 @@ public class TallyTests
     public async Task CheckGetCurrency()
     {
         await TTally.Check();
-        Currency Currency = await TTally.GetCurrency<Currency>("5344", MasterLookupField.AlterId);
+        Currency Currency = await TTally.GetCurrency<Currency>("5344", TCM.MasterLookupField.AlterId);
         Assert.NotNull(Currency);
     }
 
@@ -263,7 +262,7 @@ public class TallyTests
     public async Task CheckGetVoucher()
     {
         await TTally.Check();
-        Voucher voucher = await TTally.GetVoucher<Voucher>("1", VoucherLookupField.VoucherNumber);
+        TCM.Voucher voucher = await TTally.GetVoucher<TCM.Voucher>("1", TCM.VoucherLookupField.VoucherNumber);
         Assert.NotNull(voucher);
     }
 

@@ -20,13 +20,22 @@ public class TallyAmountJsonConverterTests
     }
 
     [Test]
-    public void TestSerializeSimpleNumber()
+    public void TestSerializeSimpleAmount()
     {
         var jsonSerializerOptions = new JsonSerializerOptions();
         jsonSerializerOptions.Converters.Add(new TallyAmountJsonConverter(true));
         TallyAmount tallyAmount = new() { Amount = 5000 };
         var json = JsonSerializer.Serialize(tallyAmount, jsonSerializerOptions);
         Assert.AreEqual(json, "5000");
+    }
+    [Test]
+    public void TestSerializeSimpleDebitAmount()
+    {
+        var jsonSerializerOptions = new JsonSerializerOptions();
+        jsonSerializerOptions.Converters.Add(new TallyAmountJsonConverter(true));
+        TallyAmount tallyAmount = new() { Amount = -5000 };
+        var json = JsonSerializer.Serialize(tallyAmount, jsonSerializerOptions);
+        Assert.AreEqual(json, "-5000");
     }
     [Test]
     public void TestSerializeSimpleAmountWithoutallowingSimple()
@@ -40,14 +49,15 @@ public class TallyAmountJsonConverterTests
     {
         TallyAmount tallyAmount = new(-5000);
         var json = JsonSerializer.Serialize(tallyAmount, jsonSerializerOptions);
-        Assert.AreEqual(json, "{\"Amount\":-5000,\"ForexAmount\":null,\"RateOfExchange\":null,\"Currency\":null,\"IsDebit\":true}");
+        Assert.AreEqual(json, "{\"Amount\":5000,\"ForexAmount\":null,\"RateOfExchange\":null,\"Currency\":null,\"IsDebit\":true}");
     }
     [Test]
     public void TestSimpleAmount()
     {
         string json = "-5000";
         var tallyAmount = JsonSerializer.Deserialize<TallyAmount>(json, jsonSerializerOptions);
-        Assert.AreEqual(tallyAmount.Amount, -5000);
+        Assert.AreEqual(tallyAmount.Amount, 5000);
+        Assert.AreEqual(tallyAmount.IsDebit, true);
     }
 
     [Test]

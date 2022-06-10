@@ -1,10 +1,4 @@
-﻿using System.IO;
-using System.Text;
-using System.Threading.Tasks;
-using System.Xml;
-using System.Xml.Serialization;
-using TallyConnector;
-using TallyConnector.Core.Models;
+﻿using TallyConnector;
 using TallyConnector.Core.Models.Masters;
 
 namespace Tests.Converters.XMLConverterHelpers;
@@ -144,7 +138,7 @@ public class TallyAmountTests
     [Test]
     public void CheckConstructorwithForeignCurrency()
     {
-        TallyAmount tallyAmount = new(500, 50, "$",false, 500 * 50);
+        TallyAmount tallyAmount = new(500, 50, "$", false, 500 * 50);
         TextWriter textWriter = new StringWriter();
         var writer = XmlWriter.Create(textWriter, settings);
         xmlSerializer.Serialize(writer, tallyAmount);
@@ -157,13 +151,13 @@ public class TallyAmountTests
     [Test]
     public void CheckConstructorwithDebitForeignCurrency()
     {
-        TallyAmount tallyAmount = new(-500, 50, "$", true,-500 * 50);
+        TallyAmount tallyAmount = new(-500, 50, "$", true, -500 * 50);
         TextWriter textWriter = new StringWriter();
         var writer = XmlWriter.Create(textWriter, settings);
         xmlSerializer.Serialize(writer, tallyAmount);
         string xml = textWriter.ToString();
 
-        Assert.AreEqual((decimal)tallyAmount, -25000);
+        Assert.AreEqual((decimal)tallyAmount, 25000);
         Assert.AreEqual(xml, "<AMOUNT>-$ 500 @ 50</AMOUNT>");
     }
 
@@ -178,14 +172,14 @@ public class TallyAmountTests
             OpeningBal = null,
         };
         var resp = await tally.PostLedger(ledger);
-        Assert.AreEqual(resp.Status, RespStatus.Sucess);
+        Assert.AreEqual(resp.Status, TCM.RespStatus.Sucess);
 
         var TLedger = await tally.GetLedger<Ledger>(ledgerName);
         Assert.AreEqual(TLedger.Name, ledgerName);
         Assert.AreEqual(TLedger.OpeningBal.Amount, 0);
-        var delResp = await tally.PostLedger(new Ledger() { Action = Action.Delete, OldName = "TesttoTallyAmount" });
+        var delResp = await tally.PostLedger(new Ledger() { Action = TCM.Action.Delete, OldName = "TesttoTallyAmount" });
 
-        Assert.AreEqual(delResp.Status, RespStatus.Sucess);
+        Assert.AreEqual(delResp.Status, TCM.RespStatus.Sucess);
     }
     [Test]
     public async Task CheckCreateLedgerTallyAmount()
@@ -197,14 +191,14 @@ public class TallyAmountTests
             OpeningBal = 5000,
         };
         var resp = await tally.PostLedger(ledger);
-        Assert.AreEqual(resp.Status, RespStatus.Sucess);
+        Assert.AreEqual(resp.Status, TCM.RespStatus.Sucess);
 
         var TLedger = await tally.GetLedger<Ledger>(ledgerName);
         Assert.AreEqual(TLedger.Name, ledgerName);
         Assert.AreEqual(TLedger.OpeningBal.Amount, 5000);
-        var delResp = await tally.PostLedger(new Ledger() { Action = Action.Delete, OldName = "TesttoTallyAmount" });
+        var delResp = await tally.PostLedger(new Ledger() { Action = TCM.Action.Delete, OldName = "TesttoTallyAmount" });
 
-        Assert.AreEqual(delResp.Status, RespStatus.Sucess);
+        Assert.AreEqual(delResp.Status, TCM.RespStatus.Sucess);
     }
     [Test]
     public async Task CheckCreateLedgerTallyDebitAmount()
@@ -216,14 +210,14 @@ public class TallyAmountTests
             OpeningBal = -5000,
         };
         var resp = await tally.PostLedger(ledger);
-        Assert.AreEqual(resp.Status, RespStatus.Sucess);
+        Assert.AreEqual(resp.Status, TCM.RespStatus.Sucess);
 
         var TLedger = await tally.GetLedger<Ledger>(ledgerName);
         Assert.AreEqual(TLedger.Name, ledgerName);
         Assert.AreEqual(TLedger.OpeningBal.Amount, 5000);
-        var delResp = await tally.PostLedger(new Ledger() { Action = Action.Delete, OldName = "TesttoTallyAmount" });
+        var delResp = await tally.PostLedger(new Ledger() { Action = TCM.Action.Delete, OldName = "TesttoTallyAmount" });
 
-        Assert.AreEqual(delResp.Status, RespStatus.Sucess);
+        Assert.AreEqual(delResp.Status, TCM.RespStatus.Sucess);
     }
 
     [Test]
@@ -236,17 +230,18 @@ public class TallyAmountTests
             OpeningBal = new(5000, 20, "$"),
         };
         var resp = await tally.PostLedger(ledger);
-        Assert.AreEqual(resp.Status, RespStatus.Sucess);
+        Assert.AreEqual(resp.Status, TCM.RespStatus.Sucess);
 
         var TLedger = await tally.GetLedger<Ledger>(ledgerName);
         Assert.AreEqual(TLedger.Name, ledgerName);
         Assert.AreEqual(TLedger.OpeningBal.Amount, 100000);
         Assert.AreEqual(TLedger.OpeningBal.ForexAmount, 5000);
         Assert.AreEqual(TLedger.OpeningBal.RateOfExchange, 20);
+        Assert.AreEqual(TLedger.OpeningBal.IsDebit, false);
         Assert.AreEqual(TLedger.OpeningBal.Currency, "$");
-        var delResp = await tally.PostLedger(new Ledger() { Action = Action.Delete, OldName = "TesttoTallyAmount" });
+        var delResp = await tally.PostLedger(new Ledger() { Action = TCM.Action.Delete, OldName = "TesttoTallyAmount" });
 
-        Assert.AreEqual(delResp.Status, RespStatus.Sucess);
+        Assert.AreEqual(delResp.Status, TCM.RespStatus.Sucess);
     }
 
     [Test]
@@ -259,17 +254,18 @@ public class TallyAmountTests
             OpeningBal = new(-5000, 20, "$"),
         };
         var resp = await tally.PostLedger(ledger);
-        Assert.AreEqual(resp.Status, RespStatus.Sucess);
+        Assert.AreEqual(resp.Status, TCM.RespStatus.Sucess);
 
         var TLedger = await tally.GetLedger<Ledger>(ledgerName);
         Assert.AreEqual(TLedger.Name, ledgerName);
         Assert.AreEqual(TLedger.OpeningBal.Amount, 100000);
         Assert.AreEqual(TLedger.OpeningBal.ForexAmount, 5000);
         Assert.AreEqual(TLedger.OpeningBal.RateOfExchange, 20);
+        Assert.AreEqual(TLedger.OpeningBal.IsDebit, true);
         Assert.AreEqual(TLedger.OpeningBal.Currency, "$");
-        var delResp = await tally.PostLedger(new Ledger() { Action = Action.Delete, OldName = "TesttoTallyAmount" });
+        var delResp = await tally.PostLedger(new Ledger() { Action = TCM.Action.Delete, OldName = "TesttoTallyAmount" });
 
-        Assert.AreEqual(delResp.Status, RespStatus.Sucess);
+        Assert.AreEqual(delResp.Status, TCM.RespStatus.Sucess);
     }
 
 }

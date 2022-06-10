@@ -1,6 +1,9 @@
-﻿using System.Xml.Schema;
+﻿using System.Diagnostics;
+using System.Xml.Schema;
 
 namespace TallyConnector.Core.Converters.XMLConverterHelpers;
+
+[DebuggerDisplay("{Value}")]
 public class TallyYesNo : IXmlSerializable
 {
     public TallyYesNo()
@@ -12,6 +15,7 @@ public class TallyYesNo : IXmlSerializable
         Value = isYes;
     }
 
+    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
     private bool Value { get; set; }
     public XmlSchema? GetSchema()
     {
@@ -65,9 +69,9 @@ public class TallyYesNo : IXmlSerializable
         return tallyYesNo.Value;
     }
 
-    //public override string ToString()
-    //{
-    //    return Value ? "yes" : "no";
-    //}
+    public override string ToString()
+    {
+        return Value ? "yes" : "no";
+    }
 }
 

@@ -13,6 +13,7 @@ public class TallyAmount : IXmlSerializable
             isDebit = Amount < 0;
         }
         IsDebit = (bool)isDebit;
+        Amount = Amount < 0 ? Amount * -1 : Amount;
     }
 
     public TallyAmount(decimal? forexAmount,
@@ -28,6 +29,8 @@ public class TallyAmount : IXmlSerializable
             isDebit = ForexAmount < 0;
         }
         IsDebit = (bool)isDebit;
+        ForexAmount = ForexAmount < 0 ? ForexAmount * -1 : ForexAmount;
+        Amount = Amount < 0 ? Amount * -1 : Amount;
     }
 
     public TallyAmount()
@@ -131,6 +134,10 @@ public class TallyAmount : IXmlSerializable
                 return $"-{Currency} {ForexAmount.ToString()!.Replace("-", "")} @ {RateOfExchange.ToString()!.Replace("-", "")}";
             }
             return $"{Currency} {ForexAmount} @ {RateOfExchange}";
+        }
+        if (IsDebit)
+        {
+            return (Amount * -1).ToString();
         }
         return Amount.ToString();
     }

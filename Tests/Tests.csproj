@@ -6,6 +6,7 @@
     <IsPackable>false</IsPackable>
 
     <OutputType>WinExe</OutputType>
+	  <ImplicitUsings>enable</ImplicitUsings>
   </PropertyGroup>
 
   <ItemGroup>

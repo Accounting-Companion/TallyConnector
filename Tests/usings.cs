@@ -1,4 +1,10 @@
 ﻿global using NUnit.Framework;
 global using System.Text.Json;
+global using System.Text;
+global using System.Xml;
+global using System.Xml.Serialization;
 global using TallyConnector.Core.Converters.JSONConverters;
 global using TallyConnector.Core.Converters.XMLConverterHelpers;
+global using TallyConnector;
+global using TCM = TallyConnector.Core.Models;
+global using TCMV = TallyConnector.Core.Models.Masters.Inventory;

@@ -104,21 +104,23 @@ public class StockItem : BasicTallyObject, ITallyObject
     [XmlElement(ElementName = "INCLUSIVETAX")]
     public TallyYesNo? InclusiveOfTax { get; set; }
 
+    [XmlElement(ElementName = "DENOMINATOR")]
+    public decimal? Denominator { get; set; }
 
     [XmlElement(ElementName = "CONVERSION")]
-    public string? Conversion { get; set; }
+    public decimal? Conversion { get; set; }
 
     [XmlElement(ElementName = "BASICRATEOFEXCISE")]
     public string? RateOfDuty { get; set; }
 
     [XmlElement(ElementName = "OPENINGBALANCE")]
-    public string? OpeningBal { get; set; }
+    public TallyQuantity? OpeningBal { get; set; }
 
     [XmlElement(ElementName = "OPENINGVALUE")]
-    public string? OpeningValue { get; set; }
+    public TallyAmount? OpeningValue { get; set; }
 
     [XmlElement(ElementName = "OPENINGRATE")]
-    public string? OpeningRate { get; set; }
+    public TallyRate? OpeningRate { get; set; }
 
 
 
@@ -163,6 +165,6 @@ public class StockItem : BasicTallyObject, ITallyObject
 
     public override string ToString()
     {
-        return $"{Name}";
+        return $"StockItem - {Name}";
     }
 }
