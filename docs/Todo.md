@@ -2,15 +2,16 @@
 
 ## Todo
 
-- [ ] Work on Company, Attendance, Employee Group & Employee models
+
 - [ ] Check whether all fields for all objects/Models(Ledger, Group etc.)
 - [ ] Add All types of XML API availaible in Tally
-- [ ] Add support for VBA(already created separate branch for .net framework for this-Now,able to add reference in VBA but cannot use  functions in VBA)
-- [ ] Detailed Documentation for c#, VB, VBA, Python
+- [ ] Detailed Documentation for c#, VB, Python
 
 ### In Progress
 
 - [ ] Check whether all fields for all objects/Models(Ledger, Group etc.) are covered
+- [ ] Work on Company, Attendance, Employee Group & Employee models
+- [ ] Detailed Documentation for c#, VB,  Python
 
 ### Done ✓
 

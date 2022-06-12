@@ -42,13 +42,6 @@ public bool status = await Ctally.Check(); // To check Whether Tally is running 
 //GetCompaniesList() Returns List of companies opened in Tally
 List<Company> CompaniesList = await  Ctally.GetCompaniesList();
 
-//FetchAllTallyData() will get all tally masters like Groups/Ledgers ...etc., in Tally.Masters
-await Ctally.FetchAllTallyData("ABC Company");
-//Ex:
-//masterType can be Ledgers,Groups ... or any masters from Tally
-string masterType = "Ledgers"
-List<BasicTallyObject> LedgerMasters = Ctally.Masters.Find(master => master.MasterType == masterType).Masters;
-
 //To Get Full Object from Tally use Specific methods like GetGroup, GetLedger, GetCostCategory,GetCostCenter ..etc.,
 //For Ex. For getting Group by name
 Group TGrp = await Ctally.GetGroup<Group>("TestGroup");
