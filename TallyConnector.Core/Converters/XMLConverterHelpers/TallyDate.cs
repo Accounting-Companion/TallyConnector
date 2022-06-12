@@ -1,7 +1,9 @@
-﻿using System.Globalization;
+﻿using System.Diagnostics;
+using System.Globalization;
 using System.Xml.Schema;
 
 namespace TallyConnector.Core.Converters.XMLConverterHelpers;
+[DebuggerDisplay("{ToString()}")]
 [JsonConverter(typeof(TallyDateJsonConverter))]
 public class TallyDate : IXmlSerializable
 {

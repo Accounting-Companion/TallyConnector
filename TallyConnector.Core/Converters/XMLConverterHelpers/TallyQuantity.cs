@@ -1,8 +1,10 @@
-﻿using System.Text.RegularExpressions;
+﻿using System.Diagnostics;
+using System.Text.RegularExpressions;
 using System.Xml.Schema;
 using TallyConnector.Core.Models.Masters.Inventory;
 
 namespace TallyConnector.Core.Converters.XMLConverterHelpers;
+[DebuggerDisplay("{ToString()}")]
 [JsonConverter(typeof(TallyQuantityJsonConverter))]
 public class TallyQuantity : IXmlSerializable
 {

@@ -1,7 +1,9 @@
-﻿using System.Text.RegularExpressions;
+﻿using System.Diagnostics;
+using System.Text.RegularExpressions;
 using System.Xml.Schema;
 
 namespace TallyConnector.Core.Converters.XMLConverterHelpers;
+[DebuggerDisplay("{ToString()}")]
 [JsonConverter(typeof(TallyRateJsonConverter))]
 public class TallyRate : IXmlSerializable
 {

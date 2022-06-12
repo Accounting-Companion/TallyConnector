@@ -480,7 +480,7 @@ public class BillAllocations : TallyBaseObject
     }
 
     [XmlElement(ElementName = "BILLTYPE")]
-    public string? BillType { get; set; }
+    public BillRefType? BillType { get; set; }
 
     [XmlElement(ElementName = "NAME")]
     public string? Name { get; set; }
@@ -788,6 +788,18 @@ public enum VoucherLookupField
     AlterId = 2,
     VoucherNumber = 3,
     GUID = 4,
+}
+public enum BillRefType
+{
+    [XmlEnum(Name = "New Ref")]
+    NewRef,
+    [XmlEnum(Name = "On Account")]
+    OnAccount,
+    [XmlEnum(Name = "Agst Ref")]
+    AgstRef,
+    [XmlEnum(Name = "Advance")]
+    Advance
+
 }
 
 /// <summary>

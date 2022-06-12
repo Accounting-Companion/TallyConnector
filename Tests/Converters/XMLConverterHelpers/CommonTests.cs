@@ -124,7 +124,7 @@ internal class CommonTests
             Amount = -10_000,
             BillAllocations = new()
             {
-                new() { BillType = "New Ref", Name = "jhgf", Amount = -10_000 }
+                new() { BillType = TCM.BillRefType.NewRef, Name = "jhgf", Amount = -10_000 }
             }
         });
         TCM.VoucherLedger SalesLedger = new() { LedgerName = "Sales", Amount = 10_000 };
