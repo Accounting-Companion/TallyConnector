@@ -300,10 +300,7 @@ public class Voucher : BasicTallyObject, ITallyObject
             }
             else { return null; }
         }
-        set
-        {
-            Date = value;
-        }
+        set => Date = value;
     }
 
 

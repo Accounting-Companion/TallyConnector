@@ -25,7 +25,7 @@ internal class GroupTest
     [Test]
     public async Task CheckGetVoucherStats()
     {
-        var Stat = await Tally.GetVoucherStatistics();
+       var Stat = await Tally.GetVoucherStatistics(fromDate:new DateTime(2010,04,01),toDate: new DateTime(2023, 03, 31));
 
         Assert.IsNotNull(Stat);
     } 

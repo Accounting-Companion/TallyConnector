@@ -13,14 +13,15 @@ public class Tally : IDisposable
     private CLogger CLogger { get; }
 
     private int Port;
+
     private string BaseURL;
 
     public string? Status { get; private set; }
     public string? ReqStatus { get; private set; }
 
     public string? Company { get; private set; }
-    public string? FromDate { get; private set; }
-    public string? ToDate { get; private set; }
+    public DateTime? FromDate { get; private set; }
+    public DateTime? ToDate { get; private set; }
 
     public List<MastersBasicInfo<BasicTallyObject>>? Masters { get; private set; }
 
@@ -81,8 +82,8 @@ public class Tally : IDisposable
     public void Setup(string baseURL,
                       int port,
                       string? company = null,
-                      string? fromDate = null,
-                      string? toDate = null)
+                      DateTime? fromDate = null,
+                      DateTime? toDate = null)
     {
         BaseURL = baseURL;
         Port = port;
@@ -101,8 +102,8 @@ public class Tally : IDisposable
     /// <param name="fromDate">Default from date from to use for fetching info</param>
     /// <param name="toDate">Default from date from to use for fetching info<</param>
     public void ChangeCompany(string company,
-                              string? fromDate = null,
-                              string? toDate = null)
+                              DateTime? fromDate = null,
+                              DateTime? toDate = null)
     {
         Company = company;
         FromDate = fromDate;
@@ -308,8 +309,8 @@ public class Tally : IDisposable
     /// <param name="toDate">Specify toDate if not specified in Setup</param>
     /// <returns></returns>
     public async Task<List<VoucherTypeStat>?> GetVoucherStatistics(string? company = null,
-                                                                   string? fromDate = null,
-                                                                   string? toDate = null)
+                                                                   DateTime? fromDate = null,
+                                                                   DateTime? toDate = null)
     {
         company ??= Company;
         fromDate ??= FromDate;
@@ -320,13 +321,11 @@ public class Tally : IDisposable
 
         RequestEnvelope requestEnvelope = new(reportField, sv);
 
-        var xml = requestEnvelope.GetXML();
-
         string Reqxml = requestEnvelope.GetXML();
         string Resxml = await SendRequest(Reqxml);
 
         List<VoucherTypeStat>? statistics = GetObjfromXml<VchStatistics>(Resxml)?.VoucherTypeStats;
-       
+
         return statistics;
 
     }/// <summary>
@@ -368,8 +367,8 @@ public class Tally : IDisposable
     /// <returns></returns>
     public async Task<List<BasicTallyObject>?> GetBasicObjectData(string ObjectType,
                                                                  string? company = null,
-                                                                 string? fromDate = null,
-                                                                 string? toDate = null,
+                                                                 DateTime? fromDate = null,
+                                                                 DateTime? toDate = null,
                                                                  List<Filter>? filters = null)
     {
         string Resxml;
@@ -407,8 +406,8 @@ public class Tally : IDisposable
 
 
     public async Task<List<ReturnObjectType>?> GetObjectsfromTally<ReturnObjectType>(string? company = null,
-                                                                                     string? fromDate = null,
-                                                                                     string? toDate = null,
+                                                                                     DateTime? fromDate = null,
+                                                                                     DateTime? toDate = null,
                                                                                      string? ColType = null,
                                                                                      string? childof = null,
                                                                                      List<string>? fetchList = null,
@@ -488,8 +487,11 @@ public class Tally : IDisposable
         company ??= Company;
         fetchList ??= new() { "MasterId", "*", "AllledgerEntries", "ledgerEntries", "Allinventoryenntries", "InventoryEntries", "InventoryEntriesIn", "InventoryEntriesOut" };
 
-        StaticVariables sv = new() { SVCompany = company };
-        sv.ViewName = Isinventory ? VoucherViewType.None : VoucherViewType.AccountingVoucherView;
+        StaticVariables sv = new()
+        {
+            SVCompany = company,
+            ViewName = Isinventory ? VoucherViewType.None : VoucherViewType.AccountingVoucherView
+        };
         string filterformulae;
         if (LookupField is VoucherLookupField.MasterId or VoucherLookupField.AlterId)
         {
@@ -540,8 +542,8 @@ public class Tally : IDisposable
     public async Task<ReturnType> GetObjectfromTally<ReturnType>(string LookupValue,
                                                                  MasterLookupField LookupField = MasterLookupField.Name,
                                                                  string? company = null,
-                                                                 string? fromDate = null,
-                                                                 string? toDate = null,
+                                                                 DateTime? fromDate = null,
+                                                                 DateTime? toDate = null,
                                                                  List<string>? fetchList = null,
                                                                  XmlAttributeOverrides? xmlAttributeOverrides = null) where ReturnType : TallyXmlJson, ITallyObject
     {
@@ -696,8 +698,8 @@ public class Tally : IDisposable
     public async Task<GroupType> GetGroup<GroupType>(string LookupValue,
                                                      MasterLookupField LookupField = MasterLookupField.Name,
                                                      string? company = null,
-                                                     string? fromDate = null,
-                                                     string? toDate = null,
+                                                     DateTime? fromDate = null,
+                                                     DateTime? toDate = null,
                                                      List<string>? fetchList = null) where GroupType : Group
     {
         try
@@ -759,8 +761,8 @@ public class Tally : IDisposable
     public async Task<LedgerType> GetLedgerDynamic<LedgerType>(string LookupValue,
                                                                MasterLookupField LookupField = MasterLookupField.Name,
                                                                string? company = null,
-                                                               string? fromDate = null,
-                                                               string? toDate = null,
+                                                               DateTime? fromDate = null,
+                                                               DateTime? toDate = null,
                                                                List<string>? fetchList = null) where LedgerType : Ledger
     {
         try
@@ -843,8 +845,8 @@ public class Tally : IDisposable
     public async Task<CostCategory> GetCostCategory<CostCategoryType>(string LookupValue,
                                                     MasterLookupField LookupField = MasterLookupField.Name,
                                                     string? company = null,
-                                                    string? fromDate = null,
-                                                    string? toDate = null,
+                                                    DateTime? fromDate = null,
+                                                    DateTime? toDate = null,
                                                     List<string>? fetchList = null) where CostCategoryType : CostCategory
     {
         try
@@ -901,8 +903,8 @@ public class Tally : IDisposable
     public async Task<CostCenter> GetCostCenter<CostCenterType>(string LookupValue,
                                                 MasterLookupField LookupField = MasterLookupField.Name,
                                                 string? company = null,
-                                                string? fromDate = null,
-                                                string? toDate = null,
+                                                DateTime? fromDate = null,
+                                                DateTime? toDate = null,
                                                 List<string>? fetchList = null) where CostCenterType : CostCenter
     {
         try
@@ -961,8 +963,8 @@ public class Tally : IDisposable
     public async Task<StockGroup> GetStockGroup<StockGroupType>(string LookupValue,
                                                 MasterLookupField LookupField = MasterLookupField.Name,
                                                 string? company = null,
-                                                string? fromDate = null,
-                                                string? toDate = null,
+                                                DateTime? fromDate = null,
+                                                DateTime? toDate = null,
                                                 List<string>? fetchList = null) where StockGroupType : StockGroup
     {
         try
@@ -1020,8 +1022,8 @@ public class Tally : IDisposable
     public async Task<StockCategory> GetStockCategory<StockCategoryType>(string LookupValue,
                                                       MasterLookupField LookupField = MasterLookupField.Name,
                                                       string? company = null,
-                                                      string? fromDate = null,
-                                                      string? toDate = null,
+                                                      DateTime? fromDate = null,
+                                                      DateTime? toDate = null,
                                                       List<string>? fetchList = null) where StockCategoryType : StockCategory
     {
         try
@@ -1077,8 +1079,8 @@ public class Tally : IDisposable
     public async Task<StockItem> GetStockItem<StockItemType>(string LookupValue,
                                                              MasterLookupField LookupField = MasterLookupField.Name,
                                                              string? company = null,
-                                                             string? fromDate = null,
-                                                             string? toDate = null,
+                                                             DateTime? fromDate = null,
+                                                             DateTime? toDate = null,
                                                              List<string>? fetchList = null) where StockItemType : StockItem
     {
         try
@@ -1135,8 +1137,8 @@ public class Tally : IDisposable
     public async Task<Unit> GetUnit<UnitType>(string LookupValue,
                                               MasterLookupField LookupField = MasterLookupField.Name,
                                               string? company = null,
-                                              string? fromDate = null,
-                                              string? toDate = null,
+                                              DateTime? fromDate = null,
+                                              DateTime? toDate = null,
                                               List<string>? fetchList = null) where UnitType : Unit
     {
         try
@@ -1194,8 +1196,8 @@ public class Tally : IDisposable
     public async Task<Godown> GetGodown<GodownType>(string LookupValue,
                                         MasterLookupField LookupField = MasterLookupField.Name,
                                         string? company = null,
-                                        string? fromDate = null,
-                                        string? toDate = null,
+                                        DateTime? fromDate = null,
+                                        DateTime? toDate = null,
                                         List<string>? fetchList = null) where GodownType : Godown
     {
         try
@@ -1251,8 +1253,8 @@ public class Tally : IDisposable
     public async Task<VoucherType> GetVoucherType<VchrType>(string LookupValue,
                                                   MasterLookupField LookupField = MasterLookupField.Name,
                                                   string? company = null,
-                                                  string? fromDate = null,
-                                                  string? toDate = null,
+                                                  DateTime? fromDate = null,
+                                                  DateTime? toDate = null,
                                                   List<string>? fetchList = null) where VchrType : VoucherType
     {
         try
@@ -1308,8 +1310,8 @@ public class Tally : IDisposable
     public async Task<Currency> GetCurrency<CurrencyType>(string LookupValue,
                                             MasterLookupField LookupField = MasterLookupField.Name,
                                             string? company = null,
-                                            string? fromDate = null,
-                                            string? toDate = null,
+                                            DateTime? fromDate = null,
+                                            DateTime? toDate = null,
                                             List<string>? fetchList = null) where CurrencyType : Currency
     {
         try
@@ -1362,8 +1364,8 @@ public class Tally : IDisposable
     public async Task<AttendanceType> GetAttendanceType<AttendnceType>(string LookupValue,
                                                         MasterLookupField LookupField = MasterLookupField.Name,
                                                         string? company = null,
-                                                        string? fromDate = null,
-                                                        string? toDate = null,
+                                                        DateTime? fromDate = null,
+                                                        DateTime? toDate = null,
                                                         List<string>? fetchList = null) where AttendnceType : AttendanceType
     {
         try
@@ -1421,8 +1423,8 @@ public class Tally : IDisposable
     public async Task<EmployeeGroup> GetEmployeeGroup<EmployeeGroupType>(string LookupValue,
                                                       MasterLookupField LookupField = MasterLookupField.Name,
                                                       string? company = null,
-                                                      string? fromDate = null,
-                                                      string? toDate = null,
+                                                      DateTime? fromDate = null,
+                                                      DateTime? toDate = null,
                                                       List<string>? fetchList = null) where EmployeeGroupType : EmployeeGroup
     {
         try
@@ -1477,8 +1479,8 @@ public class Tally : IDisposable
     public async Task<Employee> GetEmployee<EmployeeType>(string LookupValue,
                                                           MasterLookupField LookupField = MasterLookupField.Name,
                                                           string? company = null,
-                                                          string? fromDate = null,
-                                                          string? toDate = null,
+                                                          DateTime? fromDate = null,
+                                                          DateTime? toDate = null,
                                                           List<string>? fetchList = null) where EmployeeType : Employee
     {
         try
@@ -1638,8 +1640,8 @@ public class Tally : IDisposable
     public async Task<T?> GetObjFromTally<T>(string ObjName,
                                             string ObjType,
                                             string? company = null,
-                                            string? fromDate = null,
-                                            string? toDate = null,
+                                            DateTime? fromDate = null,
+                                            DateTime? toDate = null,
                                             List<string>? fetchList = null,
                                             VoucherViewType viewname = VoucherViewType.AccountingVoucherView)
     {
@@ -1685,8 +1687,8 @@ public class Tally : IDisposable
     private string GetObjXML(string objType,
                              string ObjName,
                              string? company = null,
-                             string? fromDate = null,
-                             string? toDate = null,
+                             DateTime? fromDate = null,
+                             DateTime? toDate = null,
                              List<string>? fetchList = null,
                              VoucherViewType viewname = VoucherViewType.AccountingVoucherView)
     {
@@ -1695,8 +1697,10 @@ public class Tally : IDisposable
         fromDate ??= FromDate;
         toDate ??= ToDate;
 
-        ObjEnvelope Obj = new();
-        Obj.Header = new(objType, ObjName);
+        ObjEnvelope Obj = new()
+        {
+            Header = new(objType, ObjName)
+        };
         StaticVariables staticVariables = new()
         {
             SVCompany = company,
@@ -1791,9 +1795,10 @@ public class Tally : IDisposable
                     {
                         TDLCollectionAttribute? childCollectionAttribute = GetTDLCollectionAttributeValue(propertyInfo);
                         string elemName = GetXmlElement(propertyInfo)!;
-                        ReportField ChildreportField = new(elemName);
-
-                        ChildreportField.CollectionName = childCollectionAttribute?.CollectionName;
+                        ReportField ChildreportField = new(elemName)
+                        {
+                            CollectionName = childCollectionAttribute?.CollectionName
+                        };
                         reportField.SubFields.Add(ChildreportField);
                         GenerateReportField(propertyInfo, ChildreportField);
                     }
@@ -2074,7 +2079,7 @@ public class Tally : IDisposable
             HttpResponseMessage Res = await client.PostAsync(FullURL, TXML);
             Res.EnsureSuccessStatusCode();
             var resp = await Res.Content.ReadAsStreamAsync();
-            using StreamReader streamReader = new StreamReader(resp, Encoding.Unicode);
+            using StreamReader streamReader = new(resp, Encoding.Unicode);
             Resxml = streamReader.ReadToEnd();
             //var byteArray = await Res.Content.ReadAsByteArrayAsync();
             //Resxml = Encoding.UTF8.GetString(byteArray, 0, byteArray.Length); ;

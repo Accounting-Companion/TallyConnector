@@ -28,7 +28,7 @@ internal class TallyDateJsonConverterTests
 
         string dateJson = $"\"{Date:dd-MM-yyyy}\"";
         TallyDate date = JsonSerializer.Deserialize<TallyDate>(dateJson, jsonSerializerOptions);
-        Assert.AreEqual(date.ToString(), Date.ToString("dd-MM-yyyy"));
+        Assert.AreEqual(date.ToString(), Date.ToShortDateString());
     }
     [Test]
     public void TestDeSerializeTallyDateWhenNull()

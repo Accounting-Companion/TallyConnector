@@ -11,7 +11,7 @@ public class CLogger
         Logger = logger ?? NullLogger.Instance;
     }
 
-    public void SetupLog(string company, string fromDate, string toDate)
+    public void SetupLog(string company, DateTime? fromDate, DateTime? toDate)
     {
         if (company != null)
         {
@@ -19,7 +19,7 @@ public class CLogger
 
         }
     }
-    public void SetupLog(string baseURL, int port, string company, string fromDate, string toDate)
+    public void SetupLog(string baseURL, int port, string company, DateTime? fromDate, DateTime? toDate)
     {
         Logger.LogInformation($"Setting up Tally to connect at \"{baseURL}:{port}\"");
         if (company != null)

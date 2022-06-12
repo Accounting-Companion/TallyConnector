@@ -2,7 +2,7 @@
 
 
 [XmlRoot(ElementName = "VOUCHERTYPE")]
-[TDLCollection(CollectionName = "STATVchType",Include =false)]
+[TDLCollection(CollectionName = "STATVchType", Include = false)]
 public class VoucherTypeStat : BaseStatistics
 {
 
@@ -12,13 +12,23 @@ public class VoucherTypeStat : BaseStatistics
 
     public int TotalCount => CancelledCount + Count;
 
+    public override string ToString()
+    {
+
+        return $"{Name} - {TotalCount}(C-{CancelledCount}) ";
+    }
+
 }
 
 [XmlRoot(ElementName = "MASTERTYPE")]
 [TDLCollection(CollectionName = "STATObjects")]
 public class MasterTypeStat : BaseStatistics
 {
+    public override string ToString()
+    {
 
+        return $"{Name} - {Count}) ";
+    }
 }
 
 public class BaseStatistics

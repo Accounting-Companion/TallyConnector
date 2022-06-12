@@ -136,17 +136,13 @@ public class StaticVariables : TallyBaseObject
     [XmlElement(ElementName = "SVCURRENTCOMPANY")]
     public string? SVCompany { get; set; }
 
-    [XmlIgnore]
-    public string? SVFromDate { get { return SVFrom?.Text; } set { SVFrom = new(value); } }
 
     [XmlElement(ElementName = "SVFROMDATE")]
-    public SVFrom? SVFrom { get; set; }
+    public TallyDate? SVFromDate { get; set; }
 
-    [XmlIgnore]
-    public string? SVToDate { get { return SVTo?.Text; } set { SVTo = new(value); } }
 
     [XmlElement(ElementName = "SVTODATE")]
-    public SVTo? SVTo { get; set; }
+    public TallyDate? SVToDate { get; set; }
 
     [XmlElement(ElementName = "SVViewName")]
     public VoucherViewType ViewName { get; set; }

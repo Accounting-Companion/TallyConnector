@@ -152,7 +152,7 @@ public class TallyTests
     {
         await TTally.Check();
         List<string> fields = new() { "Name", "Parent", "OpeningBalance", "Closing Balance" };
-        Ledger ledger = await TTally.GetLedgerDynamic<Ledger>("Canara Bank", fromDate: "01032021", toDate: "31032021", fetchList: fields);
+        Ledger ledger = await TTally.GetLedgerDynamic<Ledger>("Canara Bank", fromDate: new DateTime(2021, 03, 01), toDate: new DateTime(2021, 03, 31), fetchList: fields);
         string xml = ledger.GetXML();
         Assert.NotNull(ledger);
     }
