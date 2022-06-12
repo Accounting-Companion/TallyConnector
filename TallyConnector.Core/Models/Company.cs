@@ -6,6 +6,7 @@ public class Company : TallyXmlJson
 {
 
     [XmlElement(ElementName = "NAME")]
+
     public string? Name { get; set; }
 
     [XmlElement(ElementName = "GUID")]
@@ -57,13 +58,13 @@ public class Company : TallyXmlJson
 
 
     [XmlElement(ElementName = "BOOKSFROM")]
-    public string? BooksFrom { get; set; }
+    public TallyDate? BooksFrom { get; set; }
 
     [XmlElement(ElementName = "STARTINGFROM")]
-    public string? StartingFrom { get; set; }
+    public TallyDate? StartingFrom { get; set; }
 
     [XmlElement(ElementName = "ENDINGAT")]
-    public string? EndDate { get; set; }
+    public TallyDate? EndDate { get; set; }
 
     [XmlElement(ElementName = "COMPANYNUMBER")]
     public string? CompNum { get; set; }
@@ -72,33 +73,33 @@ public class Company : TallyXmlJson
     //Settings
 
     [XmlElement(ElementName = "ISINVENTORYON")]
-    public string? IsInventoryOn { get; set; }
+    public TallyYesNo? IsInventoryOn { get; set; }
 
     [XmlElement(ElementName = "ISINTEGRATED")]
-    public string? IntegrateAccountswithInventory { get; set; }
+    public TallyYesNo? IntegrateAccountswithInventory { get; set; }
 
     [XmlElement(ElementName = "ISBILLWISEON")]
-    public string? IsBillWiseOn { get; set; }
+    public TallyYesNo? IsBillWiseOn { get; set; }
 
     [XmlElement(ElementName = "ISCOSTCENTRESON")]
-    public string? IsCostCentersOn { get; set; }
+    public TallyYesNo? IsCostCentersOn { get; set; }
 
     [XmlElement(ElementName = "ISTDSON")]
-    public string? IsTDSOn { get; set; }
+    public TallyYesNo? IsTDSOn { get; set; }
 
 
     [XmlElement(ElementName = "ISTCSON")]
-    public string? IsTCSOn { get; set; }
+    public TallyYesNo? IsTCSOn { get; set; }
 
     [XmlElement(ElementName = "ISGSTON")]
-    public string? IsGSTOn { get; set; }
+    public TallyYesNo? IsGSTOn { get; set; }
 
 
     [XmlElement(ElementName = "ISPAYROLLON")]
-    public string? IsPayrollOn { get; set; }
+    public TallyYesNo? IsPayrollOn { get; set; }
 
     [XmlElement(ElementName = "ISINTERESTON")]
-    public string? IsInterestOn { get; set; }
+    public TallyYesNo? IsInterestOn { get; set; }
 
     public override string ToString()
     {
@@ -115,10 +116,10 @@ public class CompanyOnDisk : TallyXmlJson
     public string? Name { get; set; }
 
     [XmlElement(ElementName = "STARTINGFROM")]
-    public string? StartDate { get; set; }
+    public TallyDate? StartDate { get; set; }
 
     [XmlElement(ElementName = "ENDINGAT")]
-    public string? EndDate { get; set; }
+    public TallyDate? EndDate { get; set; }
 
     [XmlElement(ElementName = "COMPANYNUMBER")]
     public string? CompNum { get; set; }
