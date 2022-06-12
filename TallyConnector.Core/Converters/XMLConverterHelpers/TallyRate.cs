@@ -2,10 +2,12 @@
 using System.Xml.Schema;
 
 namespace TallyConnector.Core.Converters.XMLConverterHelpers;
+[JsonConverter(typeof(TallyRateJsonConverter))]
 public class TallyRate : IXmlSerializable
 {
     public TallyRate()
     {
+        Unit = string.Empty;
     }
     public TallyRate(decimal ratePerUnit, string unit)
     {

@@ -1,5 +1,4 @@
-﻿using TallyConnector;
-using TallyConnector.Core.Models.Masters;
+﻿using TallyConnector.Core.Models.Masters;
 
 namespace Tests.Converters.XMLConverterHelpers;
 public class TallyAmountTests

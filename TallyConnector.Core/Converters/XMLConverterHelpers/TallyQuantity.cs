@@ -3,6 +3,7 @@ using System.Xml.Schema;
 using TallyConnector.Core.Models.Masters.Inventory;
 
 namespace TallyConnector.Core.Converters.XMLConverterHelpers;
+[JsonConverter(typeof(TallyQuantityJsonConverter))]
 public class TallyQuantity : IXmlSerializable
 {
     public TallyQuantity()
@@ -28,7 +29,7 @@ public class TallyQuantity : IXmlSerializable
         {
             if (stockItem.Conversion != null && stockItem.Denominator != null)
             {
-                SecondaryUnits = new(quantity * Math.Round(((decimal)stockItem.Conversion / (decimal)stockItem.Denominator),2), stockItem.AdditionalUnits);
+                SecondaryUnits = new(quantity * Math.Round(((decimal)stockItem.Conversion / (decimal)stockItem.Denominator), 2), stockItem.AdditionalUnits);
             }
         }
 
@@ -37,6 +38,15 @@ public class TallyQuantity : IXmlSerializable
     {
         Number = quantity;
         PrimaryUnits = new(quantity, unit);
+    }
+    public TallyQuantity(decimal quantity,
+                         string unit,
+                         decimal secondaryQuantity,
+                         string secondaryUnit)
+    {
+        Number = quantity;
+        PrimaryUnits = new(quantity, unit);
+        SecondaryUnits = new(secondaryQuantity, secondaryUnit);
     }
 
     public decimal Number { get; private set; }

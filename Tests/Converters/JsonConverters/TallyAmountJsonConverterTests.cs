@@ -24,7 +24,7 @@ public class TallyAmountJsonConverterTests
     {
         var jsonSerializerOptions = new JsonSerializerOptions();
         jsonSerializerOptions.Converters.Add(new TallyAmountJsonConverter(true));
-        TallyAmount tallyAmount = new() { Amount = 5000 };
+        TallyAmount tallyAmount = new(5000);
         var json = JsonSerializer.Serialize(tallyAmount, jsonSerializerOptions);
         Assert.AreEqual(json, "5000");
     }
@@ -33,14 +33,14 @@ public class TallyAmountJsonConverterTests
     {
         var jsonSerializerOptions = new JsonSerializerOptions();
         jsonSerializerOptions.Converters.Add(new TallyAmountJsonConverter(true));
-        TallyAmount tallyAmount = new() { Amount = -5000 };
+        TallyAmount tallyAmount = new(-5000);
         var json = JsonSerializer.Serialize(tallyAmount, jsonSerializerOptions);
         Assert.AreEqual(json, "-5000");
     }
     [Test]
     public void TestSerializeSimpleAmountWithoutallowingSimple()
     {
-        TallyAmount tallyAmount = new() { Amount = 5000 };
+        TallyAmount tallyAmount = new(5000) ;
         var json = JsonSerializer.Serialize(tallyAmount, jsonSerializerOptions);
         Assert.AreEqual(json, "{\"Amount\":5000,\"ForexAmount\":null,\"RateOfExchange\":null,\"Currency\":null,\"IsDebit\":false}");
     }

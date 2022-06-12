@@ -4,6 +4,7 @@ using System.Xml.Schema;
 namespace TallyConnector.Core.Converters.XMLConverterHelpers;
 
 [DebuggerDisplay("{Value}")]
+[JsonConverter(typeof(TallyYesNoJsonConverter))]
 public class TallyYesNo : IXmlSerializable
 {
     public TallyYesNo()
@@ -24,7 +25,7 @@ public class TallyYesNo : IXmlSerializable
 
     public void ReadXml(XmlReader reader)
     {
-        
+
         bool isEmptyElement = reader.IsEmptyElement;
         if (!isEmptyElement)
         {

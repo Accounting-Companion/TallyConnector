@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace Tests.Converters.JsonConverters;
+﻿namespace Tests.Converters.JsonConverters;
 internal class TallyDateJsonConverterTests
 {
     JsonSerializerOptions jsonSerializerOptions;

@@ -2,6 +2,7 @@
 using System.Xml.Schema;
 
 namespace TallyConnector.Core.Converters.XMLConverterHelpers;
+[JsonConverter(typeof(TallyDateJsonConverter))]
 public class TallyDate : IXmlSerializable
 {
     private DateTime? Date;

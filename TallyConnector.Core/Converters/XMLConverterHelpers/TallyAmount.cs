@@ -2,7 +2,7 @@
 using System.Xml.Schema;
 
 namespace TallyConnector.Core.Converters.XMLConverterHelpers;
-
+[JsonConverter(typeof(TallyYesNoJsonConverter))]
 public class TallyAmount : IXmlSerializable
 {
     public TallyAmount(decimal amount, bool? isDebit = null)
@@ -37,16 +37,16 @@ public class TallyAmount : IXmlSerializable
     {
     }
 
-    public decimal Amount { get; set; }
+    public decimal Amount { get; private set; }
 
     // public float? BaseAmount { get; set; }
-    public decimal? ForexAmount { get; set; }
+    public decimal? ForexAmount { get; private set; }
 
-    public decimal? RateOfExchange { get; set; }
+    public decimal? RateOfExchange { get; private set; }
 
-    public string? Currency { get; set; }
+    public string? Currency { get; private set; }
 
-    public bool IsDebit { get; set; }
+    public bool IsDebit { get; private set; }
 
     public XmlSchema? GetSchema()
     {
