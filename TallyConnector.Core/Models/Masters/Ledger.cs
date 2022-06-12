@@ -60,7 +60,19 @@ public class Ledger : BasicTallyObject, ITallyObject
 
     [XmlElement(ElementName = "ISDEEMEDPOSITIVE")]
     [Column(TypeName = "nvarchar(3)")]
-    public TallyYesNo? DeemedPositive { get; set; }
+    public TallyYesNo? IsDeemedPositive
+    {
+        get
+        {
+            if (OpeningBal != null)
+            {
+                return OpeningBal.IsDebit;
+            }
+            return null;
+
+        }
+        set { }
+    }
 
     [XmlElement(ElementName = "OPENINGBALANCE")]
     public TallyAmount? OpeningBal { get; set; }

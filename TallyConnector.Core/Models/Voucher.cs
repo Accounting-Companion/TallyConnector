@@ -437,6 +437,7 @@ public class VoucherLedger : TallyBaseObject
 
 
     [XmlElement(ElementName = "ISDEEMEDPOSITIVE")]
+    [JsonIgnore]
     public TallyYesNo? IsDeemedPositive
     {
         get
@@ -577,8 +578,22 @@ public class InventoryAllocations : TallyBaseObject
     [XmlElement(ElementName = "ISSCRAP")]
     public TallyYesNo? IsScrap { get; set; }
 
+
     [XmlElement(ElementName = "ISDEEMEDPOSITIVE")]
-    public TallyYesNo? DeemedPositive { get; set; }
+    [JsonIgnore]
+    public TallyYesNo? IsDeemedPositive
+    {
+        get
+        {
+            if (Amount != null)
+            {
+                return Amount.IsDebit;
+            }
+            return null;
+
+        }
+        set { }
+    }
 
     [XmlElement(ElementName = "RATE")]
     public TallyRate? Rate { get; set; }
