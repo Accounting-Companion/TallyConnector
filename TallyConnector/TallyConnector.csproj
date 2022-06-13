@@ -25,11 +25,18 @@
 		<Nullable>enable</Nullable>
 
 		<GeneratePackageOnBuild>True</GeneratePackageOnBuild>
+
+		<Platforms>AnyCPU;x64</Platforms>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
 		<GenerateSerializationAssemblies>Off</GenerateSerializationAssemblies>
 		<DocumentationFile></DocumentationFile>
+	</PropertyGroup>
+
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+	  <GenerateSerializationAssemblies>Off</GenerateSerializationAssemblies>
+	  <DocumentationFile />
 	</PropertyGroup>
 
 	<ItemGroup>

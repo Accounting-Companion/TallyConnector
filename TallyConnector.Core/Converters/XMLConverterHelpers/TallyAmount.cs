@@ -4,7 +4,7 @@ using System.Xml.Schema;
 
 namespace TallyConnector.Core.Converters.XMLConverterHelpers;
 [DebuggerDisplay("{ToString()}")]
-[JsonConverter(typeof(TallyYesNoJsonConverter))]
+[JsonConverter(typeof(TallyAmountJsonConverter))]
 public class TallyAmount : IXmlSerializable
 {
     public TallyAmount(decimal amount, bool? isDebit = null)

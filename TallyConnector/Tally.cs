@@ -1,4 +1,4 @@
-﻿using Microsoft.Extensions.Logging.Abstractions;
+﻿
 using System.Reflection;
 using System.Xml.Xsl;
 using TallyConnector.Core.Converters.XMLConverterHelpers;
@@ -111,6 +111,8 @@ public class Tally : IDisposable
         CLogger?.SetupLog(company, fromDate!, toDate!);
 
     }
+
+
 
     /// <summary>
     /// Checks whether Tally is running in given URL and port
@@ -490,7 +492,7 @@ public class Tally : IDisposable
         StaticVariables sv = new()
         {
             SVCompany = company,
-            ViewName = Isinventory ? VoucherViewType.None : VoucherViewType.AccountingVoucherView
+            ViewName = Isinventory ? null : VoucherViewType.AccountingVoucherView
         };
         string filterformulae;
         if (LookupField is VoucherLookupField.MasterId or VoucherLookupField.AlterId)

@@ -3,6 +3,10 @@ public class TallyAmountJsonConverter : JsonConverter<TallyAmount>
 {
     private readonly bool _alllowSimple;
 
+    public TallyAmountJsonConverter()
+    {
+    }
+
     public TallyAmountJsonConverter(bool alllowSimple = false)
     {
         _alllowSimple = alllowSimple;
