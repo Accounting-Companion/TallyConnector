@@ -12,11 +12,5 @@ public class TallyDateValueConverter : ValueConverter<TallyDate, DateTime?>
     {
     }
 
-    //public TallyDateValueConverter(Expression<Func<TallyDate, DateTime?>> convertToProviderExpression, Expression<Func<DateTime?, TallyDate>> convertFromProviderExpression, ConverterMappingHints? mappingHints = null) : base(convertToProviderExpression, convertFromProviderExpression, mappingHints)
-    //{
-    //}
-
-    //public TallyDateValueConverter(Expression<Func<TallyDate, DateTime?>> convertToProviderExpression, Expression<Func<DateTime?, TallyDate>> convertFromProviderExpression, bool convertsNulls, ConverterMappingHints? mappingHints = null) : base(convertToProviderExpression, convertFromProviderExpression, convertsNulls, mappingHints)
-    //{
-    //}
+    
 }

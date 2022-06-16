@@ -3,6 +3,7 @@
 public interface ITallyObject
 {
     string? GUID { get; set; }
+    string? RemoteId { get; set; }
     int? MasterId { get; set; }
 
     public void PrepareForExport();

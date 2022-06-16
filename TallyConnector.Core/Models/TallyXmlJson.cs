@@ -67,6 +67,10 @@ public class BasicTallyObject : TallyXmlJson, ITallyObject, IBasicTallyObject
     [Column(TypeName = $"nvarchar({Constants.GUIDLength})")]
     public string? GUID { get; set; }
 
+    [XmlElement(ElementName = "REMOTEALTGUID")]
+    [Column(TypeName = $"nvarchar({Constants.GUIDLength})")]
+    public string? RemoteId { get; set; }
+
     [XmlElement(ElementName = "ALTERID")]
     public int? AlterId { get; set; }
 
@@ -76,7 +80,7 @@ public class BasicTallyObject : TallyXmlJson, ITallyObject, IBasicTallyObject
 
     public void RemoveNullChilds()
     {
-       
+
     }
 
     public override string ToString()

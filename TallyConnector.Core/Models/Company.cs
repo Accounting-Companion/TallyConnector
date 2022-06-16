@@ -6,20 +6,23 @@ public class Company : TallyXmlJson
 {
 
     [XmlElement(ElementName = "NAME")]
-
+    [Column(TypeName = $"nvarchar({Constants.MaxNameLength})")]
     public string? Name { get; set; }
 
     [XmlElement(ElementName = "GUID")]
-    [Column(TypeName = "nvarchar(100)")]
+    [Column(TypeName = $"nvarchar({Constants.GUIDLength})")]
     public string? GUID { get; set; }
 
     [XmlElement(ElementName = "BASICCOMPANYFORMALNAME")]
+    [Column(TypeName = $"nvarchar({Constants.MaxNameLength})")]
     public string? FormalName { get; set; }
 
     [XmlElement(ElementName = "STATENAME")]
+    [Column(TypeName = $"nvarchar({Constants.MaxNameLength})")]
     public string? State { get; set; }
 
     [XmlElement(ElementName = "COUNTRYNAME")]
+    [Column(TypeName = $"nvarchar({Constants.MaxNameLength})")]
     public string? Country { get; set; }
 
     [XmlElement(ElementName = "PINCODE")]
