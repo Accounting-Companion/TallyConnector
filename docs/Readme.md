@@ -1,4 +1,4 @@
-# Tally Connector [![NuGet Version](http://img.shields.io/nuget/v/TallyConnector.svg?style=flat)](https://www.nuget.org/packages/TallyConnector/)
+# Tally Connector [![NuGet Version](https://img.shields.io/nuget/v/TallyConnector.svg?style=flat)](https://www.nuget.org/packages/TallyConnector/)
 
 You can use **[Tally Connector](https://github.com/saivineeth100/TallyConnector/)** to Integrate your desktop/Mobile Applications with Tally.
 
@@ -7,14 +7,22 @@ You can use **[Tally Connector](https://github.com/saivineeth100/TallyConnector/
 1. Tally Prime
 2. Tally ERP9
 
+___
+
 ## Supported Environments
 
 1. .Net Core 6.0 | .Net Core 5.0
 2. .Net Framework 4.8
 3. Visual Basic
 
-This Library is complete abstraction for Tally XML API, Using this library
-you don't need to known or understand tally XML to interact with Tally.
+___
+
+## 📁 What's included?
+
+| Name| Framework |
+| --- | --- |
+| **TallyConnector.Core**  <br/>Core Library that used in TallyConnector.<br/> Contains models,converters,attributes |![NET6](https://img.shields.io/badge/.NET-6.0-red) ![NET5](https://img.shields.io/badge/.NET-5.0-blue) ![NETFramework48](https://img.shields.io/badge/.NET%20Framework-4.8-orange)|
+| **TallyConnector**  <br/>We can use this library to interact with Tally Erp9 / Tally prime using C# objects  |![NET6](https://img.shields.io/badge/.NET-6.0-red) ![NET5](https://img.shields.io/badge/.NET-5.0-blue) ![NETFramework48](https://img.shields.io/badge/.NET%20Framework-4.8-orange)|
 ___
 
 ## Getting Started
@@ -25,7 +33,7 @@ Install-Package TallyConnector
 
 Intiate Tally in your Project
 
-### For C#
+### In C#
 
 ```C#
 Using TallyConnector //Importing TallyConnector Library
