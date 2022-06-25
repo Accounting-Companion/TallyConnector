@@ -1,0 +1,34 @@
+name: Publish to Nugget
+
+on:
+  push:
+    tags:
+      - "V*"
+env:
+  PROJECT1_PATH: "TallyConnector.Core/TallyConnector.Core.csproj"
+  PROJECT2_PATH: "TallyConnector/TallyConnector.csproj"
+  PACKAGE_OUTPUT_DIRECTORY: ${{ github.workspace }}\output
+  NUGET_SOURCE_URL: "https://api.nuget.org/v3/index.json"
+jobs:
+  build:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Setup .NET Framework
+        uses: microsoft/setup-msbuild@v1.1
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v2
+        with:
+          dotnet-version: |
+            5.0.x
+            6.0.x
+      - name: Restore dependencies
+        run: dotnet restore ${{ env.PROJECT1_PATH }} && dotnet restore ${{ env.PROJECT2_PATH }}
+      - name: "Build projects"
+        run: dotnet build ${{ env.PROJECT1_PATH }} --configuration Release && dotnet build ${{ env.PROJECT2_PATH }} --configuration Release
+      - name: "Pack project1"
+        run: dotnet pack ${{ env.PROJECT1_PATH }} --no-restore --no-build --configuration Release --output ${{ env.PACKAGE_OUTPUT_DIRECTORY }}
+      - name: "Pack project2"
+        run: dotnet pack ${{ env.PROJECT2_PATH }} --no-restore --no-build --configuration Release --output ${{ env.PACKAGE_OUTPUT_DIRECTORY }}
+      - name: "Push package"
+        run: dotnet nuget push ${{ env.PACKAGE_OUTPUT_DIRECTORY }}\*.nupkg -k ${{ secrets.NUGGET_KEY }} -s ${{ env.NUGET_SOURCE_URL }}
