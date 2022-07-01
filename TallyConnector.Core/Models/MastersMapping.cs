@@ -38,7 +38,7 @@ public class TallyObjectMapping
             }),
 
         new TallyObjectMapping(TallyObjectType.CostCategories, "CostCategory", null),
-        new TallyObjectMapping(TallyObjectType.CostCenters, "CostCentre",
+        new TallyObjectMapping(TallyObjectType.CostCentres, "CostCentre",
             new List<Filter>()
             {
                 new Filter("IsEmployeeGroup", "Not $ISEMPLOYEEGROUP"),

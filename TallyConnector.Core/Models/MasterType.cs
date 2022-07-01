@@ -6,7 +6,7 @@ public enum TallyObjectType
     Groups,
     Ledgers,
     CostCategories,
-    CostCenters,
+    CostCentres,
     Godowns,
     StockCategories,
     StockGroups,
