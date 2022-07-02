@@ -588,6 +588,10 @@ public class Tally : IDisposable
             if (Aliasinfo != null)
             {
                 List<LanguageNameList>? languageNameLists = (List<LanguageNameList>?)typeof(ReturnType).GetProperty("LanguageNameList")?.GetValue(TallyMaster);
+                if (languageNameLists?.Count <= 0)
+                {
+                    languageNameLists.Add(new());
+                }
                 Aliasinfo.SetValue(TallyMaster, languageNameLists?[0].LanguageAlias);
             }
             //Name
