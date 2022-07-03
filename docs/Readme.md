@@ -1,8 +1,13 @@
 # Tally Connector  [![NuGet Version](https://img.shields.io/nuget/v/TallyConnector.svg?style=flat)](https://www.nuget.org/packages/TallyConnector/)
 
-[![forthebadge](https://forthebadge.com/images/badges/built-with-love.svg)](https://forthebadge.com)
-[![forthebadge](https://forthebadge.com/images/badges/open-source.svg)](https://forthebadge.com)
-[![forthebadge](https://forthebadge.com/images/badges/made-with-c-sharp.svg)](https://forthebadge.com)
+![forthebadge](https://forthebadge.com/images/badges/built-with-love.svg)
+![forthebadge](https://forthebadge.com/images/badges/open-source.svg)
+![forthebadge](https://forthebadge.com/images/badges/made-with-c-sharp.svg)
+
+## Branch Info
+
+Master Branch is for Latest Version
+If you want old Version 1.0.8 go to [Branch - 1.0.8](https://github.com/Accounting-Companion/TallyConnector/tree/1.08)
 
 You can use **[Tally Connector](https://github.com/saivineeth100/TallyConnector/)** to Integrate your desktop/Mobile Applications with Tally.
 
@@ -27,61 +32,6 @@ ___
 | --- | --- |
 | **TallyConnector.Core**  <br/>Core Library that used in TallyConnector.<br/> Contains models,converters,attributes |![NET6](https://img.shields.io/badge/.NET-6.0-red) ![NET5](https://img.shields.io/badge/.NET-5.0-blue) ![NETFramework48](https://img.shields.io/badge/.NET%20Framework-4.8-orange)|
 | **TallyConnector**  <br/>We can use this library to interact with Tally Erp9 / Tally prime using C# objects  |![NET6](https://img.shields.io/badge/.NET-6.0-red) ![NET5](https://img.shields.io/badge/.NET-5.0-blue) ![NETFramework48](https://img.shields.io/badge/.NET%20Framework-4.8-orange)|
-___
-
-## Getting Started
-
-```shell
-Install-Package TallyConnector
-```
-
-Intiate Tally in your Project
-
-### In C#
-
-```C#
-Using TallyConnector //Importing TallyConnector Library
-
-//public Tally Tally = new Tally("http://localhost",9000); --You can Specify url and port on which tally is running
-public Tally Ctally = new Tally(); //If Nothing is specified default url is localhost running on port 9000
-
-//We can also Setup default Configuration using Setup method - Once setup you no need to explicitly send these through each methods
-Ctally.Setup(URL,Port,CompName,fromDate,toDate); //URL and port are mandatory Fields 
-
-//Check() Returns true if tally is running
-public bool status = await Ctally.Check(); // To check Whether Tally is running on Given url and port. 
-
-//GetCompaniesList() Returns List of companies opened in Tally
-List<Company> CompaniesList = await  Ctally.GetCompaniesList();
-
-//To Get Full Object from Tally use Specific methods like GetGroup, GetLedger, GetCostCategory,GetCostCenter ..etc.,
-//For Ex. For getting Group by name
-Group TGrp = await Ctally.GetGroup<Group>("TestGroup");
-
-//To Create/Alter/Delete/Cancel Group,Ledger,Voucher from Tally use Specific methods like PostGroup, PostLedger, PostCostCategory,PostCostCenter ..etc.,
-//For Ex. To create group
-PResult result = await Ctally.PostGroup(new Group()
-            {
-                Name = "TestGroup",
-                Parent = "Sundry Debtors",
-            });
-//For Ex. To Alter group we need to Set Group.Action to Delete and use the same method
-PResult result = await Ctally.PostGroup(new Group()
-            {
-                OldName = "TestGroup",
-                Name = "TestGroup_Edited",
-                Parent = "Sundry Debtors",
-                Action = Action.Alter,
-                AddLAllocType = AdAllocType.NotApplicable,
-            });
-//For Ex. To Delete group we need to Set Group.Action to Delete and use the same method
-PResult result = await Ctally.PostGroup(new Group()
-            {
-                OldName = "TestGroup",
-                Action = Action.Delete,
-            }); 
-```
-
 ___
 
 ## Other Useful Resources Related to Tally Integration
