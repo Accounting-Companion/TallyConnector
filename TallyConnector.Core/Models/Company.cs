@@ -1,10 +1,8 @@
 ﻿namespace TallyConnector.Core.Models;
 
 
-[XmlRoot(ElementName = "COMPANY")]
-public class Company : TallyXmlJson
+public class BaseCompany : TallyXmlJson
 {
-
     [XmlElement(ElementName = "NAME")]
     [Column(TypeName = $"nvarchar({Constants.MaxNameLength})")]
     public string? Name { get; set; }
@@ -12,6 +10,30 @@ public class Company : TallyXmlJson
     [XmlElement(ElementName = "GUID")]
     [Column(TypeName = $"nvarchar({Constants.GUIDLength})")]
     public string? GUID { get; set; }
+
+    [XmlElement(ElementName = "BOOKSFROM")]
+    public TallyDate? BooksFrom { get; set; }
+
+    [XmlElement(ElementName = "STARTINGFROM")]
+    public TallyDate? StartingFrom { get; set; }
+
+    [XmlElement(ElementName = "ENDINGAT")]
+    public TallyDate? EndDate { get; set; }
+
+    [XmlElement(ElementName = "COMPANYNUMBER")]
+    public string? CompNum { get; set; }
+
+
+    public override string ToString()
+    {
+        return $"Company - {Name}";
+    }
+}
+
+
+[XmlRoot(ElementName = "COMPANY")]
+public class Company : BaseCompany
+{
 
     [XmlElement(ElementName = "BASICCOMPANYFORMALNAME")]
     [Column(TypeName = $"nvarchar({Constants.MaxNameLength})")]
@@ -60,19 +82,6 @@ public class Company : TallyXmlJson
     public string? TDSDeductorBranch { get; set; }
 
 
-    [XmlElement(ElementName = "BOOKSFROM")]
-    public TallyDate? BooksFrom { get; set; }
-
-    [XmlElement(ElementName = "STARTINGFROM")]
-    public TallyDate? StartingFrom { get; set; }
-
-    [XmlElement(ElementName = "ENDINGAT")]
-    public TallyDate? EndDate { get; set; }
-
-    [XmlElement(ElementName = "COMPANYNUMBER")]
-    public string? CompNum { get; set; }
-
-
     //Settings
 
     [XmlElement(ElementName = "ISINVENTORYON")]
@@ -104,32 +113,10 @@ public class Company : TallyXmlJson
     [XmlElement(ElementName = "ISINTERESTON")]
     public TallyYesNo? IsInterestOn { get; set; }
 
-    public override string ToString()
-    {
-        return $"Company - {Name}";
-    }
-
-
 }
 
 [XmlRoot(ElementName = "COMPANYONDISK")]
-public class CompanyOnDisk : TallyXmlJson
+public class CompanyOnDisk : BaseCompany
 {
-    [XmlElement(ElementName = "NAME")]
-    public string? Name { get; set; }
-
-    [XmlElement(ElementName = "STARTINGFROM")]
-    public TallyDate? StartDate { get; set; }
-
-    [XmlElement(ElementName = "ENDINGAT")]
-    public TallyDate? EndDate { get; set; }
-
-    [XmlElement(ElementName = "COMPANYNUMBER")]
-    public string? CompNum { get; set; }
-
-    public override string ToString()
-    {
-        return $"Company - {Name}";
-    }
 }
 

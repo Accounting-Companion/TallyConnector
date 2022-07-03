@@ -27,6 +27,7 @@ public class TallyDate : IXmlSerializable
         return tallyDate.Date;
     }
 
+
     public static implicit operator TallyDate?(string v)
     {
         bool IsSucess = DateTime.TryParseExact(v, "yyyyMMdd", CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime date);

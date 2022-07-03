@@ -164,57 +164,57 @@ public class TallyAmountTests
     [Test]
     public async Task CheckCreateLedgerTallyAmountwithNull()
     {
-        Tally tally = new();
+        TallyService tally = new();
         var ledgerName = "TesttoTallyAmount";
         Ledger ledger = new(ledgerName, "Sundry Debtors")
         {
             OpeningBal = null,
         };
-        var resp = await tally.PostLedger(ledger);
+        var resp = await tally.PostLedgerAsync(ledger);
         Assert.AreEqual(resp.Status, TCM.RespStatus.Sucess);
 
-        var TLedger = await tally.GetLedger<Ledger>(ledgerName);
+        var TLedger = await tally.GetLedgerAsync<Ledger>(ledgerName);
         Assert.AreEqual(TLedger.Name, ledgerName);
         Assert.AreEqual(TLedger.OpeningBal.Amount, 0);
-        var delResp = await tally.PostLedger(new Ledger() { Action = TCM.Action.Delete, OldName = "TesttoTallyAmount" });
+        var delResp = await tally.PostLedgerAsync(new Ledger() { Action = TCM.Action.Delete, OldName = "TesttoTallyAmount" });
 
         Assert.AreEqual(delResp.Status, TCM.RespStatus.Sucess);
     }
     [Test]
     public async Task CheckCreateLedgerTallyAmount()
     {
-        Tally tally = new();
+        TallyService tally = new();
         var ledgerName = "TesttoTallyAmount";
         Ledger ledger = new(ledgerName, "Sundry Debtors")
         {
             OpeningBal = 5000,
         };
-        var resp = await tally.PostLedger(ledger);
+        var resp = await tally.PostLedgerAsync(ledger);
         Assert.AreEqual(resp.Status, TCM.RespStatus.Sucess);
 
-        var TLedger = await tally.GetLedger<Ledger>(ledgerName);
+        var TLedger = await tally.GetLedgerAsync<Ledger>(ledgerName);
         Assert.AreEqual(TLedger.Name, ledgerName);
         Assert.AreEqual(TLedger.OpeningBal.Amount, 5000);
-        var delResp = await tally.PostLedger(new Ledger() { Action = TCM.Action.Delete, OldName = "TesttoTallyAmount" });
+        var delResp = await tally.PostLedgerAsync(new Ledger() { Action = TCM.Action.Delete, OldName = "TesttoTallyAmount" });
 
         Assert.AreEqual(delResp.Status, TCM.RespStatus.Sucess);
     }
     [Test]
     public async Task CheckCreateLedgerTallyDebitAmount()
     {
-        Tally tally = new();
+        TallyService tally = new();
         var ledgerName = "TesttoTallyAmount";
         Ledger ledger = new(ledgerName, "Sundry Debtors")
         {
             OpeningBal = -5000,
         };
-        var resp = await tally.PostLedger(ledger);
+        var resp = await tally.PostLedgerAsync(ledger);
         Assert.AreEqual(resp.Status, TCM.RespStatus.Sucess);
 
-        var TLedger = await tally.GetLedger<Ledger>(ledgerName);
+        var TLedger = await tally.GetLedgerAsync<Ledger>(ledgerName);
         Assert.AreEqual(TLedger.Name, ledgerName);
         Assert.AreEqual(TLedger.OpeningBal.Amount, 5000);
-        var delResp = await tally.PostLedger(new Ledger() { Action = TCM.Action.Delete, OldName = "TesttoTallyAmount" });
+        var delResp = await tally.PostLedgerAsync(new Ledger() { Action = TCM.Action.Delete, OldName = "TesttoTallyAmount" });
 
         Assert.AreEqual(delResp.Status, TCM.RespStatus.Sucess);
     }
@@ -222,23 +222,23 @@ public class TallyAmountTests
     [Test]
     public async Task CheckCreateLedgerTallyAmountwithForex()
     {
-        Tally tally = new();
+        TallyService tally = new();
         var ledgerName = "TesttoTallyAmount";
         Ledger ledger = new(ledgerName, "Sundry Debtors")
         {
             OpeningBal = new(5000, 20, "$"),
         };
-        var resp = await tally.PostLedger(ledger);
+        var resp = await tally.PostLedgerAsync(ledger);
         Assert.AreEqual(resp.Status, TCM.RespStatus.Sucess);
 
-        var TLedger = await tally.GetLedger<Ledger>(ledgerName);
+        var TLedger = await tally.GetLedgerAsync<Ledger>(ledgerName);
         Assert.AreEqual(TLedger.Name, ledgerName);
         Assert.AreEqual(TLedger.OpeningBal.Amount, 100000);
         Assert.AreEqual(TLedger.OpeningBal.ForexAmount, 5000);
         Assert.AreEqual(TLedger.OpeningBal.RateOfExchange, 20);
         Assert.AreEqual(TLedger.OpeningBal.IsDebit, false);
         Assert.AreEqual(TLedger.OpeningBal.Currency, "$");
-        var delResp = await tally.PostLedger(new Ledger() { Action = TCM.Action.Delete, OldName = "TesttoTallyAmount" });
+        var delResp = await tally.PostLedgerAsync(new Ledger() { Action = TCM.Action.Delete, OldName = "TesttoTallyAmount" });
 
         Assert.AreEqual(delResp.Status, TCM.RespStatus.Sucess);
     }
@@ -246,23 +246,23 @@ public class TallyAmountTests
     [Test]
     public async Task CheckCreateLedgerTallyDebitAmountwithForex()
     {
-        Tally tally = new();
+        TallyService tally = new();
         var ledgerName = "TesttoTallyAmount";
         Ledger ledger = new(ledgerName, "Sundry Debtors")
         {
             OpeningBal = new(-5000, 20, "$"),
         };
-        var resp = await tally.PostLedger(ledger);
+        var resp = await tally.PostLedgerAsync(ledger);
         Assert.AreEqual(resp.Status, TCM.RespStatus.Sucess);
 
-        var TLedger = await tally.GetLedger<Ledger>(ledgerName);
+        var TLedger = await tally.GetLedgerAsync<Ledger>(ledgerName);
         Assert.AreEqual(TLedger.Name, ledgerName);
         Assert.AreEqual(TLedger.OpeningBal.Amount, 100000);
         Assert.AreEqual(TLedger.OpeningBal.ForexAmount, 5000);
         Assert.AreEqual(TLedger.OpeningBal.RateOfExchange, 20);
         Assert.AreEqual(TLedger.OpeningBal.IsDebit, true);
         Assert.AreEqual(TLedger.OpeningBal.Currency, "$");
-        var delResp = await tally.PostLedger(new Ledger() { Action = TCM.Action.Delete, OldName = "TesttoTallyAmount" });
+        var delResp = await tally.PostLedgerAsync(new Ledger() { Action = TCM.Action.Delete, OldName = "TesttoTallyAmount" });
 
         Assert.AreEqual(delResp.Status, TCM.RespStatus.Sucess);
     }

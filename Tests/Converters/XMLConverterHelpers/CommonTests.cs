@@ -5,8 +5,8 @@ internal class CommonTests
     [Test]
     public async Task CheckStockItemforCustomCustomTallyObjects()
     {
-        Tally tally = new();
-        TCMV.StockItem stockItem = new()
+        TallyService tally = new();
+        TCMI.StockItem stockItem = new()
         {
             Name = "Test StockItem",
             BaseUnit = "Nos",
@@ -14,10 +14,10 @@ internal class CommonTests
         };
         stockItem.OpeningBal = new(stockItem, 50);
         stockItem.OpeningValue = new(-5000);
-        TCM.PResult result = await tally.PostStockItem<TCMV.StockItem>(stockItem);
+        TCM.PResult result = await tally.PostStockItemAsync<TCMI.StockItem>(stockItem);
 
         Assert.AreEqual(result.Status, TCM.RespStatus.Sucess);
-        TCMV.StockItem tStockItem = await tally.GetStockItem<TCMV.StockItem>("Test StockItem");
+        TCMI.StockItem tStockItem = await tally.GetStockItemAsync<TCMI.StockItem>("Test StockItem");
 
         Assert.AreEqual(tStockItem.Name, "Test StockItem");
         Assert.AreEqual(tStockItem.BaseUnit, "Nos");
@@ -28,7 +28,7 @@ internal class CommonTests
         Assert.AreEqual(tStockItem.OpeningRate.Unit, "Nos");
         Assert.AreEqual(tStockItem.OpeningRate.RatePerUnit, 100.00);
 
-        TCM.PResult Delresult = await tally.PostStockItem<TCMV.StockItem>(new() { OldName = "Test StockItem", Action = TCM.Action.Delete });
+        TCM.PResult Delresult = await tally.PostStockItemAsync<TCMI.StockItem>(new() { OldName = "Test StockItem", Action = TCM.Action.Delete });
 
         Assert.AreEqual(Delresult.Status, TCM.RespStatus.Sucess);
 
@@ -36,8 +36,8 @@ internal class CommonTests
     [Test]
     public async Task CheckStockItemforCustomCustomTallyObjectswithRate()
     {
-        Tally tally = new();
-        TCMV.StockItem stockItem = new()
+        TallyService tally = new();
+        TCMI.StockItem stockItem = new()
         {
             Name = "Test StockItem",
             BaseUnit = "Nos",
@@ -46,10 +46,10 @@ internal class CommonTests
         stockItem.OpeningBal = new(stockItem, 50);
         stockItem.OpeningRate = new(100, "Nos");
         stockItem.OpeningValue = new(-5000);
-        TCM.PResult result = await tally.PostStockItem<TCMV.StockItem>(stockItem);
+        TCM.PResult result = await tally.PostStockItemAsync<TCMI.StockItem>(stockItem);
 
         Assert.AreEqual(result.Status, TCM.RespStatus.Sucess);
-        TCMV.StockItem tStockItem = await tally.GetStockItem<TCMV.StockItem>("Test StockItem");
+        TCMI.StockItem tStockItem = await tally.GetStockItemAsync<TCMI.StockItem>("Test StockItem");
 
         Assert.AreEqual(tStockItem.Name, "Test StockItem");
         Assert.AreEqual(tStockItem.BaseUnit, "Nos");
@@ -60,7 +60,7 @@ internal class CommonTests
         Assert.AreEqual(tStockItem.OpeningRate.Unit, "Nos");
         Assert.AreEqual(tStockItem.OpeningRate.RatePerUnit, 100.00);
 
-        TCM.PResult Delresult = await tally.PostStockItem<TCMV.StockItem>(new() { OldName = "Test StockItem", Action = TCM.Action.Delete });
+        TCM.PResult Delresult = await tally.PostStockItemAsync<TCMI.StockItem>(new() { OldName = "Test StockItem", Action = TCM.Action.Delete });
 
         Assert.AreEqual(Delresult.Status, TCM.RespStatus.Sucess);
 
@@ -69,8 +69,8 @@ internal class CommonTests
     [Test]
     public async Task CheckStockItemforCustomCustomTallyObjectswithAdditionalUnit()
     {
-        Tally tally = new();
-        TCMV.StockItem stockItem = new()
+        TallyService tally = new();
+        TCMI.StockItem stockItem = new()
         {
             Name = "Test StockItem",
             BaseUnit = "Nos",
@@ -81,10 +81,10 @@ internal class CommonTests
         };
         stockItem.OpeningBal = new(stockItem, 50);
         stockItem.OpeningValue = new(-5000);
-        TCM.PResult result = await tally.PostStockItem<TCMV.StockItem>(stockItem);
+        TCM.PResult result = await tally.PostStockItemAsync<TCMI.StockItem>(stockItem);
 
         Assert.AreEqual(result.Status, TCM.RespStatus.Sucess);
-        TCMV.StockItem tStockItem = await tally.GetStockItem<TCMV.StockItem>("Test StockItem");
+        TCMI.StockItem tStockItem = await tally.GetStockItemAsync<TCMI.StockItem>("Test StockItem");
 
         Assert.AreEqual(tStockItem.Name, "Test StockItem");
         Assert.AreEqual(tStockItem.BaseUnit, "Nos");
@@ -100,7 +100,7 @@ internal class CommonTests
         Assert.AreEqual(tStockItem.OpeningRate.Unit, "Nos");
         Assert.AreEqual(tStockItem.OpeningRate.RatePerUnit, 100.00);
 
-        TCM.PResult Delresult = await tally.PostStockItem<TCMV.StockItem>(new() { OldName = "Test StockItem", Action = TCM.Action.Delete });
+        TCM.PResult Delresult = await tally.PostStockItemAsync<TCMI.StockItem>(new() { OldName = "Test StockItem", Action = TCM.Action.Delete });
 
         Assert.AreEqual(Delresult.Status, TCM.RespStatus.Sucess);
 
@@ -109,7 +109,7 @@ internal class CommonTests
     [Test]
     public async Task CheckCreateVoucherforCustomCustomTallyObjects()
     {
-        Tally tally = new();
+        TallyService tally = new();
         TCM.Voucher voucher = new()
         {
             Date = new DateTime(2022, 05, 31),
@@ -160,10 +160,10 @@ internal class CommonTests
             }
         };
 
-        TCM.PResult result = await tally.PostVoucher<TCM.Voucher>(voucher);
+        TCM.TallyResult result = await tally.PostVoucher<TCM.Voucher>(voucher);
 
         Assert.AreEqual(result.Status, TCM.RespStatus.Sucess);
-        TCM.Voucher Tvoucher = await tally.GetVoucher<TCM.Voucher>(result.VoucherMasterId, TCM.VoucherLookupField.MasterId);
+        TCM.Voucher Tvoucher = await tally.GetVoucherAsync<TCM.Voucher>("");
 
         Assert.IsNotNull(Tvoucher);
 

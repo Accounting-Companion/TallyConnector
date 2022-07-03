@@ -134,7 +134,7 @@ public class TDLMessage
     public TDLMessage(ReportField rootreportField)
     {
         Report = new() { new(rootreportField.FieldName!) };
-        Form = new() { new(rootreportField.FieldName!) { ReportTag = rootreportField.FieldName + ".LIST"} };
+        Form = new() { new(rootreportField.FieldName!) { ReportTag = rootreportField.FieldName + ".LIST" } };
         Part = new()
         {
             new(rootreportField.FieldName!,rootreportField.CollectionName!)
@@ -556,12 +556,12 @@ public class Collection : DCollection
         {
             Filters = filters;
         }
-        ComputeVar = new() { "vLineIndex: Number : IF $$IsEmpty:##vLineIndex THEN 1 ELSE ##vLineIndex + 1" };
+        ComputeVar = new();
         if (computevar != null)
         {
             ComputeVar.AddRange(computevar);
         }
-        Compute = new() { "LineIndex : ##vLineIndex" };
+        Compute = new();
         if (compute != null)
         {
             Compute.AddRange(compute);
@@ -702,9 +702,13 @@ public class PResult
 
     public string? Result { get; set; }
 
-    public string? VoucherMasterId { get; set; }
 }
+public class TallyResult
+{
+    public RespStatus Status { get; set; }
 
+    public string? Response { get; set; }
+}
 public enum RespStatus
 {
     Sucess,
