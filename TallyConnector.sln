@@ -11,7 +11,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TallyConnector.Core", "Tall
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TallyConnector.EFCore", "TallyConnector.EFCore\TallyConnector.EFCore.csproj", "{FB55DFB4-5EF6-4AFC-B053-C4A33247CA10}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TallyConnector.Reports", "TallyConnector.Reports\TallyConnector.Reports.csproj", "{42F2328A-1F3D-4BAD-871B-DDFF4187D2CA}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TallyConnector.Reports", "TallyConnector.Reports\TallyConnector.Reports.csproj", "{42F2328A-1F3D-4BAD-871B-DDFF4187D2CA}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
