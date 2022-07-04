@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace TallyConnector.Core.Models;
+﻿namespace TallyConnector.Core.Models;
 public class BaseRequestOptions
 {
     public string? Company { get; set; }
@@ -15,14 +9,20 @@ public class PostRequestOptions : BaseRequestOptions
 
 }
 
-public class RequestOptions : BaseRequestOptions
+public class DateFilterRequestOptions : BaseRequestOptions
 {
     public DateTime? FromDate { get; set; }
     public DateTime? ToDate { get; set; }
+}
+
+public class RequestOptions : DateFilterRequestOptions
+{
+    
     public List<string>? FetchList { get; set; }
     public List<Filter>? Filters { get; set; }
     public List<string>? Compute { get; set; } = new();
     public List<string>? ComputeVar { get; set; } = new();
+    public YesNo IsInitialize { get; set; } = YesNo.No;
 }
 
 public class PaginatedRequestOptions: RequestOptions
@@ -51,6 +51,5 @@ public class CollectionRequestOptions : PaginatedRequestOptions
 
     public string CollectionType { get; set; }
     public string? ChildOf { get; set; }    
-    public YesNo IsInitialize { get; set; } = YesNo.No;
 }
 

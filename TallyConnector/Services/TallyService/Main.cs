@@ -1,9 +1,4 @@
-﻿using System.Net;
-using System.Xml.Serialization;
-using TallyConnector.Core.Converters.XMLConverterHelpers;
-using TallyConnector.Core.Exceptions;
-
-namespace TallyConnector.Services;
+﻿namespace TallyConnector.Services;
 public partial class TallyService
 {
     private readonly HttpClient _httpClient;
@@ -13,7 +8,7 @@ public partial class TallyService
 
     private string _baseURL;
 
-    private BaseCompany? _company { get; set; }
+    private BaseCompany? Company { get; set; }
 
     private string FullURL => _baseURL + ":" + _port;
     public TallyService()
@@ -76,10 +71,7 @@ public partial class TallyService
     }
 
 
-    /// <summary>
-    /// Checks whether Tally is running at given url and port
-    /// </summary>
-    /// <returns>true or false</returns>
+
     public async Task<bool> CheckAsync()
     {
         TallyResult tallyResult = await SendRequestAsync();
@@ -91,9 +83,21 @@ public partial class TallyService
     }
 
 
-    public async Task GetLicenseInfoAsync()
+    public void Setup(string url,
+                      int port)
     {
-        TallyResult tallyResult = await SendRequestAsync();
+        if (!url.Contains("http") && !url.Contains("https"))
+        {
+            url = $"http://{url}";
+        }
+        _baseURL = url;
+        _port = port;
+    }
+
+    public async Task<LicenseInfo?> GetLicenseInfoAsync()
+    {
+        var LicenseInfo = await GetTDLReportAsync<LicenseInfo, LicenseInfo>();
+        return LicenseInfo;
     }
 
 
@@ -104,7 +108,7 @@ public partial class TallyService
         Envelope<ObjType> Objectenvelope = new(Object,
                                                new()
                                                {
-                                                   SVCompany = postRequestOptions?.Company ?? _company?.Name
+                                                   SVCompany = postRequestOptions?.Company ?? Company?.Name
                                                });
         string ReqXml = Objectenvelope.GetXML(postRequestOptions?.XMLAttributeOverrides);
         TallyResult tallyResult = await SendRequestAsync(ReqXml);
@@ -115,7 +119,7 @@ public partial class TallyService
         return new();
     }
 
-    public async Task<ObjType> GetObjectAsync<ObjType>(string LookupValue,
+    public async Task<ObjType> GetObjectAsync<ObjType>(string lookupValue,
                                                        MasterRequestOptions? requestOptions = null) where ObjType : TallyXmlJson, ITallyObject
     {
         // If received FetchList in collectionOptions we will use that else use default fetchlist
@@ -124,11 +128,11 @@ public partial class TallyService
         string filterformulae;
         if (requestOptions.LookupField is MasterLookupField.MasterId or MasterLookupField.AlterId)
         {
-            filterformulae = $"${requestOptions.LookupField} = {LookupValue}";
+            filterformulae = $"${requestOptions.LookupField} = {lookupValue}";
         }
         else
         {
-            filterformulae = $"${requestOptions.LookupField} = \"{LookupValue}\"";
+            filterformulae = $"${requestOptions.LookupField} = \"{lookupValue}\"";
         }
         List<Filter> filters = new() { new Filter() { FilterName = "Objfilter", FilterFormulae = filterformulae } };
 
@@ -141,14 +145,14 @@ public partial class TallyService
         }
         throw new ObjectDoesNotExist(typeof(ObjType).Name,
                                      requestOptions.LookupField.ToString(),
-                                     LookupValue,
-                                     _company?.Name!);
+                                     lookupValue,
+                                     Company?.Name!);
 
     }
 
 
 
-    public async Task<ObjType> GetObjectAsync<ObjType>(string LookupValue,
+    public async Task<ObjType> GetObjectAsync<ObjType>(string lookupValue,
                                                        VoucherRequestOptions? requestOptions = null) where ObjType : Voucher
     {
         // If received FetchList in collectionOptions we will use that else use default fetchlist
@@ -162,11 +166,11 @@ public partial class TallyService
         string filterformulae;
         if (requestOptions.LookupField is VoucherLookupField.MasterId or VoucherLookupField.AlterId)
         {
-            filterformulae = $"${requestOptions.LookupField} = {LookupValue}";
+            filterformulae = $"${requestOptions.LookupField} = {lookupValue}";
         }
         else
         {
-            filterformulae = $"${requestOptions.LookupField} = \"{LookupValue}\"";
+            filterformulae = $"${requestOptions.LookupField} = \"{lookupValue}\"";
         }
         List<Filter> filters = new() { new Filter() { FilterName = "Objfilter", FilterFormulae = filterformulae } };
 
@@ -179,8 +183,8 @@ public partial class TallyService
         }
         throw new ObjectDoesNotExist(typeof(ObjType).Name,
                                      requestOptions.LookupField.ToString(),
-                                     LookupValue,
-                                     _company?.Name!);
+                                     lookupValue,
+                                     Company?.Name!);
 
     }
 
@@ -203,13 +207,22 @@ public partial class TallyService
                 ComputeVar = objectOptions?.ComputeVar,
                 Pagination = objectOptions?.Pagination,
                 XMLAttributeOverrides = objectOptions?.XMLAttributeOverrides,
+                IsInitialize = objectOptions?.IsInitialize ?? YesNo.No,
             };
             var mapping = TallyObjectMapping.TallyObjectMappings
                     .FirstOrDefault(map => map.TallyMasterType.Equals(collectionOptions.CollectionType, StringComparison.OrdinalIgnoreCase));
             collectionOptions.Compute ??= new();
-            if (mapping != null && mapping.ComputeFields != null)
+            collectionOptions.Filters ??= new();
+            if (mapping != null)
             {
-                collectionOptions.Compute.AddRange(mapping.ComputeFields);
+                if (mapping.ComputeFields != null)
+                {
+                    collectionOptions.Compute.AddRange(mapping.ComputeFields);
+                }
+                if (mapping.Filters != null)
+                {
+                    collectionOptions.Filters.AddRange(mapping.Filters);
+                }
             }
 
             if (collectionOptions.Pagination != null)
@@ -217,7 +230,6 @@ public partial class TallyService
                 collectionOptions.Compute.Add("LineIndex : ##vLineIndex");
                 collectionOptions.ComputeVar ??= new();
                 collectionOptions.ComputeVar.Add("vLineIndex: Number : IF $$IsEmpty:##vLineIndex THEN 1 ELSE ##vLineIndex + 1");
-                collectionOptions.Filters ??= new();
                 collectionOptions.Filters.Add(new("Pagination", collectionOptions.Pagination.GetFilterFormulae()));
             }
             //Adding xmlelement name according to RootElement name of ReturnObject
@@ -246,8 +258,8 @@ public partial class TallyService
     {
         StaticVariables staticVariables = new()
         {
-            SVCompany = collectionOptions.Company ?? _company?.Name,
-            SVFromDate = collectionOptions.FromDate ?? _company?.BooksFrom!,
+            SVCompany = collectionOptions.Company ?? Company?.Name,
+            SVFromDate = collectionOptions.FromDate ?? Company?.BooksFrom!,
             SVToDate = collectionOptions.ToDate ?? DateTime.Now,
         };
         string CollectionName = $"CUSTOM{collectionOptions.CollectionType.ToUpper()}COL";
@@ -287,6 +299,29 @@ public partial class TallyService
 
     }
 
+    public async Task<ReturnType?> GetTDLReportAsync<ReportType, ReturnType>(DateFilterRequestOptions? requestOptions = null) where ReportType : class
+    {
+        StaticVariables sv = new()
+        {
+            SVCompany = requestOptions?.Company ?? Company?.Name,
+            SVExportFormat = "XML",
+            SVFromDate = requestOptions?.FromDate,
+            SVToDate = requestOptions?.ToDate
+        };
+
+        TDLReport report = TDLReportHelper.CreateTDLReport(typeof(ReportType));
+
+        RequestEnvelope requestEnvelope = new(report, sv);
+        var Reqxml = requestEnvelope.GetXML();
+        TallyResult Response = await SendRequestAsync(Reqxml);
+        if (Response.Status == RespStatus.Sucess && Response.Response != null)
+        {
+            ReturnType? tallyReport = XMLToObject.GetObjfromXml<ReturnType>(Response.Response);
+            return tallyReport;
+        }
+
+        return default;
+    }
 
     /// <summary>
     /// A helper function to send request to Tally
@@ -308,16 +343,16 @@ public partial class TallyService
         try
         {
             HttpResponseMessage tallyResponse = await _httpClient.SendAsync(requestMessage);
-            var resXml = await tallyResponse.Content.ReadAsStringAsync();
+            var resXml = ReplaceXMLText(await tallyResponse.Content.ReadAsStringAsync());
             // If Status code is 200 
             if (tallyResponse.StatusCode == HttpStatusCode.OK)
             {
-
                 //var resp = await tallyResponse.Content.ReadAsStreamAsync();
                 //using StreamReader streamReader = new(resp, Encoding.Unicode);
-                //var resXml = streamReader.ReadToEnd();
+                //resXml = streamReader.ReadToEnd();
 
                 Logger?.LogTallyResponse(resXml);
+                //CheckTallyError(resXml);
                 result.Status = RespStatus.Sucess;
                 result.Response = resXml;
             }
@@ -327,6 +362,11 @@ public partial class TallyService
                 result.Response = resXml;
             }
         }
+        catch (HttpRequestException exc)
+        {
+            result.Response = exc.Message;
+            throw new TallyConnectivityException("Tally is not running", FullURL);
+        }
         catch (Exception exc)
         {
             result.Status = RespStatus.Failure;
@@ -334,10 +374,15 @@ public partial class TallyService
             //TLogger.TallyReqError(exc.Message);
             //throw new TallyConnectivityException("Tally is not running", FullURL);
         }
-
         return result;
     }
 
+    public static string ReplaceXMLText(string Xml)
+    {
+        Xml = Xml.Replace("&#4; ", "");
+        Xml = Xml.Replace("0x20B9", "");
+        return Xml;
+    }
 
     public TallyResult ParseResponse(TallyResult tallyResult)
     {
@@ -389,5 +434,15 @@ public partial class TallyService
             tallyResult.Response = resp?.ToString();
         }
         return tallyResult;
+    }
+
+    public string? CheckTallyError(string ResXml)
+    {
+        if (ResXml.Contains("LINEERROR"))
+        {
+            FailureResponse? resp = XMLToObject.GetObjfromXml<FailureResponse>(ResXml);
+            return resp?.ToString();
+        }
+        return null;
     }
 }

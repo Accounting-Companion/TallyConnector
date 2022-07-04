@@ -19,15 +19,13 @@ public class RequestEnvelope : TallyXmlJson
 
 
 
-    public RequestEnvelope(HType Type, string iD, StaticVariables sv, ReportField rootreportfield) : this(Type, iD, sv)
+    public RequestEnvelope(HType Type, string iD, StaticVariables sv, TDLReport rootreportfield) : this(Type, iD, sv)
     {
         Body.Desc.TDL.TDLMessage = new(rootreportfield);
     }
-    public RequestEnvelope(ReportField rootreportfield, StaticVariables? sv = null)
+    public RequestEnvelope(TDLReport rootreportfield, StaticVariables? sv = null)
     {
-        string ReportName = $"Custom{rootreportfield.FieldName}".ToUpper();
-        rootreportfield.FieldName = ReportName;
-        Header = new(Request: RequestTye.Export, HType.Data, ReportName);
+        Header = new(Request: RequestTye.Export, HType.Data, rootreportfield.FieldName);
         Body.Desc.StaticVariables = sv;
         Body.Desc.TDL = new(rootreportfield);
 
@@ -84,7 +82,7 @@ public class ReqTDL
     {
     }
 
-    public ReqTDL(ReportField rootreportfield, List<Filter>? filters = null)
+    public ReqTDL(TDLReport rootreportfield, List<Filter>? filters = null)
     {
         TDLMessage = new(rootreportfield);
     }
@@ -131,10 +129,10 @@ public class TDLMessage
                          objects: ObjNames));
     }
 
-    public TDLMessage(ReportField rootreportField)
+    public TDLMessage(TDLReport rootreportField)
     {
         Report = new() { new(rootreportField.FieldName!) };
-        Form = new() { new(rootreportField.FieldName!) { ReportTag = rootreportField.FieldName + ".LIST" } };
+        Form = new() { new(rootreportField.FieldName!) { ReportTag = rootreportField.CollectionName != null ? $"{rootreportField.FieldName}.LIST" : rootreportField.FieldName } };
         Part = new()
         {
             new(rootreportField.FieldName!,rootreportField.CollectionName!)
@@ -143,7 +141,7 @@ public class TDLMessage
 
         Line RootLine = new(rootreportField.FieldName!,
                             rootlinefields,
-                            rootreportField.CollectionType!);
+                             rootreportField.CollectionName != null ? rootreportField.FieldName : null);
         Line = new()
         {
             RootLine
@@ -162,7 +160,7 @@ public class TDLMessage
                           RootLine);
     }
 
-    private void GenerateTDLFields(ReportField rootreportField,
+    private void GenerateTDLFields(TDLReport rootreportField,
                                    List<string> tfields,
                                    Line rootLine)
     {
@@ -193,7 +191,7 @@ public class TDLMessage
         });
     }
 
-    public TDLMessage(ReportField rootreportField, List<Filter>? filters = null)
+    public TDLMessage(TDLReport rootreportField, List<Filter>? filters = null)
     {
         string rName = $"LISTOF{rootreportField.FieldName}";
         string CollectionName = rootreportField.CollectionName!;
@@ -225,7 +223,7 @@ public class TDLMessage
 
     }
 
-    private void GenerateFields(ReportField rootreportField,
+    private void GenerateFields(TDLReport rootreportField,
                                 List<string> Tfields,
                                 Dictionary<string, string> Repeatfields,
                                 List<string>? fetchlist = null)
@@ -390,11 +388,14 @@ public class Part : DCollection
     {
     }
 
-    public Part(string rootTag, string collectionName)
+    public Part(string rootTag, string? collectionName)
     {
         Name = rootTag;
         Lines = new() { rootTag };
-        _Repeat = $"{rootTag} : {collectionName}";
+        if (collectionName != null)
+        {
+            _Repeat = $"{rootTag} : {collectionName}";
+        }
         SetAttributes();
     }
 
@@ -405,7 +406,7 @@ public class Part : DCollection
     public string? Repeat { get { return _Repeat; } set { } }
 
     [XmlElement(ElementName = "SCROLLED")]
-    public string? Scrolled { get { return Repeat is null ? null : "Vertical"; } set { } }
+    public string? Scrolled { get; set; } = "Vertical";
 
     [XmlAttribute(AttributeName = "NAME")]
     public string? Name { get; set; }
@@ -417,7 +418,7 @@ public class Part : DCollection
 [XmlRoot(ElementName = "LINE")]
 public class Line : DCollection
 {
-    public Line(string lineName, List<string> fields, string xmlTag)
+    public Line(string lineName, List<string> fields, string? xmlTag)
     {
         Name = lineName;
         Fields = fields;

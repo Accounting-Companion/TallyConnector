@@ -18,13 +18,17 @@ public class TallyDate : IXmlSerializable
     {
     }
 
+    public static implicit operator TallyDate?(DateTime? date)
+    {
+        return null;
+    }
     public static implicit operator TallyDate(DateTime date)
     {
         return new(date);
     }
-    public static implicit operator DateTime?(TallyDate tallyDate)
+    public static implicit operator DateTime?(TallyDate? tallyDate)
     {
-        return tallyDate.Date;
+        return tallyDate?.Date;
     }
 
 

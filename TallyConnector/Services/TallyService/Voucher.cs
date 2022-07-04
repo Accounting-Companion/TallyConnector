@@ -1,18 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Xml.Serialization;
-
-namespace TallyConnector.Services;
+﻿namespace TallyConnector.Services;
 public partial class TallyService
 {
-    public async Task<Voucher> GetVoucherAsync<Vchtype>(string LookupValue,
+    public async Task<Vchtype> GetVoucherAsync<Vchtype>(string lookupValue,
                                                         VoucherRequestOptions? voucherRequestOptions = null) where Vchtype : Voucher
     {
 
-        return new();
+        return await GetObjectAsync<Vchtype>(lookupValue, voucherRequestOptions);
     }
 
     public async Task<TallyResult> PostVoucher<TVch>(TVch voucher, PostRequestOptions? postRequestOptions = null) where TVch : Voucher

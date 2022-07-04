@@ -21,7 +21,7 @@ public class TallyAmountJsonConverter : JsonConverter<TallyAmount>
         decimal? Amount = 0;
         decimal? ForexAmount = 0;
         decimal? RateOfExchange = 0;
-        string? Currency = string.Empty;
+        string Currency = string.Empty;
         while (reader.Read())
         {
             if (reader.TokenType == JsonTokenType.EndObject)

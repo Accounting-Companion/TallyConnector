@@ -42,18 +42,18 @@ public class BaseStatistics
 }
 
 
-[XmlRoot(ElementName = "CUSTOMVOUCHERTYPESTAT.LIST")]
-public class VchStatistics
+[XmlRoot(ElementName = "VOUCHERTYPESTAT.LIST")]
+public class VoucherStatistics
 {
-    [XmlElement(ElementName = "STATVCHTYPE")]
-    public List<VoucherTypeStat>? VoucherTypeStats { get; set; }
+    [XmlElement(ElementName = "VOUCHERTYPESTAT")]
+    public List<VoucherTypeStat>? VoucherStats { get; set; }
 }
 
-[XmlRoot(ElementName = "CUSTOMMASTERTYPESTAT.LIST")]
+[XmlRoot(ElementName = "MASTERTYPESTAT.LIST")]
 public class MasterStatistics
 {
-    [XmlElement(ElementName = "STATOBJECTS")]
-    public List<MasterTypeStat>? VoucherTypeStats { get; set; }
+    [XmlElement(ElementName = "MASTERTYPESTAT")]
+    public List<MasterTypeStat>? MasterStats { get; set; }
 }
 
 

@@ -1,5 +1,4 @@
 ﻿using System.Xml;
-using System.Xml.Serialization;
 using System.Xml.Xsl;
 
 namespace TallyConnector.Services;
@@ -17,12 +16,12 @@ public static class XMLToObject
         NameTable nt = new();
         XmlNamespaceManager nsmgr = new(nt);
         nsmgr.AddNamespace("UDF", "TallyUDF");
-        XmlParserContext context = new(null, nsmgr, null, XmlSpace.None);
+        XmlParserContext context = new(null, nsmgr, null, XmlSpace.None,Encoding.Unicode);
 
         XmlReaderSettings xset = new()
         {
             CheckCharacters = false,
-            ConformanceLevel = ConformanceLevel.Fragment
+            ConformanceLevel = ConformanceLevel.Fragment          
         };
         XmlReader rd = XmlReader.Create(new StringReader(Xml), xset, context);
         //StringReader XmlStream = new StringReader(Xml);
@@ -32,7 +31,7 @@ public static class XMLToObject
             XslCompiledTransform xslTransform = new();
             xslTransform.Load(xslreader);
             StringWriter textWriter = new();
-            XmlWriter xmlwriter = XmlWriter.Create(textWriter, new XmlWriterSettings() { OmitXmlDeclaration = true, Encoding = Encoding.Unicode });
+            XmlWriter xmlwriter = XmlWriter.Create(textWriter, new XmlWriterSettings() { OmitXmlDeclaration = true, Encoding = Encoding.Unicode});
             xslTransform.Transform(rd, null, xmlwriter);
             rd = XmlReader.Create(new StringReader(textWriter.ToString()), xset, context);
         }

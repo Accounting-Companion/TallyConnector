@@ -43,7 +43,7 @@ public enum AdAllocType
 {
     [XmlEnum(Name = "")]
     None = 0,
-    [XmlEnum(Name = " Not Applicable")]
+    [XmlEnum(Name = "Not Applicable")]
     NotApplicable = 1,
     [XmlEnum(Name = "Appropriate by Qty")]
     AppropriateByQty = 2,
@@ -100,7 +100,7 @@ public enum ExciseNatureOfPurchase
 {
     [XmlEnum(Name = "")]
     None = 0,
-    [XmlEnum(Name = " Any")]
+    [XmlEnum(Name = "Any")]
     Any = 1,
     [XmlEnum(Name = "Importer")]
     Importer = 2,
@@ -109,7 +109,7 @@ public enum GSTRegistrationType
 {
     [XmlEnum(Name = "")]
     None = 0,
-    [XmlEnum(Name = " Unknown")]
+    [XmlEnum(Name = "Unknown")]
     Unknown = 1,
     [XmlEnum(Name = "Composition")]
     Composition = 2,
@@ -127,7 +127,7 @@ public enum GSTPartyType
 
     [XmlEnum(Name = "")]
     None = 0,
-    [XmlEnum(Name = " Not Applicable")]
+    [XmlEnum(Name = "Not Applicable")]
     NotApplicable = 1,
     [XmlEnum(Name = "Deemed Export")]
     DeemedExport = 2,
@@ -194,7 +194,7 @@ public enum RoundType
 {
     [XmlEnum(Name = "")]
     None = 0,
-    [XmlEnum(Name = " Not Applicable")]
+    [XmlEnum(Name = "Not Applicable")]
     NotApplicable = 1,
     [XmlEnum(Name = "Downward Rounding")]
     Dowward = 2,

@@ -91,21 +91,19 @@ public class TallyAmountTests
 
     }
 
-    //[Test]
-    //public void CheckTallyAmountConverterforDebitAmountwithForexPartial()
-    //{
-    //    string NormalAmountXml = "<AMOUNT>-$ 10000.0000 @  = -₹ 425000.00</AMOUNT>";
+    [Test]
+    public void CheckTallyAmountConverterforDebitAmountwithForexPartial()
+    {
+        string NormalAmountXml = "<AMOUNT>-$ 10000.0000 @  = -₹ 425000.00</AMOUNT>";
 
-    //    using TextReader reader = new StringReader(NormalAmountXml);
-    //    var Amount = (TallyAmount)xmlSerializer.Deserialize(reader);
+        using TextReader reader = new StringReader(NormalAmountXml);
+        var Amount = (TallyAmount)xmlSerializer.Deserialize(reader);
 
-    //    Assert.AreEqual(Amount.IsDebit, true);
-    //    Assert.AreEqual(Amount.Amount, -425000.00);
-    //    Assert.AreEqual(Amount.Currency, "$");
-    //    Assert.AreEqual(Amount.ForexAmount, -10000.0000);
-    //    Assert.AreEqual(Amount.RateOfExchange, 42.50);
+        Assert.AreEqual(Amount.IsDebit, true);
+        Assert.AreEqual(Amount.Amount, 425000.00);
+        Assert.AreEqual(Amount.Currency, "$");
 
-    //}
+    }
 
     [Test]
     public void CheckConstructor()

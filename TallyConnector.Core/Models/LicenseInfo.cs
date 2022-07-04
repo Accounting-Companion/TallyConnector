@@ -4,51 +4,67 @@
 public class LicenseInfo : TallyXmlJson
 {
     [XmlElement(ElementName = "SERIALNUMBER")]
+    [TDLXMLSet("$$LicenseInfo:SerialNumber")]
     public string? SerialNumber { get; set; }
 
     [XmlElement(ElementName = "REMOTESERIALNUMBER")]
+    [TDLXMLSet("$$LicenseInfo:RemoteSerialNumber")]
     public string? RemoteSerialNumber { get; set; }
 
     [XmlElement(ElementName = "ACCOUNTID")]
+    [TDLXMLSet("$$LicenseInfo:AccountID")]
     public string? AccountId { get; set; }
 
     [XmlElement(ElementName = "ADMINMAILID")]
+    [TDLXMLSet("$$LicenseInfo:AdminEmailID")]
     public string? AdminMailId { get; set; }
 
     [XmlElement(ElementName = "ISADMIN")]
-    public string? IsAdmin { get; set; }
+    [TDLXMLSet("$$LicenseInfo:IsAdmin")]
+    public TallyYesNo? IsAdmin { get; set; }
 
     [XmlElement(ElementName = "ISEDUCATIONALMODE")]
-    public string? IsEducationalMode { get; set; }
+    [TDLXMLSet("$$LicenseInfo:IsEducationalMode")]
+    public TallyYesNo? IsEducationalMode { get; set; }
 
     [XmlElement(ElementName = "ISSILVER")]
-    public string? IsSilver { get; set; }
+    [TDLXMLSet("$$LicenseInfo:IsAdmin")]
+    public TallyYesNo? IsSilver { get; set; }
 
     [XmlElement(ElementName = "ISGOLD")]
-    public string? IsGold { get; set; }
+    [TDLXMLSet("$$LicenseInfo:IsAdmin")]
+    public TallyYesNo? IsGold { get; set; }
 
     [XmlElement(ElementName = "PLANNAME")]
+    [TDLXMLSet("If $$LicenseInfo:IsEducationalMode Then \"Educational Version\" ELSE  If $$LicenseInfo:IsSilver Then \"Silver\" ELSE  If $$LicenseInfo:IsGold Then \"Gold\" else \"\"")]
     public string? PlanName { get; set; }
 
     [XmlElement(ElementName = "ISINDIAN")]
-    public string? IsIndian { get; set; }
+    [TDLXMLSet("$$LicenseInfo:IsAdmin")]
+    public TallyYesNo? IsIndian { get; set; }
 
     [XmlElement(ElementName = "ISREMOTEACCESSMODE")]
-    public string? IsRemoteAccessMode { get; set; }
+    [TDLXMLSet("$$LicenseInfo:IsRemoteAccessMode")]
+    public TallyYesNo? IsRemoteAccessMode { get; set; }
 
     [XmlElement(ElementName = "ISLICCLIENTMODE")]
-    public string? IsLicenseClientMode { get; set; }
+    [TDLXMLSet("$$LicenseInfo:IsLicClientMode")]
+    public TallyYesNo? IsLicenseClientMode { get; set; }
 
     [XmlElement(ElementName = "APPLICATIONPATH")]
+    [TDLXMLSet("$$SysInfo:ApplicationPath")]
     public string? ApplicationPath { get; set; }
 
     [XmlElement(ElementName = "DATAPATH")]
+    [TDLXMLSet("##SVCurrentPath")]
     public string? DataPath { get; set; }
 
     [XmlElement(ElementName = "USERLEVEL")]
+    [TDLXMLSet("$$cmpuserlevel")]
     public string? UserLevel { get; set; }
 
     [XmlElement(ElementName = "USERNAME")]
+    [TDLXMLSet("$$cmpusername")]
     public string? UserName { get; set; }
 
 }
