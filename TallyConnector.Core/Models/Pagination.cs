@@ -16,6 +16,7 @@ public class Pagination
         PageNum = pageNum;
         PageSize = pageSize;
         IntialCalculate();
+        GoToPage(PageNum);
     }
 
 

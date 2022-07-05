@@ -99,12 +99,12 @@ public class TDLMessage
     }
     public TDLMessage(string colName,
                       string colType,
-                      string? childof,
-                      List<string>? nativeFields,
-                      List<Filter>? filters,
-                      List<string>? computevar,
-                      List<string>? compute,
-                      YesNo isInitialize)
+                      string? childof = null,
+                      List<string>? nativeFields = null,
+                      List<Filter>? filters = null,
+                      List<string>? computevar = null,
+                      List<string>? compute = null,
+                      YesNo isInitialize = YesNo.No)
     {
         Collection.Add(new(colName: colName,
                            colType: colType,

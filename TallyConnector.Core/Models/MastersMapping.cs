@@ -4,6 +4,7 @@ public class TallyObjectMapping
 {
     public TallyObjectMapping(TallyObjectType masterType,
                               string tallyMasterType,
+                              int? defaultPaginateCount,
                               List<Filter>? filters,
                               List<string>? computeFields = null)
     {
@@ -11,120 +12,158 @@ public class TallyObjectMapping
         Filters = filters;
         ComputeFields = computeFields;
         TallyMasterType = tallyMasterType;
+        DefaultPaginateCount = defaultPaginateCount;
     }
 
-    public TallyObjectType MasterType { get; set; }
-    public string TallyMasterType { get; set; }
+    public TallyObjectType MasterType { get; }
+    public string TallyMasterType { get; }
 
-    public List<Filter>? Filters { get; set; }
-    public List<string>? ComputeFields { get; set; }
+    public List<Filter>? Filters { get; }
+    public List<string>? ComputeFields { get; }
+    public int? DefaultPaginateCount { get; }
 
     public static readonly List<TallyObjectMapping> MastersMappings = new()
     {
-        new TallyObjectMapping(
-            masterType: TallyObjectType.Currencies, tallyMasterType: "Currency", filters: null),
+        new TallyObjectMapping(masterType: TallyObjectType.Currencies,
+                               tallyMasterType: "Currency",
+                               defaultPaginateCount: 100,
+                               filters: null),
 
-        new TallyObjectMapping(
-            masterType: TallyObjectType.Groups,
-            tallyMasterType: "Group", filters: null,
-            computeFields: new(){"PARENTID:$GUID:Group:$Parent"}),
+        new TallyObjectMapping(masterType: TallyObjectType.Groups,
+                               tallyMasterType: "Group",
+                               defaultPaginateCount: 1000,
+                               filters: null,
+                               computeFields: new(){"PARENTID:$GUID:Group:$Parent"}),
 
-        new TallyObjectMapping(
-            TallyObjectType.Ledgers, "Ledger", null,
-            new()
-            {
-                "PARENTID:$GUID:Group:$Parent",
-                "CURRENCYID:$GUID:Currency:$CURRENCYNAME"
-            }),
+        new TallyObjectMapping(TallyObjectType.Ledgers,
+                               tallyMasterType: "Ledger",
+                               defaultPaginateCount : 500,
+                               filters: null,
+                               computeFields: new()
+                               {
+                                   "PARENTID:$GUID:Group:$Parent",
+                                   "CURRENCYID:$GUID:Currency:$CURRENCYNAME"
+                               }),
 
-        new TallyObjectMapping(TallyObjectType.CostCategories, "CostCategory", null),
-        new TallyObjectMapping(TallyObjectType.CostCentres, "CostCentre",
-            new List<Filter>()
-            {
-                new Filter("IsEmployeeGroup", "Not $ISEMPLOYEEGROUP"),
-                new Filter("IsPayroll", "Not $FORPAYROLL")
-            },
-            new()
-            {
-                "CATEGORYID:$GUID:COSTCATEGORY:$CATEGORY",
-                "PARENTID:$GUID:COSTCENTER:$Parent"
-            }),
+        new TallyObjectMapping(masterType: TallyObjectType.CostCategories,
+                               tallyMasterType: "CostCategory",
+                               defaultPaginateCount : 1000,
+                               filters: null),
+        new TallyObjectMapping(masterType: TallyObjectType.CostCentres,
+                               tallyMasterType: "CostCentre",
+                               defaultPaginateCount : 1000,
+                               filters: new List<Filter>()
+                               {
+                                   new Filter("IsEmployeeGroup", "Not $ISEMPLOYEEGROUP"),
+                                   new Filter("IsPayroll", "Not $FORPAYROLL")
+                               },
+                               computeFields: new()
+                               {
+                                   "CATEGORYID:$GUID:COSTCATEGORY:$CATEGORY",
+                                   "PARENTID:$GUID:COSTCENTER:$Parent"
+                               }),
 
-        new TallyObjectMapping(
-            TallyObjectType.Units, "Unit", null,
-            new()
-            {
-                "BASEUNITID:$GUID:Unit:$BaseUnits",
-                "ADDITIONALUNITID:$GUID:Unit:$AdditionalUnits"
-            }),
-        new TallyObjectMapping(
-            TallyObjectType.Godowns, "Godown", null,
-            new()
-            {
-                "PARENTID:$GUID:Godown:$Parent"
-            }),
-        new TallyObjectMapping(
-            TallyObjectType.StockCategories, "StockCategory", null,
-            new()
-            {
-                "PARENTID:$GUID:StockCategory:$Parent"
-            }),
-        new TallyObjectMapping(
-            TallyObjectType.StockGroups, "StockGroup", null,new()
-            {
-                "PARENTID:$GUID:StockGroup:$Parent"
-            }),
-        new TallyObjectMapping(
-            TallyObjectType.StockItems, "StockItem", null,new()
-            {
-                "PARENTID:$GUID:StockGroup:$Parent",
-                "CATEGORYID:$GUID:StockCategory:$Category",
-                "BASEUNITID:$GUID:Unit:$BaseUnits",
-                "ADDITIONALUNITID:$GUID:Unit:$AdditionalUnits",
-            }),
+        new TallyObjectMapping(masterType: TallyObjectType.Units,
+                               tallyMasterType: "Unit",
+                               defaultPaginateCount : 1000,
+                               filters: null,
+                               computeFields: new()
+                               {
+                                   "BASEUNITID:$GUID:Unit:$BaseUnits",
+                                   "ADDITIONALUNITID:$GUID:Unit:$AdditionalUnits"
+                               }),
+        new TallyObjectMapping(masterType: TallyObjectType.Godowns,
+                               tallyMasterType: "Godown",
+                               defaultPaginateCount : 1000,
+                               filters: null,
+                               computeFields: new()
+                               {
+                                   "PARENTID:$GUID:Godown:$Parent"
+                               }),
+        new TallyObjectMapping(masterType: TallyObjectType.StockCategories,
+                               tallyMasterType: "StockCategory",
+                               defaultPaginateCount : 1000,
+                               filters: null,
+                               computeFields: new()
+                               {
+                                   "PARENTID:$GUID:StockCategory:$Parent"
+                               }),
+        new TallyObjectMapping(masterType : TallyObjectType.StockGroups,
+                               tallyMasterType : "StockGroup",
+                               defaultPaginateCount : 1000,
+                               filters : null,
+                               computeFields : new()
+                               {
+                                   "PARENTID:$GUID:StockGroup:$Parent"
+                               }),
+        new TallyObjectMapping(masterType : TallyObjectType.StockItems,
+                               tallyMasterType : "StockItem",
+                               defaultPaginateCount : 500,
+                               filters : null,
+                               computeFields : new()
+                               {
+                                   "PARENTID:$GUID:StockGroup:$Parent",
+                                   "CATEGORYID:$GUID:StockCategory:$Category",
+                                   "BASEUNITID:$GUID:Unit:$BaseUnits",
+                                   "ADDITIONALUNITID:$GUID:Unit:$AdditionalUnits",
+                               }),
 
-        new TallyObjectMapping(
-            TallyObjectType.AttendanceTypes, "AttendanceType", null,
-            new()
-            {
-                "PARENTID:$GUID:AttendanceType:$Parent",
-            }),
-        new TallyObjectMapping(TallyObjectType.EmployeeGroups, "CostCentre", new List<Filter>()
-            {
-                new Filter("IsEmployeeGroup", "$ISEMPLOYEEGROUP"),
-            },
-            new()
-            {
-                "CATEGORYID:$GUID:COSTCATEGORY:$CATEGORY",
-                "PARENTID:$GUID:COSTCENTER:$Parent"
-            }),
-        new TallyObjectMapping(TallyObjectType.Employees, "CostCentre", new List<Filter>()
-            {
-                new Filter("IsEmployeeGroup", "Not $ISEMPLOYEEGROUP"),
-                new Filter("IsPayroll", "$FORPAYROLL")
-            },
-            new()
-            {
-                "CATEGORYID:$GUID:COSTCATEGORY:$CATEGORY",
-                "PARENTID:$GUID:COSTCENTER:$Parent"
-            }),
+        new TallyObjectMapping(masterType: TallyObjectType.AttendanceTypes,
+                               tallyMasterType: "AttendanceType",
+                               defaultPaginateCount : 1000,
+                               filters: null,
+                               computeFields: new()
+                               {
+                                   "PARENTID:$GUID:AttendanceType:$Parent",
+                               }),
 
-        new TallyObjectMapping(
-            TallyObjectType.VoucherTypes, "VoucherType", null,
-            new()
-            {
-                 "PARENTID:$GUID:VoucherType:$Parent"
-            }),
+        new TallyObjectMapping(masterType: TallyObjectType.EmployeeGroups,
+                               tallyMasterType: "CostCentre",
+                               defaultPaginateCount : 1000,
+                               filters: new List<Filter>()
+                               {
+                                   new Filter("IsEmployeeGroup", "$ISEMPLOYEEGROUP"),
+                               },
+                               computeFields: new()
+                               {
+                                   "CATEGORYID:$GUID:COSTCATEGORY:$CATEGORY",
+                                   "PARENTID:$GUID:COSTCENTER:$Parent"
+                               }),
+        new TallyObjectMapping(masterType : TallyObjectType.Employees,
+                               tallyMasterType : "CostCentre",
+                               defaultPaginateCount : 500,
+                               filters : new List < Filter >()
+                               {
+                                   new Filter("IsEmployeeGroup", "Not $ISEMPLOYEEGROUP"),
+                                   new Filter("IsPayroll", "$FORPAYROLL")
+                               },
+                               computeFields : new()
+                               {
+                                   "CATEGORYID:$GUID:COSTCATEGORY:$CATEGORY",
+                                   "PARENTID:$GUID:COSTCENTER:$Parent"
+                               }),
+
+        new TallyObjectMapping(masterType : TallyObjectType.VoucherTypes,
+                               tallyMasterType : "VoucherType",
+                               defaultPaginateCount : 1000,
+                               filters : null,
+                               computeFields : new()
+                               {
+                                   "PARENTID:$GUID:VoucherType:$Parent"
+                               }),
     };
 
     public static readonly List<TallyObjectMapping> TallyObjectMappings = new(MastersMappings)
     {
-        new TallyObjectMapping(TallyObjectType.Vouchers, "Voucher", null,
-            new()
-            {
-                 "VOUCHERTYPEID:$GUID:VoucherType:$VOUCHERTYPENAME",
-                 "PARTYLEDGERID:$GUID:Ledger:$PARTYLEDGERNAMEs"
-            }),
+        new TallyObjectMapping(masterType : TallyObjectType.Vouchers,
+                               tallyMasterType : "Voucher",
+                               defaultPaginateCount : 100,
+                               filters : null,
+                               computeFields : new()
+                               {
+                                   "VOUCHERTYPEID:$GUID:VoucherType:$VOUCHERTYPENAME",
+                                   "PARTYLEDGERID:$GUID:Ledger:$PARTYLEDGERNAMEs"
+                               }),
     };
 }
 

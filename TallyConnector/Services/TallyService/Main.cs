@@ -1,5 +1,7 @@
-﻿namespace TallyConnector.Services;
-public partial class TallyService
+﻿using System.Collections.Concurrent;
+
+namespace TallyConnector.Services;
+public partial class TallyService : ITallyService
 {
     private readonly HttpClient _httpClient;
     private readonly ILogger? _logger;
@@ -16,12 +18,7 @@ public partial class TallyService
         _httpClient = new();
         _baseURL = "http://localhost";
         _port = 9000;
-    }
-    public TallyService(HttpClient httpClient)
-    {
-        _httpClient = httpClient;
-        _baseURL = "http://localhost";
-        _port = 9000;
+        _httpClient.Timeout = TimeSpan.FromMinutes(10);
     }
 
     /// <summary>
@@ -35,11 +32,9 @@ public partial class TallyService
     /// <param name="timeoutMinutes"></param>
     public TallyService(string baseURL,
                         int port,
-                        HttpClient httpClient,
-                        ILogger<TallyService>? logger = null,
                         int timeoutMinutes = 1)
     {
-        _httpClient = httpClient;
+        _httpClient = new();
         //Check if schema exists in URL, if not exists add http://
         if (!baseURL.Contains("http") && !baseURL.Contains("https"))
         {
@@ -48,16 +43,14 @@ public partial class TallyService
         _httpClient.Timeout = TimeSpan.FromMinutes(timeoutMinutes);
         _baseURL = baseURL;
         _port = port;
-        _logger = logger;
-        Logger = new(_logger);
     }
 
-    /// <summary>
-    /// 
-    /// </summary>
-    /// <param name="httpClient"></param>
-    /// <param name="Logger"></param>
-    /// <param name="timeoutMinutes"></param>
+    ///// <summary>
+    ///// 
+    ///// </summary>
+    ///// <param name="httpClient"></param>
+    ///// <param name="Logger"></param>
+    ///// <param name="timeoutMinutes"></param>
     public TallyService(HttpClient httpClient,
                         ILogger<TallyService>? logger = null,
                         int timeoutMinutes = 1)
@@ -94,6 +87,12 @@ public partial class TallyService
         _port = port;
     }
 
+
+    public void SetCompany(Company company)
+    {
+        Company = company;
+    }
+
     public async Task<LicenseInfo?> GetLicenseInfoAsync()
     {
         var LicenseInfo = await GetTDLReportAsync<LicenseInfo, LicenseInfo>();
@@ -120,7 +119,7 @@ public partial class TallyService
     }
 
     public async Task<ObjType> GetObjectAsync<ObjType>(string lookupValue,
-                                                       MasterRequestOptions? requestOptions = null) where ObjType : TallyXmlJson, ITallyObject
+                                                       MasterRequestOptions? requestOptions = null) where ObjType : TallyBaseObject, ITallyObject
     {
         // If received FetchList in collectionOptions we will use that else use default fetchlist
         requestOptions ??= new();
@@ -189,72 +188,131 @@ public partial class TallyService
     }
 
 
-    public async Task<List<ObjType>?> GetObjectsAsync<ObjType>(PaginatedRequestOptions? objectOptions = null) where ObjType : TallyXmlJson
+    public async Task<List<ObjType>?> GetObjectsAsync<ObjType>(PaginatedRequestOptions? objectOptions = null) where ObjType : TallyBaseObject
     {
         //Gets Root attribute of ReturnObject
         XmlRootAttribute? RootAttribute = (XmlRootAttribute?)Attribute.GetCustomAttribute(typeof(ObjType), typeof(XmlRootAttribute));
 
-        if (RootAttribute != null)
+        CollectionRequestOptions collectionOptions = new()
         {
-            CollectionRequestOptions collectionOptions = new()
+            CollectionType = RootAttribute?.ElementName ?? typeof(ObjType).Name,
+            FromDate = objectOptions?.FromDate,
+            ToDate = objectOptions?.ToDate,
+            FetchList = (objectOptions?.FetchList) != null ? new(objectOptions.FetchList) : null,
+            Filters = (objectOptions?.Filters) != null ? new(objectOptions.Filters) : null,
+            Compute = (objectOptions?.Compute) != null ? new(objectOptions.Compute) : null,
+            ComputeVar = (objectOptions?.ComputeVar) != null ? new(objectOptions.ComputeVar) : null,
+            Pagination = objectOptions?.Pagination,
+            XMLAttributeOverrides = objectOptions?.XMLAttributeOverrides,
+            IsInitialize = objectOptions?.IsInitialize ?? YesNo.No,
+        };
+        var mapping = TallyObjectMapping.TallyObjectMappings
+                .FirstOrDefault(map => map.TallyMasterType.Equals(collectionOptions.CollectionType, StringComparison.OrdinalIgnoreCase));
+        collectionOptions.Compute ??= new();
+        collectionOptions.Filters ??= new();
+        if (mapping != null)
+        {
+            if (mapping.ComputeFields != null)
             {
-                CollectionType = RootAttribute.ElementName,
+                collectionOptions.Compute.AddRange(mapping.ComputeFields);
+            }
+            if (mapping.Filters != null)
+            {
+                collectionOptions.Filters.AddRange(mapping.Filters);
+            }
+        }
+
+        if (collectionOptions.Pagination != null)
+        {
+            collectionOptions.Compute.Add("LineIndex : ##vLineIndex");
+            collectionOptions.ComputeVar ??= new();
+            collectionOptions.ComputeVar.Add("vLineIndex: Number : IF $$IsEmpty:##vLineIndex THEN 1 ELSE ##vLineIndex + 1");
+            collectionOptions.Filters.Add(new("Pagination", collectionOptions.Pagination.GetFilterFormulae()));
+        }
+        //Adding xmlelement name according to RootElement name of ReturnObject
+        collectionOptions.XMLAttributeOverrides ??= new();
+        XmlAttributes attrs = new();
+        attrs.XmlElements.Add(new(collectionOptions.CollectionType));
+        collectionOptions.XMLAttributeOverrides.Add(typeof(Colllection<ObjType>), "Objects", attrs);
+
+        var objects = await GetCustomCollectionAsync<ObjType>(collectionOptions);
+
+        return objects;
+
+
+    }
+
+    public async Task<List<ObjType>> GetAllObjectsAsync<ObjType>(RequestOptions? objectOptions = null) where ObjType : TallyBaseObject
+    {
+        XmlRootAttribute? RootAttribute = (XmlRootAttribute?)Attribute.GetCustomAttribute(typeof(ObjType), typeof(XmlRootAttribute));
+
+        CollectionRequestOptions collectionOptions = new()
+        {
+            CollectionType = RootAttribute?.ElementName ?? typeof(ObjType).Name,
+            FromDate = objectOptions?.FromDate,
+            ToDate = objectOptions?.ToDate,
+            FetchList = (objectOptions?.FetchList) != null ? new(objectOptions.FetchList) : null,
+            Compute = (objectOptions?.Compute) != null ? new(objectOptions.Compute) : null,
+            ComputeVar = (objectOptions?.ComputeVar) != null ? new(objectOptions.ComputeVar) : null,
+            XMLAttributeOverrides = objectOptions?.XMLAttributeOverrides,
+            IsInitialize = YesNo.Yes,
+        };
+
+        var mapping = TallyObjectMapping.TallyObjectMappings
+                .FirstOrDefault(map => map.TallyMasterType.Equals(collectionOptions.CollectionType, StringComparison.OrdinalIgnoreCase));
+
+        collectionOptions.Filters ??= new();
+        if (mapping != null)
+        {
+            if (mapping.Filters != null)
+            {
+                collectionOptions.Filters.AddRange(mapping.Filters);
+            }
+        }
+        int? TotalCount = await ObjectCount(mapping!.MasterType, collectionOptions);
+        Pagination pagination = new(TotalCount ?? 0, mapping?.DefaultPaginateCount ?? 1000);
+        ConcurrentBag<ObjType> objects = new();
+        List<Task> tasks = new();
+        for (int i = 0; i < pagination.TotalPages; i++)
+        {
+            Pagination tpagination = new(TotalCount ?? 0, mapping?.DefaultPaginateCount ?? 1000, i + 1);
+            var options = new PaginatedRequestOptions()
+            {
                 FromDate = objectOptions?.FromDate,
                 ToDate = objectOptions?.ToDate,
                 FetchList = objectOptions?.FetchList,
-                Filters = objectOptions?.Filters,
                 Compute = objectOptions?.Compute,
                 ComputeVar = objectOptions?.ComputeVar,
-                Pagination = objectOptions?.Pagination,
+                Pagination = tpagination,
                 XMLAttributeOverrides = objectOptions?.XMLAttributeOverrides,
                 IsInitialize = objectOptions?.IsInitialize ?? YesNo.No,
             };
-            var mapping = TallyObjectMapping.TallyObjectMappings
-                    .FirstOrDefault(map => map.TallyMasterType.Equals(collectionOptions.CollectionType, StringComparison.OrdinalIgnoreCase));
-            collectionOptions.Compute ??= new();
-            collectionOptions.Filters ??= new();
-            if (mapping != null)
+            var tempobjects = await GetObjectsAsync<ObjType>(options);
+            if (tempobjects != null)
             {
-                if (mapping.ComputeFields != null)
-                {
-                    collectionOptions.Compute.AddRange(mapping.ComputeFields);
-                }
-                if (mapping.Filters != null)
-                {
-                    collectionOptions.Filters.AddRange(mapping.Filters);
-                }
+                tempobjects.AsParallel().ForAll(t => objects.Add(t));
             }
+        }
+        //await Task.WhenAll(tasks.ToArray());
+        return objects.ToList();
+    }
 
-            if (collectionOptions.Pagination != null)
-            {
-                collectionOptions.Compute.Add("LineIndex : ##vLineIndex");
-                collectionOptions.ComputeVar ??= new();
-                collectionOptions.ComputeVar.Add("vLineIndex: Number : IF $$IsEmpty:##vLineIndex THEN 1 ELSE ##vLineIndex + 1");
-                collectionOptions.Filters.Add(new("Pagination", collectionOptions.Pagination.GetFilterFormulae()));
-            }
-            //Adding xmlelement name according to RootElement name of ReturnObject
-            collectionOptions.XMLAttributeOverrides ??= new();
-            XmlAttributes attrs = new();
-            attrs.XmlElements.Add(new(collectionOptions.CollectionType));
-            collectionOptions.XMLAttributeOverrides.Add(typeof(Colllection<ObjType>), "Objects", attrs);
-
-            List<ObjType>? objects = await GetCustomCollectionAsync<ObjType>(collectionOptions);
-            if (objects != null)
-            {
-                return objects;
-            }
-            else
-            {
-                return null;
-            }
+    public async Task<int?> ObjectCount(TallyObjectType objectType, DateFilterRequestOptions options)
+    {
+        if (objectType is TallyObjectType.Vouchers)
+        {
+            var count = 0;
+            var vchtypescount = await GetVoucherStatisticsAsync(options);
+            vchtypescount?.ForEach(c => count += c.TotalCount);
+            return count;
         }
         else
         {
-            throw new NotImplementedException();
+            var stats = await GetMasterStatisticsAsync();
+            return stats?.FirstOrDefault(c => c.Name.Replace(" ", "") == objectType.ToString())?.Count;
         }
     }
-
-    public async Task<List<ObjType>?> GetCustomCollectionAsync<ObjType>(CollectionRequestOptions collectionOptions) where ObjType : TallyXmlJson
+    public async Task<List<ObjType>?> GetCustomCollectionAsync<ObjType>(CollectionRequestOptions collectionOptions) where ObjType : TallyBaseObject
     {
         StaticVariables staticVariables = new()
         {
@@ -299,7 +357,7 @@ public partial class TallyService
 
     }
 
-    public async Task<ReturnType?> GetTDLReportAsync<ReportType, ReturnType>(DateFilterRequestOptions? requestOptions = null) where ReportType : class
+    public async Task<ReturnType?> GetTDLReportAsync<ReportType, ReturnType>(DateFilterRequestOptions? requestOptions = null) where ReturnType : TallyBaseObject
     {
         StaticVariables sv = new()
         {
@@ -308,7 +366,6 @@ public partial class TallyService
             SVFromDate = requestOptions?.FromDate,
             SVToDate = requestOptions?.ToDate
         };
-
         TDLReport report = TDLReportHelper.CreateTDLReport(typeof(ReportType));
 
         RequestEnvelope requestEnvelope = new(report, sv);
@@ -323,12 +380,11 @@ public partial class TallyService
         return default;
     }
 
-    /// <summary>
-    /// A helper function to send request to Tally
-    /// </summary>
-    /// <param name="xml">xml that is required to send</param>
-    /// <returns></returns>
-    /// <returns></returns>
+    public async Task<ReturnType?> GetTDLReportAsync<ReturnType>(DateFilterRequestOptions? requestOptions = null) where ReturnType : TallyBaseObject
+    {
+        return await GetTDLReportAsync<ReturnType, ReturnType>(requestOptions);
+    }
+
     public async Task<TallyResult> SendRequestAsync(string? xml = null)
     {
         TallyResult result = new();
@@ -445,4 +501,5 @@ public partial class TallyService
         }
         return null;
     }
+
 }

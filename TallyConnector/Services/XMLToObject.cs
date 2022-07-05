@@ -5,9 +5,9 @@ namespace TallyConnector.Services;
 public static class XMLToObject
 {
     //Converts to given object from Xml
+    
     public static T? GetObjfromXml<T>(string Xml, XmlAttributeOverrides? attrOverrides = null)
     {
-
         string re = @"(?!₹)[^\x09\x0A\x0D\x20-\xD7FF\xE000-\xFFFD\x10000-x10FFFF]";
         //string re = @"[^\x0\]";
         Xml = System.Text.RegularExpressions.Regex.Replace(Xml, re, "");

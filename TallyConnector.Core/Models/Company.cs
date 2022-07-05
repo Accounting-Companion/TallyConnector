@@ -1,6 +1,6 @@
 ﻿namespace TallyConnector.Core.Models;
 
-
+[XmlRoot(ElementName = "COMPANY")]
 public class BaseCompany : TallyXmlJson
 {
     [XmlElement(ElementName = "NAME")]
@@ -116,7 +116,23 @@ public class Company : BaseCompany
 }
 
 [XmlRoot(ElementName = "COMPANYONDISK")]
-public class CompanyOnDisk : BaseCompany
+public class CompanyOnDisk : TallyXmlJson
 {
+    [XmlElement(ElementName = "NAME")]
+    public string? Name { get; set; }
+
+    [XmlElement(ElementName = "STARTINGFROM")]
+    public TallyDate? StartingFrom { get; set; }
+
+    [XmlElement(ElementName = "ENDINGAT")]
+    public TallyDate? EndDate { get; set; }
+
+    [XmlElement(ElementName = "COMPANYNUMBER")]
+    public string? CompNum { get; set; }
+
+    public override string ToString()
+    {
+        return $"Company - {Name}";
+    }
 }
 

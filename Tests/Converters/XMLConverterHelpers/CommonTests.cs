@@ -1,4 +1,6 @@
-﻿namespace Tests.Converters.XMLConverterHelpers;
+﻿using System.Text.RegularExpressions;
+
+namespace Tests.Converters.XMLConverterHelpers;
 internal class CommonTests
 {
 
@@ -163,7 +165,8 @@ internal class CommonTests
         TCM.TallyResult result = await tally.PostVoucher<TCM.Voucher>(voucher);
 
         Assert.AreEqual(result.Status, TCM.RespStatus.Sucess);
-        TCM.Voucher Tvoucher = await tally.GetVoucherAsync<TCM.Voucher>("1490", new() { LookupField=TCM.VoucherLookupField.MasterId});
+        var y = Regex.Matches(result.Response, @"[0-9.]+")[0].Value;
+        TCM.Voucher Tvoucher = await tally.GetVoucherAsync<TCM.Voucher>(y, new() { LookupField=TCM.VoucherLookupField.MasterId});
 
         Assert.IsNotNull(Tvoucher);
 

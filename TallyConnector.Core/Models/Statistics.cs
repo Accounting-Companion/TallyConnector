@@ -43,14 +43,14 @@ public class BaseStatistics
 
 
 [XmlRoot(ElementName = "VOUCHERTYPESTAT.LIST")]
-public class VoucherStatistics
+public class VoucherStatistics:TallyBaseObject
 {
     [XmlElement(ElementName = "VOUCHERTYPESTAT")]
     public List<VoucherTypeStat>? VoucherStats { get; set; }
 }
 
 [XmlRoot(ElementName = "MASTERTYPESTAT.LIST")]
-public class MasterStatistics
+public class MasterStatistics : TallyBaseObject
 {
     [XmlElement(ElementName = "MASTERTYPESTAT")]
     public List<MasterTypeStat>? MasterStats { get; set; }

@@ -5,7 +5,6 @@ internal class Main : BaseTallyServiceTest
     [Test]
     public async Task TestTallyCheck()
     {
-
         var isRunning = await _tallyService.CheckAsync();
         Assert.AreEqual(true, isRunning);
     }
@@ -29,14 +28,9 @@ internal class Main : BaseTallyServiceTest
         var masterstats = await _tallyService.GetMasterStatisticsAsync();
         //Get Vouchertype count from Master Statistics
         var vouchertypecount = masterstats.FirstOrDefault(C => C.Name.Replace(" ", "") == TCM.TallyObjectType.VoucherTypes.ToString()).Count;
-        var voucherstat = await _tallyService.GetVoucherStatisticsAsync();
+        var voucherstat = await _tallyService.GetVoucherStatisticsAsync(new() { FromDate=new DateTime(2010,04,01)});
         Assert.AreEqual(vouchertypecount, voucherstat.Count);
     }
 
-    [Test]
-    public async Task TestGetCompaniesList()
-    {
-        var Companies = await _tallyService.GetCompaniesAsync();
-        Assert.AreEqual(1, Companies.Count);
-    }
+    
 }

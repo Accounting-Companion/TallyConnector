@@ -66,7 +66,7 @@ public class Data<T>
     public Colllection<T>? Collection { get; set; }
 
     [XmlElement(ElementName = "RESULT")]
-    public FunctionResult? FuncResult { get; set; }
+    public FunctionResult FuncResult { get; set; } = null;
 
 }
 

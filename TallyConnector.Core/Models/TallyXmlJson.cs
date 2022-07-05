@@ -40,10 +40,11 @@ public class TallyXmlJson : TallyBaseObject
         XmlWriterSettings settings = new()
         {
             OmitXmlDeclaration = true,
-            NewLineChars = "&#13;&#10;", //If /r/n in Xml replace
+            //NewLineChars = "&#13;&#10;", //If /r/n in Xml replace
                                          //NewLineHandling = NewLineHandling.Entitize,
             Encoding = Encoding.Unicode,
             CheckCharacters = false,
+           Indent = true,
         };
         XmlSerializerNamespaces ns = new(
                      new[] { XmlQualifiedName.Empty });

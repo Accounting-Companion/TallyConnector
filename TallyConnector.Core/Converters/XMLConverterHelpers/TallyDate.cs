@@ -20,6 +20,10 @@ public class TallyDate : IXmlSerializable
 
     public static implicit operator TallyDate?(DateTime? date)
     {
+        if (date !=null)
+        {
+            return new((DateTime)date);
+        }
         return null;
     }
     public static implicit operator TallyDate(DateTime date)

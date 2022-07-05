@@ -10,9 +10,17 @@ internal class LedgerTests : BaseTallyServiceTest
     [Test]
     public async Task CheckGetAllLedgers()
     {
-        var objects = await _tallyService.GetObjectsAsync<TCMA.Ledger>(new() { FetchList = new() { "*" } });
+        var objects = await _tallyService.GetAllObjectsAsync<TCM.Voucher>(new()
+        {
+            FromDate = new(2010,4,1),
+            FetchList = new List<string>()
+                {
+                    "MasterId", "*", "AllledgerEntries", "ledgerEntries", "Allinventoryenntries",
+                    "InventoryEntries", "InventoryEntriesIn", "InventoryEntriesOut"
+                }
+        });
         Assert.NotNull(objects);
-        Assert.AreEqual(292, objects.Count);
+        Assert.AreEqual(1131, objects.Count);
     }
     [Test]
     public async Task CheckCreateLedger()
