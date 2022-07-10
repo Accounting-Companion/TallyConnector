@@ -6,7 +6,7 @@ public class Currency : BasicTallyObject, ITallyObject
 {
     public Currency()
     {
-        ExpandedSymbol = string.Empty;
+        FormalName = string.Empty;
         Name = string.Empty;
     }
 
@@ -14,27 +14,26 @@ public class Currency : BasicTallyObject, ITallyObject
     /// Create New Currency - Currency("$","USD")
     /// </summary>
     /// <param name="originalName">Symbol For Currency</param>
-    /// <param name="expandedSymbol">Expanded Symbol(In Words) for Currency</param>
-    public Currency(string originalName, string expandedSymbol)
+    /// <param name="formalName">Expanded Symbol(In Words) for Currency</param>
+    public Currency(string originalName, string formalName)
     {
-        ExpandedSymbol = expandedSymbol;
         Name = originalName;
+        FormalName = formalName;
     }
 
-
+    [XmlAttribute(AttributeName = "NAME")]
+    [JsonIgnore]
+    [Column(TypeName = $"nvarchar({Constants.MaxNameLength})")]
+    public string? OldName { get; set; }
     [XmlElement(ElementName = "ORIGINALNAME")]
     [Required]
     [Column(TypeName = "nvarchar(5)")]
     public string Name { get; set; }
 
-    [XmlElement(ElementName = "EXPANDEDSYMBOL")]
+    [XmlElement(ElementName = "MAILINGNAME")]
     [Required]
     [Column(TypeName = $"nvarchar({Constants.MaxNameLength})")]
-    public string ExpandedSymbol { get; set; }
-
-    [XmlElement(ElementName = "MAILINGNAME")]
-    [Column(TypeName = $"nvarchar({Constants.MaxNameLength})")]
-    public string? MailingName { get; set; }
+    public string FormalName { get; set; }
 
 
     [XmlElement(ElementName = "DECIMALSYMBOL")]
@@ -43,7 +42,6 @@ public class Currency : BasicTallyObject, ITallyObject
 
     [XmlElement(ElementName = "DECIMALPLACES")]
     [Range(1, 4)]
-
     public int DecimalPlaces { get; set; }
 
     /// <summary>
@@ -83,7 +81,7 @@ public class Currency : BasicTallyObject, ITallyObject
 
     public override string ToString()
     {
-        return $"{Name} - {ExpandedSymbol}";
+        return $"Currency {Name} - {FormalName}";
     }
 }
 //[XmlRoot(ElementName = "DAILYSTDRATES.LIST")]
