@@ -13,6 +13,14 @@ internal class GroupTests : BaseTallyServiceTest
         Assert.AreEqual(74, Groups.Count);
     }
     [Test]
+    public async Task CheckGetAllGroups2()
+    {
+
+        var Groups = await _tallyService.GetAllObjectsAsync<TCMA.Group>(new() { FetchList = new() { "*" } });
+        Assert.NotNull(Groups);
+        Assert.AreEqual(74, Groups.Count);
+    }
+    [Test]
     public async Task CheckGetAllGroupsbyPaginate()
     {
         List<TCMA.Group> Groups = new();

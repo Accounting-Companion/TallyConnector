@@ -1,27 +1,26 @@
-﻿using System.Xml;
-using System.Xml.Xsl;
+﻿using System.Xml.Xsl;
 
 namespace TallyConnector.Services;
 public static class XMLToObject
 {
     //Converts to given object from Xml
-    
+    public static Dictionary<string, XmlSerializer> _cache = new();
     public static T? GetObjfromXml<T>(string Xml, XmlAttributeOverrides? attrOverrides = null)
     {
         string re = @"(?!₹)[^\x09\x0A\x0D\x20-\xD7FF\xE000-\xFFFD\x10000-x10FFFF]";
         //string re = @"[^\x0\]";
         Xml = System.Text.RegularExpressions.Regex.Replace(Xml, re, "");
-        XmlSerializer XMLSer = attrOverrides == null ? new(typeof(T)) : new(typeof(T), attrOverrides);
+        XmlSerializer XMLSer = attrOverrides == null ? new(typeof(T)) : GetSerializer(typeof(T), attrOverrides);
 
         NameTable nt = new();
         XmlNamespaceManager nsmgr = new(nt);
         nsmgr.AddNamespace("UDF", "TallyUDF");
-        XmlParserContext context = new(null, nsmgr, null, XmlSpace.None,Encoding.Unicode);
+        XmlParserContext context = new(null, nsmgr, null, XmlSpace.None, Encoding.Unicode);
 
         XmlReaderSettings xset = new()
         {
             CheckCharacters = false,
-            ConformanceLevel = ConformanceLevel.Fragment          
+            ConformanceLevel = ConformanceLevel.Fragment
         };
         XmlReader rd = XmlReader.Create(new StringReader(Xml), xset, context);
         //StringReader XmlStream = new StringReader(Xml);
@@ -31,12 +30,24 @@ public static class XMLToObject
             XslCompiledTransform xslTransform = new();
             xslTransform.Load(xslreader);
             StringWriter textWriter = new();
-            XmlWriter xmlwriter = XmlWriter.Create(textWriter, new XmlWriterSettings() { OmitXmlDeclaration = true, Encoding = Encoding.Unicode});
+            XmlWriter xmlwriter = XmlWriter.Create(textWriter, new XmlWriterSettings() { OmitXmlDeclaration = true, Encoding = Encoding.Unicode });
             xslTransform.Transform(rd, null, xmlwriter);
             rd = XmlReader.Create(new StringReader(textWriter.ToString()), xset, context);
         }
         T? obj = (T?)XMLSer.Deserialize(rd);
 
         return obj;
+    }
+
+    public static XmlSerializer GetSerializer(Type type, XmlAttributeOverrides attrOverrides)
+    {
+        var hash = type.Name + type.GetGenericArguments()[0].Name;
+        _ = _cache.TryGetValue(hash, out XmlSerializer? Serializer);
+        if (Serializer == null)
+        {
+            Serializer = new(type, attrOverrides);
+            _cache[hash] = Serializer;
+        }
+        return Serializer;
     }
 }

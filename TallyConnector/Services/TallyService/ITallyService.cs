@@ -47,7 +47,7 @@ public interface ITallyService
     /// </summary>
     /// <typeparam name="CompanyType"></typeparam>
     /// <returns></returns>
-    Task<List<CompanyType>?> GetCompaniesinDefaultPathAsync<CompanyType>() where CompanyType : BaseCompany;
+    Task<List<CompanyOnDisk>?> GetCompaniesinDefaultPathAsync();
 
     /// <summary>
     /// Set company , all future requests will be send company mentioned here
