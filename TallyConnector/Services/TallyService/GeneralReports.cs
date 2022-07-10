@@ -17,9 +17,9 @@ public partial class TallyService
         return statistics?.VoucherStats;
     }
 
-    public async Task<List<Company>?> GetCompaniesAsync()
+    public async Task<List<CompanyType>?> GetCompaniesAsync<CompanyType>() where CompanyType : BaseCompany
     {
-        return await GetObjectsAsync<Company>(new()
+        return await GetObjectsAsync<CompanyType>(new()
         {
             IsInitialize = YesNo.Yes,
             FetchList = new()

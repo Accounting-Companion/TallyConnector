@@ -10,6 +10,11 @@ namespace TallyConnector.Services;
 /// </summary>
 public interface ITallyService
 {
+    /// <summary>
+    /// Coonfigure Tally Url and port
+    /// </summary>
+    /// <param name="url">Url on which Tally is running</param>
+    /// <param name="port">Port on Which Tally is runnig</param>
     void Setup(string url, int port);
 
     /// <summary>
@@ -18,22 +23,63 @@ public interface ITallyService
     /// <returns>true or false</returns>
     Task<bool> CheckAsync();
 
-    //Get License Info from Tally
+    /// <summary>
+    /// Get License Information and Other Basic Info from Tally
+    /// </summary>
+    /// <returns></returns>
     Task<LicenseInfo?> GetLicenseInfoAsync();
 
+    /// <summary>
+    /// Gets Active company from tally
+    /// </summary>
+    /// <returns></returns>
     Task<BaseCompany?> GetActiveCompanyAsync();
 
-    Task<List<Company>?> GetCompaniesAsync();
+    /// <summary>
+    /// Gets List of companies that are opened in Tally
+    /// </summary>
+    /// <typeparam name="CompanyType"></typeparam>
+    /// <returns></returns>
+    Task<List<CompanyType>?> GetCompaniesAsync<CompanyType>() where CompanyType : BaseCompany;
 
+    /// <summary>
+    /// Gets List of companies that are in Default Data Path of Tally
+    /// </summary>
+    /// <typeparam name="CompanyType"></typeparam>
+    /// <returns></returns>
+    Task<List<CompanyType>?> GetCompaniesinDefaultPathAsync<CompanyType>() where CompanyType : BaseCompany;
+
+    /// <summary>
+    /// Set company , all future requests will be send company mentioned here
+    /// irrespective of active company in Tally
+    /// you can overide company by mentioning in request options
+    /// </summary>
+    /// <param name="company"></param>
     void SetCompany(Company company);
 
+    /// <summary>
+    /// Get Statistics of Masters form Tally
+    /// Request options specified here overirdes one setup using Setup() method
+    /// </summary>
+    /// <param name="requestOptions">Request options to configure tally</param>
+    /// <returns></returns>
     Task<List<MasterTypeStat>?> GetMasterStatisticsAsync(BaseRequestOptions? requestOptions = null);
 
+    /// <summary>
+    /// Get Statistics of Vouchers from Tally
+    /// We can metion specific period using From and To Date
+    /// </summary>
+    /// <param name="requestOptions">Request options to configure tally</param>
+    /// <returns></returns>
     Task<List<VoucherTypeStat>?> GetVoucherStatisticsAsync(DateFilterRequestOptions? requestOptions = null);
 
 
     #region Accounting Masters
-
+    /*
+     * Get and Post Methods of Accounting Masters - Currency, Group, Ledger,VoucherType, Cost Category, CostCetre
+     * To Get an Item use Get[Name]Async<Type>(lookupvalue,options);
+     * Ex:To Get Group use - await GetGroupAsync<Group>("Name");
+     */
     #region Get - Methods 
     Task<CurrencyType> GetCurrencyAsync<CurrencyType>(string lookupValue, MasterRequestOptions? currencyOptions = null) where CurrencyType : Currency;
 
@@ -135,6 +181,7 @@ public interface ITallyService
 
     #endregion
 
+    Task<int?> GetObjectCountAync(TallyObjectType objectType, DateFilterRequestOptions options);
 
     /// <summary>
     /// A helper function to send request to Tally
