@@ -1,10 +1,12 @@
-﻿namespace Tests.Services.TallyService;
+﻿using TallyConnector.Core.Models;
+
+namespace Tests.Services.TallyService;
 internal class GeneralReports : BaseTallyServiceTest
 {
     [Test]
     public async Task TestGetCompaniesList()
     {
-        var Companies = await _tallyService.GetCompaniesAsync();
+        var Companies = await _tallyService.GetCompaniesAsync<Company>();
         Assert.AreEqual(1, Companies.Count);
     }
 

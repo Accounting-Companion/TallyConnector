@@ -1,4 +1,4 @@
-﻿namespace TallyConnector.Core.Models;
+﻿namespace TallyConnector.Core.Models.Masters.Inventory;
 
 //BOM
 [XmlRoot(ElementName = "MULTICOMPONENTLIST")]
@@ -6,7 +6,6 @@ public class ComponentsList
 {
     public ComponentsList()
     {
-        ComponentsItems = new();
     }
 
     [XmlElement(ElementName = "COMPONENTLISTNAME")]

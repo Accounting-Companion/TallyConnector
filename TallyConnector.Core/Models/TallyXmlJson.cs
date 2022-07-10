@@ -1,6 +1,4 @@
-﻿
-
-namespace TallyConnector.Core.Models;
+﻿namespace TallyConnector.Core.Models;
 
 public class TallyBaseObject
 {
@@ -44,7 +42,7 @@ public class TallyXmlJson : TallyBaseObject
                                          //NewLineHandling = NewLineHandling.Entitize,
             Encoding = Encoding.Unicode,
             CheckCharacters = false,
-           Indent = true,
+           //Indent = true,
         };
         XmlSerializerNamespaces ns = new(
                      new[] { XmlQualifiedName.Empty });

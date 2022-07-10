@@ -33,7 +33,7 @@ public class TallyObjectMapping
                                tallyMasterType: "Group",
                                defaultPaginateCount: 1000,
                                filters: null,
-                               computeFields: new(){"PARENTID:$GUID:Group:$Parent"}),
+                               computeFields: new(){ "NAME:$NAME","PARENTID:$GUID:Group:$Parent" }),
 
         new TallyObjectMapping(TallyObjectType.Ledgers,
                                tallyMasterType: "Ledger",
@@ -41,6 +41,7 @@ public class TallyObjectMapping
                                filters: null,
                                computeFields: new()
                                {
+                                   "NAME:$NAME",
                                    "PARENTID:$GUID:Group:$Parent",
                                    "CURRENCYID:$GUID:Currency:$CURRENCYNAME"
                                }),
@@ -48,7 +49,8 @@ public class TallyObjectMapping
         new TallyObjectMapping(masterType: TallyObjectType.CostCategories,
                                tallyMasterType: "CostCategory",
                                defaultPaginateCount : 1000,
-                               filters: null),
+                               filters: null,
+                               computeFields:new(){"NAME:$NAME"}),
         new TallyObjectMapping(masterType: TallyObjectType.CostCentres,
                                tallyMasterType: "CostCentre",
                                defaultPaginateCount : 1000,
@@ -59,6 +61,7 @@ public class TallyObjectMapping
                                },
                                computeFields: new()
                                {
+                                   "NAME:$NAME",
                                    "CATEGORYID:$GUID:COSTCATEGORY:$CATEGORY",
                                    "PARENTID:$GUID:COSTCENTER:$Parent"
                                }),
@@ -69,6 +72,7 @@ public class TallyObjectMapping
                                filters: null,
                                computeFields: new()
                                {
+                                   "NAME:$NAME",
                                    "BASEUNITID:$GUID:Unit:$BaseUnits",
                                    "ADDITIONALUNITID:$GUID:Unit:$AdditionalUnits"
                                }),
@@ -78,6 +82,7 @@ public class TallyObjectMapping
                                filters: null,
                                computeFields: new()
                                {
+                                   "NAME:$NAME",
                                    "PARENTID:$GUID:Godown:$Parent"
                                }),
         new TallyObjectMapping(masterType: TallyObjectType.StockCategories,
@@ -86,6 +91,7 @@ public class TallyObjectMapping
                                filters: null,
                                computeFields: new()
                                {
+                                   "NAME:$NAME",
                                    "PARENTID:$GUID:StockCategory:$Parent"
                                }),
         new TallyObjectMapping(masterType : TallyObjectType.StockGroups,
@@ -94,6 +100,7 @@ public class TallyObjectMapping
                                filters : null,
                                computeFields : new()
                                {
+                                   "NAME:$NAME",
                                    "PARENTID:$GUID:StockGroup:$Parent"
                                }),
         new TallyObjectMapping(masterType : TallyObjectType.StockItems,
@@ -102,6 +109,7 @@ public class TallyObjectMapping
                                filters : null,
                                computeFields : new()
                                {
+                                   "NAME:$NAME",
                                    "PARENTID:$GUID:StockGroup:$Parent",
                                    "CATEGORYID:$GUID:StockCategory:$Category",
                                    "BASEUNITID:$GUID:Unit:$BaseUnits",
@@ -114,6 +122,7 @@ public class TallyObjectMapping
                                filters: null,
                                computeFields: new()
                                {
+                                   "NAME:$NAME",
                                    "PARENTID:$GUID:AttendanceType:$Parent",
                                }),
 
@@ -139,6 +148,7 @@ public class TallyObjectMapping
                                },
                                computeFields : new()
                                {
+                                   "NAME:$NAME",
                                    "CATEGORYID:$GUID:COSTCATEGORY:$CATEGORY",
                                    "PARENTID:$GUID:COSTCENTER:$Parent"
                                }),
@@ -149,6 +159,7 @@ public class TallyObjectMapping
                                filters : null,
                                computeFields : new()
                                {
+                                   "NAME:$NAME",
                                    "PARENTID:$GUID:VoucherType:$Parent"
                                }),
     };
@@ -157,7 +168,7 @@ public class TallyObjectMapping
     {
         new TallyObjectMapping(masterType : TallyObjectType.Vouchers,
                                tallyMasterType : "Voucher",
-                               defaultPaginateCount : 100,
+                               defaultPaginateCount : 500,
                                filters : null,
                                computeFields : new()
                                {
