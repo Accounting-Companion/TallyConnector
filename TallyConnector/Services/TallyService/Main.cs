@@ -115,7 +115,7 @@ public partial class TallyService : ITallyService
         {
             return ParseResponse(tallyResult);
         }
-        return new();
+        return tallyResult;
     }
 
     public async Task<ObjType> GetObjectAsync<ObjType>(string lookupValue,
@@ -269,7 +269,7 @@ public partial class TallyService : ITallyService
                 collectionOptions.Filters.AddRange(mapping.Filters);
             }
         }
-        int? TotalCount = await ObjectCount(mapping!.MasterType, collectionOptions);
+        int? TotalCount = await GetObjectCountAync(mapping!.MasterType, collectionOptions);
         Pagination pagination = new(TotalCount ?? 0, mapping?.DefaultPaginateCount ?? 1000);
         ConcurrentBag<ObjType> objects = new();
         List<Task> tasks = new();
@@ -297,7 +297,7 @@ public partial class TallyService : ITallyService
         return objects.ToList();
     }
 
-    public async Task<int?> ObjectCount(TallyObjectType objectType, DateFilterRequestOptions options)
+    public async Task<int?> GetObjectCountAync(TallyObjectType objectType, DateFilterRequestOptions options)
     {
         if (objectType is TallyObjectType.Vouchers)
         {
@@ -309,7 +309,25 @@ public partial class TallyService : ITallyService
         else
         {
             var stats = await GetMasterStatisticsAsync();
-            return stats?.FirstOrDefault(c => c.Name.Replace(" ", "") == objectType.ToString())?.Count;
+            var stat = stats?.FirstOrDefault(c => c.Name.Replace(" ", "") == objectType.ToString());
+            int? Count = stat?.Count;
+            //Adding below is reuired as employee group and employee are filtered
+            if (stat != null && objectType is TallyObjectType.CostCentres)
+            {
+                Count += stats?.FirstOrDefault(c => c.Name.Replace(" ", "") == TallyObjectType.EmployeeGroups.ToString())?.Count;
+                Count += stats?.FirstOrDefault(c => c.Name.Replace(" ", "") == TallyObjectType.Employees.ToString())?.Count;
+            }
+            else if (stat != null && objectType is TallyObjectType.EmployeeGroups)
+            {
+                Count += stats?.FirstOrDefault(c => c.Name.Replace(" ", "") == TallyObjectType.CostCentres.ToString())?.Count;
+                Count += stats?.FirstOrDefault(c => c.Name.Replace(" ", "") == TallyObjectType.Employees.ToString())?.Count;
+            }
+            else if (stat != null && objectType is TallyObjectType.Employees)
+            {
+                Count += stats?.FirstOrDefault(c => c.Name.Replace(" ", "") == TallyObjectType.CostCentres.ToString())?.Count;
+                Count += stats?.FirstOrDefault(c => c.Name.Replace(" ", "") == TallyObjectType.EmployeeGroups.ToString())?.Count;
+            }
+            return Count;
         }
     }
     public async Task<List<ObjType>?> GetCustomCollectionAsync<ObjType>(CollectionRequestOptions collectionOptions) where ObjType : TallyBaseObject
