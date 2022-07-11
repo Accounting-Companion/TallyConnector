@@ -9,16 +9,16 @@ internal class GroupTests : BaseTallyServiceTest
     {
 
         var Groups = await _tallyService.GetObjectsAsync<TCMA.Group>(new() { FetchList = new() { "*" } });
-        Assert.NotNull(Groups);
-        Assert.AreEqual(74, Groups.Count);
+        Assert.That(Groups, Is.Not.Null);
+        Assert.That(Groups, Has.Count.EqualTo(74));
     }
     [Test]
     public async Task CheckGetAllGroups2()
     {
 
         var Groups = await _tallyService.GetAllObjectsAsync<TCMA.Group>(new() { FetchList = new() { "*" } });
-        Assert.NotNull(Groups);
-        Assert.AreEqual(74, Groups.Count);
+        Assert.That(Groups, Is.Not.Null);
+        Assert.That(Groups, Has.Count.EqualTo(74));
     }
     [Test]
     public async Task CheckGetAllGroupsbyPaginate()
@@ -33,13 +33,13 @@ internal class GroupTests : BaseTallyServiceTest
             Groups.AddRange(TGroups);
             pagination.NextPage();
         }
-        Assert.NotNull(Groups);
-        Assert.AreEqual(74, Groups.Count);
+        Assert.That(Groups, Is.Not.Null);
+        Assert.That(Groups, Has.Count.EqualTo(74));
     }
 
     [Test]
     public async Task CheckPostGroup_Create()
     {
-        await _tallyService.PostGroupAsync(new TCMA.Group("Test NA") { AddlAllocType = TCM.AdAllocType.NotApplicable });
+        //await _tallyService.PostGroupAsync(new TCMA.Group("Test NA") { AddlAllocType = TCM.AdAllocType.NotApplicable });
     }
 }

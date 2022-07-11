@@ -42,7 +42,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <PackageReference Include="TallyConnector.Core" Version="1.0.8" />
+	  <ProjectReference Include="..\TallyConnector.Core\TallyConnector.Core.csproj" />
 	</ItemGroup>
 
 

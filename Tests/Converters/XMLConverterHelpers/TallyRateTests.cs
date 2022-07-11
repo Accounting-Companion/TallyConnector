@@ -29,7 +29,7 @@ internal class TallyRateTests
         using TextReader reader = new StringReader(TallyRateXml);
         var rate = (TallyRate)xmlSerializer.Deserialize(reader);
 
-        Assert.AreEqual(rate.RatePerUnit, 0);
+        Assert.That(rate.RatePerUnit, Is.EqualTo(0));
 
     }
     [Test]
@@ -40,7 +40,7 @@ internal class TallyRateTests
         using TextReader reader = new StringReader(TallyRateXml);
         var rate = (TallyRate)xmlSerializer.Deserialize(reader);
 
-        Assert.AreEqual(rate.RatePerUnit, 0);
+        Assert.That(rate.RatePerUnit, Is.EqualTo(0));
 
     }
     [Test]
@@ -50,11 +50,13 @@ internal class TallyRateTests
 
         using TextReader reader = new StringReader(TallyRateXml);
         var rate = (TallyRate)xmlSerializer.Deserialize(reader);
-
-        Assert.AreEqual(rate.RatePerUnit, 8500);
-        Assert.AreEqual(rate.Unit, "Nos");
-
+        Assert.Multiple(() =>
+        {
+            Assert.That(rate.RatePerUnit, Is.EqualTo(8500));
+            Assert.That(rate.Unit, Is.EqualTo("Nos"));
+        });
     }
+
     [Test]
     public void CheckTallyRateWithForeignCurrency()
     {
@@ -62,13 +64,15 @@ internal class TallyRateTests
 
         using TextReader reader = new StringReader(TallyRateXml);
         var rate = (TallyRate)xmlSerializer.Deserialize(reader);
-
-        Assert.AreEqual(rate.RatePerUnit, 8500);
-        Assert.AreEqual(rate.ForexAmount, 200);
-        Assert.AreEqual(rate.ForeignCurrency, "$");
-        Assert.AreEqual(rate.Unit, "Nos");
-
+        Assert.Multiple(() =>
+        {
+            Assert.That(rate.RatePerUnit, Is.EqualTo(8500));
+            Assert.That(rate.ForexAmount, Is.EqualTo(200));
+            Assert.That(rate.ForeignCurrency, Is.EqualTo("$"));
+            Assert.That(rate.Unit, Is.EqualTo("Nos"));
+        });
     }
+
     [Test]
     public void CheckTallyRateConstructor()
     {
@@ -79,12 +83,14 @@ internal class TallyRateTests
         var writer = XmlWriter.Create(textWriter, settings);
         xmlSerializer.Serialize(writer, tallyRate);
         string outxml = textWriter.ToString();
-
-        Assert.AreEqual(tallyRate.RatePerUnit, 8500);
-        Assert.AreEqual(tallyRate.Unit, "Nos");
-        Assert.AreEqual(outxml, TallyRateXml);
-
+        Assert.Multiple(() =>
+        {
+            Assert.That(tallyRate.RatePerUnit, Is.EqualTo(8500));
+            Assert.That(tallyRate.Unit, Is.EqualTo("Nos"));
+            Assert.That(outxml, Is.EqualTo(TallyRateXml));
+        });
     }
+
     [Test]
     public void CheckTallyRateConstructorwithForeignCurrency()
     {
@@ -96,10 +102,11 @@ internal class TallyRateTests
         xmlSerializer.Serialize(writer, tallyRate);
         string outxml = textWriter.ToString();
 
-        Assert.AreEqual(tallyRate.RatePerUnit, 8500);
-        Assert.AreEqual(tallyRate.Unit, "Nos");
-
-        Assert.AreEqual(outxml, TallyRateXml);
-
+        Assert.Multiple(() =>
+        {
+            Assert.That(tallyRate.RatePerUnit, Is.EqualTo(8500));
+            Assert.That(tallyRate.Unit, Is.EqualTo("Nos"));
+            Assert.That(outxml, Is.EqualTo(TallyRateXml));
+        });
     }
 }

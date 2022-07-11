@@ -15,13 +15,13 @@ internal class CommonTests
     {
         TCM.VoucherViewType voucherViewType = TCM.VoucherViewType.AccountingVoucherView;
         var json = JsonSerializer.Serialize(voucherViewType, jsonSerializerOptions);
-        Assert.AreEqual(json, "\"accountingVoucherView\"");
+        Assert.That(json, Is.EqualTo("\"accountingVoucherView\""));
     }
     [Test]
     public void TestEnumDeSerialization()
     {
         string json = "\"AccountingVoucherView\"";
         var res = JsonSerializer.Deserialize<TCM.VoucherViewType>(json, jsonSerializerOptions);
-        Assert.AreEqual(res, TCM.VoucherViewType.AccountingVoucherView);
+        Assert.That(res, Is.EqualTo(TCM.VoucherViewType.AccountingVoucherView));
     }
 }

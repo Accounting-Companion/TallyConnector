@@ -19,7 +19,7 @@ internal class VoucherTests : BaseTallyServiceTest
                     "InventoryEntries", "InventoryEntriesIn", "InventoryEntriesOut"
                 }
         });
-        Assert.NotNull(objects);
-        Assert.AreEqual(1131, objects.Count);
+        Assert.That(objects, Is.Not.Null);
+        Assert.That(objects, Has.Count.EqualTo(1206));
     }
 }

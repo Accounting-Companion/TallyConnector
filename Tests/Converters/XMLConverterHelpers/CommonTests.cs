@@ -18,23 +18,24 @@ internal class CommonTests
         stockItem.OpeningValue = new(-5000);
         TCM.TallyResult result = await tally.PostStockItemAsync<TCMI.StockItem>(stockItem);
 
-        Assert.AreEqual(result.Status, TCM.RespStatus.Sucess);
+        Assert.That(result.Status, Is.EqualTo(TCM.RespStatus.Sucess));
         TCMI.StockItem tStockItem = await tally.GetStockItemAsync<TCMI.StockItem>("Test StockItem");
-
-        Assert.AreEqual(tStockItem.Name, "Test StockItem");
-        Assert.AreEqual(tStockItem.BaseUnit, "Nos");
-        Assert.AreEqual(tStockItem.OpeningBal.Number, 50);
-        Assert.AreEqual(tStockItem.OpeningBal.PrimaryUnits.Number, 50);
-        Assert.AreEqual(tStockItem.OpeningBal.PrimaryUnits.Unit, "Nos");
-        Assert.AreEqual(tStockItem.OpeningValue.Amount, 5000);
-        Assert.AreEqual(tStockItem.OpeningRate.Unit, "Nos");
-        Assert.AreEqual(tStockItem.OpeningRate.RatePerUnit, 100.00);
-
+        Assert.Multiple(() =>
+        {
+            Assert.That(tStockItem.Name, Is.EqualTo("Test StockItem"));
+            Assert.That(tStockItem.BaseUnit, Is.EqualTo("Nos"));
+            Assert.That(tStockItem.OpeningBal.Number, Is.EqualTo(50));
+            Assert.That(tStockItem.OpeningBal.PrimaryUnits.Number, Is.EqualTo(50));
+            Assert.That(tStockItem.OpeningBal.PrimaryUnits.Unit, Is.EqualTo("Nos"));
+            Assert.That(tStockItem.OpeningValue.Amount, Is.EqualTo(5000));
+            Assert.That(tStockItem.OpeningRate.Unit, Is.EqualTo("Nos"));
+            Assert.That(tStockItem.OpeningRate.RatePerUnit, Is.EqualTo(100.00));
+        });
         TCM.TallyResult Delresult = await tally.PostStockItemAsync<TCMI.StockItem>(new() { OldName = "Test StockItem", Action = TCM.Action.Delete });
 
-        Assert.AreEqual(Delresult.Status, TCM.RespStatus.Sucess);
-
+        Assert.That(Delresult.Status, Is.EqualTo(TCM.RespStatus.Sucess));
     }
+
     [Test]
     public async Task CheckStockItemforCustomCustomTallyObjectswithRate()
     {
@@ -50,22 +51,22 @@ internal class CommonTests
         stockItem.OpeningValue = new(-5000);
         TCM.TallyResult result = await tally.PostStockItemAsync<TCMI.StockItem>(stockItem);
 
-        Assert.AreEqual(result.Status, TCM.RespStatus.Sucess);
+        Assert.That(result.Status, Is.EqualTo(TCM.RespStatus.Sucess));
         TCMI.StockItem tStockItem = await tally.GetStockItemAsync<TCMI.StockItem>("Test StockItem");
-
-        Assert.AreEqual(tStockItem.Name, "Test StockItem");
-        Assert.AreEqual(tStockItem.BaseUnit, "Nos");
-        Assert.AreEqual(tStockItem.OpeningBal.Number, 50);
-        Assert.AreEqual(tStockItem.OpeningBal.PrimaryUnits.Number, 50);
-        Assert.AreEqual(tStockItem.OpeningBal.PrimaryUnits.Unit, "Nos");
-        Assert.AreEqual(tStockItem.OpeningValue.Amount, 5000);
-        Assert.AreEqual(tStockItem.OpeningRate.Unit, "Nos");
-        Assert.AreEqual(tStockItem.OpeningRate.RatePerUnit, 100.00);
-
+        Assert.Multiple(() =>
+        {
+            Assert.That(tStockItem.Name, Is.EqualTo("Test StockItem"));
+            Assert.That(tStockItem.BaseUnit, Is.EqualTo("Nos"));
+            Assert.That(tStockItem.OpeningBal.Number, Is.EqualTo(50));
+            Assert.That(tStockItem.OpeningBal.PrimaryUnits.Number, Is.EqualTo(50));
+            Assert.That(tStockItem.OpeningBal.PrimaryUnits.Unit, Is.EqualTo("Nos"));
+            Assert.That(tStockItem.OpeningValue.Amount, Is.EqualTo(5000));
+            Assert.That(tStockItem.OpeningRate.Unit, Is.EqualTo("Nos"));
+            Assert.That(tStockItem.OpeningRate.RatePerUnit, Is.EqualTo(100.00));
+        });
         TCM.TallyResult Delresult = await tally.PostStockItemAsync<TCMI.StockItem>(new() { OldName = "Test StockItem", Action = TCM.Action.Delete });
 
-        Assert.AreEqual(Delresult.Status, TCM.RespStatus.Sucess);
-
+        Assert.That(Delresult.Status, Is.EqualTo(TCM.RespStatus.Sucess));
     }
 
     [Test]
@@ -85,27 +86,27 @@ internal class CommonTests
         stockItem.OpeningValue = new(-5000);
         TCM.TallyResult result = await tally.PostStockItemAsync<TCMI.StockItem>(stockItem);
 
-        Assert.AreEqual(result.Status, TCM.RespStatus.Sucess);
+        Assert.That(result.Status, Is.EqualTo(TCM.RespStatus.Sucess));
         TCMI.StockItem tStockItem = await tally.GetStockItemAsync<TCMI.StockItem>("Test StockItem");
-
-        Assert.AreEqual(tStockItem.Name, "Test StockItem");
-        Assert.AreEqual(tStockItem.BaseUnit, "Nos");
-        Assert.AreEqual(tStockItem.AdditionalUnits, "Boxes");
-        Assert.AreEqual(tStockItem.Conversion, 1);
-        Assert.AreEqual(tStockItem.Denominator, 10);
-        Assert.AreEqual(tStockItem.OpeningBal.Number, 50);
-        Assert.AreEqual(tStockItem.OpeningBal.PrimaryUnits.Number, 50);
-        Assert.AreEqual(tStockItem.OpeningBal.PrimaryUnits.Unit, "Nos");
-        Assert.AreEqual(tStockItem.OpeningBal.SecondaryUnits.Number, 5);
-        Assert.AreEqual(tStockItem.OpeningBal.SecondaryUnits.Unit, "Boxes");
-        Assert.AreEqual(tStockItem.OpeningValue.Amount, 5000);
-        Assert.AreEqual(tStockItem.OpeningRate.Unit, "Nos");
-        Assert.AreEqual(tStockItem.OpeningRate.RatePerUnit, 100.00);
-
+        Assert.Multiple(() =>
+        {
+            Assert.That(tStockItem.Name, Is.EqualTo("Test StockItem"));
+            Assert.That(tStockItem.BaseUnit, Is.EqualTo("Nos"));
+            Assert.That(tStockItem.AdditionalUnits, Is.EqualTo("Boxes"));
+            Assert.That(tStockItem.Conversion, Is.EqualTo(1));
+            Assert.That(tStockItem.Denominator, Is.EqualTo(10));
+            Assert.That(tStockItem.OpeningBal.Number, Is.EqualTo(50));
+            Assert.That(tStockItem.OpeningBal.PrimaryUnits.Number, Is.EqualTo(50));
+            Assert.That(tStockItem.OpeningBal.PrimaryUnits.Unit, Is.EqualTo("Nos"));
+            Assert.That(tStockItem.OpeningBal.SecondaryUnits.Number, Is.EqualTo(5));
+            Assert.That(tStockItem.OpeningBal.SecondaryUnits.Unit, Is.EqualTo("Boxes"));
+            Assert.That(tStockItem.OpeningValue.Amount, Is.EqualTo(5000));
+            Assert.That(tStockItem.OpeningRate.Unit, Is.EqualTo("Nos"));
+            Assert.That(tStockItem.OpeningRate.RatePerUnit, Is.EqualTo(100.00));
+        });
         TCM.TallyResult Delresult = await tally.PostStockItemAsync<TCMI.StockItem>(new() { OldName = "Test StockItem", Action = TCM.Action.Delete });
 
-        Assert.AreEqual(Delresult.Status, TCM.RespStatus.Sucess);
-
+        Assert.That(Delresult.Status, Is.EqualTo(TCM.RespStatus.Sucess));
     }
 
     [Test]
@@ -164,25 +165,27 @@ internal class CommonTests
 
         TCM.TallyResult result = await tally.PostVoucher<TCM.Voucher>(voucher);
 
-        Assert.AreEqual(result.Status, TCM.RespStatus.Sucess);
+        Assert.That(result.Status, Is.EqualTo(TCM.RespStatus.Sucess));
         var y = Regex.Matches(result.Response, @"[0-9.]+")[0].Value;
-        TCM.Voucher Tvoucher = await tally.GetVoucherAsync<TCM.Voucher>(y, new() { LookupField=TCM.VoucherLookupField.MasterId});
+        TCM.Voucher Tvoucher = await tally.GetVoucherAsync<TCM.Voucher>(y, new() { LookupField = TCM.VoucherLookupField.MasterId });
 
-        Assert.IsNotNull(Tvoucher);
+        Assert.That(Tvoucher, Is.Not.Null);
 
 
 
         var InvAlloc = Tvoucher.Ledgers[1].InventoryAllocations[0];
-
-        Assert.AreEqual(InvAlloc.Rate.RatePerUnit, 500);
-        Assert.AreEqual(InvAlloc.Rate.Unit, "Nos");
-        Assert.AreEqual(InvAlloc.Amount.Amount, 10_000);
-        Assert.AreEqual(InvAlloc.ActualQuantity.Number, 25);
-        Assert.AreEqual(InvAlloc.ActualQuantity.PrimaryUnits.Number, 25);
-        Assert.AreEqual(InvAlloc.ActualQuantity.PrimaryUnits.Unit, "Nos");
-        Assert.AreEqual(InvAlloc.ActualQuantity.SecondaryUnits.Number, 2.50);
-        Assert.AreEqual(InvAlloc.ActualQuantity.SecondaryUnits.Unit, "Boxes");
-        Assert.AreEqual(InvAlloc.BilledQuantity.Number, 20);
-        Assert.AreEqual(InvAlloc.BilledQuantity.SecondaryUnits.Number, 2.00);
+        Assert.Multiple(() =>
+        {
+            Assert.That(InvAlloc.Rate.RatePerUnit, Is.EqualTo(500));
+            Assert.That(InvAlloc.Rate.Unit, Is.EqualTo("Nos"));
+            Assert.That(InvAlloc.Amount.Amount, Is.EqualTo(10_000));
+            Assert.That(InvAlloc.ActualQuantity.Number, Is.EqualTo(25));
+            Assert.That(InvAlloc.ActualQuantity.PrimaryUnits.Number, Is.EqualTo(25));
+            Assert.That(InvAlloc.ActualQuantity.PrimaryUnits.Unit, Is.EqualTo("Nos"));
+            Assert.That(InvAlloc.ActualQuantity.SecondaryUnits.Number, Is.EqualTo(2.50));
+            Assert.That(InvAlloc.ActualQuantity.SecondaryUnits.Unit, Is.EqualTo("Boxes"));
+            Assert.That(InvAlloc.BilledQuantity.Number, Is.EqualTo(20));
+            Assert.That(InvAlloc.BilledQuantity.SecondaryUnits.Number, Is.EqualTo(2.00));
+        });
     }
 }

@@ -17,8 +17,8 @@ internal class LedgerTests : BaseTallyServiceTest
                     "MasterId", "*","CanDelete"
                 }
         });
-        Assert.NotNull(objects);
-        Assert.AreEqual(292, objects.Count);
+        Assert.That(objects, Is.Not.Null);
+        Assert.That(objects, Has.Count.EqualTo(292));
     }
     [Test]
     public async Task CheckGetAllLedgers2()
@@ -30,8 +30,8 @@ internal class LedgerTests : BaseTallyServiceTest
                     "MasterId", "*","CanDelete"
                 }
         });
-        Assert.NotNull(objects);
-        Assert.AreEqual(292, objects.Count);
+        Assert.That(objects, Is.Not.Null);
+        Assert.That(objects, Has.Count.EqualTo(292));
     }
     [Test]
     public async Task CheckCreateLedger()

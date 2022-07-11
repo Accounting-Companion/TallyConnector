@@ -14,9 +14,9 @@ public class TallyAmountJsonConverterTests
     {
         TallyAmount tallyAmount = new(5000, 20, "$");
         var json = JsonSerializer.Serialize(tallyAmount, jsonSerializerOptions);
-        Assert.AreEqual(json,
-            "{\"Amount\":0,\"ForexAmount\":5000,\"RateOfExchange\":20," +
-            "\"Currency\":\"$\",\"IsDebit\":false}");
+        Assert.That(json,
+            Is.EqualTo("{\"Amount\":0,\"ForexAmount\":5000,\"RateOfExchange\":20," +
+            "\"Currency\":\"$\",\"IsDebit\":false}"));
     }
 
     [Test]
@@ -26,7 +26,7 @@ public class TallyAmountJsonConverterTests
         jsonSerializerOptions.Converters.Add(new TallyAmountJsonConverter(true));
         TallyAmount tallyAmount = new(5000);
         var json = JsonSerializer.Serialize(tallyAmount, jsonSerializerOptions);
-        Assert.AreEqual(json, "5000");
+        Assert.That(json, Is.EqualTo("5000"));
     }
     [Test]
     public void TestSerializeSimpleDebitAmount()
@@ -35,29 +35,34 @@ public class TallyAmountJsonConverterTests
         jsonSerializerOptions.Converters.Add(new TallyAmountJsonConverter(true));
         TallyAmount tallyAmount = new(-5000);
         var json = JsonSerializer.Serialize(tallyAmount, jsonSerializerOptions);
-        Assert.AreEqual(json, "-5000");
+        Assert.That(json, Is.EqualTo("-5000"));
     }
     [Test]
     public void TestSerializeSimpleAmountWithoutallowingSimple()
     {
-        TallyAmount tallyAmount = new(5000) ;
+        TallyAmount tallyAmount = new(5000);
         var json = JsonSerializer.Serialize(tallyAmount, jsonSerializerOptions);
-        Assert.AreEqual(json, "{\"Amount\":5000,\"ForexAmount\":null,\"RateOfExchange\":null,\"Currency\":null,\"IsDebit\":false}");
+        Assert.That(json,
+            Is.EqualTo("{\"Amount\":5000,\"ForexAmount\":null,\"RateOfExchange\":null,\"Currency\":null,\"IsDebit\":false}"));
     }
     [Test]
     public void TestSerializeSimpleDebitAmountWithoutallowingSimple()
     {
         TallyAmount tallyAmount = new(-5000);
         var json = JsonSerializer.Serialize(tallyAmount, jsonSerializerOptions);
-        Assert.AreEqual(json, "{\"Amount\":5000,\"ForexAmount\":null,\"RateOfExchange\":null,\"Currency\":null,\"IsDebit\":true}");
+        Assert.That(json,
+            Is.EqualTo("{\"Amount\":5000,\"ForexAmount\":null,\"RateOfExchange\":null,\"Currency\":null,\"IsDebit\":true}"));
     }
     [Test]
     public void TestSimpleAmount()
     {
         string json = "-5000";
         var tallyAmount = JsonSerializer.Deserialize<TallyAmount>(json, jsonSerializerOptions);
-        Assert.AreEqual(tallyAmount.Amount, 5000);
-        Assert.AreEqual(tallyAmount.IsDebit, true);
+        Assert.Multiple(() =>
+        {
+            Assert.That(tallyAmount.Amount, Is.EqualTo(5000));
+            Assert.That(tallyAmount.IsDebit, Is.EqualTo(true));
+        });
     }
 
     [Test]
@@ -68,10 +73,13 @@ public class TallyAmountJsonConverterTests
             "\"Currency\":\"$\",\"IsDebit\":false}";
 
         var amount = JsonSerializer.Deserialize<TallyAmount>(inputJson, jsonSerializerOptions);
-        Assert.AreEqual(amount.Amount, 0);
-        Assert.AreEqual(amount.RateOfExchange, 20);
-        Assert.AreEqual(amount.ForexAmount, 5000);
-        Assert.AreEqual(amount.Currency, "$");
+        Assert.Multiple(() =>
+        {
+            Assert.That(amount.Amount, Is.EqualTo(0));
+            Assert.That(amount.RateOfExchange, Is.EqualTo(20));
+            Assert.That(amount.ForexAmount, Is.EqualTo(5000));
+            Assert.That(amount.Currency, Is.EqualTo("$"));
+        });
     }
 
     [Test]
@@ -82,9 +90,12 @@ public class TallyAmountJsonConverterTests
             "\"Currency\":\"$\",\"IsDebit\":false}";
 
         var amount = JsonSerializer.Deserialize<TallyAmount>(inputJson, jsonSerializerOptions);
-        Assert.AreEqual(amount.Amount, 0);
-        Assert.AreEqual(amount.RateOfExchange, 20);
-        Assert.AreEqual(amount.Currency, "$");
+        Assert.Multiple(() =>
+        {
+            Assert.That(amount.Amount, Is.EqualTo(0));
+            Assert.That(amount.RateOfExchange, Is.EqualTo(20));
+            Assert.That(amount.Currency, Is.EqualTo("$"));
+        });
 
     }
 

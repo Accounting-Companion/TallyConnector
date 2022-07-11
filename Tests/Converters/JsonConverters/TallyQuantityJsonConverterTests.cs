@@ -7,48 +7,52 @@ public class TallyQuantityJsonConverterTests
     {
         TallyQuantity tallyQuantity = null;
         string json = JsonSerializer.Serialize(tallyQuantity);
-        Assert.AreEqual(json, "null");
+        Assert.That(json, Is.EqualTo("null"));
     }
     [Test]
     public void TestSerializeTallyQantitywhenEmpty()
     {
         TallyQuantity tallyQuantity = new();
         string json = JsonSerializer.Serialize(tallyQuantity);
-        Assert.AreEqual(json, "{\"Number\":0,\"PrimaryUnits\":null,\"SecondaryUnits\":null}");
+        Assert.That(json,
+            Is.EqualTo("{\"Number\":0,\"PrimaryUnits\":null,\"SecondaryUnits\":null}"));
     }
     [Test]
     public void TestSerializeTallyQantity()
     {
         TallyQuantity tallyQuantity = new(50, "Nos");
         string json = JsonSerializer.Serialize(tallyQuantity);
-        Assert.AreEqual(json, "{\"Number\":50,\"PrimaryUnits\":{\"Number\":50,\"Unit\":\"Nos\"},\"SecondaryUnits\":null}");
+        Assert.That(json,
+            Is.EqualTo("{\"Number\":50,\"PrimaryUnits\":{\"Number\":50,\"Unit\":\"Nos\"},\"SecondaryUnits\":null}"));
     }
     [Test]
     public void TestSerializeTallyQantitywithSecondaryUnit()
     {
         TallyQuantity tallyQuantity = new(50, "Nos", 10, "Box");
         string json = JsonSerializer.Serialize(tallyQuantity);
-        Assert.AreEqual(json, "{\"Number\":50,\"PrimaryUnits\":{\"Number\":50,\"Unit\":\"Nos\"},\"SecondaryUnits\":{\"Number\":10,\"Unit\":\"Box\"}}");
+        Assert.That(json,
+            Is.EqualTo("{\"Number\":50,\"PrimaryUnits\":{\"Number\":50,\"Unit\":\"Nos\"},\"SecondaryUnits\":{\"Number\":10,\"Unit\":\"Box\"}}"));
     }
     [Test]
     public void TestDeSerializeTallyQantitywhenNull()
     {
         string json = "null";
         var tallyQuantity = JsonSerializer.Deserialize<TallyQuantity>(json);
-        Assert.AreEqual(tallyQuantity, null);
+        Assert.That(tallyQuantity, Is.EqualTo(null));
     }
     [Test]
     public void TestDeSerializeTallyQantitywhenEmpty()
     {
         string json = "{\"Number\":0,\"PrimaryUnits\":null,\"SecondaryUnits\":null}";
         var tallyQuantity = JsonSerializer.Deserialize<TallyQuantity>(json);
-        Assert.AreEqual(tallyQuantity, null);
-    }[Test]
+        Assert.That(tallyQuantity, Is.EqualTo(null));
+    }
+    [Test]
     public void TestDeSerializeTallyQantitywhenEmptyVariant2()
     {
         string json = "{\"PrimaryUnits\":null,\"SecondaryUnits\":null}";
         var tallyQuantity = JsonSerializer.Deserialize<TallyQuantity>(json);
-        Assert.AreEqual(tallyQuantity, null);
+        Assert.That(tallyQuantity, Is.EqualTo(null));
     }
     [Test]
     public void TestDeSerializeTallyQantity()
@@ -56,12 +60,14 @@ public class TallyQuantityJsonConverterTests
         string inJson = "{\"Number\":50,\"PrimaryUnits\":{\"Number\":50,\"Unit\":\"Nos\"},\"SecondaryUnits\":null}";
 
         TallyQuantity tallyAmount = JsonSerializer.Deserialize<TallyQuantity>(inJson);
-
-        Assert.AreEqual(tallyAmount.Number, 50);
-        Assert.AreEqual(tallyAmount.PrimaryUnits.Number, 50);
-        Assert.AreEqual(tallyAmount.PrimaryUnits.Unit, "Nos");
-        Assert.AreEqual(tallyAmount.SecondaryUnits, null);
-
+        
+        Assert.Multiple(() =>
+        {
+            Assert.That(tallyAmount.Number, Is.EqualTo(50));
+            Assert.That(tallyAmount.PrimaryUnits.Number, Is.EqualTo(50));
+            Assert.That(tallyAmount.PrimaryUnits.Unit, Is.EqualTo("Nos"));
+            Assert.That(tallyAmount.SecondaryUnits, Is.EqualTo(null));
+        });
     }
 
     [Test]
@@ -71,11 +77,13 @@ public class TallyQuantityJsonConverterTests
 
         TallyQuantity tallyAmount = JsonSerializer.Deserialize<TallyQuantity>(inJson);
 
-        Assert.AreEqual(tallyAmount.Number, 50);
-        Assert.AreEqual(tallyAmount.PrimaryUnits.Number, 50);
-        Assert.AreEqual(tallyAmount.PrimaryUnits.Unit, "Nos");
-        Assert.AreEqual(tallyAmount.SecondaryUnits.Number, 10);
-        Assert.AreEqual(tallyAmount.SecondaryUnits.Unit, "Box");
-
+        Assert.Multiple(() =>
+        {
+            Assert.That(tallyAmount.Number, Is.EqualTo(50));
+            Assert.That(tallyAmount.PrimaryUnits.Number, Is.EqualTo(50));
+            Assert.That(tallyAmount.PrimaryUnits.Unit, Is.EqualTo("Nos"));
+            Assert.That(tallyAmount.SecondaryUnits.Number, Is.EqualTo(10));
+            Assert.That(tallyAmount.SecondaryUnits.Unit, Is.EqualTo("Box"));
+        });
     }
 }

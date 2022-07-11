@@ -12,14 +12,14 @@ internal class TallyDateJsonConverterTests
     {
         TallyDate tallyDate = DateTime.Now;
         string json = JsonSerializer.Serialize(tallyDate, jsonSerializerOptions);
-        Assert.AreEqual(json, $"\"{((DateTime)tallyDate).ToString("dd-MM-yyyy")}\"");
+        Assert.That(json, Is.EqualTo($"\"{((DateTime)tallyDate).ToString("dd-MM-yyyy")}\""));
     }
     [Test]
     public void TestSerializeTallyDatewhenNull()
     {
         TallyDate tallyDate = null;
         string json = JsonSerializer.Serialize(tallyDate, jsonSerializerOptions);
-        Assert.AreEqual(json,"null");
+        Assert.That(json, Is.EqualTo("null"));
     }
     [Test]
     public void TestDeSerializeTallyDate()
@@ -28,7 +28,7 @@ internal class TallyDateJsonConverterTests
 
         string dateJson = $"\"{Date:dd-MM-yyyy}\"";
         TallyDate date = JsonSerializer.Deserialize<TallyDate>(dateJson, jsonSerializerOptions);
-        Assert.AreEqual(date.ToString(), Date.ToShortDateString());
+        Assert.That(date.ToString("dd-MM-yyyy"), Is.EqualTo(Date.ToString("dd-MM-yyyy")));
     }
     [Test]
     public void TestDeSerializeTallyDateWhenNull()
@@ -37,7 +37,7 @@ internal class TallyDateJsonConverterTests
 
         string dateJson = $"\"\"";
         TallyDate date = JsonSerializer.Deserialize<TallyDate>(dateJson, jsonSerializerOptions);
-        Assert.AreEqual(date,null);
+        Assert.That(date, Is.EqualTo(null));
     }
 
 }

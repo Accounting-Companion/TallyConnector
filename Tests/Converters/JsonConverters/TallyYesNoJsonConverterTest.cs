@@ -13,13 +13,13 @@ internal class TallyYesNoJsonConverterTest
     {
         TallyYesNo Tallybool = false;
         string json = JsonSerializer.Serialize(Tallybool, jsonSerializerOptions);
-        Assert.AreEqual(json, "false");
+        Assert.That(json, Is.EqualTo("false"));
     }
     [Test]
     public void TestDeSerializeTallyYesNo()
     {
         var obj = JsonSerializer.Deserialize<TallyYesNo>("true", jsonSerializerOptions);
-        Assert.AreEqual((bool)obj, true);
+        Assert.That((bool)obj, Is.EqualTo(true));
     }
 
 }

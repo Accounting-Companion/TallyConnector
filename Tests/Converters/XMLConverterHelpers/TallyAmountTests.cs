@@ -31,11 +31,13 @@ public class TallyAmountTests
 
         using TextReader reader = new StringReader(NormalAmountXml);
         var Amount = (TallyAmount)xmlSerializer.Deserialize(reader);
-
-        Assert.AreEqual(Amount.Amount, 5000);
-        Assert.AreEqual(Amount.IsDebit, false);
-
+        Assert.Multiple(() =>
+        {
+            Assert.That(Amount.Amount, Is.EqualTo(5000));
+            Assert.That(Amount.IsDebit, Is.EqualTo(false));
+        });
     }
+
     [Test]
     public void CheckTallyAmountConverterforDebitAmount()
     {
@@ -43,11 +45,13 @@ public class TallyAmountTests
 
         using TextReader reader = new StringReader(NormalAmountXml);
         var Amount = (TallyAmount)xmlSerializer.Deserialize(reader);
-
-        Assert.AreEqual(Amount.Amount, 5000);
-        Assert.AreEqual(Amount.IsDebit, true);
-
+        Assert.Multiple(() =>
+        {
+            Assert.That(Amount.Amount, Is.EqualTo(5000));
+            Assert.That(Amount.IsDebit, Is.EqualTo(true));
+        });
     }
+
     [Test]
     public void CheckTallyAmountConverterforNoAmount()
     {
@@ -55,11 +59,13 @@ public class TallyAmountTests
 
         using TextReader reader = new StringReader(NormalAmountXml);
         var Amount = (TallyAmount)xmlSerializer.Deserialize(reader);
-
-        Assert.AreEqual(Amount.Amount, 0);
-        Assert.AreEqual(Amount.IsDebit, false);
-
+        Assert.Multiple(() =>
+        {
+            Assert.That(0, Is.EqualTo(Amount.Amount));
+            Assert.That(Amount.IsDebit, Is.EqualTo(false));
+        });
     }
+
     [Test]
     public void CheckTallyAmountConverterforAmountwithForex()
     {
@@ -67,14 +73,16 @@ public class TallyAmountTests
 
         using TextReader reader = new StringReader(NormalAmountXml);
         var Amount = (TallyAmount)xmlSerializer.Deserialize(reader);
-
-        Assert.AreEqual(Amount.Amount, 186920287.61);
-        Assert.AreEqual(Amount.Currency, "$");
-        Assert.AreEqual(Amount.IsDebit, false);
-        Assert.AreEqual(Amount.ForexAmount, 4875.0000);
-        Assert.AreEqual(Amount.RateOfExchange, 38342.6231);
-
+        Assert.Multiple(() =>
+        {
+            Assert.That(Amount.Amount, Is.EqualTo(186920287.61));
+            Assert.That(Amount.Currency, Is.EqualTo("$"));
+            Assert.That(Amount.IsDebit, Is.EqualTo(false));
+            Assert.That(Amount.ForexAmount, Is.EqualTo(4875.0000));
+            Assert.That(Amount.RateOfExchange, Is.EqualTo(38342.6231));
+        });
     }
+
     [Test]
     public void CheckTallyAmountConverterforDebitAmountwithForex()
     {
@@ -82,13 +90,14 @@ public class TallyAmountTests
 
         using TextReader reader = new StringReader(NormalAmountXml);
         var Amount = (TallyAmount)xmlSerializer.Deserialize(reader);
-
-        Assert.AreEqual(Amount.IsDebit, true);
-        Assert.AreEqual(Amount.Amount, 425000.00);
-        Assert.AreEqual(Amount.Currency, "$");
-        Assert.AreEqual(Amount.ForexAmount, 10000.0000);
-        Assert.AreEqual(Amount.RateOfExchange, 42.50);
-
+        Assert.Multiple(() =>
+        {
+            Assert.That(Amount.IsDebit, Is.EqualTo(true));
+            Assert.That(Amount.Amount, Is.EqualTo(425000.00));
+            Assert.That(Amount.Currency, Is.EqualTo("$"));
+            Assert.That(Amount.ForexAmount, Is.EqualTo(10000.0000));
+            Assert.That(Amount.RateOfExchange, Is.EqualTo(42.50));
+        });
     }
 
     [Test]
@@ -98,11 +107,12 @@ public class TallyAmountTests
 
         using TextReader reader = new StringReader(NormalAmountXml);
         var Amount = (TallyAmount)xmlSerializer.Deserialize(reader);
-
-        Assert.AreEqual(Amount.IsDebit, true);
-        Assert.AreEqual(Amount.Amount, 425000.00);
-        Assert.AreEqual(Amount.Currency, "$");
-
+        Assert.Multiple(() =>
+        {
+            Assert.That(Amount.IsDebit, Is.EqualTo(true));
+            Assert.That(Amount.Amount, Is.EqualTo(425000.00));
+            Assert.That(Amount.Currency, Is.EqualTo("$"));
+        });
     }
 
     [Test]
@@ -115,8 +125,8 @@ public class TallyAmountTests
         xmlSerializer.Serialize(writer, tallyAmount);
         string xml = textWriter.ToString();
 
-        Assert.AreEqual((decimal)tallyAmount, 5000);
-        Assert.AreEqual(xml, "<AMOUNT>5000</AMOUNT>");
+        Assert.That((decimal)tallyAmount, Is.EqualTo(5000));
+        Assert.That(xml, Is.EqualTo("<AMOUNT>5000</AMOUNT>"));
     }
 
     [Test]
@@ -129,7 +139,7 @@ public class TallyAmountTests
         string xml = textWriter.ToString();
 
         //Assert.AreEqual((decimal)tallyAmount, 5000);
-        Assert.AreEqual(xml, "<AMOUNT>-5000</AMOUNT>");
+        Assert.That(xml, Is.EqualTo("<AMOUNT>-5000</AMOUNT>"));
     }
 
     [Test]
@@ -140,9 +150,11 @@ public class TallyAmountTests
         var writer = XmlWriter.Create(textWriter, settings);
         xmlSerializer.Serialize(writer, tallyAmount);
         string xml = textWriter.ToString();
-
-        Assert.AreEqual((decimal)tallyAmount, 25000);
-        Assert.AreEqual(xml, "<AMOUNT>$ 500 @ 50</AMOUNT>");
+        Assert.Multiple(() =>
+        {
+            Assert.That((decimal)tallyAmount, Is.EqualTo(25000));
+            Assert.That(xml, Is.EqualTo("<AMOUNT>$ 500 @ 50</AMOUNT>"));
+        });
     }
 
     [Test]
@@ -153,11 +165,12 @@ public class TallyAmountTests
         var writer = XmlWriter.Create(textWriter, settings);
         xmlSerializer.Serialize(writer, tallyAmount);
         string xml = textWriter.ToString();
-
-        Assert.AreEqual((decimal)tallyAmount, 25000);
-        Assert.AreEqual(xml, "<AMOUNT>-$ 500 @ 50</AMOUNT>");
+        Assert.Multiple(() =>
+        {
+            Assert.That((decimal)tallyAmount, Is.EqualTo(25000));
+            Assert.That(xml, Is.EqualTo("<AMOUNT>-$ 500 @ 50</AMOUNT>"));
+        });
     }
-
 
     [Test]
     public async Task CheckCreateLedgerTallyAmountwithNull()
@@ -169,15 +182,20 @@ public class TallyAmountTests
             OpeningBal = null,
         };
         var resp = await tally.PostLedgerAsync(ledger);
-        Assert.AreEqual(resp.Status, TCM.RespStatus.Sucess);
+
+        Assert.That(resp.Status, Is.EqualTo(TCM.RespStatus.Sucess));
 
         var TLedger = await tally.GetLedgerAsync<Ledger>(ledgerName);
-        Assert.AreEqual(TLedger.Name, ledgerName);
-        Assert.AreEqual(TLedger.OpeningBal.Amount, 0);
+        Assert.Multiple(() =>
+        {
+            Assert.That(TLedger.Name, Is.EqualTo(ledgerName));
+            Assert.That(TLedger.OpeningBal.Amount, Is.EqualTo(0));
+        });
         var delResp = await tally.PostLedgerAsync(new Ledger() { Action = TCM.Action.Delete, OldName = "TesttoTallyAmount" });
 
-        Assert.AreEqual(delResp.Status, TCM.RespStatus.Sucess);
+        Assert.That(delResp.Status, Is.EqualTo(TCM.RespStatus.Sucess));
     }
+
     [Test]
     public async Task CheckCreateLedgerTallyAmount()
     {
@@ -188,15 +206,19 @@ public class TallyAmountTests
             OpeningBal = 5000,
         };
         var resp = await tally.PostLedgerAsync(ledger);
-        Assert.AreEqual(resp.Status, TCM.RespStatus.Sucess);
+        Assert.That(resp.Status, Is.EqualTo(TCM.RespStatus.Sucess));
 
         var TLedger = await tally.GetLedgerAsync<Ledger>(ledgerName);
-        Assert.AreEqual(TLedger.Name, ledgerName);
-        Assert.AreEqual(TLedger.OpeningBal.Amount, 5000);
+        Assert.Multiple(() =>
+        {
+            Assert.That(TLedger.Name, Is.EqualTo(ledgerName));
+            Assert.That(TLedger.OpeningBal.Amount, Is.EqualTo(5000));
+        });
         var delResp = await tally.PostLedgerAsync(new Ledger() { Action = TCM.Action.Delete, OldName = "TesttoTallyAmount" });
 
-        Assert.AreEqual(delResp.Status, TCM.RespStatus.Sucess);
+        Assert.That(delResp.Status, Is.EqualTo(TCM.RespStatus.Sucess));
     }
+
     [Test]
     public async Task CheckCreateLedgerTallyDebitAmount()
     {
@@ -207,14 +229,17 @@ public class TallyAmountTests
             OpeningBal = -5000,
         };
         var resp = await tally.PostLedgerAsync(ledger);
-        Assert.AreEqual(resp.Status, TCM.RespStatus.Sucess);
+        Assert.That(resp.Status, Is.EqualTo(TCM.RespStatus.Sucess));
 
         var TLedger = await tally.GetLedgerAsync<Ledger>(ledgerName);
-        Assert.AreEqual(TLedger.Name, ledgerName);
-        Assert.AreEqual(TLedger.OpeningBal.Amount, 5000);
+        Assert.Multiple(() =>
+        {
+            Assert.That(TLedger.Name, Is.EqualTo(ledgerName));
+            Assert.That(TLedger.OpeningBal.Amount, Is.EqualTo(5000));
+        });
         var delResp = await tally.PostLedgerAsync(new Ledger() { Action = TCM.Action.Delete, OldName = "TesttoTallyAmount" });
 
-        Assert.AreEqual(delResp.Status, TCM.RespStatus.Sucess);
+        Assert.That(delResp.Status, Is.EqualTo(TCM.RespStatus.Sucess));
     }
 
     [Test]
@@ -227,18 +252,21 @@ public class TallyAmountTests
             OpeningBal = new(5000, 20, "$"),
         };
         var resp = await tally.PostLedgerAsync(ledger);
-        Assert.AreEqual(resp.Status, TCM.RespStatus.Sucess);
+        Assert.That(resp.Status, Is.EqualTo(TCM.RespStatus.Sucess));
 
         var TLedger = await tally.GetLedgerAsync<Ledger>(ledgerName);
-        Assert.AreEqual(TLedger.Name, ledgerName);
-        Assert.AreEqual(TLedger.OpeningBal.Amount, 100000);
-        Assert.AreEqual(TLedger.OpeningBal.ForexAmount, 5000);
-        Assert.AreEqual(TLedger.OpeningBal.RateOfExchange, 20);
-        Assert.AreEqual(TLedger.OpeningBal.IsDebit, false);
-        Assert.AreEqual(TLedger.OpeningBal.Currency, "$");
+        Assert.Multiple(() =>
+        {
+            Assert.That(TLedger.Name, Is.EqualTo(ledgerName));
+            Assert.That(TLedger.OpeningBal.Amount, Is.EqualTo(100000));
+            Assert.That(TLedger.OpeningBal.ForexAmount, Is.EqualTo(5000));
+            Assert.That(TLedger.OpeningBal.RateOfExchange, Is.EqualTo(20));
+            Assert.That(TLedger.OpeningBal.IsDebit, Is.EqualTo(false));
+            Assert.That(TLedger.OpeningBal.Currency, Is.EqualTo("$"));
+        });
         var delResp = await tally.PostLedgerAsync(new Ledger() { Action = TCM.Action.Delete, OldName = "TesttoTallyAmount" });
 
-        Assert.AreEqual(delResp.Status, TCM.RespStatus.Sucess);
+        Assert.That(delResp.Status, Is.EqualTo(TCM.RespStatus.Sucess));
     }
 
     [Test]
@@ -251,19 +279,21 @@ public class TallyAmountTests
             OpeningBal = new(-5000, 20, "$"),
         };
         var resp = await tally.PostLedgerAsync(ledger);
-        Assert.AreEqual(resp.Status, TCM.RespStatus.Sucess);
+        Assert.That(resp.Status, Is.EqualTo(TCM.RespStatus.Sucess));
 
         var TLedger = await tally.GetLedgerAsync<Ledger>(ledgerName);
-        Assert.AreEqual(TLedger.Name, ledgerName);
-        Assert.AreEqual(TLedger.OpeningBal.Amount, 100000);
-        Assert.AreEqual(TLedger.OpeningBal.ForexAmount, 5000);
-        Assert.AreEqual(TLedger.OpeningBal.RateOfExchange, 20);
-        Assert.AreEqual(TLedger.OpeningBal.IsDebit, true);
-        Assert.AreEqual(TLedger.OpeningBal.Currency, "$");
+        Assert.Multiple(() =>
+        {
+            Assert.That(TLedger.Name, Is.EqualTo(ledgerName));
+            Assert.That(TLedger.OpeningBal.Amount, Is.EqualTo(100000));
+            Assert.That(TLedger.OpeningBal.ForexAmount, Is.EqualTo(5000));
+            Assert.That(TLedger.OpeningBal.RateOfExchange, Is.EqualTo(20));
+            Assert.That(TLedger.OpeningBal.IsDebit, Is.EqualTo(true));
+            Assert.That(TLedger.OpeningBal.Currency, Is.EqualTo("$"));
+        });
         var delResp = await tally.PostLedgerAsync(new Ledger() { Action = TCM.Action.Delete, OldName = "TesttoTallyAmount" });
 
-        Assert.AreEqual(delResp.Status, TCM.RespStatus.Sucess);
+        Assert.That(delResp.Status, Is.EqualTo(TCM.RespStatus.Sucess));
     }
-
 }
 

@@ -29,11 +29,12 @@ internal class TallyQuantityTests
 
         using TextReader reader = new StringReader(TallyQuantitytXml);
         var quantity = (TallyQuantity)xmlSerializer.Deserialize(reader);
-
-        Assert.AreEqual(quantity.Number, 0);
-        Assert.AreEqual(quantity.PrimaryUnits, null);
-        Assert.AreEqual(quantity.SecondaryUnits, null);
-
+        Assert.Multiple(() =>
+        {
+            Assert.That(quantity.Number, Is.EqualTo(0));
+            Assert.That(quantity.PrimaryUnits, Is.EqualTo(null));
+            Assert.That(quantity.SecondaryUnits, Is.EqualTo(null));
+        });
     }
 
     [Test]
@@ -43,11 +44,12 @@ internal class TallyQuantityTests
 
         using TextReader reader = new StringReader(TallyQuantitytXml);
         var quantity = (TallyQuantity)xmlSerializer.Deserialize(reader);
-
-        Assert.AreEqual(quantity.Number, 0);
-        Assert.AreEqual(quantity.PrimaryUnits, null);
-        Assert.AreEqual(quantity.SecondaryUnits, null);
-
+        Assert.Multiple(() =>
+        {
+            Assert.That(quantity.Number, Is.EqualTo(0));
+            Assert.That(quantity.PrimaryUnits, Is.EqualTo(null));
+            Assert.That(quantity.SecondaryUnits, Is.EqualTo(null));
+        });
     }
 
     [Test]
@@ -58,11 +60,14 @@ internal class TallyQuantityTests
         using TextReader reader = new StringReader(TallyQuantitytXml);
         var quantity = (TallyQuantity)xmlSerializer.Deserialize(reader);
 
-        Assert.AreEqual(quantity.Number, 50);
-        Assert.AreEqual(quantity.PrimaryUnits.Number, 50);
-        Assert.AreEqual(quantity.PrimaryUnits.Unit, "Nos");
-        Assert.AreEqual(quantity.SecondaryUnits, null);
 
+        Assert.Multiple(() =>
+        {
+            Assert.That(quantity.Number, Is.EqualTo(50));
+            Assert.That(quantity.PrimaryUnits.Number, Is.EqualTo(50));
+            Assert.That(quantity.PrimaryUnits.Unit, Is.EqualTo("Nos"));
+            Assert.That(quantity.SecondaryUnits, Is.EqualTo(null));
+        });
     }
 
     [Test]
@@ -73,12 +78,14 @@ internal class TallyQuantityTests
         using TextReader reader = new StringReader(TallyQuantitytXml);
         var quantity = (TallyQuantity)xmlSerializer.Deserialize(reader);
 
-        Assert.AreEqual(quantity.Number, 1000);
-        Assert.AreEqual(quantity.PrimaryUnits.Number, 1000);
-        Assert.AreEqual(quantity.PrimaryUnits.Unit, "Nos");
-        Assert.AreEqual(quantity.SecondaryUnits.Number, 100);
-        Assert.AreEqual(quantity.SecondaryUnits.Unit, "Boxes");
-
+        Assert.Multiple(() =>
+        {
+            Assert.That(quantity.Number, Is.EqualTo(1000));
+            Assert.That(quantity.PrimaryUnits.Number, Is.EqualTo(1000));
+            Assert.That(quantity.PrimaryUnits.Unit, Is.EqualTo("Nos"));
+            Assert.That(quantity.SecondaryUnits.Number, Is.EqualTo(100));
+            Assert.That(quantity.SecondaryUnits.Unit, Is.EqualTo("Boxes"));
+        });
     }
     [Test]
     public void CheckTallyQuantityNull()
@@ -90,7 +97,7 @@ internal class TallyQuantityTests
         var writer = XmlWriter.Create(textWriter, settings);
         xmlSerializer.Serialize(writer, tallyQuantity);
         string outxml = textWriter.ToString();
-        Assert.AreEqual(outxml, TallyQuantitytXml);
+        Assert.That(outxml, Is.EqualTo(TallyQuantitytXml));
     }
     [Test]
     public void CheckTallyQuantityConstructor()
@@ -103,10 +110,14 @@ internal class TallyQuantityTests
         xmlSerializer.Serialize(writer, tallyQuantity);
         string outxml = textWriter.ToString();
 
-        Assert.AreEqual(tallyQuantity.Number, 1000);
-        Assert.AreEqual(tallyQuantity.PrimaryUnits.Number, 1000);
-        Assert.AreEqual(tallyQuantity.PrimaryUnits.Unit, "Nos");
-        Assert.AreEqual(outxml, TallyQuantitytXml);
+        Assert.Multiple(() =>
+        {
+            Assert.That(tallyQuantity.Number, Is.EqualTo(1000));
+            Assert.That(tallyQuantity.PrimaryUnits.Number, Is.EqualTo(1000));
+            Assert.That(tallyQuantity.PrimaryUnits.Unit, Is.EqualTo("Nos"));
+            Assert.That(outxml, Is.EqualTo(TallyQuantitytXml));
+
+        });
     }
     [Test]
     public void CheckTallyQuantityConstructorwithStockItem()
@@ -118,12 +129,15 @@ internal class TallyQuantityTests
         var writer = XmlWriter.Create(textWriter, settings);
         xmlSerializer.Serialize(writer, tallyQuantity);
         string outxml = textWriter.ToString();
-
-        Assert.AreEqual(tallyQuantity.Number, 1000);
-        Assert.AreEqual(tallyQuantity.PrimaryUnits.Number, 1000);
-        Assert.AreEqual(tallyQuantity.PrimaryUnits.Unit, "Nos");
-        Assert.AreEqual(outxml, TallyQuantitytXml);
+        Assert.Multiple(() =>
+        {
+            Assert.That(tallyQuantity.Number, Is.EqualTo(1000));
+            Assert.That(tallyQuantity.PrimaryUnits.Number, Is.EqualTo(1000));
+            Assert.That(tallyQuantity.PrimaryUnits.Unit, Is.EqualTo("Nos"));
+            Assert.That(outxml, Is.EqualTo(TallyQuantitytXml));
+        });
     }
+
     [Test]
     public void CheckTallyQuantityConstructorwithStockItemandAdditionalUnits()
     {
@@ -134,13 +148,16 @@ internal class TallyQuantityTests
         var writer = XmlWriter.Create(textWriter, settings);
         xmlSerializer.Serialize(writer, tallyQuantity);
         string outxml = textWriter.ToString();
-
-        Assert.AreEqual(tallyQuantity.Number, 1000);
-        Assert.AreEqual(tallyQuantity.PrimaryUnits.Number, 1000);
-        Assert.AreEqual(tallyQuantity.PrimaryUnits.Unit, "Nos");
-        Assert.AreEqual(tallyQuantity.SecondaryUnits, null);
-        Assert.AreEqual(outxml, TallyQuantitytXml);
+        Assert.Multiple(() =>
+        {
+            Assert.That(tallyQuantity.Number, Is.EqualTo(1000));
+            Assert.That(tallyQuantity.PrimaryUnits.Number, Is.EqualTo(1000));
+            Assert.That(tallyQuantity.PrimaryUnits.Unit, Is.EqualTo("Nos"));
+            Assert.That(tallyQuantity.SecondaryUnits, Is.EqualTo(null));
+            Assert.That(outxml, Is.EqualTo(TallyQuantitytXml));
+        });
     }
+
     [Test]
     public void CheckTallyQuantityConstructorwithStockItemandAdditionalUnitsandConversion()
     {
@@ -151,12 +168,14 @@ internal class TallyQuantityTests
         var writer = XmlWriter.Create(textWriter, settings);
         xmlSerializer.Serialize(writer, tallyQuantity);
         string outxml = textWriter.ToString();
-
-        Assert.AreEqual(tallyQuantity.Number, 1000);
-        Assert.AreEqual(tallyQuantity.PrimaryUnits.Number, 1000);
-        Assert.AreEqual(tallyQuantity.PrimaryUnits.Unit, "Nos");
-        Assert.AreEqual(tallyQuantity.SecondaryUnits.Number, 70);
-        Assert.AreEqual(tallyQuantity.SecondaryUnits.Unit, "Boxes");
-        Assert.AreEqual(outxml, TallyQuantitytXml);
+        Assert.Multiple(() =>
+        {
+            Assert.That(tallyQuantity.Number, Is.EqualTo(1000));
+            Assert.That(tallyQuantity.PrimaryUnits.Number, Is.EqualTo(1000));
+            Assert.That(tallyQuantity.PrimaryUnits.Unit, Is.EqualTo("Nos"));
+            Assert.That(tallyQuantity.SecondaryUnits.Number, Is.EqualTo(70));
+            Assert.That(tallyQuantity.SecondaryUnits.Unit, Is.EqualTo("Boxes"));
+            Assert.That(outxml, Is.EqualTo(TallyQuantitytXml));
+        });
     }
 }
