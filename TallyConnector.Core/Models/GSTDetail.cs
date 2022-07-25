@@ -4,7 +4,7 @@
 public class GSTDetail : TallyBaseObject
 {
     [XmlElement(ElementName = "APPLICABLEFROM")]
-    public string? ApplicableFrom { get; set; }
+    public TallyDate? ApplicableFrom { get; set; }
 
     [XmlElement(ElementName = "CALCULATIONTYPE")]
     public string? CalculationType { get; set; }

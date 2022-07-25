@@ -55,7 +55,8 @@ public class StockGroup : BasicTallyObject, ITallyObject
     [TDLCollection(CollectionName = "LanguageName")]
     public List<LanguageNameList> LanguageNameList { get; set; }
 
-
+    [XmlElement(ElementName = "GSTDETAILS.LIST")]
+    public List<GSTDetail>? GSTDetails { get; set; }
     public void CreateNamesList()
     {
         if (LanguageNameList.Count == 0)

@@ -135,6 +135,9 @@ public class StockItem : BasicTallyObject, ITallyObject
     [XmlElement(ElementName = "MULTICOMPONENTLIST.LIST")]
     public List<ComponentsList>? BOMList { get; set; }
 
+    [XmlElement(ElementName = "GSTDETAILS.LIST")]
+    public List<GSTDetail>? GSTDetails { get; set; }
+
     public void CreateNamesList()
     {
         if (LanguageNameList.Count == 0)
