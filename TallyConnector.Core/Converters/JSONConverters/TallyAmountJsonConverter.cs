@@ -34,22 +34,22 @@ public class TallyAmountJsonConverter : JsonConverter<TallyAmount>
                 reader.Read();
                 if (propertyName == "Amount")
                 {
-                    Amount = reader.GetDecimal();
+                    Amount = reader.TokenType == JsonTokenType.Null ? null : reader.GetDecimal();
                     continue;
                 }
                 if (propertyName == "ForexAmount")
                 {
-                    ForexAmount = reader.GetDecimal();
+                    ForexAmount = reader.TokenType == JsonTokenType.Null ? null : reader.GetDecimal();
                     continue;
                 }
                 if (propertyName == "RateOfExchange")
                 {
-                    RateOfExchange = reader.GetDecimal();
+                    RateOfExchange = reader.TokenType == JsonTokenType.Null ? null : reader.GetDecimal();
                     continue;
                 }
                 if (propertyName == "Currency")
                 {
-                    Currency = reader.GetString();
+                    Currency = reader.TokenType == JsonTokenType.Null ? string.Empty : reader.GetString();
                     continue;
                 }
             }
