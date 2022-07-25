@@ -8,7 +8,7 @@ public partial class TallyService
         return await GetObjectAsync<Vchtype>(lookupValue, voucherRequestOptions);
     }
 
-    public async Task<TallyResult> PostVoucher<TVch>(TVch voucher, PostRequestOptions? postRequestOptions = null) where TVch : Voucher
+    public async Task<TallyResult> PostVoucherAsync<TVch>(TVch voucher, PostRequestOptions? postRequestOptions = null) where TVch : Voucher
     {
         postRequestOptions ??= new();
         postRequestOptions.XMLAttributeOverrides ??= new();

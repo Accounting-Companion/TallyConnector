@@ -358,7 +358,7 @@ public partial class TallyService : ITallyService
             try
             {
                 Envelope<ObjType>? Envelope = XMLToObject.GetObjfromXml<Envelope<ObjType>>(Response.Response,
-                                                                                           collectionOptions.XMLAttributeOverrides);
+                                                                                           collectionOptions.XMLAttributeOverrides, _logger);
                 return Envelope?.Body.Data.Collection?.Objects;
 
             }

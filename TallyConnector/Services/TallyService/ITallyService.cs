@@ -159,7 +159,7 @@ public interface ITallyService
     #endregion
 
     #region Post - Methods 
-    Task<TallyResult> PostVoucher<TVch>(TVch voucher, PostRequestOptions? postRequestOptions = null) where TVch : Voucher;
+    Task<TallyResult> PostVoucherAsync<TVch>(TVch voucher, PostRequestOptions? postRequestOptions = null) where TVch : Voucher;
 
     #endregion
 
