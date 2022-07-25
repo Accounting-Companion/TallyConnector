@@ -193,7 +193,9 @@ public enum RequestTye
     [XmlEnum(Name = "EXPORT")]
     Export,
     [XmlEnum(Name = "IMPORT")]
-    Import
+    Import,
+    [XmlEnum(Name = "Import Data")]
+    ImportData
 }
 
 public enum HType

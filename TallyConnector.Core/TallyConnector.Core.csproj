@@ -29,5 +29,8 @@
 		<Reference Include="System.ComponentModel.DataAnnotations" />
 		<PackageReference Include="System.Net.Http" Version="4.3.4" />
 	</ItemGroup>
+	<ItemGroup>
+	  <PackageReference Include="System.Text.Json" Version="6.0.5" />
+	</ItemGroup>
 
 </Project>

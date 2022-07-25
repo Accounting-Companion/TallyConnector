@@ -19,6 +19,7 @@ public class TallyXmlJson : TallyBaseObject
     /// Accepted Values //Create, Alter, Delete
     /// </summary>
     [JsonIgnore]
+    [NotMapped]
     [XmlAttribute(AttributeName = "Action")]
     public Action Action { get; set; }
 

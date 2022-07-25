@@ -300,7 +300,7 @@ public class Voucher : BasicTallyObject, ITallyObject
             }
             else { return null; }
         }
-        set => Date = value;
+        set => Date = value ?? string.Empty;
     }
 
 
@@ -350,7 +350,7 @@ public class Voucher : BasicTallyObject, ITallyObject
                 cc.CostCenterAllocations?.Sort((x, y) => x.Amount!.Amount.CompareTo(y.Amount!.Amount));
             });
             //sort Inventory Allocations
-            c.InventoryAllocations?.Sort((x, y) => x.ActualQuantity!.Number.CompareTo(y.ActualQuantity.Number));
+            c.InventoryAllocations?.Sort((x, y) => x.ActualQuantity!.Number.CompareTo(y.ActualQuantity!.Number));
             c.InventoryAllocations?.Sort((x, y) => x.Amount!.Amount.CompareTo(y.Amount!.Amount));
 
             c.InventoryAllocations?.ForEach(inv =>
@@ -674,11 +674,6 @@ public class CostCenterAllocations : TallyBaseObject
 [XmlRoot(ElementName = "ATTENDANCEENTRIES.LIST")]
 public class AttendanceEntry
 {
-
-    [XmlIgnore]
-    public string? AttdTypeId { get; set; }
-
-
     [XmlElement(ElementName = "NAME")]
     [Column(TypeName = $"nvarchar({Constants.MaxNameLength})")]
     public string? Name { get; set; }
@@ -895,14 +890,22 @@ public enum TransportMode
 {
     [XmlEnum(Name = "")]
     None = 0,
-    [XmlEnum(Name = "1 - Road")]
+    [XmlEnum(Name = "Road")]
     Road = 1,
-    [XmlEnum(Name = "2 - Rail")]
+    [XmlEnum(Name = "1 - Road")]
+    Road_InPrime = 1,
+    [XmlEnum(Name = "Rail")]
     Rail = 2,
-    [XmlEnum(Name = "3 - Air")]
+    [XmlEnum(Name = "2 - Rail")]
+    Rail_InPrime = 2,
+    [XmlEnum(Name = "Air")]
     Air = 3,
-    [XmlEnum(Name = "4 - Ship")]
+    [XmlEnum(Name = "3 - Air")]
+    Air_InPrime = 3,
+    [XmlEnum(Name = "Ship")]
     Ship = 4,
+    [XmlEnum(Name = "4 - Ship")]
+    Ship_InPrime = 4,
 }
 
 
@@ -915,10 +918,14 @@ public enum VehicleType
 {
     [XmlEnum(Name = "")]
     None = 0,
-    [XmlEnum(Name = "R - Regular")]
+    [XmlEnum(Name = "Regular")]
     Regular = 1,
+    [XmlEnum(Name = "R - Regular")]
+    Regular_InPrime = 1,
     [XmlEnum(Name = "Over Dimensional Cargo")]
     OverDimensionalCargo = 2,
+    [XmlEnum(Name = "O - Over Dimensional Cargo")]
+    OverDimensionalCargo_InPrime = 2,
 
 }
 

@@ -8,9 +8,9 @@ public class TallyDateValueConverter : ValueConverter<TallyDate, DateTime?>
     public TallyDateValueConverter()
         : base(
             v => (DateTime?)v,
-            v => v)
+            v => v!)
     {
     }
 
-    
+
 }

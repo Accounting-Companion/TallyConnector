@@ -33,13 +33,9 @@ internal class LedgerTests : BaseTallyServiceTest
         Assert.That(objects, Is.Not.Null);
         Assert.That(objects, Has.Count.EqualTo(292));
     }
+
     [Test]
-    public async Task CheckCreateLedger()
-    {
-        //var result = await _tallyService.PostObjectToTallyAsync(new TCMA.Ledger("Test Ledg NA", "Sundry Debtors") { GSTPartyType = TCM.GSTPartyType.DeemedExport });
-    }
-    [Test]
-    public async Task CheckGetLedger()
+    public async Task CheckLedger_Create_Read_Delete()
     {
         var result = await _tallyService.GetObjectAsync<TCMA.Ledger>("Test Ledg NA");
     }

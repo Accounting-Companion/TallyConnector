@@ -5,7 +5,7 @@ public static class XMLToObject
 {
     //Converts to given object from Xml
     public static Dictionary<string, XmlSerializer> _cache = new();
-    public static T? GetObjfromXml<T>(string Xml, XmlAttributeOverrides? attrOverrides = null)
+    public static T? GetObjfromXml<T>(string Xml, XmlAttributeOverrides? attrOverrides = null, ILogger? Logger = null)
     {
         string re = @"(?!₹)[^\x09\x0A\x0D\x20-\xD7FF\xE000-\xFFFD\x10000-x10FFFF]";
         //string re = @"[^\x0\]";
@@ -34,9 +34,18 @@ public static class XMLToObject
             xslTransform.Transform(rd, null, xmlwriter);
             rd = XmlReader.Create(new StringReader(textWriter.ToString()), xset, context);
         }
-        T? obj = (T?)XMLSer.Deserialize(rd);
+        try
+        {
+            T? obj = (T?)XMLSer.Deserialize(rd);
+            return obj;
+        }
+        catch (Exception ex)
+        {
+            Logger?.LogError(ex.Message);
+            Logger?.LogError("Error - XML {xml}", Xml);
+            return default;
+        }
 
-        return obj;
     }
 
     public static XmlSerializer GetSerializer(Type type, XmlAttributeOverrides attrOverrides)

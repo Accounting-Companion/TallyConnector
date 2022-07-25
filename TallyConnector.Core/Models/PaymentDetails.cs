@@ -1,5 +1,7 @@
 ﻿namespace TallyConnector.Core.Models;
 
+
+//Related to ledger
 [XmlRoot(ElementName = "PAYMENTDETAILS.LIST")]
 public class PaymentDetails
 {

@@ -163,7 +163,7 @@ internal class CommonTests
             }
         };
 
-        TCM.TallyResult result = await tally.PostVoucher<TCM.Voucher>(voucher);
+        TCM.TallyResult result = await tally.PostVoucherAsync<TCM.Voucher>(voucher);
 
         Assert.That(result.Status, Is.EqualTo(TCM.RespStatus.Sucess));
         var y = Regex.Matches(result.Response, @"[0-9.]+")[0].Value;

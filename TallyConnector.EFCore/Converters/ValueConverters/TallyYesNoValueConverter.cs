@@ -7,7 +7,7 @@ public class TallyYesNoValueConverter : ValueConverter<TallyYesNo, bool?>
     public TallyYesNoValueConverter()
        : base(
            v => (bool?)v,
-           v => v)
+           v => v!)
     {
     }
 }

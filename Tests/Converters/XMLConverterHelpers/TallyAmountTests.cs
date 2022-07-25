@@ -3,9 +3,9 @@
 namespace Tests.Converters.XMLConverterHelpers;
 public class TallyAmountTests
 {
-    XmlAttributeOverrides xmlAttributeOverrides = new();
-    XmlSerializer xmlSerializer;
-    XmlWriterSettings settings;
+    readonly XmlAttributeOverrides xmlAttributeOverrides = new();
+    readonly XmlSerializer xmlSerializer;
+    readonly XmlWriterSettings settings;
     public TallyAmountTests()
     {
         XmlAttributes xmlAttributes = new() { XmlRoot = new XmlRootAttribute("AMOUNT") };
@@ -61,7 +61,7 @@ public class TallyAmountTests
         var Amount = (TallyAmount)xmlSerializer.Deserialize(reader);
         Assert.Multiple(() =>
         {
-            Assert.That(0, Is.EqualTo(Amount.Amount));
+            Assert.That(Amount.Amount, Is.EqualTo(0));
             Assert.That(Amount.IsDebit, Is.EqualTo(false));
         });
     }
@@ -124,9 +124,11 @@ public class TallyAmountTests
         var writer = XmlWriter.Create(textWriter, settings);
         xmlSerializer.Serialize(writer, tallyAmount);
         string xml = textWriter.ToString();
-
-        Assert.That((decimal)tallyAmount, Is.EqualTo(5000));
-        Assert.That(xml, Is.EqualTo("<AMOUNT>5000</AMOUNT>"));
+        Assert.Multiple(() =>
+        {
+            Assert.That((decimal)tallyAmount, Is.EqualTo(5000));
+            Assert.That(xml, Is.EqualTo("<AMOUNT>5000</AMOUNT>"));
+        });
     }
 
     [Test]
