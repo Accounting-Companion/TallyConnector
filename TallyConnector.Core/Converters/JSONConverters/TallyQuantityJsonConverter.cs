@@ -18,6 +18,10 @@ public class TallyQuantityJsonConverter : JsonConverter<TallyQuantity>
                     return new TallyQuantity((decimal)quantity, unit, (decimal)secondaryQuantity, secondaryUnit);
 
                 }
+                else if (quantity != null && unit != null)
+                {
+                    return new TallyQuantity((decimal)quantity, unit);
+                }
                 else
                 {
                     return null;
@@ -28,6 +32,10 @@ public class TallyQuantityJsonConverter : JsonConverter<TallyQuantity>
             {
                 var propertyName = reader.GetString();
                 reader.Read();
+                if (reader.TokenType == JsonTokenType.Null)
+                {
+                    continue;
+                }
                 while (propertyName == Comparestring && reader.Read())
                 {
                     if (reader.TokenType == JsonTokenType.EndObject)
@@ -55,8 +63,10 @@ public class TallyQuantityJsonConverter : JsonConverter<TallyQuantity>
                     {
                         var NpropertyName = reader.GetString();
                         reader.Read();
+                        
                         if (NpropertyName == nameof(TallyQuantity.SecondaryUnits.Number))
                         {
+                           
                             if (propertyName == nameof(TallyQuantity.PrimaryUnits))
                             {
                                 quantity = reader.GetDecimal();
