@@ -42,10 +42,22 @@ public static class XMLToObject
         catch (Exception ex)
         {
             Logger?.LogError(ex.Message);
-            Logger?.LogError("Error - XML {xml}", Xml);
+            Logger?.LogError("Error - {errs}", GetInnerError(ex).Reverse().Take(2));
             return default;
         }
 
+    }
+
+    private static IEnumerable<string>? GetInnerError(Exception ex, List<string>? errors = null)
+    {
+        errors ??= new List<string>();
+        errors.Add(ex.Message);
+        if (ex.InnerException is not null)
+        {
+            GetInnerError(ex.InnerException, errors);
+        }
+
+        return errors;
     }
 
     public static XmlSerializer GetSerializer(Type type, XmlAttributeOverrides attrOverrides)
