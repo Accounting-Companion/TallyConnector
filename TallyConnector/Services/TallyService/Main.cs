@@ -101,7 +101,7 @@ public partial class TallyService : ITallyService
 
 
     public async Task<TallyResult> PostObjectToTallyAsync<ObjType>(ObjType Object,
-                                                              PostRequestOptions? postRequestOptions = null) where ObjType : TallyXmlJson, ITallyObject
+                                                                   PostRequestOptions? postRequestOptions = null) where ObjType : TallyXmlJson, ITallyObject
     {
         Object.PrepareForExport();
         Envelope<ObjType> Objectenvelope = new(Object,
@@ -191,11 +191,13 @@ public partial class TallyService : ITallyService
     public async Task<List<ObjType>?> GetObjectsAsync<ObjType>(PaginatedRequestOptions? objectOptions = null) where ObjType : TallyBaseObject
     {
         //Gets Root attribute of ReturnObject
-        XmlRootAttribute? RootAttribute = (XmlRootAttribute?)Attribute.GetCustomAttribute(typeof(ObjType), typeof(XmlRootAttribute));
+        string? RootElemet = AttributeHelper.GetXmlRootElement(typeof(ObjType), _logger);
+
+        Logger?.BuildingOptions(typeof(CollectionRequestOptions));
 
         CollectionRequestOptions collectionOptions = new()
         {
-            CollectionType = RootAttribute?.ElementName ?? typeof(ObjType).Name,
+            CollectionType = RootElemet ?? typeof(ObjType).Name,
             FromDate = objectOptions?.FromDate,
             ToDate = objectOptions?.ToDate,
             FetchList = (objectOptions?.FetchList) != null ? new(objectOptions.FetchList) : null,
@@ -236,9 +238,8 @@ public partial class TallyService : ITallyService
         collectionOptions.XMLAttributeOverrides.Add(typeof(Colllection<ObjType>), "Objects", attrs);
 
         var objects = await GetCustomCollectionAsync<ObjType>(collectionOptions);
-
+        objects?.ForEach(obj => obj.RemoveNullChilds());
         return objects;
-
 
     }
 
@@ -275,7 +276,14 @@ public partial class TallyService : ITallyService
         List<Task> tasks = new();
         for (int i = 0; i < pagination.TotalPages; i++)
         {
+            
             Pagination tpagination = new(TotalCount ?? 0, mapping?.DefaultPaginateCount ?? 1000, i + 1);
+            _logger?.LogInformation("getting {type} from {start} to {end} (Page {cur} of {Total})",
+                                    mapping!.MasterType,
+                                    tpagination.Start,
+                                    tpagination.End,
+                                    tpagination.PageNum,
+                                    tpagination.TotalPages);
             var options = new PaginatedRequestOptions()
             {
                 FromDate = objectOptions?.FromDate,
@@ -332,25 +340,7 @@ public partial class TallyService : ITallyService
     }
     public async Task<List<ObjType>?> GetCustomCollectionAsync<ObjType>(CollectionRequestOptions collectionOptions) where ObjType : TallyBaseObject
     {
-        StaticVariables staticVariables = new()
-        {
-            SVCompany = collectionOptions.Company ?? Company?.Name,
-            SVFromDate = collectionOptions.FromDate ?? Company?.BooksFrom!,
-            SVToDate = collectionOptions.ToDate ?? DateTime.Now,
-        };
-        string CollectionName = $"CUSTOM{collectionOptions.CollectionType.ToUpper()}COL";
-        RequestEnvelope ColEnvelope = new(HType.Collection, CollectionName, staticVariables); //Collection Envelope
-
-        ColEnvelope.Body.Desc.TDL.TDLMessage = new(colName: CollectionName,
-                                                   colType: collectionOptions.CollectionType,
-                                                   childof: collectionOptions.ChildOf,
-                                                   nativeFields: collectionOptions.FetchList,
-                                                   filters: collectionOptions.Filters,
-                                                   computevar: collectionOptions.ComputeVar,
-                                                   compute: collectionOptions.Compute,
-                                                   collectionOptions.IsInitialize);
-
-        string Reqxml = ColEnvelope.GetXML();
+        string Reqxml = GenerateCollectionXML(collectionOptions);
 
         var Response = await SendRequestAsync(Reqxml);
         if (Response.Status == RespStatus.Sucess && Response.Response != null)
@@ -373,6 +363,30 @@ public partial class TallyService : ITallyService
             return null;
         }
 
+    }
+
+    public string GenerateCollectionXML(CollectionRequestOptions collectionOptions)
+    {
+        StaticVariables staticVariables = new()
+        {
+            SVCompany = collectionOptions.Company ?? Company?.Name,
+            SVFromDate = collectionOptions.FromDate ?? Company?.BooksFrom!,
+            SVToDate = collectionOptions.ToDate ?? DateTime.Now,
+        };
+        string CollectionName = $"CUSTOM{collectionOptions.CollectionType.ToUpper()}COL";
+        RequestEnvelope ColEnvelope = new(HType.Collection, CollectionName, staticVariables); //Collection Envelope
+
+        ColEnvelope.Body.Desc.TDL.TDLMessage = new(colName: CollectionName,
+                                                   colType: collectionOptions.CollectionType,
+                                                   childof: collectionOptions.ChildOf,
+                                                   nativeFields: collectionOptions.FetchList,
+                                                   filters: collectionOptions.Filters,
+                                                   computevar: collectionOptions.ComputeVar,
+                                                   compute: collectionOptions.Compute,
+                                                   collectionOptions.IsInitialize);
+
+        string Reqxml = ColEnvelope.GetXML();
+        return Reqxml;
     }
 
     public async Task<ReturnType?> GetTDLReportAsync<ReportType, ReturnType>(DateFilterRequestOptions? requestOptions = null) where ReturnType : TallyBaseObject
@@ -408,9 +422,9 @@ public partial class TallyService : ITallyService
         TallyResult result = new();
         HttpRequestMessage requestMessage = new(HttpMethod.Post, FullURL);
         //Check whether xml is null or empty
+        Logger?.LogTallyRequest(xml);
         if (xml != null && xml != string.Empty)
         {
-            Logger?.LogTallyRequest(xml);
             //Tally requires UTF-16/Unicode encoding
             requestMessage.Content = new StringContent(xml, Encoding.Unicode, "application/xml");
         }
@@ -445,7 +459,7 @@ public partial class TallyService : ITallyService
         {
             result.Status = RespStatus.Failure;
             result.Response = exc.Message;
-            //TLogger.TallyReqError(exc.Message);
+            Logger?.TallyReqError(exc.Message);
             //throw new TallyConnectivityException("Tally is not running", FullURL);
         }
         return result;

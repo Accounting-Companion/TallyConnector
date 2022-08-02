@@ -33,6 +33,18 @@ public static class AttributeHelper
         }
         return null;
     }
+    internal static string? GetXmlRootElement(Type type, ILogger? _logger = null)
+    {
+        _logger?.LogDebug("Getting {Attribute} attribute of {objtype}", typeof(XmlRootAttribute).Name, type.Name);
+        XmlRootAttribute[] RElement = (XmlRootAttribute[])Attribute.GetCustomAttributes(type, typeof(XmlRootAttribute));//propertyinfo.CustomAttributes.FirstOrDefault(Attributedata => Attributedata.AttributeType == typeof(XmlAttributeAttribute));
+        _logger?.LogDebug("{object} has {count} {Attribute}s", type.Name, RElement.Length, typeof(XmlRootAttribute).Name);
+        if (RElement.Length > 0)
+        {
+            string xmlTag = RElement[0].ElementName;
+            return xmlTag;
+        }
+        return null;
+    }
 
     public static TDLXMLSetAttribute? GetTDLXMLSetAttributeValue(PropertyInfo propertyinfo)
     {
@@ -43,4 +55,6 @@ public static class AttributeHelper
         }
         return null;
     }
+
+
 }
