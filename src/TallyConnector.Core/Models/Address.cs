@@ -141,24 +141,23 @@ public class MultiAddress : ICheckNull
 
     public bool IsNull()
     {
-        ExciseJurisdictions = ExciseJurisdictions?.Where(ExcJur => ExcJur.IsNull()).ToList();
+        ExciseJurisdictions = ExciseJurisdictions?.Where(ExcJur => !ExcJur.IsNull()).ToList();
         if (ExciseJurisdictions?.Count == 0)
         {
             ExciseJurisdictions = null;
         }
-        if (ExciseJurisdictions?.Count == 0 || ExciseJurisdictions == null
-            )
+        if (true)
         {
 
         }
         return false;
     }
+
 }
 [XmlRoot(ElementName = "EXCISEJURISDICTIONDETAILS.LIST")]
 public class ExciseJurisdiction : ICheckNull
 {
     [XmlElement(ElementName = "APPLICABLEFROM")]
-    [Column(TypeName = $"nvarchar({Constants.MaxDateLength})")]
     public TallyDate? ApplicableFrom { get; set; }
 
     [XmlElement(ElementName = "RANGE")]

@@ -40,6 +40,6 @@ internal class TLogger
 
     internal void TallyReqError(string message)
     {
-        _logger?.LogError("Error ocuured while sending request to Tally - {}", message);
+        _logger?.LogError("Error ocuured while sending request to Tally - {msg}", message);
     }
 }

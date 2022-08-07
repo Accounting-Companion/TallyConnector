@@ -41,14 +41,14 @@ public class Currency : BasicTallyObject, ITallyObject
     public string? DecimalSymbol { get; set; }
 
     [XmlElement(ElementName = "DECIMALPLACES")]
-    [Range(1, 4)]
+    [Range(0, 4)]
     public int DecimalPlaces { get; set; }
 
     /// <summary>
     /// Tally Field - No.of Decimal Places for amount in Words
     /// </summary>
     [XmlElement(ElementName = "DECIMALPLACESFORPRINTING")]
-    [Range(1, 4)]
+    [Range(0, 4)]
     public int DecimalPlacesPrint { get; set; }
 
     [XmlElement(ElementName = "INMILLIONS")]

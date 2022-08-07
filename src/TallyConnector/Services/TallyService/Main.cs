@@ -18,7 +18,7 @@ public partial class TallyService : ITallyService
         _httpClient = new();
         _baseURL = "http://localhost";
         _port = 9000;
-        _httpClient.Timeout = TimeSpan.FromMinutes(10);
+        _httpClient.Timeout = TimeSpan.FromMinutes(3);
     }
 
     /// <summary>
@@ -32,7 +32,7 @@ public partial class TallyService : ITallyService
     /// <param name="timeoutMinutes"></param>
     public TallyService(string baseURL,
                         int port,
-                        int timeoutMinutes = 1)
+                        int timeoutMinutes = 3)
     {
         _httpClient = new();
         //Check if schema exists in URL, if not exists add http://
@@ -53,7 +53,7 @@ public partial class TallyService : ITallyService
     ///// <param name="timeoutMinutes"></param>
     public TallyService(HttpClient httpClient,
                         ILogger<TallyService>? logger = null,
-                        int timeoutMinutes = 1)
+                        int timeoutMinutes = 3)
     {
         _httpClient = httpClient;
         _httpClient.Timeout = TimeSpan.FromMinutes(timeoutMinutes);

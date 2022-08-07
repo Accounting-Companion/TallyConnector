@@ -174,7 +174,7 @@ public class Ledger : BasicTallyObject, ITallyObject
     public TallyYesNo? IsBillwise { get; set; }
 
     [XmlElement(ElementName = "BILLCREDITPERIOD")]
-    [Column(TypeName = "nvarchar(10)")]
+    [Column(TypeName = $"nvarchar({Constants.MaxDateLength})")]
     public string? CreditPeriod { get; set; }
 
     [XmlElement(ElementName = "ISCREDITDAYSCHKON")]
@@ -403,20 +403,20 @@ public class Ledger : BasicTallyObject, ITallyObject
         return $"Ledger - {Name}";
     }
 
-    public new void RemoveNullChilds()
+    public override void RemoveNullChilds()
     {
-        InterestList = InterestList?.Where(IntList => IntList.IsNull())?.ToList();
+        InterestList = InterestList?.Where(IntList => !IntList.IsNull())?.ToList();
         if (InterestList?.Count == 0)
         {
             InterestList = null;
         }
-        ClosingBalances = ClosingBalances?.Where(ClsBal => ClsBal.IsNull())?.ToList();
+        ClosingBalances = ClosingBalances?.Where(ClsBal => ! ClsBal.IsNull())?.ToList();
         if (ClosingBalances?.Count == 0)
         {
             ClosingBalances = null;
         }
 
-        MultipleAddresses = MultipleAddresses?.Where(MulAdress => MulAdress.IsNull())?.ToList();
+        MultipleAddresses = MultipleAddresses?.Where(MulAdress => !MulAdress.IsNull())?.ToList();
         if (MultipleAddresses?.Count == 0)
         {
             MultipleAddresses = null;
@@ -432,11 +432,9 @@ public class InterestList : ICheckNull
     }
 
     [XmlElement(ElementName = "INTERESTFROMDATE")]
-    [Column(TypeName = $"nvarchar({Constants.MaxDateLength})")]
     public TallyDate? FromDate { get; set; }
 
     [XmlElement(ElementName = "INTERESTTODATE")]
-    [Column(TypeName = $"nvarchar({Constants.MaxDateLength})")]
     public TallyDate? ToDate { get; set; }
 
     [XmlElement(ElementName = "INTERESTSTYLE")]
@@ -494,7 +492,6 @@ public class ClosingBalances : ICheckNull
 {
 
     [XmlElement(ElementName = "DATE")]
-    [Column(TypeName = $"nvarchar({Constants.MaxDateLength})")]
     public TallyDate? Date { get; set; }
 
     [XmlElement(ElementName = "AMOUNT")]

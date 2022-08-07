@@ -10,11 +10,9 @@ public class Voucher : BasicTallyObject, ITallyObject
     }
 
     [XmlElement(ElementName = "DATE")]
-    [Column(TypeName = $"nvarchar({Constants.MaxDateLength})")]
     public TallyDate? Date { get; set; }
 
     [XmlElement(ElementName = "REFERENCEDATE")]
-    [Column(TypeName = $"nvarchar({Constants.MaxDateLength})")]
     public TallyDate? ReferenceDate { get; set; }
 
     [XmlElement(ElementName = "REFERENCE")]
@@ -44,7 +42,6 @@ public class Voucher : BasicTallyObject, ITallyObject
     public TallyYesNo? IsOptional { get; set; }
 
     [XmlElement(ElementName = "EFFECTIVEDATE")]
-    [Column(TypeName = $"nvarchar({Constants.MaxDateLength})")]
     public TallyDate? EffectiveDate { get; set; }
 
     [XmlElement(ElementName = "NARRATION")]
@@ -255,18 +252,15 @@ public class Voucher : BasicTallyObject, ITallyObject
     public string? ConsigneePinCode { get; set; }
 
 
-
-
-
     [XmlElement(ElementName = "ISCANCELLED")]
     public TallyYesNo? IsCancelled { get; set; }
 
     //EWAY Details
     [XmlElement(ElementName = "OVRDNEWAYBILLAPPLICABILITY")]
-    public TallyYesNo OverrideEWayBillApplicability { get; set; }
+    public TallyYesNo? OverrideEWayBillApplicability { get; set; }
 
     [XmlElement(ElementName = "EWAYBILLDETAILS.LIST")]
-    public List<EwayBillDetail>? EWayBillDetails { get; set; }
+    public List<EwayBillDetail> EWayBillDetails { get; set; }
 
     [XmlElement(ElementName = "ALLLEDGERENTRIES.LIST", Type = typeof(VoucherLedger))]
     [XmlElement(ElementName = "LEDGERENTRIES.LIST", Type = typeof(EVoucherLedger))]
@@ -286,7 +280,7 @@ public class Voucher : BasicTallyObject, ITallyObject
 
 
     [XmlElement(ElementName = "ATTENDANCEENTRIES.LIST")]
-    public List<AttendanceEntry>? AttendanceEntries { get; set; }
+    public List<AttendanceEntry> AttendanceEntries { get; set; }
 
     [JsonIgnore]
     [XmlAttribute(AttributeName = "DATE")]

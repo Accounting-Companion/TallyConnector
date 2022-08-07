@@ -27,6 +27,8 @@
 		<GeneratePackageOnBuild>True</GeneratePackageOnBuild>
 
 		<Platforms>AnyCPU;x64</Platforms>
+
+		<GenerateDocumentationFile>True</GenerateDocumentationFile>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">

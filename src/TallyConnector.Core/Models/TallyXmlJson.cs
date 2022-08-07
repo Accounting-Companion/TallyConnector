@@ -11,6 +11,11 @@ public class TallyBaseObject
     [JsonIgnore]
     [XmlAnyAttribute]
     public XmlAttribute[]? OtherAttributes { get; set; }
+
+    public virtual void RemoveNullChilds()
+    {
+
+    }
 }
 
 public class TallyXmlJson : TallyBaseObject
@@ -54,7 +59,6 @@ public class TallyXmlJson : TallyBaseObject
         return textWriter.ToString()!;
     }
 
-
 }
 
 [XmlRoot(ElementName = "OBJECTS")]
@@ -78,10 +82,7 @@ public class BasicTallyObject : TallyXmlJson, ITallyObject, IBasicTallyObject
     {
     }
 
-    public void RemoveNullChilds()
-    {
-
-    }
+   
 
     public override string ToString()
     {

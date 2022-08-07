@@ -72,12 +72,13 @@ public enum GSTTaxabilityType
 {
     [XmlEnum(Name = "")]
     None = 0,
-
     [XmlEnum(Name = "Taxable")]
     Taxable = 1,
     [XmlEnum(Name = "Exempt")]
     Exempt = 2,
-    [XmlEnum(Name = "NilRated")]
+    [XmlEnum(Name = "Nil Rated")]
     NilRated = 3,
+    [XmlEnum(Name = "Unknown")]
+    Unknown = 4,
 
 }
