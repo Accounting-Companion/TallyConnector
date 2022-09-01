@@ -18,7 +18,7 @@ internal class LedgerTests : BaseTallyServiceTest
                 }
         });
         Assert.That(objects, Is.Not.Null);
-        Assert.That(objects, Has.Count.EqualTo(292));
+        Assert.That(objects, Has.Count.EqualTo(269));
     }
     [Test]
     public async Task CheckGetAllLedgers2()
@@ -31,12 +31,15 @@ internal class LedgerTests : BaseTallyServiceTest
                 }
         });
         Assert.That(objects, Is.Not.Null);
-        Assert.That(objects, Has.Count.EqualTo(292));
+        Assert.That(objects, Has.Count.EqualTo(269));
     }
 
     [Test]
     public async Task CheckLedger_Create_Read_Delete()
     {
-        var result = await _tallyService.GetObjectAsync<TCMA.Ledger>("Test Ledg NA");
+        var result = await _tallyService.GetObjectAsync<TCMA.Ledger>("Test Party");
+
+        Assert.That(result, Is.Not.Null);
+        Assert.That(result.Name, Is.EqualTo("Test Party"));
     }
 }

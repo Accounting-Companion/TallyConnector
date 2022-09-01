@@ -67,7 +67,7 @@ public interface ITallyService
 
     /// <summary>
     /// Get Statistics of Vouchers from Tally
-    /// We can metion specific period using From and To Date
+    /// We can metion specific period using From and To Date in request options
     /// </summary>
     /// <param name="requestOptions">Request options to configure tally</param>
     /// <returns></returns>
@@ -81,6 +81,7 @@ public interface ITallyService
      * Ex:To Get Group use - await GetGroupAsync<Group>("Name");
      */
     #region Get - Methods 
+
     Task<CurrencyType> GetCurrencyAsync<CurrencyType>(string lookupValue, MasterRequestOptions? currencyOptions = null) where CurrencyType : Currency;
 
     Task<GroupType> GetGroupAsync<GroupType>(string lookupValue, MasterRequestOptions? groupOptions = null) where GroupType : Group;

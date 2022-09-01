@@ -38,6 +38,9 @@
 	<ItemGroup>
 	  <Folder Include="Data\" />
 	</ItemGroup>
+	<ItemGroup>
+	  <ProjectReference Include="..\TallyConnector.Core\TallyConnector.Core.csproj" />
+	</ItemGroup>
 
 
 

@@ -1,6 +1,5 @@
 ﻿using System.Reflection;
 
-
 namespace TallyConnector.Services;
 public static class TDLReportHelper
 {

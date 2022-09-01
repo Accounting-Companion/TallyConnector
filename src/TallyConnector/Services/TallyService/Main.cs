@@ -13,6 +13,7 @@ public partial class TallyService : ITallyService
     private BaseCompany? Company { get; set; }
 
     private string FullURL => _baseURL + ":" + _port;
+
     public TallyService()
     {
         _httpClient = new();
@@ -256,6 +257,7 @@ public partial class TallyService : ITallyService
             Compute = (objectOptions?.Compute) != null ? new(objectOptions.Compute) : null,
             ComputeVar = (objectOptions?.ComputeVar) != null ? new(objectOptions.ComputeVar) : null,
             XMLAttributeOverrides = objectOptions?.XMLAttributeOverrides,
+            Filters = objectOptions?.Filters,
             IsInitialize = YesNo.Yes,
         };
 
@@ -289,6 +291,7 @@ public partial class TallyService : ITallyService
                 FromDate = objectOptions?.FromDate,
                 ToDate = objectOptions?.ToDate,
                 FetchList = objectOptions?.FetchList,
+                Filters = objectOptions?.Filters,
                 Compute = objectOptions?.Compute,
                 ComputeVar = objectOptions?.ComputeVar,
                 Pagination = tpagination,
