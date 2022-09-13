@@ -161,8 +161,7 @@ public partial class TallyService : ITallyService
         requestOptions.FetchList ??=
                 new List<string>()
                 {
-                    "MasterId", "*", "AllledgerEntries", "ledgerEntries", "Allinventoryenntries",
-                    "InventoryEntries", "InventoryEntriesIn", "InventoryEntriesOut"
+                    "MasterId", "*",
                 };
         string filterformulae;
         if (requestOptions.LookupField is VoucherLookupField.MasterId or VoucherLookupField.AlterId)
@@ -224,6 +223,10 @@ public partial class TallyService : ITallyService
             {
                 collectionOptions.Filters.AddRange(mapping.Filters);
             }
+            if (mapping.Objects != null)
+            {
+                collectionOptions.Objects = mapping.Objects;
+            }
         }
 
         if (collectionOptions.Pagination != null)
@@ -246,6 +249,7 @@ public partial class TallyService : ITallyService
     }
 
     /// <inheritdoc/>
+    public async Task<List<ObjType>> GetAllObjectsAsync<ObjType>(RequestOptions? objectOptions = null, IProgress<double>? progress = null) where ObjType : TallyBaseObject
     {
         XmlRootAttribute? RootAttribute = (XmlRootAttribute?)Attribute.GetCustomAttribute(typeof(ObjType), typeof(XmlRootAttribute));
 
@@ -279,7 +283,7 @@ public partial class TallyService : ITallyService
         List<Task> tasks = new();
         for (int i = 0; i < pagination.TotalPages; i++)
         {
-            
+
             Pagination tpagination = new(TotalCount ?? 0, mapping?.DefaultPaginateCount ?? 1000, i + 1);
             _logger?.LogInformation("getting {type} from {start} to {end} (Page {cur} of {Total})",
                                     mapping!.MasterType,
@@ -304,6 +308,7 @@ public partial class TallyService : ITallyService
             {
                 tempobjects.AsParallel().ForAll(t => objects.Add(t));
             }
+            progress?.Report(pagination.TotalPages / pagination.PageNum);
         }
         //await Task.WhenAll(tasks.ToArray());
         return objects.ToList();
@@ -391,7 +396,8 @@ public partial class TallyService : ITallyService
                                                    filters: collectionOptions.Filters,
                                                    computevar: collectionOptions.ComputeVar,
                                                    compute: collectionOptions.Compute,
-                                                   collectionOptions.IsInitialize);
+                                                   objects: collectionOptions.Objects,
+                                                   isInitialize: collectionOptions.IsInitialize);
 
         string Reqxml = ColEnvelope.GetXML();
         return Reqxml;

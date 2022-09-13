@@ -4,7 +4,8 @@ public partial class TallyService
     public async Task<Vchtype> GetVoucherAsync<Vchtype>(string lookupValue,
                                                         VoucherRequestOptions? voucherRequestOptions = null) where Vchtype : Voucher
     {
-
+        voucherRequestOptions ??= new();
+        voucherRequestOptions.FetchList ??= new(Constants.DefaultFetchList);
         return await GetObjectAsync<Vchtype>(lookupValue, voucherRequestOptions);
     }
 

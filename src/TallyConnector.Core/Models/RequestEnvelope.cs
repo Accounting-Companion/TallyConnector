@@ -104,8 +104,11 @@ public class TDLMessage
                       List<Filter>? filters = null,
                       List<string>? computevar = null,
                       List<string>? compute = null,
+                      List<TallyCustomObject>? objects = null,
                       YesNo isInitialize = YesNo.No)
     {
+
+        Object = objects;
         Collection.Add(new(colName: colName,
                            colType: colType,
                            childOf: childof,

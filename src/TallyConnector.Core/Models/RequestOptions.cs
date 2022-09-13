@@ -17,7 +17,7 @@ public class DateFilterRequestOptions : BaseRequestOptions
 
 public class RequestOptions : DateFilterRequestOptions
 {
-    
+
     public List<string>? FetchList { get; set; }
     public List<Filter>? Filters { get; set; }
     public List<string>? Compute { get; set; } = new();
@@ -25,7 +25,7 @@ public class RequestOptions : DateFilterRequestOptions
     public YesNo IsInitialize { get; set; } = YesNo.No;
 }
 
-public class PaginatedRequestOptions: RequestOptions
+public class PaginatedRequestOptions : RequestOptions
 {
     public Pagination? Pagination { get; set; }
 }
@@ -50,6 +50,8 @@ public class CollectionRequestOptions : PaginatedRequestOptions
     }
 
     public string CollectionType { get; set; }
-    public string? ChildOf { get; set; }    
+    public string? ChildOf { get; set; }
+
+    public List<TallyCustomObject> Objects { get; set; }
 }
 

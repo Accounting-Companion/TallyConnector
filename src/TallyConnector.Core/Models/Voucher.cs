@@ -1,4 +1,6 @@
-﻿namespace TallyConnector.Core.Models;
+﻿using TallyConnector.Core.Models.Masters;
+
+namespace TallyConnector.Core.Models;
 
 [Serializable]
 [XmlRoot(ElementName = "VOUCHER", Namespace = "")]
@@ -53,20 +55,20 @@ public class Voucher : BasicTallyObject, ITallyObject
     public string? PriceLevel { get; set; }
 
     //E-Invoice Details
-    [TallyCategory(Constants.VoucherCategory.EInvoiceDetails)]
+    [TallyCategory(Constants.Voucher.Category.EInvoiceDetails)]
     [XmlElement(ElementName = "BILLTOPLACE")]
     [Column(TypeName = $"nvarchar({Constants.MaxNarrLength})")]
     public string? BillToPlace { get; set; }
 
-    [TallyCategory(Constants.VoucherCategory.EInvoiceDetails)]
+    [TallyCategory(Constants.Voucher.Category.EInvoiceDetails)]
     [XmlElement(ElementName = "IRN")]
     public string? IRN { get; set; }
 
-    [TallyCategory(Constants.VoucherCategory.EInvoiceDetails)]
+    [TallyCategory(Constants.Voucher.Category.EInvoiceDetails)]
     [XmlElement(ElementName = "IRNACKNO")]
     public string? IRNAckNo { get; set; }
 
-    [TallyCategory(Constants.VoucherCategory.EInvoiceDetails)]
+    [TallyCategory(Constants.Voucher.Category.EInvoiceDetails)]
     [XmlElement(ElementName = "IRNACKDATE")]
     public string? IRNAckDate { get; set; }
 
@@ -260,7 +262,7 @@ public class Voucher : BasicTallyObject, ITallyObject
     public TallyYesNo? OverrideEWayBillApplicability { get; set; }
 
     [XmlElement(ElementName = "EWAYBILLDETAILS.LIST")]
-    public List<EwayBillDetail> EWayBillDetails { get; set; }
+    public List<EwayBillDetail>? EWayBillDetails { get; set; }
 
     [XmlElement(ElementName = "ALLLEDGERENTRIES.LIST", Type = typeof(VoucherLedger))]
     [XmlElement(ElementName = "LEDGERENTRIES.LIST", Type = typeof(EVoucherLedger))]
@@ -398,8 +400,18 @@ public class Voucher : BasicTallyObject, ITallyObject
     {
         OrderLedgers(); //Ensures ledgers are ordered in correct way
         GetJulianday();
+        InventoryAllocations?.ForEach(c => c.BatchAllocations?.ForEach(btch => btch.OrderDueDate = Date));
     }
 
+    /// <inheritdoc/>
+    public override void RemoveNullChilds()
+    {
+        EWayBillDetails = EWayBillDetails?.Where(Ewaybilldetail => !Ewaybilldetail.IsNull())?.ToList();
+        if (EWayBillDetails?.Count == 0)
+        {
+            EWayBillDetails = null;
+        }
+    }
 
     public override string ToString()
     {
@@ -425,6 +437,16 @@ public class VoucherLedger : TallyBaseObject
     [XmlElement(ElementName = "LEDGERNAME")]
     [Column(TypeName = $"nvarchar({Constants.MaxNameLength})")]
     public string? LedgerName { get; set; }
+
+    [XmlElement(ElementName = "LEDGERID")]
+    [Column(TypeName = $"nvarchar({Constants.GUIDLength})")]
+    public string? LedgerId { get; set; }
+
+    [XmlElement(ElementName = "LEDGERTAXTYPE")]
+    public string? LedgerTaxType { get; set; }
+
+    [XmlElement(ElementName = "VCHLEDGERTYPE")]
+    public string? LedgerType { get; set; }
 
 
     [XmlElement(ElementName = "ISDEEMEDPOSITIVE")]
@@ -543,7 +565,8 @@ public class InventoryoutAllocations : InventoryAllocations
 [XmlRoot(ElementName = "ALLINVENTORYENTRIES.LIST")]
 public class AllInventoryAllocations : InventoryAllocations
 {
-
+    [XmlElement(ElementName = "ACCOUNTINGALLOCATIONS.LIST")]
+    public List<VoucherLedger>? Ledgers { get; set; }
 }
 [XmlRoot(ElementName = "INVENTORYENTRIES.LIST")]
 public class InventoryEntries : AllInventoryAllocations
@@ -561,6 +584,10 @@ public class InventoryAllocations : TallyBaseObject
     [XmlElement(ElementName = "STOCKITEMNAME")]
     [Column(TypeName = $"nvarchar({Constants.MaxNameLength})")]
     public string? StockItemName { get; set; }
+
+    [XmlElement(ElementName = "STOCKITEMID")]
+    [Column(TypeName = $"nvarchar({Constants.GUIDLength})")]
+    public string? StockItemId { get; set; }
 
     [XmlElement(ElementName = "BOMNAME")]
     [Column(TypeName = $"nvarchar({Constants.MaxNameLength})")]
@@ -621,9 +648,16 @@ public class BatchAllocations : TallyBaseObject//Godown Allocations
     [Column(TypeName = $"nvarchar({Constants.MaxNameLength})")]
     public string? GodownName { get; set; }
 
+    [XmlElement(ElementName = "GODOWNID")]
+    [Column(TypeName = $"nvarchar({Constants.GUIDLength})")]
+    public string? GodownId { get; set; }
+
     [XmlElement(ElementName = "BATCHNAME")]
     [Column(TypeName = $"nvarchar({Constants.MaxNameLength})")]
     public string? BatchName { get; set; }
+
+    [XmlElement(ElementName = "ORDERDUEDATE")]
+    public TallyDate? OrderDueDate { get; set; }
 
     [XmlElement(ElementName = "AMOUNT")]
     public TallyAmount? Amount { get; set; }
@@ -646,6 +680,10 @@ public class CostCategoryAllocations : TallyBaseObject
     [Column(TypeName = $"nvarchar({Constants.MaxNameLength})")]
     public string? CostCategoryName { get; set; }
 
+    [XmlElement(ElementName = "COSTCATEGORYID")]
+    [Column(TypeName = $"nvarchar({Constants.GUIDLength})")]
+    public string? CostCategoryId { get; set; }
+
     [XmlElement(ElementName = "COSTCENTREALLOCATIONS.LIST")]
     public List<CostCenterAllocations>? CostCenterAllocations { get; set; }
 
@@ -656,6 +694,10 @@ public class CostCenterAllocations : TallyBaseObject
     [XmlElement(ElementName = "NAME")]
     [Column(TypeName = $"nvarchar({Constants.MaxNameLength})")]
     public string? Name { get; set; }
+
+    [XmlElement(ElementName = "COSTCENTREID")]
+    [Column(TypeName = $"nvarchar({Constants.GUIDLength})")]
+    public string? CostCenterId { get; set; }
 
     [XmlElement(ElementName = "AMOUNT")]
 
@@ -697,7 +739,7 @@ public class DeliveryNotes
 
 
 [XmlRoot(ElementName = "EWAYBILLDETAILS.LIST")]
-public class EwayBillDetail : TallyBaseObject
+public class EwayBillDetail : TallyBaseObject, ICheckNull
 {
     [XmlElement(ElementName = "BILLDATE")]
     public TallyDate? BillDate { get; set; }
@@ -732,12 +774,24 @@ public class EwayBillDetail : TallyBaseObject
     [XmlElement(ElementName = "TRANSPORTDETAILS.LIST")]
     public List<TransporterDetail>? TransporterDetails { get; set; }
 
-
-
+    /// <inheritdoc/>
+    public bool IsNull()
+    {
+        TransporterDetails = TransporterDetails?.Where(Details => !Details.IsNull())?.ToList();
+        if (TransporterDetails?.Count == 0)
+        {
+            TransporterDetails = null;
+        }
+        if (TransporterDetails == null && BillDate is null || BillDate == DateTime.MinValue && string.IsNullOrEmpty(BillNumber))
+        {
+            return true;
+        }
+        return false;
+    }
 }
 
 [XmlRoot(ElementName = "TRANSPORTDETAILS.LIST")]
-public class TransporterDetail : TallyBaseObject
+public class TransporterDetail : TallyBaseObject, ICheckNull
 {
     [XmlElement(ElementName = "DISTANCE")]
     public string? Distance { get; set; }
@@ -750,7 +804,7 @@ public class TransporterDetail : TallyBaseObject
     public string? TransporterId { get; set; }
 
     [XmlElement(ElementName = "TRANSPORTMODE")]
-    public TransportMode TransportMode { get; set; }
+    public TransportMode? TransportMode { get; set; }
 
     /// <summary>
     /// Document/Landing/RR/Airway Number/ 
@@ -765,7 +819,22 @@ public class TransporterDetail : TallyBaseObject
     public string? VehicleNumber { get; set; }
 
     [XmlElement(ElementName = "VEHICLETYPE")]
-    public VehicleType VehicleType { get; set; }
+    public VehicleType? VehicleType { get; set; }
+
+    public bool IsNull()
+    {
+        if (string.IsNullOrEmpty(Distance)
+            && string.IsNullOrEmpty(TransporterName)
+            && string.IsNullOrEmpty(TransporterId)
+            && (TransportMode is null || TransportMode is Models.TransportMode.None)
+            && string.IsNullOrEmpty(DocumentNumber)
+            && string.IsNullOrEmpty(VehicleNumber)
+            && (VehicleType is null || VehicleType is Models.VehicleType.None))
+        {
+            return true;
+        }
+        return false;
+    }
 }
 
 public enum VoucherLookupField

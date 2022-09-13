@@ -17,8 +17,57 @@ public static class Constants
     public const string MaxParticularsLength = "30";
     public const string GUIDLength = "100";
 
-    public static class VoucherCategory
+
+    public static class Voucher
     {
-        public const string EInvoiceDetails = "E-InvoiceDetails";
+        public static class Category
+        {
+            public const string EInvoiceDetails = "E-InvoiceDetails";
+        }
+        public static class InvoiceViewFetchList
+        {
+            public const string LedgerId = "LEDGERENTRIES.LEDGERID,ALLINVENTORYENTRIES.ACCOUNTINGALLOCATIONS.LEDGERID";
+            public const string LedgerTaxType = "LEDGERENTRIES.LEDGERTAXTYPE,ALLINVENTORYENTRIES.ACCOUNTINGALLOCATIONS.LEDGERTAXTYPE";
+            public const string VCHLedgerType = "LEDGERENTRIES.VCHLEDGERTYPE,ALLINVENTORYENTRIES.ACCOUNTINGALLOCATIONS.VCHLEDGERTYPE";
+            public const string StockItemId = "ALLINVENTORYENTRIES.STOCKITEMID";
+            public const string GodownId = "ALLINVENTORYENTRIES.BATCHALLOCATIONS.GODOWNID," +
+                                           "ALLINVENTORYENTRIES.BATCHALLOCATIONS.DESTINATIONGODOWNID";
+
+            public const string CostCategoryId = "LEDGERENTRIES.CATEGORYALLOCATIONS.COSTCATEGORYID," +
+                "ALLINVENTORYENTRIES.ACCOUNTINGALLOCATIONS.CATEGORYALLOCATIONS.COSTCATEGORYID";
+            public const string CostCenterId = "LEDGERENTRIES.CATEGORYALLOCATIONS.COSTCENTREALLOCATIONS.COSTCENTREID," +
+                "ALLINVENTORYENTRIES.ACCOUNTINGALLOCATIONS.CATEGORYALLOCATIONS.COSTCENTREALLOCATIONS.COSTCENTREID";
+
+            public static List<string> All = new(DefaultFetchList)
+            {
+                LedgerId, LedgerTaxType, VCHLedgerType,
+                StockItemId, GodownId,CostCategoryId,CostCenterId
+            };
+        }
+        public static class AccountingViewFetchList
+        {
+            public const string LedgerId = "LEDGERENTRIES.LEDGERID";
+            public const string LedgerTaxType = "LEDGERENTRIES.LEDGERTAXTYPE";
+            public const string VCHLedgerType = "LEDGERENTRIES.VCHLEDGERTYPE";
+            public const string StockItemId = "LEDGERENTRIES.INVENTORYALLOCATIONS.STOCKITEMID";
+            public const string GodownId = "LEDGERENTRIES.INVENTORYALLOCATIONS.BATCHALLOCATIONS.GODOWNID," +
+                                           "LEDGERENTRIES.INVENTORYALLOCATIONS.BATCHALLOCATIONS.DESTINATIONGODOWNID";
+
+            public const string CostCategoryId = "LEDGERENTRIES.CATEGORYALLOCATIONS.COSTCATEGORYID," +
+                "LEDGERENTRIES.INVENTORYALLOCATIONS.CATEGORYALLOCATIONS.COSTCATEGORYID";
+            public const string CostCenterId = "LEDGERENTRIES.CATEGORYALLOCATIONS.COSTCENTREALLOCATIONS.COSTCENTREID," +
+                "LEDGERENTRIES.INVENTORYALLOCATIONS.CATEGORYALLOCATIONS.COSTCENTREALLOCATIONS.COSTCENTREID";
+
+            public static List<string> All = new(DefaultFetchList)
+            {
+                LedgerId, LedgerTaxType, VCHLedgerType,
+                StockItemId, GodownId ,CostCategoryId,CostCenterId
+            };
+        }
+
     }
+
+    public static List<string> DefaultFetchList = new() { "MasterId", "*" };
+
+    public static List<string> VoucherViews = new() { "AcctgVchView", "InvVchView", "MulConsVchView", "ConsVchView" };
 }

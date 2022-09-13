@@ -6,13 +6,15 @@ public class TallyObjectMapping
                               string tallyMasterType,
                               int? defaultPaginateCount,
                               List<Filter>? filters,
-                              List<string>? computeFields = null)
+                              List<string>? computeFields = null,
+                              List<TallyCustomObject>? objects = null)
     {
         MasterType = masterType;
         Filters = filters;
         ComputeFields = computeFields;
         TallyMasterType = tallyMasterType;
         DefaultPaginateCount = defaultPaginateCount;
+        Objects = objects;
     }
 
     public TallyObjectType MasterType { get; }
@@ -21,6 +23,8 @@ public class TallyObjectMapping
     public List<Filter>? Filters { get; }
     public List<string>? ComputeFields { get; }
     public int? DefaultPaginateCount { get; }
+
+    public List<TallyCustomObject>? Objects { get; }
 
     public static readonly List<TallyObjectMapping> MastersMappings = new()
     {
@@ -173,7 +177,31 @@ public class TallyObjectMapping
                                computeFields : new()
                                {
                                    "VOUCHERTYPEID:$GUID:VoucherType:$VOUCHERTYPENAME",
-                                   "PARTYLEDGERID:$GUID:Ledger:$PARTYLEDGERNAMEs"
+                                   "PARTYLEDGERID:$GUID:Ledger:$PARTYLEDGERNAME"
+                               },
+                               objects: new()
+                               {
+                                   new("LedgerEntry", new()
+                                   {
+                                       "LedgerID: $GUID:Ledger:$LedgerName"
+                                   }){IsModify=YesNo.Yes},
+                                   new("InventoryEntry", new()
+                                   {
+                                       "StockItemID: $GUID:StockItem:$StockItemName"
+                                   }){IsModify=YesNo.Yes},
+                                   new("BatchAllocations", new()
+                                   {
+                                       "GodownID: $GUID:Godown:$GodownName",
+                                       "DestinationGodownID: $GUID:Godown:$DestinationGodownName"
+                                   }){IsModify=YesNo.Yes},
+                                   new("CategoryAllocations", new()
+                                   {
+                                       "CostCategoryID: $GUID:CostCategory:$Category",
+                                   }){IsModify=YesNo.Yes},
+                                   new("CostCenterAllocations", new()
+                                   {
+                                       "CostCentreID: $GUID:COSTCENTER:$NAME",
+                                   }){IsModify=YesNo.Yes}
                                }),
     };
 }
