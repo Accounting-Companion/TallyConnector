@@ -24,7 +24,7 @@
 
 		<RepositoryType>git</RepositoryType>
 
-		<VersionPrefix>2.0.1</VersionPrefix>
+		<VersionPrefix>2.0.2</VersionPrefix>
 		<VersionSuffix>rc</VersionSuffix>
 		<Nullable>enable</Nullable>
 

@@ -5,8 +5,8 @@ on:
     tags:
       - "V*"
 env:
-  PROJECT1_PATH: "TallyConnector.Core/TallyConnector.Core.csproj"
-  PROJECT2_PATH: "TallyConnector/TallyConnector.csproj"
+  PROJECT1_PATH: "src/TallyConnector.Core/TallyConnector.Core.csproj"
+  PROJECT2_PATH: "src/TallyConnector/TallyConnector.csproj"
   PACKAGE_OUTPUT_DIRECTORY: ${{ github.workspace }}\output
   NUGET_SOURCE_URL: "https://api.nuget.org/v3/index.json"
 jobs:
