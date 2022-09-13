@@ -26,7 +26,7 @@ public class Group : BasicTallyObject, ITallyObject
     /// Creates New Group under mention Parent group
     /// </summary>
     /// <param name="name">Name Of the Group</param>
-    /// <param name="Parent">Name of Base Group</param>
+    /// <param name="parent">Name of Base Group</param>
     public Group(string name, string parent)
     {
         Name = name;

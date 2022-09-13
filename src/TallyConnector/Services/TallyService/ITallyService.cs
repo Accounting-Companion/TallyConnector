@@ -50,7 +50,7 @@ public interface ITallyService
     Task<List<CompanyOnDisk>?> GetCompaniesinDefaultPathAsync();
 
     /// <summary>
-    /// Set company , all future requests will be send company mentioned here
+    /// Set company , all future requests will be send to company mentioned here
     /// irrespective of active company in Tally
     /// you can overide company by mentioning in request options
     /// </summary>
@@ -167,13 +167,18 @@ public interface ITallyService
     #endregion
 
     #region Generic Methods
-
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="collectionOptions"></param>
+    /// <returns></returns>
+    string GenerateCollectionXML(CollectionRequestOptions collectionOptions);
     Task<List<ObjType>?> GetCustomCollectionAsync<ObjType>(CollectionRequestOptions collectionOptions) where ObjType : TallyBaseObject;
 
     Task<ObjType> GetObjectAsync<ObjType>(string lookupValue, MasterRequestOptions? requestOptions = null) where ObjType : TallyBaseObject, ITallyObject;
     Task<ObjType> GetObjectAsync<ObjType>(string lookupValue, VoucherRequestOptions? requestOptions = null) where ObjType : Voucher;
     Task<List<ObjType>?> GetObjectsAsync<ObjType>(PaginatedRequestOptions? objectOptions = null) where ObjType : TallyBaseObject;
-    Task<List<ObjType>> GetAllObjectsAsync<ObjType>(RequestOptions? objectOptions = null) where ObjType : TallyBaseObject;
+    Task<List<ObjType>> GetAllObjectsAsync<ObjType>(RequestOptions? objectOptions = null, IProgress<double>? progress = null) where ObjType : TallyBaseObject;
 
     Task<ReturnType?> GetTDLReportAsync<ReportType, ReturnType>(DateFilterRequestOptions? requestOptions = null) where ReturnType : TallyBaseObject;
 

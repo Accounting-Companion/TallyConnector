@@ -9,12 +9,16 @@
 		<PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
 		<RepositoryUrl>https://github.com/Accounting-Companion/TallyConnector.git</RepositoryUrl>
 		<PackageProjectUrl>https://github.com/Accounting-Companion/TallyConnector</PackageProjectUrl>
-		<Description>Using This library we can interact with Tally prime / Tally erp9 easily without knowing Tally XML.
-		This library is complete abstraction for Tally XML API</Description>
+		<Description>
+			Using This library we can interact with Tally prime / Tally erp9 easily without knowing Tally XML.
+			- We can Create,Alter and Delete all types of masters, and Vouchers
+			- Get Custom TDL reports Based on C# object
+			- Have support for Custom Fields, and computed fields
+		</Description>
 
 		<ImplicitUsings>enable</ImplicitUsings>
 
-		<PackageTags>tally,xml,tallyprime,tallyerp9</PackageTags>
+		<PackageTags>tally,xml,tallyprime,tallyerp9,tallyxml</PackageTags>
 
 		<PackageLicenseExpression>MIT</PackageLicenseExpression>
 
@@ -37,8 +41,8 @@
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-	  <GenerateSerializationAssemblies>Off</GenerateSerializationAssemblies>
-	  <DocumentationFile />
+		<GenerateSerializationAssemblies>Off</GenerateSerializationAssemblies>
+		<DocumentationFile />
 	</PropertyGroup>
 
 	<ItemGroup>
@@ -47,6 +51,6 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <ProjectReference Include="..\TallyConnector.Core\TallyConnector.Core.csproj" />
+		<ProjectReference Include="..\TallyConnector.Core\TallyConnector.Core.csproj" />
 	</ItemGroup>
 </Project>

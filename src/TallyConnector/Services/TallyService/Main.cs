@@ -13,7 +13,9 @@ public partial class TallyService : ITallyService
     private BaseCompany? Company { get; set; }
 
     private string FullURL => _baseURL + ":" + _port;
-
+    /// <summary>
+    /// Intiate Tally Service with Default Parameters
+    /// </summary>
     public TallyService()
     {
         _httpClient = new();
@@ -23,14 +25,11 @@ public partial class TallyService : ITallyService
     }
 
     /// <summary>
-    /// Intiate TallyService with Url and port
-    /// Setup Http Client logger and httpClient Timeout Seconds
+    /// Intiaite Tally Service with Custom base url, port and timeoutMinutes
     /// </summary>
-    /// <param name="baseURL"></param>
-    /// <param name="port"></param>
-    /// <param name="httpClient"></param>
-    /// <param name="Logger"></param>
-    /// <param name="timeoutMinutes"></param>
+    /// <param name="baseURL">URL on which Tally is running</param>
+    /// <param name="port">Port on which tally is running</param>
+    /// <param name="timeoutMinutes">Request timeout in Minutes</param>
     public TallyService(string baseURL,
                         int port,
                         int timeoutMinutes = 3)
@@ -46,12 +45,12 @@ public partial class TallyService : ITallyService
         _port = port;
     }
 
-    ///// <summary>
-    ///// 
-    ///// </summary>
-    ///// <param name="httpClient"></param>
-    ///// <param name="Logger"></param>
-    ///// <param name="timeoutMinutes"></param>
+    /// <summary>
+    /// Intiaite Tally Service with httpclient , logger and timeoutMinutes
+    /// </summary>
+    /// <param name="httpClient">http client</param>
+    /// <param name="logger">logger</param>
+    /// <param name="timeoutMinutes">Request timeout in Minutes</param>
     public TallyService(HttpClient httpClient,
                         ILogger<TallyService>? logger = null,
                         int timeoutMinutes = 3)
@@ -65,7 +64,7 @@ public partial class TallyService : ITallyService
     }
 
 
-
+    /// <inheritdoc/>
     public async Task<bool> CheckAsync()
     {
         TallyResult tallyResult = await SendRequestAsync();
@@ -76,7 +75,7 @@ public partial class TallyService : ITallyService
         return false;
     }
 
-
+    /// <inheritdoc/>
     public void Setup(string url,
                       int port)
     {
@@ -89,18 +88,20 @@ public partial class TallyService : ITallyService
     }
 
 
+    /// <inheritdoc/>
     public void SetCompany(Company company)
     {
         Company = company;
     }
 
+    /// <inheritdoc/>
     public async Task<LicenseInfo?> GetLicenseInfoAsync()
     {
         var LicenseInfo = await GetTDLReportAsync<LicenseInfo, LicenseInfo>();
         return LicenseInfo;
     }
 
-
+    /// <inheritdoc/>
     public async Task<TallyResult> PostObjectToTallyAsync<ObjType>(ObjType Object,
                                                                    PostRequestOptions? postRequestOptions = null) where ObjType : TallyXmlJson, ITallyObject
     {
@@ -118,7 +119,7 @@ public partial class TallyService : ITallyService
         }
         return tallyResult;
     }
-
+    /// <inheritdoc/>
     public async Task<ObjType> GetObjectAsync<ObjType>(string lookupValue,
                                                        MasterRequestOptions? requestOptions = null) where ObjType : TallyBaseObject, ITallyObject
     {
@@ -151,7 +152,7 @@ public partial class TallyService : ITallyService
     }
 
 
-
+    /// <inheritdoc/>
     public async Task<ObjType> GetObjectAsync<ObjType>(string lookupValue,
                                                        VoucherRequestOptions? requestOptions = null) where ObjType : Voucher
     {
@@ -188,7 +189,7 @@ public partial class TallyService : ITallyService
 
     }
 
-
+    /// <inheritdoc/>
     public async Task<List<ObjType>?> GetObjectsAsync<ObjType>(PaginatedRequestOptions? objectOptions = null) where ObjType : TallyBaseObject
     {
         //Gets Root attribute of ReturnObject
@@ -244,7 +245,7 @@ public partial class TallyService : ITallyService
 
     }
 
-    public async Task<List<ObjType>> GetAllObjectsAsync<ObjType>(RequestOptions? objectOptions = null) where ObjType : TallyBaseObject
+    /// <inheritdoc/>
     {
         XmlRootAttribute? RootAttribute = (XmlRootAttribute?)Attribute.GetCustomAttribute(typeof(ObjType), typeof(XmlRootAttribute));
 
@@ -308,6 +309,7 @@ public partial class TallyService : ITallyService
         return objects.ToList();
     }
 
+    /// <inheritdoc/>
     public async Task<int?> GetObjectCountAync(TallyObjectType objectType, DateFilterRequestOptions options)
     {
         if (objectType is TallyObjectType.Vouchers)
@@ -341,6 +343,8 @@ public partial class TallyService : ITallyService
             return Count;
         }
     }
+
+    /// <inheritdoc/>
     public async Task<List<ObjType>?> GetCustomCollectionAsync<ObjType>(CollectionRequestOptions collectionOptions) where ObjType : TallyBaseObject
     {
         string Reqxml = GenerateCollectionXML(collectionOptions);
@@ -368,6 +372,7 @@ public partial class TallyService : ITallyService
 
     }
 
+    /// <inheritdoc/>
     public string GenerateCollectionXML(CollectionRequestOptions collectionOptions)
     {
         StaticVariables staticVariables = new()
@@ -392,6 +397,7 @@ public partial class TallyService : ITallyService
         return Reqxml;
     }
 
+    /// <inheritdoc/>
     public async Task<ReturnType?> GetTDLReportAsync<ReportType, ReturnType>(DateFilterRequestOptions? requestOptions = null) where ReturnType : TallyBaseObject
     {
         StaticVariables sv = new()
@@ -415,11 +421,13 @@ public partial class TallyService : ITallyService
         return default;
     }
 
+    /// <inheritdoc/>
     public async Task<ReturnType?> GetTDLReportAsync<ReturnType>(DateFilterRequestOptions? requestOptions = null) where ReturnType : TallyBaseObject
     {
         return await GetTDLReportAsync<ReturnType, ReturnType>(requestOptions);
     }
 
+    /// <inheritdoc/>
     public async Task<TallyResult> SendRequestAsync(string? xml = null)
     {
         TallyResult result = new();
@@ -468,6 +476,7 @@ public partial class TallyService : ITallyService
         return result;
     }
 
+    /// <inheritdoc/>
     public static string ReplaceXMLText(string Xml)
     {
         Xml = Xml.Replace("&#4; ", "");
@@ -475,6 +484,7 @@ public partial class TallyService : ITallyService
         return Xml;
     }
 
+    /// <inheritdoc/>
     public TallyResult ParseResponse(TallyResult tallyResult)
     {
         if (!tallyResult.Response!.Contains("RESPONSE"))
@@ -527,6 +537,7 @@ public partial class TallyService : ITallyService
         return tallyResult;
     }
 
+    /// <inheritdoc/>
     public string? CheckTallyError(string ResXml)
     {
         if (ResXml.Contains("LINEERROR"))

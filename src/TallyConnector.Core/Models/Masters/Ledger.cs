@@ -403,6 +403,9 @@ public class Ledger : BasicTallyObject, ITallyObject
         return $"Ledger - {Name}";
     }
 
+    /// <summary>
+    /// Removes Null Childs that are created during xml deserilisation
+    /// </summary>
     public override void RemoveNullChilds()
     {
         InterestList = InterestList?.Where(IntList => !IntList.IsNull())?.ToList();

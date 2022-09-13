@@ -11,7 +11,9 @@ public class TallyBaseObject
     [JsonIgnore]
     [XmlAnyAttribute]
     public XmlAttribute[]? OtherAttributes { get; set; }
-
+    /// <summary>
+    /// Removes Null Childs that are created during xml deserilisation
+    /// </summary>
     public virtual void RemoveNullChilds()
     {
 
