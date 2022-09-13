@@ -6,7 +6,7 @@
 		<Nullable>enable</Nullable>
 		<AssemblyName>TallyConnector.Core</AssemblyName>
 		<LangVersion>latest</LangVersion>
-		<PackageTags>tally,xml,tallyprime,tallyerp9</PackageTags>
+		<PackageTags>tally,xml,tallyprime,tallyerp9,tallyxml</PackageTags>
 
 		<PackageLicenseExpression>MIT</PackageLicenseExpression>
 		<Authors>saivineeth</Authors>
@@ -14,7 +14,10 @@
 		<RepositoryUrl>https://github.com/Accounting-Companion/TallyConnector.git</RepositoryUrl>
 		<PackageProjectUrl>https://github.com/Accounting-Companion/TallyConnector</PackageProjectUrl>
 		<Description>
-			This library provides models and other core things for TallyConnector
+			This package includes Models,Converters,Attributes for TallyConnector:
+			- Converters : Custom XML and Json converters for complex Tally Data like - Amount, units ..etc.,
+			- Attributes : Attributes that help creating custom TDL report in XML
+			- Models     : Models contains the objects like ledgers, groups , vouchers and their Childs
 		</Description>
 		<RepositoryType>git</RepositoryType>
 		<VersionPrefix>2.0.1</VersionPrefix>

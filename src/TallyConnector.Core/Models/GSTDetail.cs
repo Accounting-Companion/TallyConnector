@@ -1,7 +1,7 @@
 ﻿namespace TallyConnector.Core.Models;
 
 [XmlRoot(ElementName = "GSTDETAILS.LIST")]
-public class GSTDetail : TallyBaseObject
+public class GSTDetail : TallyBaseObject, ICheckNull
 {
     [XmlElement(ElementName = "APPLICABLEFROM")]
     public TallyDate? ApplicableFrom { get; set; }
@@ -35,6 +35,11 @@ public class GSTDetail : TallyBaseObject
 
     [XmlElement(ElementName = "STATEWISEDETAILS.LIST")]
     public List<StateWiseDetail>? StateWiseDetails { get; set; }
+
+    public bool IsNull()
+    {
+        return false;
+    }
 }
 
 [XmlRoot(ElementName = "STATEWISEDETAILS.LIST")]

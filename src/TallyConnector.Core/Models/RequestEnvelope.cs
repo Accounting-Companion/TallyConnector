@@ -120,6 +120,8 @@ public class TDLMessage
 
         filters?.ForEach(filter => System.Add(new(name: filter.FilterName!,
                                                  text: filter.FilterFormulae!)));
+
+
     }
 
 
@@ -681,11 +683,13 @@ public class TallyCustomObject : DCollection
     public TallyCustomObject()
     {
         LocalFormulas = new();
+        SetAttributes();
     }
     public TallyCustomObject(string name, List<string> formulas)
     {
         Name = name;
         LocalFormulas = formulas;
+        SetAttributes();
     }
     [XmlAttribute(AttributeName = "NAME")]
     public string? Name { get; set; }

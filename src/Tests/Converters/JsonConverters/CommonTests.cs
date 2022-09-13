@@ -7,7 +7,7 @@ internal class CommonTests
     public CommonTests()
     {
         jsonSerializerOptions = new();
-        jsonSerializerOptions.Converters.Add(new JsonStringEnumConverter(JsonNamingPolicy.CamelCase));
+        jsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
     }
 
     [Test]
@@ -23,5 +23,12 @@ internal class CommonTests
         string json = "\"AccountingVoucherView\"";
         var res = JsonSerializer.Deserialize<TCM.VoucherViewType>(json, jsonSerializerOptions);
         Assert.That(res, Is.EqualTo(TCM.VoucherViewType.AccountingVoucherView));
+    }
+    [Test]
+    public void TestEnumDeSerializationforGSTPartyType()
+    {
+        string json = "\"None\"";
+        var res = JsonSerializer.Deserialize<TCM.GSTPartyType>(json, jsonSerializerOptions);
+        Assert.That(res, Is.EqualTo(TCM.GSTPartyType.None));
     }
 }

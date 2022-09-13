@@ -67,6 +67,10 @@ public class LicenseInfo : TallyXmlJson
     [TDLXMLSet("$$cmpusername")]
     public string? UserName { get; set; }
 
+    [XmlElement(ElementName = "TALLYVERSION")]
+    [TDLXMLSet("$$SPrintf:@@CapProductDetails:@@VersionReleaseString:@@VersionBuildString:@@ProductBitnessStr:($$String:@@MajorReleaseeFormula):($$String:@@MinorReleaseFormula):\"0\":@@CapBuildNumberFormula")]
+    public string? TallyVersion { get; set; }
+
 }
 
 

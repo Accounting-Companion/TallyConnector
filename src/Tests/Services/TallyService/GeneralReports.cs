@@ -21,5 +21,5 @@ internal class GeneralReports : BaseTallyServiceTest
     {
         var Company = await _tallyService.GetActiveCompanyAsync();
         Assert.That(Company, Is.Not.Null);
-    }x
+    }
 }

@@ -99,6 +99,22 @@ public class TallyAmountJsonConverterTests
 
     }
 
+    [Test]
+    public void ParseCompleAmountvariant3()
+    {
+        string inputJson = "{\"Amount\": 0,\"IsDebit\": false,\"Currency\": null," +
+            "\"ForexAmount\": null,\"RateOfExchange\": null}";
+
+        var amount = JsonSerializer.Deserialize<TallyAmount>(inputJson, jsonSerializerOptions);
+        Assert.Multiple(() =>
+        {
+            Assert.That(amount.Amount, Is.EqualTo(0));
+            Assert.That(amount.RateOfExchange, Is.EqualTo(20));
+            Assert.That(amount.Currency, Is.EqualTo("$"));
+        });
+
+    }
+
 
 }
 

@@ -7,7 +7,9 @@ public interface ITallyObject
     int? MasterId { get; set; }
 
     public void PrepareForExport();
-
+    /// <summary>
+    /// Removes Null Childs that are created during xml deserilisation
+    /// </summary>
     public void RemoveNullChilds();
 }
 

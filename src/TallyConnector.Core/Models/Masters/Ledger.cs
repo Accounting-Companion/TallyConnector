@@ -413,7 +413,7 @@ public class Ledger : BasicTallyObject, ITallyObject
         {
             InterestList = null;
         }
-        ClosingBalances = ClosingBalances?.Where(ClsBal => ! ClsBal.IsNull())?.ToList();
+        ClosingBalances = ClosingBalances?.Where(ClsBal => !ClsBal.IsNull())?.ToList();
         if (ClosingBalances?.Count == 0)
         {
             ClosingBalances = null;
@@ -473,14 +473,14 @@ public class InterestList : ICheckNull
     {
         if (FromDate is null
             && ToDate is null
-            && InterestStyle is null || InterestStyle is Models.InterestStyle.None
-            && InterestBalanceType is null || InterestBalanceType is Models.InterestBalanceType.None
-            && InterestAppliedOn is null || InterestAppliedOn is Models.InterestAppliedOn.None
-            && InterestFromType is null || InterestFromType is Models.InterestFromType.None
-            && RoundType is null || RoundType is Models.RoundType.None
-            && InterestRate is null || InterestRate is 0
-            && InterestAppliedFrom is null || InterestAppliedFrom is 0
-            && RoundLimit is null || RoundLimit is 0)
+            && (InterestStyle is null || InterestStyle is Models.InterestStyle.None)
+            && (InterestBalanceType is null || InterestBalanceType is Models.InterestBalanceType.None)
+            && (InterestAppliedOn is null || InterestAppliedOn is Models.InterestAppliedOn.None)
+            && (InterestFromType is null || InterestFromType is Models.InterestFromType.None)
+            && (RoundType is null || RoundType is Models.RoundType.None)
+            && (InterestRate is null || InterestRate is 0)
+            && (InterestAppliedFrom is null || InterestAppliedFrom is 0)
+            && (RoundLimit is null || RoundLimit is 0))
         {
             return true;
         }

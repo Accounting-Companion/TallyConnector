@@ -84,6 +84,16 @@ public class StockGroup : BasicTallyObject, ITallyObject
         }
         CreateNamesList();
     }
+
+    /// <inheritdoc/>
+    public override void RemoveNullChilds()
+    {
+        GSTDetails = GSTDetails?.Where(c => !c.IsNull()).ToList();
+        if (GSTDetails?.Count == 0)
+        {
+            GSTDetails = null;
+        }
+    }
     public override string ToString()
     {
         return $"Stock Group - {Name}";

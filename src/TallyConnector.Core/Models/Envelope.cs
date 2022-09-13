@@ -144,8 +144,8 @@ public class StaticVariables : TallyBaseObject
     [XmlElement(ElementName = "SVTODATE")]
     public TallyDate? SVToDate { get; set; }
 
-    [XmlElement(ElementName = "SVViewName")]
-    public VoucherViewType? ViewName { get; set; }
+    //[XmlElement(ElementName = "SVViewName")]
+    //public VoucherViewType? ViewName { get; set; }
 
     [XmlElement(ElementName = "EXPLODEFLAG")]
     public string? ExplodeFlag { get; set; }

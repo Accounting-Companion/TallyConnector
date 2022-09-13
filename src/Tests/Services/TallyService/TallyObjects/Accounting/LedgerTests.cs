@@ -37,7 +37,7 @@ internal class LedgerTests : BaseTallyServiceTest
     [Test]
     public async Task CheckLedger_Create_Read_Delete()
     {
-        var result = await _tallyService.GetObjectAsync<TCMA.Ledger>("Test Party");
+        var result = await _tallyService.GetObjectAsync<TCMA.Ledger>("ABCD India Pvt Ltd");
 
         Assert.That(result, Is.Not.Null);
         Assert.That(result.Name, Is.EqualTo("Test Party"));

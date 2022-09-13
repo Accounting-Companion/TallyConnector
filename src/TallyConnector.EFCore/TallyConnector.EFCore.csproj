@@ -36,7 +36,9 @@
 		</PackageReference>
 	</ItemGroup>
 	<ItemGroup>
-	  <Folder Include="Data\" />
+	  <Compile Remove="Data\**" />
+	  <EmbeddedResource Remove="Data\**" />
+	  <None Remove="Data\**" />
 	</ItemGroup>
 	<ItemGroup>
 	  <ProjectReference Include="..\TallyConnector.Core\TallyConnector.Core.csproj" />

@@ -36,6 +36,8 @@ public class MultiAddress : ICheckNull
         ExciseJurisdictions = new();
     }
 
+    [XmlElement(ElementName = "ADDRESSNAME")]
+    public string AddressName { get; set; }
     [JsonIgnore]
     [XmlElement(ElementName = "ADDRESS.LIST")]
     public HAddress FAddress;
@@ -63,7 +65,7 @@ public class MultiAddress : ICheckNull
 
     [XmlElement(ElementName = "COUNTRYNAME")]
     [Column(TypeName = "nvarchar(60)")]
-    public string? Country { get; set; }
+    public string Country { get; set; }
 
     [XmlElement(ElementName = "LEDSTATENAME")]
     [Column(TypeName = "nvarchar(100)")]
@@ -141,14 +143,14 @@ public class MultiAddress : ICheckNull
 
     public bool IsNull()
     {
+        if (string.IsNullOrEmpty(AddressName))
+        {
+            return true;
+        }
         ExciseJurisdictions = ExciseJurisdictions?.Where(ExcJur => !ExcJur.IsNull()).ToList();
         if (ExciseJurisdictions?.Count == 0)
         {
             ExciseJurisdictions = null;
-        }
-        if (true)
-        {
-
         }
         return false;
     }
@@ -158,15 +160,15 @@ public class MultiAddress : ICheckNull
 public class ExciseJurisdiction : ICheckNull
 {
     [XmlElement(ElementName = "APPLICABLEFROM")]
-    public TallyDate? ApplicableFrom { get; set; }
+    public TallyDate ApplicableFrom { get; set; }
 
     [XmlElement(ElementName = "RANGE")]
     [Column(TypeName = "nvarchar(20)")]
-    public string? Range { get; set; }
+    public string Range { get; set; }
 
     [XmlElement(ElementName = "DIVISION")]
     [Column(TypeName = "nvarchar(20)")]
-    public string? Division { get; set; }
+    public string Division { get; set; }
 
     [XmlElement(ElementName = "COMMISSIONERATE")]
     [Column(TypeName = "nvarchar(20)")]
@@ -174,6 +176,10 @@ public class ExciseJurisdiction : ICheckNull
 
     public bool IsNull()
     {
+        if (ApplicableFrom is null || ApplicableFrom == DateTime.MinValue  && string.IsNullOrEmpty(Range) && string.IsNullOrEmpty(Division))
+        {
+            return true;
+        }
         return false;
     }
 }
