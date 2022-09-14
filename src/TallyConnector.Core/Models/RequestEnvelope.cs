@@ -579,7 +579,7 @@ public class Collection : DCollection
     }
     public Collection()
     {
-
+        SetAttributes();
     }
 
     public Collection(string objcollectionName, string objects)
@@ -594,6 +594,9 @@ public class Collection : DCollection
 
     [XmlElement(ElementName = "CHILDOF")]
     public string? Childof { get; set; }
+
+    [XmlElement(ElementName = "SOURCECOLLECTION")]
+    public string? Collections { get; set; }
 
     [XmlElement(ElementName = "NATIVEMETHOD")]
     public List<string>? NativeFields { get; set; }

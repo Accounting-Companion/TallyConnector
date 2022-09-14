@@ -15,14 +15,20 @@ public class DateFilterRequestOptions : BaseRequestOptions
     public DateTime? ToDate { get; set; }
 }
 
+public class CountRequestOptions : DateFilterRequestOptions
+{
+    public List<Filter>? Filters { get; set; }
+    public YesNo IsInitialize { get; set; } = YesNo.No;
+
+    public string CollectionType { get; set; }
+}
 public class RequestOptions : DateFilterRequestOptions
 {
-
-    public List<string>? FetchList { get; set; }
     public List<Filter>? Filters { get; set; }
+    public YesNo IsInitialize { get; set; } = YesNo.No;
+    public List<string>? FetchList { get; set; }
     public List<string>? Compute { get; set; } = new();
     public List<string>? ComputeVar { get; set; } = new();
-    public YesNo IsInitialize { get; set; } = YesNo.No;
 }
 
 public class PaginatedRequestOptions : RequestOptions

@@ -1,4 +1,5 @@
 ﻿using System.Collections.Concurrent;
+using System.Data;
 
 namespace TallyConnector.Services;
 public partial class TallyService : ITallyService
@@ -228,14 +229,6 @@ public partial class TallyService : ITallyService
                 collectionOptions.Objects = mapping.Objects;
             }
         }
-
-        if (collectionOptions.Pagination != null)
-        {
-            collectionOptions.Compute.Add("LineIndex : ##vLineIndex");
-            collectionOptions.ComputeVar ??= new();
-            collectionOptions.ComputeVar.Add("vLineIndex: Number : IF $$IsEmpty:##vLineIndex THEN 1 ELSE ##vLineIndex + 1");
-            collectionOptions.Filters.Add(new("Pagination", collectionOptions.Pagination.GetFilterFormulae()));
-        }
         //Adding xmlelement name according to RootElement name of ReturnObject
         collectionOptions.XMLAttributeOverrides ??= new();
         XmlAttributes attrs = new();
@@ -277,7 +270,13 @@ public partial class TallyService : ITallyService
                 collectionOptions.Filters.AddRange(mapping.Filters);
             }
         }
-        int? TotalCount = await GetObjectCountAync(mapping!.MasterType, collectionOptions);
+        int? TotalCount = await GetObjectCountAync(new()
+        {
+            CollectionType = collectionOptions.CollectionType,
+            FromDate = collectionOptions.FromDate,
+            ToDate = collectionOptions.ToDate,
+            Filters = collectionOptions.Filters,
+        });
         Pagination pagination = new(TotalCount ?? 0, mapping?.DefaultPaginateCount ?? 1000);
         ConcurrentBag<ObjType> objects = new();
         List<Task> tasks = new();
@@ -315,38 +314,32 @@ public partial class TallyService : ITallyService
     }
 
     /// <inheritdoc/>
-    public async Task<int?> GetObjectCountAync(TallyObjectType objectType, DateFilterRequestOptions options)
+    public async Task<int?> GetObjectCountAync(CountRequestOptions options)
     {
-        if (objectType is TallyObjectType.Vouchers)
+        RequestEnvelope requestEnvelope = new(HType.Function, "$$NUMITEMS", new()
         {
-            var count = 0;
-            var vchtypescount = await GetVoucherStatisticsAsync(options);
-            vchtypescount?.ForEach(c => count += c.TotalCount);
-            return count;
-        }
-        else
+            SVFromDate = options.FromDate,
+            SVToDate = options.ToDate ?? DateTime.Now,
+            SVCompany = options.Company ?? Company?.Name,
+        });
+        string CollectionName = $"CUSTOM{options.CollectionType.ToUpper()}COL";
+        requestEnvelope.Body.Desc.FunctionParams = new() { Param = new() { CollectionName } };
+        requestEnvelope.Body.Desc.TDL.TDLMessage.Collection.Add(new(CollectionName,
+                                                                    options.CollectionType,
+                                                                    filters: options.Filters?.Select(c => c.FilterName).ToList()!));
+
+
+        options.Filters?.ForEach(filter => requestEnvelope.Body.Desc.TDL.TDLMessage.System?.Add(new(name: filter.FilterName!,
+                                                 text: filter.FilterFormulae!)));
+
+        string Reqxml = requestEnvelope.GetXML();
+        var Response = await SendRequestAsync(Reqxml);
+        if (Response.Status == RespStatus.Sucess && Response.Response != null)
         {
-            var stats = await GetMasterStatisticsAsync();
-            var stat = stats?.FirstOrDefault(c => c.Name.Replace(" ", "") == objectType.ToString());
-            int? Count = stat?.Count;
-            //Adding below is reuired as employee group and employee are filtered
-            if (stat != null && objectType is TallyObjectType.CostCentres)
-            {
-                Count += stats?.FirstOrDefault(c => c.Name.Replace(" ", "") == TallyObjectType.EmployeeGroups.ToString())?.Count;
-                Count += stats?.FirstOrDefault(c => c.Name.Replace(" ", "") == TallyObjectType.Employees.ToString())?.Count;
-            }
-            else if (stat != null && objectType is TallyObjectType.EmployeeGroups)
-            {
-                Count += stats?.FirstOrDefault(c => c.Name.Replace(" ", "") == TallyObjectType.CostCentres.ToString())?.Count;
-                Count += stats?.FirstOrDefault(c => c.Name.Replace(" ", "") == TallyObjectType.Employees.ToString())?.Count;
-            }
-            else if (stat != null && objectType is TallyObjectType.Employees)
-            {
-                Count += stats?.FirstOrDefault(c => c.Name.Replace(" ", "") == TallyObjectType.CostCentres.ToString())?.Count;
-                Count += stats?.FirstOrDefault(c => c.Name.Replace(" ", "") == TallyObjectType.EmployeeGroups.ToString())?.Count;
-            }
-            return Count;
+            Envelope<string>? Envelope = XMLToObject.GetObjfromXml<Envelope<string>>(Response.Response, null, _logger);
+            return int.Parse(Envelope?.Body.Data.FuncResult.Result);
         }
+        return 0;
     }
 
     /// <inheritdoc/>
@@ -399,6 +392,25 @@ public partial class TallyService : ITallyService
                                                    objects: collectionOptions.Objects,
                                                    isInitialize: collectionOptions.IsInitialize);
 
+
+
+        if (collectionOptions.Pagination != null)
+        {
+            
+            ColEnvelope.Body.Desc.TDL.TDLMessage.Collection.Add(new()
+            {
+                Name = ColEnvelope.Header.ID + "PAGINATED",
+                Collections = ColEnvelope.Header!.ID,
+                Compute = new() { "LineIndex : ##vLineIndex" },
+                ComputeVar = new() { "vLineIndex: Number : IF $$IsEmpty:##vLineIndex THEN 1 ELSE ##vLineIndex + 1" },
+                NativeFields = new() {"*" },
+                Filters = new() { "Pagination" }
+            });
+            ColEnvelope.Body.Desc.TDL.TDLMessage.System?.Add(new("Pagination", collectionOptions.Pagination.GetFilterFormulae()));
+            ColEnvelope.Header!.ID += "PAGINATED";
+            //collectionOptions.Filters.Add(new("Pagination", collectionOptions.Pagination.GetFilterFormulae()));
+
+        }
         string Reqxml = ColEnvelope.GetXML();
         return Reqxml;
     }

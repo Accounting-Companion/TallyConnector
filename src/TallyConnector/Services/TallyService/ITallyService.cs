@@ -187,7 +187,7 @@ public interface ITallyService
 
     #endregion
 
-    Task<int?> GetObjectCountAync(TallyObjectType objectType, DateFilterRequestOptions options);
+    Task<int?> GetObjectCountAync(CountRequestOptions options);
 
     /// <summary>
     /// A helper function to send request to Tally
