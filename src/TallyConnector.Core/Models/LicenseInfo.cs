@@ -1,4 +1,6 @@
-﻿namespace TallyConnector.Core.Models;
+﻿using System.Text.RegularExpressions;
+
+namespace TallyConnector.Core.Models;
 
 [XmlRoot(ElementName = "LICENSEINFO")]
 public class LicenseInfo : TallyXmlJson
@@ -68,9 +70,10 @@ public class LicenseInfo : TallyXmlJson
     public string? UserName { get; set; }
 
     [XmlElement(ElementName = "TALLYVERSION")]
-    [TDLXMLSet("$$SPrintf:@@CapProductDetails:@@VersionReleaseString:@@VersionBuildString:@@ProductBitnessStr:($$String:@@MajorReleaseeFormula):($$String:@@MinorReleaseFormula):\"0\":@@CapBuildNumberFormula")]
+    [TDLXMLSet(Constants.License)]
     public string? TallyVersion { get; set; }
 
+    public string? TallyShortVersion => Regex.Replace(Regex.Match(TallyVersion, "[a-zA-Z. 0-9-]+").Value, "(\\s([a-zA-Z]+\\s)+)", "");
 }
 
 

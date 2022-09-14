@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.AccessControl;
 using System.Text;
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
@@ -12,21 +13,47 @@ internal class VoucherTests : BaseTallyServiceTest
     [Test]
     public async Task CheckGetAllVouchers()
     {
-        var objects = await _tallyService.GetAllObjectsAsync<TCM.Voucher>(new()
+        RequestOptions requestOptions = new()
         {
             FromDate = new(2010, 4, 1),
-            FetchList = new List<string>()
-                {
-                    "MasterId", "*", "AllledgerEntries", "ledgerEntries", "Allinventoryenntries",
-                    "InventoryEntries", "InventoryEntriesIn", "InventoryEntriesOut"
-                }
-        });
+            FetchList = Constants.Voucher.AccountingViewFetchList.All,
+            Filters = new List<Filter>() { Constants.Voucher.Filters.ViewTypeFilters.AccountingVoucherFilter }
+        };
+        var ActngVchrs = await _tallyService.GetAllObjectsAsync<TCM.Voucher>(requestOptions);
+
+        requestOptions.Filters[0] = Constants.Voucher.Filters.ViewTypeFilters.InvoiceVoucherFilter;
+
+        ActngVchrs.AddRange(await _tallyService.GetAllObjectsAsync<TCM.Voucher>(requestOptions));
+
+        requestOptions.Filters[0] = Constants.Voucher.Filters.ViewTypeFilters.InventoryVoucherFilter;
         // Voucher voucher = await _tallyService.GetVoucherAsync<Voucher>("52889497-5b6b-403d-8f83-224e3c7759b4-00001285", new() { LookupField = VoucherLookupField.GUID });
         //StockItem stockItem = await _tallyService.GetStockItemAsync<StockItem>("Floppy Drive");
-        Assert.That(objects, Is.Not.Null);
-        Assert.That(objects, Has.Count.EqualTo(1206));
-    }
 
+        ActngVchrs.AddRange(await _tallyService.GetAllObjectsAsync<TCM.Voucher>(requestOptions));
+
+        requestOptions.Filters[0] = Constants.Voucher.Filters.ViewTypeFilters.PayslipVoucherFilter;
+        List<Voucher> collection = await _tallyService.GetAllObjectsAsync<TCM.Voucher>(requestOptions);
+        ActngVchrs.AddRange(collection);
+
+        requestOptions.Filters[0] = Constants.Voucher.Filters.ViewTypeFilters.MfgJournalVoucherFilter;
+        ActngVchrs.AddRange(await _tallyService.GetAllObjectsAsync<TCM.Voucher>(requestOptions));
+
+        //var value = ActngVchrs.GroupBy(c => c.VchType).ToDictionary(c => c.Key, c => c.ToList());
+
+        //foreach (var v in value)
+        //{
+        //    string json = JsonSerializer.Serialize(v.Value, new JsonSerializerOptions() { WriteIndented = true,DefaultIgnoreCondition=JsonIgnoreCondition.WhenWritingDefault });
+        //    await File.WriteAllTextAsync("json2/" + v.Key + ".json", json);
+        //}
+
+        Assert.That(ActngVchrs, Is.Not.Null);
+        Assert.That(ActngVchrs.Count, Is.EqualTo(1107));
+    }
+    public class testobj
+    {
+        public string Vchtype { get; set; }
+        public int Count { get; set; }
+    }
     [Test]
     public async Task CreatePurchaseVoucher()
     {

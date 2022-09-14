@@ -279,7 +279,8 @@ public class Voucher : BasicTallyObject, ITallyObject
     [XmlElement(ElementName = "INVENTORYENTRIESIN.LIST")]
     public List<InventoryinAllocations>? InventoriesIn { get; set; }
 
-
+    [XmlElement(ElementName = "CATEGORYENTRY.LIST")]
+    public CategoryEntry? CategoryEntry { get; set; }
 
     [XmlElement(ElementName = "ATTENDANCEENTRIES.LIST")]
     public List<AttendanceEntry> AttendanceEntries { get; set; }
@@ -433,6 +434,9 @@ public class VoucherLedger : TallyBaseObject
     {
     }
 
+
+    [XmlElement(ElementName = "INDEXNUMBER")]
+    public int? IndexNumber { get; set; }
 
     [XmlElement(ElementName = "LEDGERNAME")]
     [Column(TypeName = $"nvarchar({Constants.MaxNameLength})")]
@@ -835,6 +839,47 @@ public class TransporterDetail : TallyBaseObject, ICheckNull
         }
         return false;
     }
+}
+
+[XmlRoot(ElementName = "TRANSPORTDETAILS.LIST")]
+public  class CategoryEntry
+{
+    [XmlElement(ElementName = "CATEGORY")]
+    public string Category { get; set; }
+
+    [XmlElement(ElementName = "EMPLOYEEENTRIES.LIST")]
+    public List<EmployeeEntry> EmployeeEntries { get; set; }
+}
+
+[XmlRoot(ElementName = "EMPLOYEEENTRIES.LIST")]
+public class EmployeeEntry
+{
+    [XmlElement(ElementName = "EMPLOYEENAME")]
+    public string EmployeeName { get; set; }
+
+    [XmlElement(ElementName = "EMPLOYEESORTORDER")]
+    public int EmployeeSortOrder { get; set; }
+
+    [XmlElement(ElementName = "AMOUNT")]
+    public TallyAmount Amount { get; set; }
+
+    [XmlElement(ElementName = "PAYHEADALLOCATIONS.LIST")]
+    public List<PayHeadAllocation> PayHeadAllocations{ get; set; }
+}
+[XmlRoot(ElementName = "PAYHEADALLOCATIONS.LIST")]
+public  class PayHeadAllocation
+{
+    [XmlElement(ElementName = "PAYHEADNAME")]
+    public string PayHeadName { get; set; }
+
+    [XmlElement(ElementName = "ISDEEMEDPOSITIVE")]
+    public TallyYesNo IsDeemedPositive { get; set; }
+
+    [XmlElement(ElementName = "PAYHEADSORTORDER")]
+    public int PayHeadSortOrder { get; set; }
+
+    [XmlElement(ElementName = "AMOUNT")]
+    public TallyAmount Amount { get; set; }
 }
 
 public enum VoucherLookupField
