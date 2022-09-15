@@ -242,7 +242,8 @@ public partial class TallyService : ITallyService
     }
 
     /// <inheritdoc/>
-    public async Task<List<ObjType>> GetAllObjectsAsync<ObjType>(RequestOptions? objectOptions = null, IProgress<double>? progress = null) where ObjType : TallyBaseObject
+    public async Task<List<ObjType>> GetAllObjectsAsync<ObjType>(RequestOptions? objectOptions = null,
+                                                                 IProgress<ReportProgressHelper>? progress = null) where ObjType : TallyBaseObject
     {
         XmlRootAttribute? RootAttribute = (XmlRootAttribute?)Attribute.GetCustomAttribute(typeof(ObjType), typeof(XmlRootAttribute));
 
@@ -307,7 +308,7 @@ public partial class TallyService : ITallyService
             {
                 tempobjects.AsParallel().ForAll(t => objects.Add(t));
             }
-            progress?.Report(pagination.TotalPages / pagination.PageNum);
+            progress?.Report(new(tpagination.TotalCount, tpagination.End-tpagination.Start, tpagination.End));
         }
         //await Task.WhenAll(tasks.ToArray());
         return objects.ToList();
