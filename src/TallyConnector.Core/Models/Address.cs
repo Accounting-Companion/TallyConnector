@@ -65,7 +65,7 @@ public class MultiAddress : ICheckNull
 
     [XmlElement(ElementName = "COUNTRYNAME")]
     [Column(TypeName = "nvarchar(60)")]
-    public string Country { get; set; }
+    public string? Country { get; set; }
 
     [XmlElement(ElementName = "LEDSTATENAME")]
     [Column(TypeName = "nvarchar(100)")]
@@ -176,7 +176,7 @@ public class ExciseJurisdiction : ICheckNull
 
     public bool IsNull()
     {
-        if (ApplicableFrom is null || ApplicableFrom == DateTime.MinValue  && string.IsNullOrEmpty(Range) && string.IsNullOrEmpty(Division))
+        if (ApplicableFrom is null || ApplicableFrom == DateTime.MinValue && string.IsNullOrEmpty(Range) && string.IsNullOrEmpty(Division))
         {
             return true;
         }

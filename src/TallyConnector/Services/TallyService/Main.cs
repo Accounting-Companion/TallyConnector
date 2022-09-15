@@ -210,7 +210,7 @@ public partial class TallyService : ITallyService
             XMLAttributeOverrides = objectOptions?.XMLAttributeOverrides,
             IsInitialize = objectOptions?.IsInitialize ?? YesNo.No,
         };
-        var mapping = TallyObjectMapping.TallyObjectMappings
+        var mapping = Mappings.TallyObjectMappings
                 .FirstOrDefault(map => map.TallyMasterType.Equals(collectionOptions.CollectionType, StringComparison.OrdinalIgnoreCase));
         collectionOptions.Compute ??= new();
         collectionOptions.Filters ??= new();
@@ -260,7 +260,7 @@ public partial class TallyService : ITallyService
             IsInitialize = YesNo.Yes,
         };
 
-        var mapping = TallyObjectMapping.TallyObjectMappings
+        var mapping = Mappings.TallyObjectMappings
                 .FirstOrDefault(map => map.TallyMasterType.Equals(collectionOptions.CollectionType, StringComparison.OrdinalIgnoreCase));
 
         collectionOptions.Filters ??= new();
@@ -397,14 +397,14 @@ public partial class TallyService : ITallyService
 
         if (collectionOptions.Pagination != null)
         {
-            
+
             ColEnvelope.Body.Desc.TDL.TDLMessage.Collection.Add(new()
             {
                 Name = ColEnvelope.Header.ID + "PAGINATED",
                 Collections = ColEnvelope.Header!.ID,
                 Compute = new() { "LineIndex : ##vLineIndex" },
                 ComputeVar = new() { "vLineIndex: Number : IF $$IsEmpty:##vLineIndex THEN 1 ELSE ##vLineIndex + 1" },
-                NativeFields = new() {"*" },
+                NativeFields = new() { "*" },
                 Filters = new() { "Pagination" }
             });
             ColEnvelope.Body.Desc.TDL.TDLMessage.System?.Add(new("Pagination", collectionOptions.Pagination.GetFilterFormulae()));

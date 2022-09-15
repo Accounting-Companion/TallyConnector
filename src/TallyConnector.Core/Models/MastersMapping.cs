@@ -25,7 +25,26 @@ public class TallyObjectMapping
     public int? DefaultPaginateCount { get; }
 
     public List<TallyCustomObject>? Objects { get; }
+}
 
+public class ViewTypeMapping
+{
+    public ViewTypeMapping(VoucherViewType viewType,
+                           List<string> fetchList,
+                           Filter filter)
+    {
+        ViewType = viewType;
+        FetchList = fetchList;
+        Filter = filter;
+    }
+
+    public VoucherViewType ViewType { get; }
+
+    public List<string> FetchList { get; }
+    public Filter Filter { get; }
+}
+public class Mappings
+{
     public static readonly List<TallyObjectMapping> MastersMappings = new()
     {
         new TallyObjectMapping(masterType: TallyObjectType.Currencies,
@@ -204,19 +223,28 @@ public class TallyObjectMapping
                                    }){IsModify=YesNo.Yes}
                                }),
     };
-}
 
-public class MastersBasicInfo<T>
-{
-    public MastersBasicInfo(TallyObjectType masterType, List<T> masters)
+    public static readonly List<ViewTypeMapping> VoucherViewTypeMappings = new()
     {
-        MasterType = masterType;
-        Masters = masters;
-    }
+        new(VoucherViewType.AccountingVoucherView,
+            Constants.Voucher.AccountingViewFetchList.All,
+            Constants.Voucher.Filters.ViewTypeFilters.AccountingVoucherFilter),
 
-    public TallyObjectType MasterType { get; set; }
+        new(VoucherViewType.InvoiceVoucherView,
+            Constants.Voucher.InvoiceViewFetchList.All,
+            Constants.Voucher.Filters.ViewTypeFilters.InvoiceVoucherFilter),
 
-    public List<T> Masters { get; set; } = new();
+        new(VoucherViewType.ConsumptionVoucherView,
+            Constants.Voucher.AccountingViewFetchList.All,
+            Constants.Voucher.Filters.ViewTypeFilters.InventoryVoucherFilter),
 
-    public int Count => Masters.Count;
+        new(VoucherViewType.MultiConsumptionVoucherView,
+            Constants.Voucher.AccountingViewFetchList.All,
+            Constants.Voucher.Filters.ViewTypeFilters.MfgJournalVoucherFilter),
+
+        new(VoucherViewType.PaySlipVoucherView,
+            Constants.Voucher.AccountingViewFetchList.All,
+            Constants.Voucher.Filters.ViewTypeFilters.PayslipVoucherFilter),
+    };
 }
+

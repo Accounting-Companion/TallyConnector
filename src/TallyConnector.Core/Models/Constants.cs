@@ -99,5 +99,10 @@ public static class Constants
 
     public static List<string> DefaultFetchList = new() { "MasterId", "*", "CanDelete" };
 
-    public static List<string> VoucherViews = new() { "AcctgVchView", "InvVchView", "MulConsVchView", "ConsVchView", "PaySlipVchView" };
+    public static List<string> VoucherViews = new()
+    {
+        Voucher.ViewType.AccountingVoucherView, Voucher.ViewType.InvoiceVoucherView,
+        Voucher.ViewType.MfgJournalVoucherView, Voucher.ViewType.InventoryVoucherView,
+        Voucher.ViewType.PayrollVoucherView
+    };
 }

@@ -12,7 +12,7 @@ public class Voucher : BasicTallyObject, ITallyObject
     }
 
     [XmlElement(ElementName = "DATE")]
-    public TallyDate? Date { get; set; }
+    public TallyDate Date { get; set; }
 
     [XmlElement(ElementName = "REFERENCEDATE")]
     public TallyDate? ReferenceDate { get; set; }
