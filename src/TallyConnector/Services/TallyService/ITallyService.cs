@@ -175,7 +175,7 @@ public interface ITallyService
     string GenerateCollectionXML(CollectionRequestOptions collectionOptions);
     Task<List<ObjType>?> GetCustomCollectionAsync<ObjType>(CollectionRequestOptions collectionOptions) where ObjType : TallyBaseObject;
 
-    Task<ObjType> GetObjectAsync<ObjType>(string lookupValue, MasterRequestOptions? requestOptions = null) where ObjType : TallyBaseObject, ITallyObject;
+    Task<ObjType> GetObjectAsync<ObjType>(string lookupValue, MasterRequestOptions? requestOptions = null) where ObjType : TallyBaseObject, INamedTallyObject;
     Task<ObjType> GetObjectAsync<ObjType>(string lookupValue, VoucherRequestOptions? requestOptions = null) where ObjType : Voucher;
     Task<List<ObjType>?> GetObjectsAsync<ObjType>(PaginatedRequestOptions? objectOptions = null) where ObjType : TallyBaseObject;
     Task<List<ObjType>> GetAllObjectsAsync<ObjType>(RequestOptions? objectOptions = null, IProgress<ReportProgressHelper>? progress = null) where ObjType : TallyBaseObject;

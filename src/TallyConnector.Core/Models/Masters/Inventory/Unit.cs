@@ -3,7 +3,7 @@
 
 [XmlRoot(ElementName = "UNIT")]
 [XmlType(AnonymousType = true)]
-public class Unit : BasicTallyObject, ITallyObject
+public class Unit : BasicTallyObject, INamedTallyObject
 {
     [XmlAttribute(AttributeName = "NAME")]
     [Column(TypeName = $"nvarchar({Constants.MaxNameLength})")]

@@ -12,7 +12,10 @@ public interface ITallyObject
     /// </summary>
     public void RemoveNullChilds();
 }
-
+public interface INamedTallyObject : ITallyObject
+{
+    string Name { get; set; }
+}
 public interface ICheckNull
 {
     public bool IsNull();

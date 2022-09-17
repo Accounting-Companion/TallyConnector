@@ -2,7 +2,7 @@
 
 [XmlRoot(ElementName = "CURRENCY")]
 [XmlType(AnonymousType = true)]
-public class Currency : BasicTallyObject, ITallyObject
+public class Currency : BasicTallyObject, INamedTallyObject
 {
     public Currency()
     {

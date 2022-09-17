@@ -122,7 +122,7 @@ public partial class TallyService : ITallyService
     }
     /// <inheritdoc/>
     public async Task<ObjType> GetObjectAsync<ObjType>(string lookupValue,
-                                                       MasterRequestOptions? requestOptions = null) where ObjType : TallyBaseObject, ITallyObject
+                                                       MasterRequestOptions? requestOptions = null) where ObjType : TallyBaseObject, INamedTallyObject
     {
         // If received FetchList in collectionOptions we will use that else use default fetchlist
         requestOptions ??= new();

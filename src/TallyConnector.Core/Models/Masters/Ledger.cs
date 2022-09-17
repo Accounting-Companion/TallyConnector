@@ -3,7 +3,7 @@
 [Serializable]
 [XmlRoot("LEDGER")]
 [XmlType(AnonymousType = true)]
-public class Ledger : BasicTallyObject, ITallyObject
+public class Ledger : BasicTallyObject, INamedTallyObject
 {
     private string? name;
     public Ledger()

@@ -2,7 +2,7 @@
 
 [XmlRoot(ElementName = "STOCKITEM")]
 [XmlType(AnonymousType = true)]
-public class StockItem : BasicTallyObject, ITallyObject
+public class StockItem : BasicTallyObject, INamedTallyObject
 {
     public StockItem()
     {

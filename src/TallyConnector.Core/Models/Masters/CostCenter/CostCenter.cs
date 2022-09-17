@@ -3,7 +3,7 @@
 
 [XmlRoot(ElementName = "COSTCENTRE")]
 [XmlType(AnonymousType = true)]
-public class CostCenter : BasicTallyObject, ITallyObject
+public class CostCenter : BasicTallyObject, INamedTallyObject
 {
     public CostCenter()
     {
