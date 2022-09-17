@@ -7,7 +7,7 @@ namespace TallyConnector.Core.Converters.XMLConverterHelpers;
 [JsonConverter(typeof(TallyDateJsonConverter))]
 public class TallyDate : IXmlSerializable
 {
-    private protected DateTime? Date;
+    private protected DateTime Date;
 
     public TallyDate(DateTime date)
     {
@@ -83,11 +83,11 @@ public class TallyDate : IXmlSerializable
 
     public override string? ToString()
     {
-        return Date?.ToShortDateString();
+        return Date.ToShortDateString();
     }
     public string? ToString(string? format)
     {
-        return Date?.ToString(format);
+        return Date.ToString(format);
     }
 }
 

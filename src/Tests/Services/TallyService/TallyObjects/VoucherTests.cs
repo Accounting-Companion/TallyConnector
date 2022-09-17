@@ -13,42 +13,54 @@ internal class VoucherTests : BaseTallyServiceTest
     [Test]
     public async Task CheckGetAllVouchers()
     {
+        int count = 0;
+        IProgress<ReportProgressHelper> progress = new Progress<ReportProgressHelper>(c => count += c.ProcessedCount);
         RequestOptions requestOptions = new()
         {
             FromDate = new(2010, 4, 1),
             FetchList = Constants.Voucher.AccountingViewFetchList.All,
             Filters = new List<Filter>() { Constants.Voucher.Filters.ViewTypeFilters.AccountingVoucherFilter }
         };
-        var ActngVchrs = await _tallyService.GetAllObjectsAsync<TCM.Voucher>(requestOptions);
+        var ActngVchrs = await _tallyService.GetAllObjectsAsync<TCM.Voucher>(requestOptions, progress);
 
         requestOptions.Filters[0] = Constants.Voucher.Filters.ViewTypeFilters.InvoiceVoucherFilter;
 
-        ActngVchrs.AddRange(await _tallyService.GetAllObjectsAsync<TCM.Voucher>(requestOptions));
+        requestOptions.FetchList = Constants.Voucher.InvoiceViewFetchList.All;
+        ActngVchrs.AddRange(await _tallyService.GetAllObjectsAsync<TCM.Voucher>(requestOptions, progress));
 
         requestOptions.Filters[0] = Constants.Voucher.Filters.ViewTypeFilters.InventoryVoucherFilter;
         // Voucher voucher = await _tallyService.GetVoucherAsync<Voucher>("52889497-5b6b-403d-8f83-224e3c7759b4-00001285", new() { LookupField = VoucherLookupField.GUID });
         //StockItem stockItem = await _tallyService.GetStockItemAsync<StockItem>("Floppy Drive");
 
-        ActngVchrs.AddRange(await _tallyService.GetAllObjectsAsync<TCM.Voucher>(requestOptions));
+        ActngVchrs.AddRange(await _tallyService.GetAllObjectsAsync<TCM.Voucher>(requestOptions, progress));
 
         requestOptions.Filters[0] = Constants.Voucher.Filters.ViewTypeFilters.PayslipVoucherFilter;
-        List<Voucher> collection = await _tallyService.GetAllObjectsAsync<TCM.Voucher>(requestOptions);
+        List<Voucher> collection = await _tallyService.GetAllObjectsAsync<TCM.Voucher>(requestOptions, progress);
         ActngVchrs.AddRange(collection);
 
         requestOptions.Filters[0] = Constants.Voucher.Filters.ViewTypeFilters.MfgJournalVoucherFilter;
-        ActngVchrs.AddRange(await _tallyService.GetAllObjectsAsync<TCM.Voucher>(requestOptions));
+        ActngVchrs.AddRange(await _tallyService.GetAllObjectsAsync<TCM.Voucher>(requestOptions, progress));
 
         //var value = ActngVchrs.GroupBy(c => c.VchType).ToDictionary(c => c.Key, c => c.ToList());
 
         //foreach (var v in value)
         //{
-        //    string json = JsonSerializer.Serialize(v.Value, new JsonSerializerOptions() { WriteIndented = true,DefaultIgnoreCondition=JsonIgnoreCondition.WhenWritingDefault });
-        //    await File.WriteAllTextAsync("json2/" + v.Key + ".json", json);
+        //    string json = JsonSerializer.Serialize(v.Value, new JsonSerializerOptions()
+        //    {
+        //        WriteIndented = true,
+        //        //DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingDefault,
+        //        Converters = { new JsonStringEnumConverter(), new TallyDateJsonConverter() }
+        //    });
+        //    await File.WriteAllTextAsync("json/" + v.Key + ".json", json);
         //}
 
         Assert.That(ActngVchrs, Is.Not.Null);
         Assert.That(ActngVchrs.Count, Is.EqualTo(1107));
+        Assert.That(count, Is.EqualTo(1107));
     }
+
+
+
     public class testobj
     {
         public string Vchtype { get; set; }
@@ -107,12 +119,14 @@ internal class VoucherTests : BaseTallyServiceTest
     public async Task CheckGetInvoiceVoucher()
     {
 
-        Voucher voucher = await _tallyService.GetVoucherAsync<Voucher>("52889497-5b6b-403d-8f83-224e3c7759b4-000013db",
+       // TallyResult tallyResult = await _tallyService.PostVoucherAsync<Voucher>(new() { MasterId= 4393,Action=TCM.Action.Delete });
+        Voucher voucher = await _tallyService.GetVoucherAsync<Voucher>("4393",
                                                                        new()
                                                                        {
-                                                                           LookupField = VoucherLookupField.GUID,
+                                                                           LookupField = VoucherLookupField.MasterId,
                                                                            FetchList = Constants.Voucher.InvoiceViewFetchList.All
                                                                        });
+
 
         string json = voucher.GetJson();
 

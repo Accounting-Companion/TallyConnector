@@ -22,11 +22,12 @@ public class TallyAmountJsonConverter : JsonConverter<TallyAmount>
         decimal? ForexAmount = 0;
         decimal? RateOfExchange = 0;
         string Currency = string.Empty;
+        bool Isdebit = false;
         while (reader.Read())
         {
             if (reader.TokenType == JsonTokenType.EndObject)
             {
-                return new TallyAmount(ForexAmount, RateOfExchange, Currency, amount: (decimal)Amount);
+                return new TallyAmount(ForexAmount, RateOfExchange, Currency, Isdebit, amount: (decimal)Amount);
             }
             if (reader.TokenType == JsonTokenType.PropertyName)
             {
@@ -50,6 +51,11 @@ public class TallyAmountJsonConverter : JsonConverter<TallyAmount>
                 if (propertyName == "Currency")
                 {
                     Currency = reader.TokenType == JsonTokenType.Null ? string.Empty : reader.GetString();
+                    continue;
+                }
+                if (propertyName == "IsDebit")
+                {
+                    Isdebit = reader.TokenType == JsonTokenType.Null ? false : reader.GetBoolean();
                     continue;
                 }
             }

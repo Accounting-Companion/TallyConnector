@@ -81,6 +81,23 @@ public class TallyAmountJsonConverterTests
             Assert.That(amount.Currency, Is.EqualTo("$"));
         });
     }
+    [Test]
+    public void ParseComplexDebitAmount()
+    {
+        string inputJson = "{\"Amount\":0,\"ForexAmount\":5000," +
+            "\"RateOfExchange\":20," +
+            "\"Currency\":\"$\",\"IsDebit\":true}";
+
+        var amount = JsonSerializer.Deserialize<TallyAmount>(inputJson, jsonSerializerOptions);
+        Assert.Multiple(() =>
+        {
+            Assert.That(amount.Amount, Is.EqualTo(0));
+            Assert.That(amount.RateOfExchange, Is.EqualTo(20));
+            Assert.That(amount.ForexAmount, Is.EqualTo(5000));
+            Assert.That(amount.Currency, Is.EqualTo("$"));
+            Assert.That(amount.IsDebit, Is.EqualTo(true));
+        });
+    }
 
     [Test]
     public void ParseCompleAmountvariant2()
@@ -102,13 +119,13 @@ public class TallyAmountJsonConverterTests
     [Test]
     public void ParseCompleAmountvariant3()
     {
-        string inputJson = "{\"Amount\": 0,\"IsDebit\": false,\"Currency\": null," +
-            "\"ForexAmount\": null,\"RateOfExchange\": null}";
+        string inputJson = "{\"Amount\": 100,\"IsDebit\": false,\"Currency\": \"$\"," +
+            "\"ForexAmount\": 5,\"RateOfExchange\": 20}";
 
         var amount = JsonSerializer.Deserialize<TallyAmount>(inputJson, jsonSerializerOptions);
         Assert.Multiple(() =>
         {
-            Assert.That(amount.Amount, Is.EqualTo(0));
+            Assert.That(amount.Amount, Is.EqualTo(100));
             Assert.That(amount.RateOfExchange, Is.EqualTo(20));
             Assert.That(amount.Currency, Is.EqualTo("$"));
         });

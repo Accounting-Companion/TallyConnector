@@ -15,7 +15,7 @@ internal class CommonTests
     {
         TCM.VoucherViewType voucherViewType = TCM.VoucherViewType.AccountingVoucherView;
         var json = JsonSerializer.Serialize(voucherViewType, jsonSerializerOptions);
-        Assert.That(json, Is.EqualTo("\"accountingVoucherView\""));
+        Assert.That(json, Is.EqualTo("\"AccountingVoucherView\""));
     }
     [Test]
     public void TestEnumDeSerialization()

@@ -82,14 +82,14 @@ public class TallyAmount : IXmlSerializable
                 }
                 else
                 {
-                    if(content.Contains("=") && matches.Count == 2)
+                    if (content.Contains("=") && matches.Count == 2)
 
                     {
                         Amount = decimal.Parse(matches[1].Value);
                         Currency = IsDebit ? content[1].ToString() : content[0].ToString();
                     }
                 }
-                
+
             }
         }
     }
@@ -124,7 +124,15 @@ public class TallyAmount : IXmlSerializable
 
     public static implicit operator decimal(TallyAmount amount)
     {
-        return amount.Amount;
+        if (amount.IsDebit)
+        {
+            return amount.Amount * -1;
+        }
+        else
+        {
+
+            return amount.Amount;
+        }
     }
 
     public static implicit operator TallyAmount(decimal amount)
