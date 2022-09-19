@@ -4,8 +4,8 @@ using System.Text.RegularExpressions;
 namespace TallyConnector.Services;
 public class ConfigureServerPortHelper
 {
-    const string ServerPortPattern = "ServerPort=.*0+";
-    const string ClientServerPattern = "Client Server=[a-zA-Z]+";
+    const string ServerPortPattern = "ServerPort[= .*0-9]+";
+    const string ClientServerPattern = "Client Server[=a-zA-Z]+";
 
     /// <summary>
     /// Configures Tally to open odbc port on specified port
@@ -24,8 +24,8 @@ public class ConfigureServerPortHelper
         string path = Path.Combine(tallyProcessInfo.RootFolder, "tally.ini");
         var Text = File.ReadAllText(path);
 
-        Text = Regex.Replace(Text, ServerPortPattern, $"ServerPort={Port}");
-        Text = Regex.Replace(Text, ClientServerPattern, "Client Server=Both");
+        Text = Regex.Replace(Text, ServerPortPattern, $"ServerPort = {Port}");
+        Text = Regex.Replace(Text, ClientServerPattern, "Client Server = Both");
 
         File.WriteAllText(path, Text);
         Process.GetProcessById(tallyProcessInfo.ProcessId).Kill();
