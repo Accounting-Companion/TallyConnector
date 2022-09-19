@@ -51,6 +51,7 @@ public class TallyQuantity : IXmlSerializable
         SecondaryUnits = new(secondaryQuantity, secondaryUnit);
     }
 
+    [Column(TypeName = "decimal(9,4)")]
     public decimal Number { get; private set; }
     public BaseTallyQuantity? PrimaryUnits { get; private set; }
     public BaseTallyQuantity? SecondaryUnits { get; private set; }
@@ -108,6 +109,7 @@ public class TallyQuantity : IXmlSerializable
 
 public class BaseTallyQuantity
 {
+    [Column(TypeName = "decimal(9,4)")]
     public decimal Number { get; private set; }
 
     public string Unit { get; private set; }

@@ -39,11 +39,14 @@ public class TallyAmount : IXmlSerializable
     {
     }
 
+    [Column(TypeName = "decimal(20,6)")]
     public decimal Amount { get; private set; }
 
     // public float? BaseAmount { get; set; }
+    [Column(TypeName = "decimal(20,6)")]
     public decimal? ForexAmount { get; private set; }
 
+    [Column(TypeName = "decimal(20,6)")]
     public decimal? RateOfExchange { get; private set; }
 
     public string? Currency { get; private set; }

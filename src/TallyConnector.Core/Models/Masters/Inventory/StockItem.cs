@@ -105,9 +105,11 @@ public class StockItem : BasicTallyObject, INamedTallyObject
     public TallyYesNo? InclusiveOfTax { get; set; }
 
     [XmlElement(ElementName = "DENOMINATOR")]
+    [Column(TypeName = "decimal(9,4)")]
     public decimal? Denominator { get; set; }
 
     [XmlElement(ElementName = "CONVERSION")]
+    [Column(TypeName = "decimal(9,4)")]
     public decimal? Conversion { get; set; }
 
     [XmlElement(ElementName = "BASICRATEOFEXCISE")]

@@ -28,11 +28,14 @@ public class TallyRate : IXmlSerializable
         ForeignCurrency = currency;
     }
 
+    [Column(TypeName = "decimal(20,6)")]
     public decimal RatePerUnit { get; private set; }
     public string Unit { get; private set; }
 
+    [Column(TypeName = "decimal(20,6)")]
     public decimal? ForexAmount { get; set; }
 
+    [Column(TypeName = "decimal(20,6)")]
     public decimal? RateOfExchange { get; set; }
 
     public string? ForeignCurrency { get; set; }
