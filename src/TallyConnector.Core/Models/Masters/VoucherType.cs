@@ -117,6 +117,13 @@ public class VoucherType : BasicTallyObject, INamedTallyObject
     public TallyYesNo? IsforJobworkIn { get; set; }
 
 
+    [XmlElement(ElementName = "DEFAULTVOUCHERCATEGORY")]
+    public DefaultVoucherCategory? DefaultVoucherCategory { get; set; }
+
+    [XmlElement(ElementName = "COREVOUCHERTYPE")]
+    public CoreVoucherType? CoreVoucherType { get; set; }
+
+
     [XmlElement(ElementName = "CANDELETE")]
     [Column(TypeName = "nvarchar(3)")]
     public TallyYesNo? CanDelete { get; set; }
@@ -150,4 +157,74 @@ public class VoucherType : BasicTallyObject, INamedTallyObject
     {
         return $"VoucherType - {Name}";
     }
+}
+
+public enum DefaultVoucherCategory
+{
+    [XmlEnum(Name = "")]
+    None = 0,
+    [XmlEnum(Name = "AccountingVch")]
+    AccountingVch = 1,
+    [XmlEnum(Name = "InventoryVch")]
+    InventoryVch = 2,
+    [XmlEnum(Name = "OrderVch")]
+    OrderVch = 3,
+    [XmlEnum(Name = "PayrollVch")]
+    PayrollVch = 4,
+    [XmlEnum(Name = "PayrollAttndVch")]
+    PayrollAttndVch = 5,
+}
+
+public enum CoreVoucherType
+{
+    [XmlEnum(Name = "")]
+    None = 0,
+    [XmlEnum(Name = "Sales")]
+    Sales = 1,
+    [XmlEnum(Name = "Purchase")]
+    Purchase = 2,
+    [XmlEnum(Name = "DebitNote")]
+    DebitNote = 3,
+    [XmlEnum(Name = "CreditNote")]
+    CreditNote = 4,
+    [XmlEnum(Name = "Payment")]
+    Payment = 5,
+    [XmlEnum(Name = "Receipt")]
+    Receipt = 6,
+    [XmlEnum(Name = "Contra")]
+    Contra = 7,
+    [XmlEnum(Name = "Journal")]
+    Journal = 8,
+    [XmlEnum(Name = "SalesOrder")]
+    SalesOrder = 9,
+    [XmlEnum(Name = "PurchaseOrder")]
+    PurchaseOrder = 10,
+    [XmlEnum(Name = "Memo")]
+    Memo = 11,
+    [XmlEnum(Name = "Reversing Journal")]
+    ReversingJournal = 12,
+    [XmlEnum(Name = "MaterialIn")]
+    MaterialIn = 13,
+    [XmlEnum(Name = "MaterialOut")]
+    MaterialOut = 14,
+    [XmlEnum(Name = "JobWork In Order")]
+    JobWorkInOrder = 15,
+    [XmlEnum(Name = "JobWork Out Order")]
+    JobWorkOutOrder = 16,
+    [XmlEnum(Name = "ReceiptNote")]
+    ReceiptNote = 17,
+    [XmlEnum(Name = "DeliveryNote")]
+    DeliveryNote = 18,
+    [XmlEnum(Name = "PhysicalStock")]
+    PhysicalStock = 19,
+    [XmlEnum(Name = "Payroll")]
+    Payroll = 20,
+    [XmlEnum(Name = "Attendance")]
+    Attendance = 21,
+    [XmlEnum(Name = "RejectionsIn")]
+    RejectionsIn = 22,
+    [XmlEnum(Name = "RejectionsOut")]
+    RejectionsOut = 23,
+    [XmlEnum(Name = "StockJournal")]
+    StockJournal = 24,
 }

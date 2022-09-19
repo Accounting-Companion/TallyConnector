@@ -1,6 +1,4 @@
-﻿using TallyConnector.Core.Models.Masters;
-
-namespace TallyConnector.Core.Models;
+﻿namespace TallyConnector.Core.Models;
 
 [Serializable]
 [XmlRoot(ElementName = "VOUCHER", Namespace = "")]

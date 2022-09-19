@@ -29,7 +29,7 @@ public class LanguageNameList
     }
 
     [XmlElement(ElementName = "NAME.LIST")]
-    public Names NameList { get; set; }
+    public Names NameList { get; set; } 
 
     //[XmlElement(ElementName = "LANGUAGEID")]
     //public LANGUAGEID LANGUAGEID { get; set; }

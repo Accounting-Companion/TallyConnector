@@ -45,6 +45,11 @@ public class ViewTypeMapping
 }
 public class Mappings
 {
+    private const string CoreVchtypeFormulae1 = "CoreVoucherType:(if $$IsSales:$NAME then \"Sales\" else if $$IsPurchase:$NAME then \"Purchase\" else if $$IsDebitNote:$Name then \"DebitNote\" else if $$IsCreditNote:$Name then \"CreditNote\" else if $$IsPayment:$Name then \"Payment\" else if $$IsReceipt:$Name then \"Receipt\" else if  $$IsContra:$Name then \"Contra\" else if  $$IsJournal:$Name then \"Journal\" else if  $$IsSalesOrder:$Name then \"SalesOrder\" else if  $$IsPurcOrder:$Name then \"PurchaseOrder\" else if  $$IsMemo:$Name then \"Memo\" else \"\") +  ";
+    private const string CoreVchtypeFormulae2 = "(if  $$IsRevJrnl:$Name then \"Reversing Journal\"  else if $$IsJobMaterialReceive:$NAME then \"MaterialIn\" else if  $$IsJobMaterialIssue:$Name then \"MaterialOut\" else if  $$IsJobOrderIn:$Name then \"JobWork In Order\" else if  $$IsJobOrderOut:$Name then \"JobWork Out Order\" else if  $$IsRcptNote:$Name then \"ReceiptNote\" else \"\") + ";
+    private const string CoreVchtypeFormulae3 = "(if  $$IsDelNote:$Name then \"DeliveryNote\" else if  $$IsPhysStock:$Name then \"PhysicalStock\" else if  $$IsPayroll:$Name then \"Payroll\" else if  $$IsAttendance:$Name then \"Attendance\" else if  $$IsRejIn:$Name then \"RejectionsIn\"  else if  $$IsRejOut:$Name then \"RejectionsOut\" else if  $$IsStockJrnl:$Name then \"StockJournal\" else \"\")";
+
+
     public static readonly List<TallyObjectMapping> MastersMappings = new()
     {
         new TallyObjectMapping(masterType: TallyObjectType.Currencies,
@@ -183,7 +188,16 @@ public class Mappings
                                computeFields : new()
                                {
                                    "NAME:$NAME",
-                                   "PARENTID:$GUID:VoucherType:$Parent"
+                                   "PARENTID:$GUID:VoucherType:$Parent",
+
+                                   "DefaultVoucherCategory:if $$IsAccountingVch:$NAME then \"AccountingVch\" else " +
+                                   "if $$IsInventoryVch:$NAME then \"InventoryVch\" " +
+                                   "else if $$IsOrderVch:$Name then \"OrderVch\" else " +
+                                   "if $$IsPayrollVch:$Name then \"PayrollVch\" else " +
+                                   "if $$IsAttendance:$Name then \"PayrollAttndVch\" else \"\"",
+
+                                   CoreVchtypeFormulae1 + CoreVchtypeFormulae2 + CoreVchtypeFormulae3
+
                                }),
     };
 
@@ -246,5 +260,7 @@ public class Mappings
             Constants.Voucher.AccountingViewFetchList.All,
             Constants.Voucher.Filters.ViewTypeFilters.PayslipVoucherFilter),
     };
+
+
 }
 

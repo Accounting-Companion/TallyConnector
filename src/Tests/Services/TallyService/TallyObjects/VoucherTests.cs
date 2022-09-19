@@ -17,7 +17,7 @@ internal class VoucherTests : BaseTallyServiceTest
         IProgress<ReportProgressHelper> progress = new Progress<ReportProgressHelper>(c => count += c.ProcessedCount);
         RequestOptions requestOptions = new()
         {
-            FromDate = new(2010, 4, 1),
+            FromDate = new(2022, 4, 1),
             FetchList = Constants.Voucher.AccountingViewFetchList.All,
             Filters = new List<Filter>() { Constants.Voucher.Filters.ViewTypeFilters.AccountingVoucherFilter }
         };
@@ -107,7 +107,7 @@ internal class VoucherTests : BaseTallyServiceTest
     public async Task CheckGetAccountingVoucher()
     {
 
-        Voucher voucher = await _tallyService.GetVoucherAsync<Voucher>("52889497-5b6b-403d-8f83-224e3c7759b4-000013d5",
+        Voucher voucher = await _tallyService.GetVoucherAsync<Voucher>("52889497-5b6b-403d-8f83-224e3c7759b4-000013e3",
                                                                        new()
                                                                        {
                                                                            LookupField = VoucherLookupField.GUID,

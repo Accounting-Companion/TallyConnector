@@ -11,6 +11,6 @@ internal class GetTallyProcessesHelperTests
     public async Task CheckGettallyprocesses()
     {
         List<TallyProcessInfo> tallyProcessInfos = GetTallyProcessesHelper.GetTallyProcesses();
-        ConfigureServerPortHelper.ConfigureTallyServerPort(tallyProcessInfos[1], 9001);
+        ConfigureServerPortHelper.ConfigureTallyServerPort(tallyProcessInfos[0], 9005);
     }
 }

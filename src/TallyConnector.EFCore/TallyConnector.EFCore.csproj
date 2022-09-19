@@ -32,7 +32,7 @@
 	</ItemGroup>
 	<ItemGroup Condition="'$(TargetFramework)' == 'net6.0'">
 		<PackageReference Include="Microsoft.EntityFrameworkCore">
-			<Version>6.0.7</Version>
+			<Version>6.0.9</Version>
 		</PackageReference>
 	</ItemGroup>
 	<ItemGroup>
