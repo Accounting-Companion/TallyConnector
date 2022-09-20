@@ -3,7 +3,7 @@
 
 [XmlRoot("GROUP")]
 
-public class Group : BasicTallyObject, INamedTallyObject
+public class Group : BasicTallyObject, IAliasTallyObject
 {
     private string? name;
 

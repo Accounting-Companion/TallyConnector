@@ -2,7 +2,7 @@
 
 [XmlRoot(ElementName = "VOUCHERTYPE")]
 [XmlType(AnonymousType = true)]
-public class VoucherType : BasicTallyObject, INamedTallyObject
+public class VoucherType : BasicTallyObject, IAliasTallyObject
 {
     public VoucherType()
     {

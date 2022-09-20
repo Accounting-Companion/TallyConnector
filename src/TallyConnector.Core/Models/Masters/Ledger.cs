@@ -3,7 +3,7 @@
 [Serializable]
 [XmlRoot("LEDGER")]
 [XmlType(AnonymousType = true)]
-public class Ledger : BasicTallyObject, INamedTallyObject
+public class Ledger : BasicTallyObject, IAliasTallyObject
 {
     private string? name;
     public Ledger()
@@ -77,62 +77,6 @@ public class Ledger : BasicTallyObject, INamedTallyObject
     [XmlElement(ElementName = "OPENINGBALANCE")]
     public TallyAmount? OpeningBal { get; set; }
 
-    //[XmlIgnore]
-    //[Column(TypeName = $"nvarchar({Constants.MaxAmountLength})")]
-    //public string? ClosingForexAmount { get; set; }
-    //[XmlIgnore]
-    //[Column(TypeName = $"nvarchar({Constants.MaxRateLength})")]
-    //public string? ClosingRateofExchange { get; set; }
-    //[XmlIgnore]
-    //public double? CleanedClosingBal { get; set; }
-
-    //private string? _ClosingBal;
-
-    //[XmlElement(ElementName = "CLOSINGBALANCE")]
-    //[Column(TypeName = $"nvarchar({Constants.MaxAmountLength})")]
-    //public string? ClosingBal
-    //{
-    //    get
-    //    {
-    //        if (ClosingForexAmount != null && ClosingRateofExchange != null)
-    //        {
-    //            _OpeningBal = $"{ClosingForexAmount} @ {ClosingRateofExchange}";
-    //        }
-    //        else if (ClosingForexAmount != null)
-    //        {
-    //            _ClosingBal = ClosingForexAmount;
-    //        }
-    //        return _ClosingBal;
-    //    }
-    //    set
-    //    {
-    //        if (value != null)
-    //        {
-    //            double t_opbal;
-    //            if (value.ToString().Contains('='))
-    //            {
-    //                List<string> SplittedValues = value.ToString().Split('=').ToList();
-    //                var CleanedAmount = Regex.Match(SplittedValues[1], @"[0-9.]+");
-    //                bool Isnegative = SplittedValues[1].Contains('-');
-    //                bool sucess = Isnegative ? double.TryParse('-' + CleanedAmount.Value, out t_opbal) : double.TryParse(CleanedAmount.ToString(), out t_opbal);
-    //                CleanedClosingBal = t_opbal;
-    //                var ForexInfo = SplittedValues[0].Split('@');
-    //                ClosingForexAmount = ForexInfo[0].Trim();
-    //                ClosingRateofExchange = Regex.Match(ForexInfo[1], @"[0-9.]+").Value;
-    //            }
-    //            else
-    //            {
-    //                CleanedClosingBal = double.TryParse(value, out t_opbal) ? t_opbal : 0;
-    //                _ClosingBal = value;
-    //            }
-    //        }
-    //        else
-    //        {
-    //            _ClosingBal = value;
-    //        }
-    //    }
-
-    //}
 
 
     private string? _Currency;

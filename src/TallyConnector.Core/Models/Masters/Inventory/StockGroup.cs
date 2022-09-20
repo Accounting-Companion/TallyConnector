@@ -2,7 +2,7 @@
 
 [XmlRoot(ElementName = "STOCKGROUP")]
 [XmlType(AnonymousType = true)]
-public class StockGroup : BasicTallyObject, INamedTallyObject
+public class StockGroup : BasicTallyObject, IAliasTallyObject
 {
     public StockGroup()
     {

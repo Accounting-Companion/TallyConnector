@@ -3,7 +3,7 @@
 
 [XmlRoot(ElementName = "GODOWN")]
 [XmlType(AnonymousType = true)]
-public class Godown : BasicTallyObject, INamedTallyObject
+public class Godown : BasicTallyObject, IAliasTallyObject
 {
     public Godown()
     {

@@ -236,7 +236,16 @@ public partial class TallyService : ITallyService
         collectionOptions.XMLAttributeOverrides.Add(typeof(Colllection<ObjType>), "Objects", attrs);
 
         var objects = await GetCustomCollectionAsync<ObjType>(collectionOptions);
-        objects?.ForEach(obj => obj.RemoveNullChilds());
+        objects?.ForEach(obj =>
+        {
+            obj.RemoveNullChilds();
+            if (obj is IAliasTallyObject AliasObj)
+            {
+                AliasObj.Alias = AliasObj.LanguageNameList?.First()?.LanguageAlias;
+            }
+
+        });
+
         return objects;
 
     }
@@ -308,7 +317,7 @@ public partial class TallyService : ITallyService
             {
                 tempobjects.AsParallel().ForAll(t => objects.Add(t));
             }
-            progress?.Report(new(tpagination.TotalCount, tpagination.End-tpagination.Start, tpagination.End));
+            progress?.Report(new(tpagination.TotalCount, tpagination.End - tpagination.Start, tpagination.End));
         }
         //await Task.WhenAll(tasks.ToArray());
         return objects.ToList();
