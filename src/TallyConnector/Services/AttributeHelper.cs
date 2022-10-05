@@ -4,7 +4,7 @@
 namespace TallyConnector.Services;
 public static class AttributeHelper
 {
-    public static TDLCollectionAttribute? GetTDLCollectionAttributeValue(Type type)
+    public static TDLCollectionAttribute? GetTDLCollectionAttributeValue(Type type, ILogger? _logger = null)
     {
         TDLCollectionAttribute[] TDLColattribute = (TDLCollectionAttribute[])Attribute.GetCustomAttributes(type, typeof(TDLCollectionAttribute));
         if (TDLColattribute.Length > 0)

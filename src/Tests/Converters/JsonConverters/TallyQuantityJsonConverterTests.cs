@@ -15,7 +15,7 @@ public class TallyQuantityJsonConverterTests
         TallyQuantity tallyQuantity = new();
         string json = JsonSerializer.Serialize(tallyQuantity);
         Assert.That(json,
-            Is.EqualTo("{\"Number\":0,\"PrimaryUnits\":null,\"SecondaryUnits\":null}"));
+            Is.EqualTo("{\"PrimaryUnits\":null,\"SecondaryUnits\":null}"));
     }
     [Test]
     public void TestSerializeTallyQantity()
@@ -23,7 +23,7 @@ public class TallyQuantityJsonConverterTests
         TallyQuantity tallyQuantity = new(50, "Nos");
         string json = JsonSerializer.Serialize(tallyQuantity);
         Assert.That(json,
-            Is.EqualTo("{\"Number\":50,\"PrimaryUnits\":{\"Number\":50,\"Unit\":\"Nos\"},\"SecondaryUnits\":null}"));
+            Is.EqualTo("{\"PrimaryUnits\":{\"Number\":50,\"Unit\":\"Nos\"},\"SecondaryUnits\":null}"));
     }
     [Test]
     public void TestSerializeTallyQantitywithSecondaryUnit()
@@ -31,7 +31,7 @@ public class TallyQuantityJsonConverterTests
         TallyQuantity tallyQuantity = new(50, "Nos", 10, "Box");
         string json = JsonSerializer.Serialize(tallyQuantity);
         Assert.That(json,
-            Is.EqualTo("{\"Number\":50,\"PrimaryUnits\":{\"Number\":50,\"Unit\":\"Nos\"},\"SecondaryUnits\":{\"Number\":10,\"Unit\":\"Box\"}}"));
+            Is.EqualTo("{\"PrimaryUnits\":{\"Number\":50,\"Unit\":\"Nos\"},\"SecondaryUnits\":{\"Number\":10,\"Unit\":\"Box\"}}"));
     }
     [Test]
     public void TestDeSerializeTallyQantitywhenNull()

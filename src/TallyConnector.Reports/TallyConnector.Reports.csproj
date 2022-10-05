@@ -9,4 +9,8 @@
 		<GeneratePackageOnBuild>True</GeneratePackageOnBuild>
 	</PropertyGroup>
 
+	<ItemGroup>
+	  <ProjectReference Include="..\TallyConnector\TallyConnector.csproj" />
+	</ItemGroup>
+
 </Project>

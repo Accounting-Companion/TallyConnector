@@ -281,7 +281,7 @@ public class Voucher : BasicTallyObject, ITallyObject
     public CategoryEntry? CategoryEntry { get; set; }
 
     [XmlElement(ElementName = "ATTENDANCEENTRIES.LIST")]
-    public List<AttendanceEntry> AttendanceEntries { get; set; }
+    public List<AttendanceEntry>? AttendanceEntries { get; set; }
 
     [JsonIgnore]
     [XmlAttribute(AttributeName = "DATE")]
@@ -317,52 +317,19 @@ public class Voucher : BasicTallyObject, ITallyObject
 
     public void OrderLedgers()
     {
-        if (VchType != "Contra" && VchType != "Purchase" && VchType != "Receipt" && VchType != "Credit Note")
-        {
-            Ledgers?.Sort((x, y) => y.LedgerName!.CompareTo(x.LedgerName));//First Sort Ledger list Using Ledger Names
-            Ledgers?.Sort((x, y) => y.Amount!.Amount!.CompareTo(x.Amount!.Amount)); //Next sort Ledger List Using Ledger Amounts
-            Ledgers?.Sort((x, y) => y.Amount!.IsDebit.CompareTo(x.Amount!.IsDebit));
-        }
-        else
-        {
-            Ledgers?.Sort((x, y) => x.LedgerName!.CompareTo(y.LedgerName));//First Sort Ledger list Using Ledger Names
-            Ledgers?.Sort((x, y) => x.Amount!.Amount.CompareTo(y.Amount!.Amount)); //Next sort Ledger List Using Ledger Amounts
-            Ledgers?.Sort((x, y) => x.Amount!.IsDebit.CompareTo(y.Amount!.IsDebit));
-        }
-
-        //Looop Through all Ledgers
-        Ledgers?.ForEach(c =>
-        {
-            //Sort Bill Allocations
-            c.BillAllocations?.Sort((x, y) => x.Name!.CompareTo(y.Name)); //First Sort BillAllocations Using Bill Numbers
-            c.BillAllocations?.Sort((x, y) => x.Amount!.Amount.CompareTo(y.Amount!.Amount));//Next sort BillAllocationst Using  Amounts
-
-            c.CostCategoryAllocations?.Sort((x, y) => x.CostCategoryName!.CompareTo(y.CostCategoryName));
-
-            c.CostCategoryAllocations?.ForEach(cc =>
-            {
-                cc.CostCenterAllocations?.Sort((x, y) => x.Name!.CompareTo(y.Name));
-                cc.CostCenterAllocations?.Sort((x, y) => x.Amount!.Amount.CompareTo(y.Amount!.Amount));
-            });
-            //sort Inventory Allocations
-            c.InventoryAllocations?.Sort((x, y) => x.ActualQuantity!.Number.CompareTo(y.ActualQuantity!.Number));
-            c.InventoryAllocations?.Sort((x, y) => x.Amount!.Amount.CompareTo(y.Amount!.Amount));
-
-            c.InventoryAllocations?.ForEach(inv =>
-            {
-                inv.BatchAllocations?.Sort((x, y) => x.GodownName!.CompareTo(y.GodownName));
-                inv.BatchAllocations?.Sort((x, y) => x.Amount!.Amount.CompareTo(y.Amount!.Amount));
-
-                inv.CostCategoryAllocations?.Sort((x, y) => x.CostCategoryName!.CompareTo(y.CostCategoryName));
-
-                inv.CostCategoryAllocations?.ForEach(cc =>
-                {
-                    cc.CostCenterAllocations?.Sort((x, y) => x.Name!.CompareTo(y.Name));
-                    cc.CostCenterAllocations?.Sort((x, y) => x.Amount!.Amount.CompareTo(y.Amount!.Amount));
-                });
-            });
-
-        });
+        //if (VchType != "Contra" && VchType != "Purchase" && VchType != "Receipt" && VchType != "Credit Note")
+        //{
+        //    Ledgers?.Sort((x, y) => y.LedgerName!.CompareTo(x.LedgerName));//First Sort Ledger list Using Ledger Names
+        //    Ledgers?.Sort((x, y) => y.Amount!.Amount!.CompareTo(x.Amount!.Amount)); //Next sort Ledger List Using Ledger Amounts
+        //    Ledgers?.Sort((x, y) => y.Amount!.IsDebit.CompareTo(x.Amount!.IsDebit));
+        //}
+        //else
+        //{
+        //    Ledgers?.Sort((x, y) => x.LedgerName!.CompareTo(y.LedgerName));//First Sort Ledger list Using Ledger Names
+        //    Ledgers?.Sort((x, y) => x.Amount!.Amount.CompareTo(y.Amount!.Amount)); //Next sort Ledger List Using Ledger Amounts
+        //    Ledgers?.Sort((x, y) => x.Amount!.IsDebit.CompareTo(y.Amount!.IsDebit));
+        //}
+        
     }
 
     public new string GetJson(bool Indented = false)
@@ -399,7 +366,7 @@ public class Voucher : BasicTallyObject, ITallyObject
     {
         OrderLedgers(); //Ensures ledgers are ordered in correct way
         GetJulianday();
-        InventoryAllocations?.ForEach(c => c.BatchAllocations?.ForEach(btch => btch.OrderDueDate = Date));
+        //InventoryAllocations?.ForEach(c => c.BatchAllocations?.ForEach(btch => btch.OrderDueDate = Date));
     }
 
     /// <inheritdoc/>
@@ -840,7 +807,7 @@ public class TransporterDetail : TallyBaseObject, ICheckNull
 }
 
 [XmlRoot(ElementName = "TRANSPORTDETAILS.LIST")]
-public  class CategoryEntry
+public class CategoryEntry
 {
     [XmlElement(ElementName = "CATEGORY")]
     public string Category { get; set; }
@@ -862,10 +829,10 @@ public class EmployeeEntry
     public TallyAmount Amount { get; set; }
 
     [XmlElement(ElementName = "PAYHEADALLOCATIONS.LIST")]
-    public List<PayHeadAllocation> PayHeadAllocations{ get; set; }
+    public List<PayHeadAllocation> PayHeadAllocations { get; set; }
 }
 [XmlRoot(ElementName = "PAYHEADALLOCATIONS.LIST")]
-public  class PayHeadAllocation
+public class PayHeadAllocation
 {
     [XmlElement(ElementName = "PAYHEADNAME")]
     public string PayHeadName { get; set; }

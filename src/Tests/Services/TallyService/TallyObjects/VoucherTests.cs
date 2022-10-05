@@ -78,7 +78,8 @@ internal class VoucherTests : BaseTallyServiceTest
             Reference = "frt",
             Ledgers = new()
             {
-                new(){LedgerName="Test Party",Amount=400 },
+                new(){LedgerName="ABCD India Pvt Ltd",Amount=118 },
+                new(){LedgerName="Gst @ 18%",Amount=-18 },
 
             },
             InventoryAllocations = new()
@@ -86,19 +87,20 @@ internal class VoucherTests : BaseTallyServiceTest
                 new()
                 {
                     StockItemName = "Mouse",
-                    Rate = new(35,"Nos"),
+                    Rate = new(10,"Nos"),
                     ActualQuantity =new(10,"Nos"),
                     BilledQuantity =new(10,"Nos"),
-                    Amount = -350,
+                    Amount = -100,
                     BatchAllocations = new()
                     {
-                        new(){OrderNo="frt",Amount=-350,BilledQuantity=new(10,"Nos")}
+                        new(){OrderNo="frt",Amount=-100,BilledQuantity=new(10,"Nos"),ActualQuantity=new(10,"Nos")}
                     },
-                    Ledgers = new(){ new() { LedgerName = "Purchase", Amount = -350 } }
+                    Ledgers = new(){ new() { LedgerName = "Purchase", Amount = -100 } }
 
                 }
             }
         };
+        string ks = voucher.GetJson(true);
         TallyResult tallyResult = await _tallyService.PostVoucherAsync(voucher);
     }
 
@@ -119,7 +121,7 @@ internal class VoucherTests : BaseTallyServiceTest
     public async Task CheckGetInvoiceVoucher()
     {
 
-       // TallyResult tallyResult = await _tallyService.PostVoucherAsync<Voucher>(new() { MasterId= 4393,Action=TCM.Action.Delete });
+        // TallyResult tallyResult = await _tallyService.PostVoucherAsync<Voucher>(new() { MasterId= 4393,Action=TCM.Action.Delete });
         Voucher voucher = await _tallyService.GetVoucherAsync<Voucher>("4393",
                                                                        new()
                                                                        {

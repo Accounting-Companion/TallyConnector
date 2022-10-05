@@ -5,6 +5,7 @@ public class TallyAmountJsonConverterTests
     public TallyAmountJsonConverterTests()
     {
         jsonSerializerOptions = new();
+        //jsonSerializerOptions.PropertyNamingPolicy =  JsonNamingPolicy.CamelCase;
         jsonSerializerOptions.Converters.Add(new TallyAmountJsonConverter());
     }
 

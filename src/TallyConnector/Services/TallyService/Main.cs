@@ -175,9 +175,9 @@ public partial class TallyService : ITallyService
         }
         List<Filter> filters = new() { new Filter() { FilterName = "Objfilter", FilterFormulae = filterformulae } };
 
-        CollectionRequestOptions collectionRequestOptions = new() { FetchList = requestOptions.FetchList, Filters = filters };
+        PaginatedRequestOptions paginatedRequestOptions = new() { FetchList = requestOptions.FetchList, Filters = filters };
 
-        List<ObjType>? objects = await GetObjectsAsync<ObjType>(collectionRequestOptions);
+        List<ObjType>? objects = await GetObjectsAsync<ObjType>(paginatedRequestOptions);
         if (objects != null && objects.Count > 0)
         {
             return objects[0];
@@ -194,7 +194,6 @@ public partial class TallyService : ITallyService
     {
         //Gets Root attribute of ReturnObject
         string? RootElemet = AttributeHelper.GetXmlRootElement(typeof(ObjType), _logger);
-
         Logger?.BuildingOptions(typeof(CollectionRequestOptions));
 
         CollectionRequestOptions collectionOptions = new()
@@ -426,7 +425,7 @@ public partial class TallyService : ITallyService
     }
 
     /// <inheritdoc/>
-    public async Task<ReturnType?> GetTDLReportAsync<ReportType, ReturnType>(DateFilterRequestOptions? requestOptions = null) where ReturnType : TallyBaseObject
+    public async Task<ReturnType?> GetTDLReportAsync<ReportType, ReturnType>(DateFilterRequestOptions? requestOptions = null)
     {
         StaticVariables sv = new()
         {

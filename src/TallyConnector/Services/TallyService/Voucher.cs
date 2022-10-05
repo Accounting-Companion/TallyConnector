@@ -17,7 +17,7 @@ public partial class TallyService
         if (voucher.View != VoucherViewType.AccountingVoucherView)
         {
             XmlAttributes xmlattribute = new();
-            xmlattribute.XmlElements.Add(new XmlElementAttribute() { ElementName = "LEDGERENTRIES.LIST" });
+            xmlattribute.XmlElements.Add(new("LEDGERENTRIES.LIST"));
             postRequestOptions.XMLAttributeOverrides.Add(typeof(Voucher), "Ledgers", xmlattribute);
         }
 

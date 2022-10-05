@@ -17,6 +17,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\TallyConnector.Reports\TallyConnector.Reports.csproj" />
     <ProjectReference Include="..\TallyConnector\TallyConnector.csproj" />
   </ItemGroup>
 

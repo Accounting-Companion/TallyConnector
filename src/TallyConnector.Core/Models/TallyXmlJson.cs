@@ -35,6 +35,7 @@ public class TallyXmlJson : TallyBaseObject
         string Json = JsonSerializer.Serialize(this, GetType(), new JsonSerializerOptions()
         {
             WriteIndented = Indented,
+            //DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingDefault,
             Converters = { new JsonStringEnumConverter(), new TallyDateJsonConverter() }
         });
         return Json;
