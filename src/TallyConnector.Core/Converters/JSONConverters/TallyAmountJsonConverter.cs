@@ -21,7 +21,7 @@ public class TallyAmountJsonConverter : JsonConverter<TallyAmount>
         decimal? Amount = 0;
         decimal? ForexAmount = 0;
         decimal? RateOfExchange = 0;
-        string Currency = string.Empty;
+        string? Currency = string.Empty;
         bool Isdebit = false;
         while (reader.Read())
         {
@@ -33,29 +33,29 @@ public class TallyAmountJsonConverter : JsonConverter<TallyAmount>
             {
                 var propertyName = reader.GetString();
                 reader.Read();
-                if (propertyName == "Amount")
+                if (propertyName?.Equals("Amount", StringComparison.InvariantCultureIgnoreCase) ?? false)
                 {
                     Amount = reader.TokenType == JsonTokenType.Null ? null : reader.GetDecimal();
                     continue;
                 }
-                if (propertyName == "ForexAmount")
+                if (propertyName?.Equals("ForexAmount", StringComparison.InvariantCultureIgnoreCase) ?? false)
                 {
                     ForexAmount = reader.TokenType == JsonTokenType.Null ? null : reader.GetDecimal();
                     continue;
                 }
-                if (propertyName == "RateOfExchange")
+                if (propertyName?.Equals("RateOfExchange", StringComparison.InvariantCultureIgnoreCase) ?? false)
                 {
                     RateOfExchange = reader.TokenType == JsonTokenType.Null ? null : reader.GetDecimal();
                     continue;
                 }
-                if (propertyName == "Currency")
+                if (propertyName?.Equals("Currency", StringComparison.InvariantCultureIgnoreCase) ?? false)
                 {
                     Currency = reader.TokenType == JsonTokenType.Null ? string.Empty : reader.GetString();
                     continue;
                 }
-                if (propertyName == "IsDebit")
+                if (propertyName?.Equals("IsDebit", StringComparison.InvariantCultureIgnoreCase) ?? false)
                 {
-                    Isdebit = reader.TokenType == JsonTokenType.Null ? false : reader.GetBoolean();
+                    Isdebit = reader.TokenType != JsonTokenType.Null && reader.GetBoolean();
                     continue;
                 }
             }
@@ -66,6 +66,8 @@ public class TallyAmountJsonConverter : JsonConverter<TallyAmount>
 
     public override void Write(Utf8JsonWriter writer, TallyAmount value, JsonSerializerOptions options)
     {
+        JsonNamingPolicy? propertyNamingPolicy = options.PropertyNamingPolicy;
+
         if (!_alllowSimple || value.ForexAmount != null
             && value.ForexAmount != 0
             && value.RateOfExchange != null
@@ -74,25 +76,25 @@ public class TallyAmountJsonConverter : JsonConverter<TallyAmount>
             && value.Currency != string.Empty)
         {
             writer.WriteStartObject();
-            writer.WriteNumber("Amount", value.Amount);
+            writer.WriteNumber(propertyNamingPolicy?.ConvertName(nameof(TallyAmount.Amount)) ?? nameof(TallyAmount.Amount), value.Amount);
             if (value.ForexAmount != null)
             {
-                writer.WriteNumber("ForexAmount", (decimal)value.ForexAmount);
+                writer.WriteNumber(propertyNamingPolicy?.ConvertName(nameof(TallyAmount.ForexAmount)) ?? nameof(TallyAmount.ForexAmount), (decimal)value.ForexAmount);
             }
             else
             {
-                writer.WriteNull("ForexAmount");
+                writer.WriteNull(propertyNamingPolicy?.ConvertName(nameof(TallyAmount.ForexAmount)) ?? nameof(TallyAmount.ForexAmount));
             }
             if (value.RateOfExchange != null)
             {
-                writer.WriteNumber("RateOfExchange", (decimal)value.RateOfExchange);
+                writer.WriteNumber(propertyNamingPolicy?.ConvertName(nameof(TallyAmount.RateOfExchange)) ?? nameof(TallyAmount.RateOfExchange), (decimal)value.RateOfExchange);
             }
             else
             {
-                writer.WriteNull("RateOfExchange");
+                writer.WriteNull(propertyNamingPolicy?.ConvertName(nameof(TallyAmount.RateOfExchange)) ?? nameof(TallyAmount.RateOfExchange));
             }
-            writer.WriteString("Currency", value.Currency);
-            writer.WriteBoolean("IsDebit", value.IsDebit);
+            writer.WriteString(propertyNamingPolicy?.ConvertName(nameof(TallyAmount.Currency)) ?? nameof(TallyAmount.Currency), value.Currency);
+            writer.WriteBoolean(propertyNamingPolicy?.ConvertName(nameof(TallyAmount.IsDebit)) ?? nameof(TallyAmount.IsDebit), value.IsDebit);
             writer.WriteEndObject();
 
         }

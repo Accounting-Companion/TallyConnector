@@ -27,27 +27,27 @@ public class TallyRateJsonConverter : JsonConverter<TallyRate>
                 {
                     var propertyName = reader.GetString();
                     reader.Read();
-                    if (propertyName == nameof(TallyRate.RatePerUnit))
+                    if (propertyName?.Equals(nameof(TallyRate.RatePerUnit), StringComparison.InvariantCultureIgnoreCase) ?? false)
                     {
                         RatePerUnit = reader.GetDecimal();
                         continue;
                     }
-                    if (propertyName == nameof(TallyRate.Unit))
+                    if (propertyName?.Equals(nameof(TallyRate.Unit), StringComparison.InvariantCultureIgnoreCase) ?? false)
                     {
                         Unit = reader.GetString() ?? string.Empty;
                         continue;
                     }
-                    if (propertyName == nameof(TallyRate.ForexAmount))
+                    if (propertyName?.Equals(nameof(TallyRate.ForexAmount), StringComparison.InvariantCultureIgnoreCase) ?? false)
                     {
                         ForexAmount = reader.GetDecimal();
                         continue;
                     }
-                    if (propertyName == nameof(TallyRate.RateOfExchange))
+                    if (propertyName?.Equals(nameof(TallyRate.RateOfExchange), StringComparison.InvariantCultureIgnoreCase) ?? false)
                     {
                         RateOfExchange = reader.GetDecimal();
                         continue;
                     }
-                    if (propertyName == nameof(TallyRate.ForeignCurrency))
+                    if (propertyName?.Equals(nameof(TallyRate.ForeignCurrency), StringComparison.InvariantCultureIgnoreCase) ?? false)
                     {
                         ForeignCurrency = reader.GetString() ?? string.Empty;
                         continue;
@@ -60,6 +60,7 @@ public class TallyRateJsonConverter : JsonConverter<TallyRate>
 
     public override void Write(Utf8JsonWriter writer, TallyRate value, JsonSerializerOptions options)
     {
+        JsonNamingPolicy? propertyNamingPolicy = options.PropertyNamingPolicy;
         if (value == null)
         {
             writer.WriteNullValue();
@@ -67,11 +68,11 @@ public class TallyRateJsonConverter : JsonConverter<TallyRate>
         else
         {
             writer.WriteStartObject();
-            writer.WriteNumber(nameof(value.RatePerUnit), value.RatePerUnit);
-            writer.WriteString(nameof(value.Unit), value.Unit);
-            writer.WriteNumber(nameof(value.ForexAmount), value.ForexAmount ?? 0);
-            writer.WriteNumber(nameof(value.RateOfExchange), value.RateOfExchange ?? 0);
-            writer.WriteString(nameof(value.ForeignCurrency), value.ForeignCurrency);
+            writer.WriteNumber(propertyNamingPolicy?.ConvertName(nameof(value.RatePerUnit)) ?? nameof(value.RatePerUnit), value.RatePerUnit);
+            writer.WriteString(propertyNamingPolicy?.ConvertName(nameof(value.Unit)) ?? nameof(value.Unit), value.Unit);
+            writer.WriteNumber(propertyNamingPolicy?.ConvertName(nameof(value.ForexAmount)) ?? nameof(value.ForexAmount), value.ForexAmount ?? 0);
+            writer.WriteNumber(propertyNamingPolicy?.ConvertName(nameof(value.RateOfExchange)) ?? nameof(value.RateOfExchange), value.RateOfExchange ?? 0);
+            writer.WriteString(propertyNamingPolicy?.ConvertName(nameof(value.ForeignCurrency)) ?? nameof(value.ForeignCurrency), value.ForeignCurrency);
             writer.WriteEndObject();
         }
     }

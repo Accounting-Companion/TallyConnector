@@ -36,11 +36,11 @@ public class TallyQuantityJsonConverter : JsonConverter<TallyQuantity>
                 {
                     continue;
                 }
-                while (propertyName == Comparestring && reader.Read())
+                while ((propertyName?.Equals(Comparestring, StringComparison.InvariantCultureIgnoreCase) ?? false) && reader.Read())
                 {
                     if (reader.TokenType == JsonTokenType.EndObject)
                     {
-                        if (Comparestring != nameof(TallyQuantity.SecondaryUnits))
+                        if (!Comparestring.Equals(nameof(TallyQuantity.SecondaryUnits), StringComparison.InvariantCultureIgnoreCase))
                         {
                             Comparestring = nameof(TallyQuantity.SecondaryUnits);
                             continue;
@@ -63,11 +63,11 @@ public class TallyQuantityJsonConverter : JsonConverter<TallyQuantity>
                     {
                         var NpropertyName = reader.GetString();
                         reader.Read();
-                        
-                        if (NpropertyName == nameof(TallyQuantity.SecondaryUnits.Number))
+
+                        if (NpropertyName?.Equals(nameof(TallyQuantity.SecondaryUnits.Number), StringComparison.InvariantCultureIgnoreCase) ?? false)
                         {
-                           
-                            if (propertyName == nameof(TallyQuantity.PrimaryUnits))
+
+                            if (propertyName.Equals(nameof(TallyQuantity.PrimaryUnits), StringComparison.InvariantCultureIgnoreCase))
                             {
                                 quantity = reader.GetDecimal();
                             }
@@ -76,9 +76,9 @@ public class TallyQuantityJsonConverter : JsonConverter<TallyQuantity>
                                 secondaryQuantity = reader.GetDecimal();
                             }
                         }
-                        if (NpropertyName == nameof(TallyQuantity.PrimaryUnits.Unit))
+                        if (NpropertyName?.Equals(nameof(TallyQuantity.PrimaryUnits.Unit), StringComparison.InvariantCultureIgnoreCase) ?? false)
                         {
-                            if (propertyName == nameof(TallyQuantity.PrimaryUnits))
+                            if (propertyName.Equals(nameof(TallyQuantity.PrimaryUnits), StringComparison.InvariantCultureIgnoreCase))
                             {
                                 unit = reader.GetString();
                             }
@@ -100,6 +100,7 @@ public class TallyQuantityJsonConverter : JsonConverter<TallyQuantity>
 
     public override void Write(Utf8JsonWriter writer, TallyQuantity value, JsonSerializerOptions options)
     {
+        JsonNamingPolicy? propertyNamingPolicy = options.PropertyNamingPolicy;
         if (value is null)
         {
             writer.WriteNullValue();
@@ -108,8 +109,8 @@ public class TallyQuantityJsonConverter : JsonConverter<TallyQuantity>
         {
 
             writer.WriteStartObject();
-            writer.WriteNumber(nameof(value.Number), value.Number);
-            writer.WritePropertyName(nameof(value.PrimaryUnits));
+            //writer.WriteNumber(propertyNamingPolicy?.ConvertName(nameof(value.Number)) ?? nameof(value.Number), value.Number);
+            writer.WritePropertyName(propertyNamingPolicy?.ConvertName(nameof(value.PrimaryUnits)) ?? nameof(value.PrimaryUnits));
             if (value.PrimaryUnits is null)
             {
                 writer.WriteNullValue();
@@ -117,11 +118,11 @@ public class TallyQuantityJsonConverter : JsonConverter<TallyQuantity>
             else
             {
                 writer.WriteStartObject();
-                writer.WriteNumber(nameof(value.PrimaryUnits.Number), value.PrimaryUnits.Number);
-                writer.WriteString(nameof(value.PrimaryUnits.Unit), value.PrimaryUnits.Unit);
+                writer.WriteNumber(propertyNamingPolicy?.ConvertName(nameof(value.PrimaryUnits.Number)) ?? nameof(value.PrimaryUnits.Number), value.PrimaryUnits.Number);
+                writer.WriteString(propertyNamingPolicy?.ConvertName(nameof(value.PrimaryUnits.Unit)) ?? nameof(value.PrimaryUnits.Unit), value.PrimaryUnits.Unit);
                 writer.WriteEndObject();
             }
-            writer.WritePropertyName(nameof(value.SecondaryUnits));
+            writer.WritePropertyName(propertyNamingPolicy?.ConvertName(nameof(value.SecondaryUnits)) ?? nameof(value.SecondaryUnits));
             if (value.SecondaryUnits is null)
             {
                 writer.WriteNullValue();
@@ -129,8 +130,8 @@ public class TallyQuantityJsonConverter : JsonConverter<TallyQuantity>
             else
             {
                 writer.WriteStartObject();
-                writer.WriteNumber(nameof(value.SecondaryUnits.Number), value.SecondaryUnits.Number);
-                writer.WriteString(nameof(value.SecondaryUnits.Unit), value.SecondaryUnits.Unit);
+                writer.WriteNumber(propertyNamingPolicy?.ConvertName(nameof(value.SecondaryUnits.Number)) ?? nameof(value.SecondaryUnits.Number), value.SecondaryUnits.Number);
+                writer.WriteString(propertyNamingPolicy?.ConvertName(nameof(value.SecondaryUnits.Unit)) ?? nameof(value.SecondaryUnits.Unit), value.SecondaryUnits.Unit);
                 writer.WriteEndObject();
             }
             writer.WriteEndObject();
