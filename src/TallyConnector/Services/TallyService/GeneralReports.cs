@@ -29,6 +29,51 @@ public partial class TallyService
         });
     }
 
+    /// <inheritdoc/>
+    public async Task<LastAlterIdsRoot?> GetLastAlterIdsAsync()
+    {
+        _logger?.LogInformation("Getting Last MasterIds from Tally");
+        string reportName = "AlterIdsReport";
+        RequestEnvelope requestEnvelope = new(HType.Data, reportName, new()
+        {
+            SVFromDate = Company?.StartingFrom,
+            SVToDate = Company?.StartingFrom is null ? null : DateTime.Now,
+            SVCompany = Company?.Name,
+        });
+        TDLMessage tdlMessage = new()
+        {
+            Report = new() { new(reportName) },
+            Form = new() { new(reportName) },
+            Part = new() { new() { Name = reportName, Lines = new() { reportName } } },
+            Line = new() { new(reportName, fields: new() { "MastersLastId", "VouchersLastId" }) },
+            Field = new()
+            {
+                new("MastersLastId", "MastersLastId", "$$CollectionField:$ALTERID:last:MastersCollection"),
+                new("VouchersLastId", "VouchersLastId", "$$CollectionField:$ALTERID:last:VouchersCollection")
+            },
+            Collection = new()
+            {
+                new(colName:"MastersCollection",colType:"Masters",nativeFields:new(){"ALTERID"}){Sort="@@Default: -$Alterid"},
+                new(colName:"VouchersCollection",colType:"Vouchers",nativeFields:new(){"ALTERID"}){Sort="@@Default: -$Alterid"}
+            }
+        };
+        tdlMessage.Part![0].SetAttributes();
+
+        requestEnvelope.Body.Desc.TDL.TDLMessage = tdlMessage;
+        string xml = requestEnvelope.GetXML();
+
+        TallyResult result = await SendRequestAsync(xml);
+        if (result.Status == RespStatus.Sucess)
+        {
+            LastAlterIdsRoot? lastMasterIdsRoot = XMLToObject.GetObjfromXml<LastAlterIdsRoot>(result.Response!);
+            _logger?.LogInformation("Received Last MasterIds from Tally");
+            return lastMasterIdsRoot;
+        }
+        else
+        {
+            return null;
+        }
+    }
     public async Task<List<CompanyOnDisk>?> GetCompaniesinDefaultPathAsync()
     {
         return await GetObjectsAsync<CompanyOnDisk>(new()

@@ -43,6 +43,12 @@ public interface ITallyService
     Task<List<CompanyType>?> GetCompaniesAsync<CompanyType>() where CompanyType : BaseCompany;
 
     /// <summary>
+    /// Gets Last AlterId in Master and Voucher
+    /// </summary>
+    /// <returns>instance of LastMasterIdsRoot</returns>
+    Task<LastAlterIdsRoot?> GetLastAlterIdsAsync();
+
+    /// <summary>
     /// Gets List of companies that are in Default Data Path of Tally
     /// </summary>
     /// <typeparam name="CompanyType"></typeparam>
