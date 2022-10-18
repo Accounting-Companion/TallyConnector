@@ -41,17 +41,17 @@ public class TallyXmlJson : TallyBaseObject
         return Json;
     }
 
-    public string GetXML(XmlAttributeOverrides? attrOverrides = null)
+    public string GetXML(XmlAttributeOverrides? attrOverrides = null, bool indent = false)
     {
         TextWriter textWriter = new StringWriter();
         XmlWriterSettings settings = new()
         {
             OmitXmlDeclaration = true,
             //NewLineChars = "&#13;&#10;", //If /r/n in Xml replace
-                                         //NewLineHandling = NewLineHandling.Entitize,
+            //NewLineHandling = NewLineHandling.Entitize,
             Encoding = Encoding.Unicode,
             CheckCharacters = false,
-           //Indent = true,
+            Indent = indent,
         };
         XmlSerializerNamespaces ns = new(
                      new[] { XmlQualifiedName.Empty });
@@ -65,7 +65,7 @@ public class TallyXmlJson : TallyBaseObject
 }
 
 [XmlRoot(ElementName = "OBJECTS")]
-public class BasicTallyObject : TallyXmlJson,ITallyObject ,IBasicTallyObject
+public class BasicTallyObject : TallyXmlJson, ITallyObject, IBasicTallyObject
 {
     [XmlElement(ElementName = "MASTERID")]
     public int? MasterId { get; set; }
@@ -85,7 +85,7 @@ public class BasicTallyObject : TallyXmlJson,ITallyObject ,IBasicTallyObject
     {
     }
 
-   
+
 
     public override string ToString()
     {

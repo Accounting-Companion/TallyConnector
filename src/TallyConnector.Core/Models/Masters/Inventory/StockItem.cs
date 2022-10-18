@@ -153,10 +153,10 @@ public class StockItem : BasicTallyObject, IAliasTallyObject
             LanguageNameList[0].LanguageAlias = Alias;
         }
     }
-    public new string GetXML(XmlAttributeOverrides? attrOverrides = null)
+    public new string GetXML(XmlAttributeOverrides? attrOverrides = null, bool indent = false)
     {
         CreateNamesList();
-        return base.GetXML(attrOverrides);
+        return base.GetXML(attrOverrides, indent);
     }
 
     public new void PrepareForExport()

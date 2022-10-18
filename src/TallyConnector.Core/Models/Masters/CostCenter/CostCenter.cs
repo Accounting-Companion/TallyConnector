@@ -80,14 +80,14 @@ public class CostCenter : BasicTallyObject, IAliasTallyObject
             LanguageNameList![0].LanguageAlias = Alias;
         }
     }
-    public new string GetXML(XmlAttributeOverrides? attrOverrides = null)
+    public new string GetXML(XmlAttributeOverrides? attrOverrides = null, bool indent = false)
     {
         if (Parent != null && Parent.Contains("Primary"))
         {
             Parent = null;
         }
         CreateNamesList();
-        return base.GetXML(attrOverrides);
+        return base.GetXML(attrOverrides, indent);
     }
 
     public new void PrepareForExport()

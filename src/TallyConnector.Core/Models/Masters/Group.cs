@@ -125,10 +125,10 @@ public class Group : BasicTallyObject, IAliasTallyObject
         }
     }
 
-    public new string GetXML(XmlAttributeOverrides? attrOverrides = null)
+    public new string GetXML(XmlAttributeOverrides? attrOverrides = null, bool indent = false)
     {
         CreateNamesList();
-        return base.GetXML(attrOverrides);
+        return base.GetXML(attrOverrides, indent);
     }
 
     public new void PrepareForExport()
@@ -145,11 +145,11 @@ public class Group : BasicTallyObject, IAliasTallyObject
         CreateNamesList();
     }
 
-   
+
     public override string ToString()
     {
         return $"Group - {Name}";
     }
 
-    
+
 }

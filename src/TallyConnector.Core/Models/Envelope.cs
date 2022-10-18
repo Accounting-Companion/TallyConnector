@@ -30,7 +30,7 @@ public class Envelope<T> : TallyXmlJson
     public Body<T> Body { get; set; } = new();
 
 
-    public new string GetXML(XmlAttributeOverrides? attrOverrides = null)
+    public new string GetXML(XmlAttributeOverrides? attrOverrides = null, bool indent = false)
     {
         //Gets Root attribute of ReturnObject
         XmlRootAttribute? RootAttribute = (XmlRootAttribute?)Attribute.GetCustomAttribute(typeof(T), typeof(XmlRootAttribute));
@@ -42,7 +42,7 @@ public class Envelope<T> : TallyXmlJson
         XmlAttributes attrs = new();
         attrs.XmlElements.Add(new(TallyType));
         attrOverrides.Add(typeof(Message<T>), "Objects", attrs);
-        return base.GetXML(attrOverrides);
+        return base.GetXML(attrOverrides, indent);
     }
 }
 
