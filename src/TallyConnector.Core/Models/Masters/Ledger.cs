@@ -108,7 +108,7 @@ public class Ledger : BasicTallyObject, IAliasTallyObject
 
     [XmlElement(ElementName = "GSTDUTYHEAD")]
     [Column(TypeName = "nvarchar(15)")]
-    public GSTTaxType GSTTaxType { get; set; }
+    public GSTTaxType? GSTTaxType { get; set; }
 
     [XmlElement(ElementName = "RATEOFTAXCALCULATION")]
     public double? RateofTax { get; set; }
@@ -223,7 +223,7 @@ public class Ledger : BasicTallyObject, IAliasTallyObject
 
     [XmlElement(ElementName = "GSTNATUREOFSUPPLY")]
     [Column(TypeName = "nvarchar(20)")]
-    public GSTPartyType GSTPartyType { get; set; }
+    public GSTPartyType? GSTPartyType { get; set; }
 
     [XmlElement(ElementName = "ISTRANSPORTER")]
     [Column(TypeName = "nvarchar(3)")]

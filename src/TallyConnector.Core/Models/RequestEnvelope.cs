@@ -423,7 +423,7 @@ public class Part : DCollection
 [XmlRoot(ElementName = "LINE")]
 public class Line : DCollection
 {
-    public Line(string lineName, List<string> fields, string? xmlTag)
+    public Line(string lineName, List<string> fields, string? xmlTag = null)
     {
         Name = lineName;
         Fields = fields;
@@ -607,6 +607,8 @@ public class Collection : DCollection
     [XmlElement(ElementName = "COMPUTEVAR")]
     public List<string>? ComputeVar { get; set; }
 
+    [XmlElement(ElementName = "SORT")]
+    public string? Sort { get; set; }
 
     [XmlElement(ElementName = "FILTERS")]
     public List<string>? Filters { get; set; }
@@ -618,6 +620,8 @@ public class Collection : DCollection
 
     [XmlAttribute(AttributeName = "NAME")]
     public string? Name { get; set; }
+
+    
 
 
 }

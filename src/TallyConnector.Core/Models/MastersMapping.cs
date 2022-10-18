@@ -249,7 +249,7 @@ public class Mappings
             Constants.Voucher.Filters.ViewTypeFilters.InvoiceVoucherFilter),
 
         new(VoucherViewType.ConsumptionVoucherView,
-            Constants.Voucher.AccountingViewFetchList.All,
+            Constants.Voucher.InventoryViewFetchList.All,
             Constants.Voucher.Filters.ViewTypeFilters.InventoryVoucherFilter),
 
         new(VoucherViewType.MultiConsumptionVoucherView,

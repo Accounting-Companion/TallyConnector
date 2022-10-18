@@ -175,7 +175,7 @@ public partial class TallyService : ITallyService
         }
         List<Filter> filters = new() { new Filter() { FilterName = "Objfilter", FilterFormulae = filterformulae } };
 
-        PaginatedRequestOptions paginatedRequestOptions = new() { FetchList = requestOptions.FetchList, Filters = filters };
+        PaginatedRequestOptions paginatedRequestOptions = new() { FetchList = requestOptions.FetchList, Filters = filters, Objects = requestOptions.Objects };
 
         List<ObjType>? objects = await GetObjectsAsync<ObjType>(paginatedRequestOptions);
         if (objects != null && objects.Count > 0)
@@ -206,6 +206,7 @@ public partial class TallyService : ITallyService
             Compute = (objectOptions?.Compute) != null ? new(objectOptions.Compute) : null,
             ComputeVar = (objectOptions?.ComputeVar) != null ? new(objectOptions.ComputeVar) : null,
             Pagination = objectOptions?.Pagination,
+            Objects = objectOptions?.Objects,
             XMLAttributeOverrides = objectOptions?.XMLAttributeOverrides,
             IsInitialize = objectOptions?.IsInitialize ?? YesNo.No,
         };
@@ -213,6 +214,7 @@ public partial class TallyService : ITallyService
                 .FirstOrDefault(map => map.TallyMasterType.Equals(collectionOptions.CollectionType, StringComparison.OrdinalIgnoreCase));
         collectionOptions.Compute ??= new();
         collectionOptions.Filters ??= new();
+        collectionOptions.Objects ??= new();
         if (mapping != null)
         {
             if (mapping.ComputeFields != null)
@@ -225,7 +227,13 @@ public partial class TallyService : ITallyService
             }
             if (mapping.Objects != null)
             {
-                collectionOptions.Objects = mapping.Objects;
+                mapping.Objects.ForEach(obj =>
+                {
+                    if (!collectionOptions.Objects.Contains(obj))
+                    {
+                        collectionOptions.Objects.Add(obj);
+                    }
+                });
             }
         }
         //Adding xmlelement name according to RootElement name of ReturnObject
@@ -263,6 +271,7 @@ public partial class TallyService : ITallyService
             FetchList = (objectOptions?.FetchList) != null ? new(objectOptions.FetchList) : null,
             Compute = (objectOptions?.Compute) != null ? new(objectOptions.Compute) : null,
             ComputeVar = (objectOptions?.ComputeVar) != null ? new(objectOptions.ComputeVar) : null,
+            Objects = objectOptions?.Objects,
             XMLAttributeOverrides = objectOptions?.XMLAttributeOverrides,
             Filters = objectOptions?.Filters,
             IsInitialize = YesNo.Yes,
@@ -307,6 +316,7 @@ public partial class TallyService : ITallyService
                 Filters = objectOptions?.Filters,
                 Compute = objectOptions?.Compute,
                 ComputeVar = objectOptions?.ComputeVar,
+                Objects = objectOptions?.Objects,
                 Pagination = tpagination,
                 XMLAttributeOverrides = objectOptions?.XMLAttributeOverrides,
                 IsInitialize = objectOptions?.IsInitialize ?? YesNo.No,
@@ -346,7 +356,7 @@ public partial class TallyService : ITallyService
         if (Response.Status == RespStatus.Sucess && Response.Response != null)
         {
             Envelope<string>? Envelope = XMLToObject.GetObjfromXml<Envelope<string>>(Response.Response, null, _logger);
-            return int.Parse(Envelope?.Body.Data.FuncResult.Result);
+            return int.Parse(Envelope?.Body?.Data?.FuncResult?.Result);
         }
         return 0;
     }

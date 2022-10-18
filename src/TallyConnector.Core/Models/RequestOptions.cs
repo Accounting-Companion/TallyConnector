@@ -29,6 +29,8 @@ public class RequestOptions : DateFilterRequestOptions
     public List<string>? FetchList { get; set; }
     public List<string>? Compute { get; set; } = new();
     public List<string>? ComputeVar { get; set; } = new();
+
+    public List<TallyCustomObject>? Objects { get; set; }
 }
 
 public class PaginatedRequestOptions : RequestOptions
@@ -58,6 +60,5 @@ public class CollectionRequestOptions : PaginatedRequestOptions
     public string CollectionType { get; set; }
     public string? ChildOf { get; set; }
 
-    public List<TallyCustomObject> Objects { get; set; }
 }
 

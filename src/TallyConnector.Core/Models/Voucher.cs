@@ -22,7 +22,7 @@ public class Voucher : BasicTallyObject, ITallyObject
 
     [XmlElement(ElementName = "VOUCHERTYPENAME")]
     [Column(TypeName = $"nvarchar({Constants.MaxNameLength})")]
-    public string? VoucherType { get; set; }
+    public string VoucherType { get; set; }
 
     [XmlElement(ElementName = "VOUCHERTYPEID")]
     [Column(TypeName = $"nvarchar({Constants.GUIDLength})")]
@@ -285,6 +285,7 @@ public class Voucher : BasicTallyObject, ITallyObject
 
     [JsonIgnore]
     [XmlAttribute(AttributeName = "DATE")]
+    [NotMapped]
     public string? Dt
     {
         get
@@ -300,6 +301,7 @@ public class Voucher : BasicTallyObject, ITallyObject
 
 
     [JsonIgnore]
+    [NotMapped]
     [XmlAttribute(AttributeName = "VCHTYPE")]
     public string? VchType
     {
@@ -405,7 +407,7 @@ public class VoucherLedger : TallyBaseObject
 
     [XmlElement(ElementName = "LEDGERNAME")]
     [Column(TypeName = $"nvarchar({Constants.MaxNameLength})")]
-    public string? LedgerName { get; set; }
+    public string LedgerName { get; set; }
 
     [XmlElement(ElementName = "LEDGERID")]
     [Column(TypeName = $"nvarchar({Constants.GUIDLength})")]

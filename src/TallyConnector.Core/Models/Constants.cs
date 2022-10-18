@@ -94,6 +94,22 @@ public static class Constants
                 StockItemId, GodownId ,CostCategoryId,CostCenterId
             };
         }
+        public static class InventoryViewFetchList
+        {
+            public const string LedgerId = "LEDGERENTRIES.LEDGERID";
+            public const string LedgerTaxType = "LEDGERENTRIES.LEDGERTAXTYPE";
+            public const string VCHLedgerType = "LEDGERENTRIES.VCHLEDGERTYPE";
+            public const string VCHLedgerIndex = "LEDGERENTRIES.INDEXNUMBER";
+            public const string StockItemId = "INVENTORYENTRIESIN.STOCKITEMID,INVENTORYENTRIESOUT.STOCKITEMID";
+            public const string GodownId = "INVENTORYENTRIESIN.BATCHALLOCATIONS.GODOWNID,INVENTORYENTRIESOUT.BATCHALLOCATIONS.GODOWNID" +
+                                           "INVENTORYENTRIESIN.BATCHALLOCATIONS.DESTINATIONGODOWNID,INVENTORYENTRIESOUT.BATCHALLOCATIONS.DESTINATIONGODOWNID";
+
+            public static List<string> All = new(DefaultFetchList)
+            {
+                LedgerId, LedgerTaxType, VCHLedgerType,VCHLedgerIndex,
+                StockItemId, GodownId
+            };
+        }
 
     }
 

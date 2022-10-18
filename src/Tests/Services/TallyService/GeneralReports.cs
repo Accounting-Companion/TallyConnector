@@ -22,4 +22,10 @@ internal class GeneralReports : BaseTallyServiceTest
         var Company = await _tallyService.GetActiveCompanyAsync();
         Assert.That(Company, Is.Not.Null);
     }
+    [Test]
+    public async Task TestGetAlterIds()
+    {
+        LastAlterIdsRoot lastMasterIdsRoot = await _tallyService.GetLastAlterIdsAsync();
+        Assert.That(lastMasterIdsRoot, Is.Not.Null);
+    }
 }
