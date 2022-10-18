@@ -29,27 +29,42 @@ public class TallyRateJsonConverter : JsonConverter<TallyRate>
                     reader.Read();
                     if (propertyName?.Equals(nameof(TallyRate.RatePerUnit), StringComparison.InvariantCultureIgnoreCase) ?? false)
                     {
-                        RatePerUnit = reader.GetDecimal();
+                        if (reader.TokenType != JsonTokenType.Null)
+                        {
+                            RatePerUnit = reader.GetDecimal();
+                        }
                         continue;
                     }
                     if (propertyName?.Equals(nameof(TallyRate.Unit), StringComparison.InvariantCultureIgnoreCase) ?? false)
                     {
-                        Unit = reader.GetString() ?? string.Empty;
+                        if (reader.TokenType != JsonTokenType.Null)
+                        {
+                            Unit = reader.GetString() ?? string.Empty;
+                        }
                         continue;
                     }
                     if (propertyName?.Equals(nameof(TallyRate.ForexAmount), StringComparison.InvariantCultureIgnoreCase) ?? false)
                     {
-                        ForexAmount = reader.GetDecimal();
+                        if (reader.TokenType != JsonTokenType.Null)
+                        {
+                            ForexAmount = reader.GetDecimal();
+                        }
                         continue;
                     }
                     if (propertyName?.Equals(nameof(TallyRate.RateOfExchange), StringComparison.InvariantCultureIgnoreCase) ?? false)
                     {
-                        RateOfExchange = reader.GetDecimal();
+                        if (reader.TokenType != JsonTokenType.Null)
+                        {
+                            RateOfExchange = reader.GetDecimal();
+                        }
                         continue;
                     }
                     if (propertyName?.Equals(nameof(TallyRate.ForeignCurrency), StringComparison.InvariantCultureIgnoreCase) ?? false)
                     {
-                        ForeignCurrency = reader.GetString() ?? string.Empty;
+                        if (reader.TokenType != JsonTokenType.Null)
+                        {
+                            ForeignCurrency = reader.GetString() ?? string.Empty;
+                        }
                         continue;
                     }
                 }

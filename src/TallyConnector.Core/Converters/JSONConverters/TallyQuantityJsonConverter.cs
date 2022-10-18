@@ -47,15 +47,7 @@ public class TallyQuantityJsonConverter : JsonConverter<TallyQuantity>
                         }
                         else
                         {
-                            if (secondaryQuantity != null && secondaryUnit != null)
-                            {
-                                break;
-                            }
-                            else
-                            {
-                                return new TallyQuantity((decimal)quantity, unit);
-                            }
-
+                            break;
                         }
                     }
 
@@ -73,7 +65,10 @@ public class TallyQuantityJsonConverter : JsonConverter<TallyQuantity>
                             }
                             else
                             {
-                                secondaryQuantity = reader.GetDecimal();
+                                if (reader.TokenType != JsonTokenType.Null)
+                                {
+                                    secondaryQuantity = reader.GetDecimal();
+                                }
                             }
                         }
                         if (NpropertyName?.Equals(nameof(TallyQuantity.PrimaryUnits.Unit), StringComparison.InvariantCultureIgnoreCase) ?? false)
