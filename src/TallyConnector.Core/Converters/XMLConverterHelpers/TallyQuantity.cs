@@ -75,7 +75,10 @@ public class TallyQuantity : IXmlSerializable
                 {
                     Number = decimal.Parse(matches[0].Value);
                     var splittedtext = content.Split('=');
-
+                    if (!content.Contains('='))
+                    {
+                        splittedtext = new string[] { content.Substring(0,content.Length/2), content.Substring(content.Length / 2) };
+                    }
                     PrimaryUnits = new(Number, splittedtext.First().Trim().Split(' ').Last().Trim());
                     SecondaryUnits = new(decimal.Parse(matches[1].Value), splittedtext.Last().Trim().Split(' ').Last().Trim());
                 }
@@ -87,6 +90,7 @@ public class TallyQuantity : IXmlSerializable
                 }
             }
         }
+        
     }
 
     public void WriteXml(XmlWriter writer)

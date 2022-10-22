@@ -689,7 +689,7 @@ public class AttendanceEntry
     public decimal? AttendanceTypeTimeValue { get; set; }
 
     [XmlElement(ElementName = "ATTDTYPEVALUE")]
-    public string? AttendanceTypeValue { get; set; }
+    public TallyQuantity? AttendanceTypeValue { get; set; }
 
 }
 
