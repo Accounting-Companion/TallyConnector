@@ -121,13 +121,14 @@ internal class CommonTests
             Ledgers = new(),
             VoucherNumber = "sdfgh"
         };
+        voucher.EffectiveDate = voucher.Date;
         voucher.Ledgers.Add(new()
         {
             LedgerName = "abc India Pvt. Ltd.",
             Amount = -10_000,
             BillAllocations = new()
             {
-                new() { BillType = TCM.BillRefType.NewRef, Name = "jhgf", Amount = -10_000 }
+                new() { BillType = TCM.BillRefType.NewRef, Name = "jhgf", Amount = -10_000,BillCreditPeriod = new(new DateTime(2022, 07, 31)) }
             }
         });
         TCM.VoucherLedger SalesLedger = new() { LedgerName = "Sales", Amount = 10_000 };
@@ -167,7 +168,7 @@ internal class CommonTests
 
         Assert.That(result.Status, Is.EqualTo(TCM.RespStatus.Sucess));
         var y = Regex.Matches(result.Response, @"[0-9.]+")[0].Value;
-        TCM.Voucher Tvoucher = await tally.GetVoucherAsync<TCM.Voucher>(y, new() { LookupField = TCM.VoucherLookupField.MasterId });
+        TCM.Voucher Tvoucher = await tally.GetVoucherAsync<TCM.Voucher>(y, new() { LookupField = TCM.VoucherLookupField.MasterId, FetchList = TCM.Constants.Voucher.AccountingViewFetchList.All });
 
         Assert.That(Tvoucher, Is.Not.Null);
 

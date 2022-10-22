@@ -177,8 +177,9 @@ public interface ITallyService
     /// 
     /// </summary>
     /// <param name="collectionOptions"></param>
+    /// <param name="indented"></param>
     /// <returns></returns>
-    string GenerateCollectionXML(CollectionRequestOptions collectionOptions);
+    string GenerateCollectionXML(CollectionRequestOptions collectionOptions, bool indented = false);
     Task<List<ObjType>?> GetCustomCollectionAsync<ObjType>(CollectionRequestOptions collectionOptions) where ObjType : TallyBaseObject;
 
     Task<ObjType> GetObjectAsync<ObjType>(string lookupValue, MasterRequestOptions? requestOptions = null) where ObjType : TallyBaseObject, INamedTallyObject;

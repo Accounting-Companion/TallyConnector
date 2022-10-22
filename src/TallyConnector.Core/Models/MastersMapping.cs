@@ -216,7 +216,11 @@ public class Mappings
                                {
                                    new("LedgerEntry", new()
                                    {
-                                       "LedgerID: $GUID:Ledger:$LedgerName"
+                                       "LedgerId: $GUID:Ledger:$LedgerName"
+                                   }){IsModify=YesNo.Yes},
+                                   new("BillAllocations", new()
+                                   {
+                                       "LedgerID: $.LedgerId"
                                    }){IsModify=YesNo.Yes},
                                    new("InventoryEntry", new()
                                    {
@@ -234,6 +238,23 @@ public class Mappings
                                    new("CostCenterAllocations", new()
                                    {
                                        "CostCentreID: $GUID:COSTCENTER:$NAME",
+                                   }){IsModify=YesNo.Yes},
+                                   new("AttendanceEntry", new()
+                                   {
+                                       "EmployeeId: $GUID:COSTCENTER:$NAME",
+                                       "AttendanceTypeId: $GUID:ATTENDANCETYPE:$ATTENDANCETYPE",
+                                   }){IsModify=YesNo.Yes},
+                                   new("CategoryEntry", new()
+                                   {
+                                       "CategoryId: $GUID:CostCategory:$Category",
+                                   }){IsModify=YesNo.Yes},
+                                   new("EmployeeEntry", new()
+                                   {
+                                       "EmployeeId: $GUID:CostCenter:$EmployeeName",
+                                   }){IsModify=YesNo.Yes},
+                                   new("PayheadAllocations", new()
+                                   {
+                                       "LedgerId: $GUID:Ledger:$PayHeadName",
                                    }){IsModify=YesNo.Yes}
                                }),
     };
@@ -253,11 +274,14 @@ public class Mappings
             Constants.Voucher.Filters.ViewTypeFilters.InventoryVoucherFilter),
 
         new(VoucherViewType.MultiConsumptionVoucherView,
-            Constants.Voucher.AccountingViewFetchList.All,
+            Constants.Voucher.InventoryViewFetchList.All,
             Constants.Voucher.Filters.ViewTypeFilters.MfgJournalVoucherFilter),
 
+        new(VoucherViewType.AccountingVoucherView,
+            Constants.Voucher.AttendanceFetchList.All,
+            Constants.Voucher.Filters.ViewTypeFilters.AttndVoucherFilter),
         new(VoucherViewType.PaySlipVoucherView,
-            Constants.Voucher.AccountingViewFetchList.All,
+            Constants.Voucher.PaySlipViewFetchList.All,
             Constants.Voucher.Filters.ViewTypeFilters.PayslipVoucherFilter),
     };
 

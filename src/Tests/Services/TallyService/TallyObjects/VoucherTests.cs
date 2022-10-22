@@ -15,48 +15,42 @@ internal class VoucherTests : BaseTallyServiceTest
     {
         int count = 0;
         IProgress<ReportProgressHelper> progress = new Progress<ReportProgressHelper>(c => count += c.ProcessedCount);
-        RequestOptions requestOptions = new()
+
+        var ActngVchrs = new List<Voucher>();
+
+        foreach (var mapping in Mappings.VoucherViewTypeMappings)
         {
-            FromDate = new(2022, 4, 1),
-            FetchList = Constants.Voucher.AccountingViewFetchList.All,
-            Filters = new List<Filter>() { Constants.Voucher.Filters.ViewTypeFilters.AccountingVoucherFilter }
-        };
-        var ActngVchrs = await _tallyService.GetAllObjectsAsync<TCM.Voucher>(requestOptions, progress);
+            var vchs = await _tallyService.GetAllObjectsAsync<Voucher>(new()
+            {
+                FromDate = new(2009, 4, 1),
+                FetchList = mapping.FetchList,
+                Filters = new List<Filter>() {mapping.Filter }
 
-        requestOptions.Filters[0] = Constants.Voucher.Filters.ViewTypeFilters.InvoiceVoucherFilter;
+            }, progress);
+            ActngVchrs.AddRange(vchs);
+        }
+        var value = ActngVchrs.GroupBy(c => c.VchType).ToDictionary(c => c.Key, c => c.ToList());
 
-        requestOptions.FetchList = Constants.Voucher.InvoiceViewFetchList.All;
-        ActngVchrs.AddRange(await _tallyService.GetAllObjectsAsync<TCM.Voucher>(requestOptions, progress));
+        foreach (var v in value)
+        {
+            var Subdict = v.Value.GroupBy(c => c.View).ToDictionary(c => c.Key, c => c.ToList());
+            foreach (var item in Subdict)
+            {
+                string json = JsonSerializer.Serialize(item.Value, new JsonSerializerOptions()
+                {
+                    WriteIndented = true,
+                    //DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingDefault,
+                    PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+                    Converters = { new JsonStringEnumConverter(), new TallyDateJsonConverter() }
+                });
+                await File.WriteAllTextAsync("json/" + v.Key + "_" + item.Key + ".json", json);
+            }
 
-        requestOptions.Filters[0] = Constants.Voucher.Filters.ViewTypeFilters.InventoryVoucherFilter;
-        // Voucher voucher = await _tallyService.GetVoucherAsync<Voucher>("52889497-5b6b-403d-8f83-224e3c7759b4-00001285", new() { LookupField = VoucherLookupField.GUID });
-        //StockItem stockItem = await _tallyService.GetStockItemAsync<StockItem>("Floppy Drive");
-
-        ActngVchrs.AddRange(await _tallyService.GetAllObjectsAsync<TCM.Voucher>(requestOptions, progress));
-
-        requestOptions.Filters[0] = Constants.Voucher.Filters.ViewTypeFilters.PayslipVoucherFilter;
-        List<Voucher> collection = await _tallyService.GetAllObjectsAsync<TCM.Voucher>(requestOptions, progress);
-        ActngVchrs.AddRange(collection);
-
-        requestOptions.Filters[0] = Constants.Voucher.Filters.ViewTypeFilters.MfgJournalVoucherFilter;
-        ActngVchrs.AddRange(await _tallyService.GetAllObjectsAsync<TCM.Voucher>(requestOptions, progress));
-
-        //var value = ActngVchrs.GroupBy(c => c.VchType).ToDictionary(c => c.Key, c => c.ToList());
-
-        //foreach (var v in value)
-        //{
-        //    string json = JsonSerializer.Serialize(v.Value, new JsonSerializerOptions()
-        //    {
-        //        WriteIndented = true,
-        //        //DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingDefault,
-        //        Converters = { new JsonStringEnumConverter(), new TallyDateJsonConverter() }
-        //    });
-        //    await File.WriteAllTextAsync("json/" + v.Key + ".json", json);
-        //}
+        }
 
         Assert.That(ActngVchrs, Is.Not.Null);
-        Assert.That(ActngVchrs.Count, Is.EqualTo(1107));
-        Assert.That(count, Is.EqualTo(1107));
+        Assert.That(ActngVchrs.Count, Is.EqualTo(1463));
+        Assert.That(count, Is.EqualTo(1463));
     }
 
 
@@ -109,7 +103,7 @@ internal class VoucherTests : BaseTallyServiceTest
     public async Task CheckGetAccountingVoucher()
     {
 
-        Voucher voucher = await _tallyService.GetVoucherAsync<Voucher>("52889497-5b6b-403d-8f83-224e3c7759b4-000013e3",
+        Voucher voucher = await _tallyService.GetVoucherAsync<Voucher>("52889497-5b6b-403d-8f83-224e3c7759b4-00001411",
                                                                        new()
                                                                        {
                                                                            LookupField = VoucherLookupField.GUID,

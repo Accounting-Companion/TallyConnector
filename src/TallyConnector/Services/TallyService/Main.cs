@@ -11,7 +11,7 @@ public partial class TallyService : ITallyService
 
     private string _baseURL;
 
-    private BaseCompany? Company { get; set; }
+    protected BaseCompany? Company { get; set; }
 
     private string FullURL => _baseURL + ":" + _port;
     /// <summary>
@@ -240,7 +240,14 @@ public partial class TallyService : ITallyService
         collectionOptions.XMLAttributeOverrides ??= new();
         XmlAttributes attrs = new();
         attrs.XmlElements.Add(new(collectionOptions.CollectionType));
-        collectionOptions.XMLAttributeOverrides.Add(typeof(Colllection<ObjType>), "Objects", attrs);
+        try
+        {
+            collectionOptions.XMLAttributeOverrides.Add(typeof(Colllection<ObjType>), "Objects", attrs);
+        }
+        catch (Exception ex)
+        {
+        }
+
 
         var objects = await GetCustomCollectionAsync<ObjType>(collectionOptions);
         objects?.ForEach(obj =>
@@ -390,13 +397,13 @@ public partial class TallyService : ITallyService
     }
 
     /// <inheritdoc/>
-    public string GenerateCollectionXML(CollectionRequestOptions collectionOptions)
+    public string GenerateCollectionXML(CollectionRequestOptions collectionOptions, bool indented = false)
     {
         StaticVariables staticVariables = new()
         {
             SVCompany = collectionOptions.Company ?? Company?.Name,
             SVFromDate = collectionOptions.FromDate ?? Company?.BooksFrom!,
-            SVToDate = collectionOptions.ToDate ?? DateTime.Now,
+            SVToDate = collectionOptions.ToDate ?? (collectionOptions.FromDate == null ? null : DateTime.Now),
         };
         string CollectionName = $"CUSTOM{collectionOptions.CollectionType.ToUpper()}COL";
         RequestEnvelope ColEnvelope = new(HType.Collection, CollectionName, staticVariables); //Collection Envelope
@@ -430,7 +437,7 @@ public partial class TallyService : ITallyService
             //collectionOptions.Filters.Add(new("Pagination", collectionOptions.Pagination.GetFilterFormulae()));
 
         }
-        string Reqxml = ColEnvelope.GetXML();
+        string Reqxml = ColEnvelope.GetXML(indent: indented);
         return Reqxml;
     }
 

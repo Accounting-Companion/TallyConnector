@@ -595,6 +595,9 @@ public class Collection : DCollection
     [XmlElement(ElementName = "CHILDOF")]
     public string? Childof { get; set; }
 
+    [XmlElement(ElementName = "BELONGSTO")]
+    public TallyYesNo? BelongsTo { get; set; }
+
     [XmlElement(ElementName = "SOURCECOLLECTION")]
     public string? Collections { get; set; }
 

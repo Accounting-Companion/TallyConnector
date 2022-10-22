@@ -33,7 +33,7 @@ public static class AttributeHelper
         }
         return null;
     }
-    internal static string? GetXmlRootElement(Type type, ILogger? _logger = null)
+    public static string? GetXmlRootElement(Type type, ILogger? _logger = null)
     {
         _logger?.LogDebug("Getting {Attribute} attribute of {objtype}", typeof(XmlRootAttribute).Name, type.Name);
         XmlRootAttribute[] RElement = (XmlRootAttribute[])Attribute.GetCustomAttributes(type, typeof(XmlRootAttribute));//propertyinfo.CustomAttributes.FirstOrDefault(Attributedata => Attributedata.AttributeType == typeof(XmlAttributeAttribute));

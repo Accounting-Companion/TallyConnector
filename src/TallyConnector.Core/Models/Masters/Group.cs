@@ -2,7 +2,6 @@
 
 
 [XmlRoot("GROUP")]
-
 public class Group : BasicTallyObject, IAliasTallyObject
 {
     private string? name;

@@ -169,7 +169,7 @@ public class TallyAmountTests
         string xml = textWriter.ToString();
         Assert.Multiple(() =>
         {
-            Assert.That((decimal)tallyAmount, Is.EqualTo(25000));
+            Assert.That((decimal)tallyAmount, Is.EqualTo(-25000));
             Assert.That(xml, Is.EqualTo("<AMOUNT>-$ 500 @ 50</AMOUNT>"));
         });
     }
