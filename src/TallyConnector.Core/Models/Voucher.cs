@@ -278,7 +278,7 @@ public class Voucher : BasicTallyObject, ITallyObject
     public List<InventoryinAllocations>? InventoriesIn { get; set; }
 
     [XmlElement(ElementName = "CATEGORYENTRY.LIST")]
-    public CategoryEntry? CategoryEntry { get; set; }
+    public CategoryEntry? CategoryEntries { get; set; }
 
     [XmlElement(ElementName = "ATTENDANCEENTRIES.LIST")]
     public List<AttendanceEntry>? AttendanceEntries { get; set; }
@@ -331,7 +331,7 @@ public class Voucher : BasicTallyObject, ITallyObject
         //    Ledgers?.Sort((x, y) => x.Amount!.Amount.CompareTo(y.Amount!.Amount)); //Next sort Ledger List Using Ledger Amounts
         //    Ledgers?.Sort((x, y) => x.Amount!.IsDebit.CompareTo(y.Amount!.IsDebit));
         //}
-        
+
     }
 
     public new string GetJson(bool Indented = false)
@@ -358,7 +358,7 @@ public class Voucher : BasicTallyObject, ITallyObject
                     EffectiveDate ??= Date;
                     DateTime dateTime = (DateTime)EffectiveDate!;
                     double days = dateTime.Subtract(new DateTime(1900, 1, 1)).TotalDays + 1;
-                    billalloc.BillCP.JD = days.ToString();
+                   // billalloc.BillCP.JD = days.ToString();
                 }
             });
         });
@@ -403,7 +403,7 @@ public class VoucherLedger : TallyBaseObject
 
 
     [XmlElement(ElementName = "INDEXNUMBER")]
-    public int? IndexNumber { get; set; }
+    public int IndexNumber { get; set; }
 
     [XmlElement(ElementName = "LEDGERNAME")]
     [Column(TypeName = $"nvarchar({Constants.MaxNameLength})")]
@@ -460,7 +460,7 @@ public class BillAllocations : TallyBaseObject
 {
     public BillAllocations()
     {
-        _BillCP = new();
+        
     }
 
     [XmlElement(ElementName = "BILLTYPE")]
@@ -469,29 +469,15 @@ public class BillAllocations : TallyBaseObject
     [XmlElement(ElementName = "NAME")]
     public string? Name { get; set; }
 
-    private BillCP _BillCP;
+    [XmlElement(ElementName = "BILLID")]
+    public int BillId { get; set; }
 
-    [JsonIgnore]
+    [XmlElement(ElementName = "LEDGERID")]
+    [Column(TypeName = $"nvarchar({Constants.GUIDLength})")]
+    public string? LedgerId { get; set; }
+
     [XmlElement(ElementName = "BILLCREDITPERIOD")]
-    public BillCP BillCP
-    {
-        get { _BillCP.Days = BillCreditPeriod; return _BillCP; }
-        set
-        {
-            _BillCP = value;
-            BillCreditPeriod = value.Days;
-        }
-    }
-
-    private string? _billCreditPeriod;
-
-    [XmlIgnore]
-    public string? BillCreditPeriod
-    {
-        get { return _billCreditPeriod; }
-        set { _billCreditPeriod = value; }
-    }
-
+    public TallyDueDate? BillCreditPeriod { get; set; }
 
     [XmlElement(ElementName = "AMOUNT")]
     public TallyAmount? Amount { get; set; }
@@ -551,6 +537,8 @@ public class InventoryAllocations : TallyBaseObject
     {
     }
 
+    [XmlElement(ElementName = "INDEXNUMBER")]
+    public int IndexNumber { get; set; }
 
     [XmlElement(ElementName = "STOCKITEMNAME")]
     [Column(TypeName = $"nvarchar({Constants.MaxNameLength})")]
@@ -628,7 +616,7 @@ public class BatchAllocations : TallyBaseObject//Godown Allocations
     public string? BatchName { get; set; }
 
     [XmlElement(ElementName = "ORDERDUEDATE")]
-    public TallyDate? OrderDueDate { get; set; }
+    public TallyDueDate? OrderDueDate { get; set; }
 
     [XmlElement(ElementName = "AMOUNT")]
     public TallyAmount? Amount { get; set; }
@@ -685,16 +673,23 @@ public class AttendanceEntry
     [Column(TypeName = $"nvarchar({Constants.MaxNameLength})")]
     public string? Name { get; set; }
 
+    [XmlElement(ElementName = "EMPLOYEEID")]
+    [Column(TypeName = $"nvarchar({Constants.GUIDLength})")]
+    public string EmployeeId { get; set; }
 
     [XmlElement(ElementName = "ATTENDANCETYPE")]
     [Column(TypeName = $"nvarchar({Constants.MaxNameLength})")]
-    public string? AttdType { get; set; }
+    public string? AttendanceType { get; set; }
+
+    [XmlElement(ElementName = "ATTENDANCETYPEID")]
+    [Column(TypeName = $"nvarchar({Constants.GUIDLength})")]
+    public string AttendanceTypeId { get; set; }
 
     [XmlElement(ElementName = "ATTDTYPETIMEVALUE")]
-    public string? AttdTypeTimeValue { get; set; }
+    public decimal? AttendanceTypeTimeValue { get; set; }
 
     [XmlElement(ElementName = "ATTDTYPEVALUE")]
-    public string? AttdTypeValue { get; set; }
+    public string? AttendanceTypeValue { get; set; }
 
 }
 
@@ -808,11 +803,13 @@ public class TransporterDetail : TallyBaseObject, ICheckNull
     }
 }
 
-[XmlRoot(ElementName = "TRANSPORTDETAILS.LIST")]
+[XmlRoot(ElementName = "CATEGORYENTRY.LIST")]
 public class CategoryEntry
 {
     [XmlElement(ElementName = "CATEGORY")]
     public string Category { get; set; }
+    [XmlElement(ElementName = "CATEGORYID")]
+    public string CategoryId { get; set; }
 
     [XmlElement(ElementName = "EMPLOYEEENTRIES.LIST")]
     public List<EmployeeEntry> EmployeeEntries { get; set; }
@@ -823,6 +820,9 @@ public class EmployeeEntry
 {
     [XmlElement(ElementName = "EMPLOYEENAME")]
     public string EmployeeName { get; set; }
+
+    [XmlElement(ElementName = "EMPLOYEEID")]
+    public string EmployeeId { get; set; }
 
     [XmlElement(ElementName = "EMPLOYEESORTORDER")]
     public int EmployeeSortOrder { get; set; }
@@ -839,8 +839,24 @@ public class PayHeadAllocation
     [XmlElement(ElementName = "PAYHEADNAME")]
     public string PayHeadName { get; set; }
 
+    [XmlElement(ElementName = "LEDGERID")]
+    public string LedgerId { get; set; }
+
     [XmlElement(ElementName = "ISDEEMEDPOSITIVE")]
-    public TallyYesNo IsDeemedPositive { get; set; }
+    [JsonIgnore]
+    public TallyYesNo? IsDeemedPositive
+    {
+        get
+        {
+            if (Amount != null)
+            {
+                return Amount.IsDebit;
+            }
+            return null;
+
+        }
+        set { }
+    }
 
     [XmlElement(ElementName = "PAYHEADSORTORDER")]
     public int PayHeadSortOrder { get; set; }
