@@ -10,14 +10,7 @@ public class TallyDueDate : IXmlSerializable
     {
     }
 
-    public TallyDueDate(DateTime billDate, DateTime dueDate, DueDateFormat suffix)
-    {
-        _billDate = billDate;
-        DueDate = dueDate;
-        Suffix = suffix;
-        var diff = dueDate - billDate;
-        Value = (int)(suffix == DueDateFormat.Week ? diff.TotalDays / 7 : suffix == DueDateFormat.Month ? diff.TotalDays / 30 : suffix == DueDateFormat.Year ? diff.TotalDays / 365 : diff.TotalDays);
-    }
+    
     public TallyDueDate(DateTime dueDate)
     {
         DueDate = dueDate;
@@ -27,6 +20,7 @@ public class TallyDueDate : IXmlSerializable
         Value = value;
         Suffix = suffix;
     }
+
     private DateTime? _billDate;
     public int Value { get; private set; }
     public DueDateFormat? Suffix { get; private set; }
@@ -47,7 +41,7 @@ public class TallyDueDate : IXmlSerializable
             if (tValue.Contains('-'))
             {
                 Suffix = DueDateFormat.Date;
-                bool v = DateTime.TryParseExact(tValue, "dd-MMM-yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime date);
+                bool v = DateTime.TryParseExact(tValue, "d-MMM-yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime date);
                 bool sdate = DateTime.TryParseExact(tValue, "d-MMM-yy", CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime ShrtDate);
                 if (v)
                 {
@@ -87,7 +81,7 @@ public class TallyDueDate : IXmlSerializable
                 {
                     DueDate = Suffix == DueDateFormat.Month ?
                     _billDate?.AddMonths(Value) : Suffix == DueDateFormat.Year ?
-                    _billDate?.AddYears(1) : Suffix == DueDateFormat.Week ? _billDate?.AddDays(7) : _billDate?.AddDays(Value);
+                    _billDate?.AddYears(Value) : Suffix == DueDateFormat.Week ? _billDate?.AddDays(Value * 7) : _billDate?.AddDays(Value);
                 }
 
             }
@@ -114,6 +108,10 @@ public class TallyDueDate : IXmlSerializable
         }
     }
 
+    public static implicit operator TallyDueDate(DateTime dueDate)
+    {
+        return new(dueDate);
+    }
 }
 
 public enum DueDateFormat
