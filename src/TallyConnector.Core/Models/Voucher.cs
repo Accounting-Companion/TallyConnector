@@ -358,7 +358,7 @@ public class Voucher : BasicTallyObject, ITallyObject
                     EffectiveDate ??= Date;
                     DateTime dateTime = (DateTime)EffectiveDate!;
                     double days = dateTime.Subtract(new DateTime(1900, 1, 1)).TotalDays + 1;
-                   // billalloc.BillCP.JD = days.ToString();
+                    // billalloc.BillCP.JD = days.ToString();
                 }
             });
         });
@@ -436,11 +436,14 @@ public class VoucherLedger : TallyBaseObject
         set { }
     }
 
+    [XmlElement(ElementName = "SWIFTCODE")]
+    public string? SWIFTCode { get; set; }
 
     [XmlElement(ElementName = "AMOUNT")]
     public TallyAmount? Amount { get; set; }
 
-
+    [XmlElement(ElementName = "BANKALLOCATIONS.LIST")]
+    public List<BankAllocation> BankAllocations { get; set; }
 
     [XmlElement(ElementName = "BILLALLOCATIONS.LIST")]
     public List<BillAllocations>? BillAllocations { get; set; }
@@ -460,7 +463,7 @@ public class BillAllocations : TallyBaseObject
 {
     public BillAllocations()
     {
-        
+
     }
 
     [XmlElement(ElementName = "BILLTYPE")]
@@ -484,29 +487,6 @@ public class BillAllocations : TallyBaseObject
 
 
 }
-[XmlRoot(ElementName = "BILLCREDITPERIOD")]
-public class BillCP
-{
-    [XmlAttribute(AttributeName = "JD")]
-    public string? JD { get; set; }
-
-    private string? _days;
-    [XmlAttribute(AttributeName = "Days")]
-    public string? Days
-    {
-        get { return _days; }
-        set { _days = value; }
-    }
-
-    [XmlText]
-    public string? TextValue
-    {
-        get { return _days; }
-        set { _days = value; }
-    }
-
-}
-
 
 [XmlRoot(ElementName = "INVENTORYENTRIESIN.LIST")]
 public class InventoryinAllocations : InventoryAllocations
@@ -865,6 +845,55 @@ public class PayHeadAllocation
     public TallyAmount Amount { get; set; }
 }
 
+[XmlRoot(ElementName = "BANKALLOCATIONS.LIST")]
+public class BankAllocation
+{
+    [XmlElement(ElementName = "DATE")]
+    public TallyDate Date { get; set; }
+
+    /// <summary>
+    /// Use this field for Bank Reconcilliation Date
+    /// </summary>
+    [XmlElement(ElementName = "BANKERSDATE")]
+    public TallyDate? BankersDate { get; set; }
+
+    [XmlElement(ElementName = "INSTRUMENTDATE")]
+    public TallyDate InstrumentDate { get; set; }
+
+    [XmlElement(ElementName = "INSTRUMENTNUMBER")]
+    public string? InstrumentNumber { get; set; }
+
+    [XmlElement(ElementName = "NAME")]
+    [Column(TypeName = $"nvarchar({Constants.GUIDLength})")]
+    public string? Name { get; set; }
+
+    [XmlElement(ElementName = "EMAIL")]
+    public string? Email { get; set; }
+
+    [XmlElement(ElementName = "TRANSACTIONTYPE")]
+    public BankTransactionType TransactionType { get; set; }
+
+    [XmlElement(ElementName = "BANKNAME")]
+    public string? BankName { get; set; }
+
+    [XmlElement(ElementName = "IFSCODE")]
+    public string? IFSCCode { get; set; }
+
+    [XmlElement(ElementName = "ACCOUNTNUMBER")]
+    public string? AccountNumber { get; set; }
+
+    [XmlElement(ElementName = "BENEFICIARYCODE")]
+    public string? BeneficiaryCode { get; set; }
+
+    [XmlElement(ElementName = "NARRATION")]
+    public string? Remarks { get; set; }
+
+    [XmlElement(ElementName = "TRANSFERMODE")]
+    public string? TransferMode { get; set; }
+
+    [XmlElement(ElementName = "AMOUNT")]
+    public TallyAmount? Amount { get; set; }
+}
 public enum VoucherLookupField
 {
     MasterId = 1,
@@ -1020,5 +1049,29 @@ public enum VehicleType
 
 }
 
-
+public enum BankTransactionType
+{
+    [XmlEnum(Name = "Others")]
+    Others = 0,
+    [XmlEnum(Name = "ATM")]
+    ATM = 1,
+    [XmlEnum(Name = "Cash")]
+    Cash = 2,
+    [XmlEnum(Name = "Cheque")]
+    Cheque = 3,
+    [XmlEnum(Name = "Card")]
+    Card = 4,
+    [XmlEnum(Name = "ECS")]
+    ECS = 5,
+    [XmlEnum(Name = "Electronic Cheque")]
+    ElectronicCheque = 6,
+    [XmlEnum(Name = "Electronic DD/PO")]
+    ElectronicDDPO = 7,
+    [XmlEnum(Name = "Inter Bank Transfer")]
+    InterBankTransfer = 8,
+    [XmlEnum(Name = "Same Bank Transfer")]
+    SameBankTransfer = 9,
+    [XmlEnum(Name = "Cheque/DD")]
+    ChequeDD = 10,
+}
 

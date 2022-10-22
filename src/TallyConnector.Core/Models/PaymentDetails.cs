@@ -1,13 +1,12 @@
 ﻿namespace TallyConnector.Core.Models;
 
 
-//Related to ledger
+//Related to payroll and ledger
 [XmlRoot(ElementName = "PAYMENTDETAILS.LIST")]
 public class PaymentDetails
 {
     [XmlElement(ElementName = "DEFAULTTRANSACTIONTYPE")]
     public string? DefaultTransactionType { get; set; }
-
 
     [XmlElement(ElementName = "PAYMENTFAVOURING")]
     public string? InFavour { get; set; }

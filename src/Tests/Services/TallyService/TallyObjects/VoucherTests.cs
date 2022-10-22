@@ -24,7 +24,7 @@ internal class VoucherTests : BaseTallyServiceTest
             {
                 FromDate = new(2009, 4, 1),
                 FetchList = mapping.FetchList,
-                Filters = new List<Filter>() {mapping.Filter }
+                Filters = new List<Filter>() { mapping.Filter }
 
             }, progress);
             ActngVchrs.AddRange(vchs);
@@ -48,9 +48,9 @@ internal class VoucherTests : BaseTallyServiceTest
 
         }
 
-        Assert.That(ActngVchrs, Is.Not.Null);
-        Assert.That(ActngVchrs.Count, Is.EqualTo(1463));
-        Assert.That(count, Is.EqualTo(1463));
+        Assert.That(ActngVchrs, Is.Not.Null);   
+        Assert.That(ActngVchrs.Count, Is.EqualTo(1464));
+        Assert.That(count, Is.EqualTo(1464));
     }
 
 
