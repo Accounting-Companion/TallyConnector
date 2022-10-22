@@ -306,7 +306,8 @@ public class Ledger : BasicTallyObject, IAliasTallyObject
     [XmlElement(ElementName = "LEDGERCLOSINGVALUES.LIST")]
     public List<ClosingBalances>? ClosingBalances { get; set; }
 
-
+    [XmlElement(ElementName = "GSTDETAILS.LIST")]
+    public List<GSTDetail>? GSTDetails { get; set; }
 
     [XmlElement(ElementName = "CANDELETE")]
     [Column(TypeName = "nvarchar(3)")]
