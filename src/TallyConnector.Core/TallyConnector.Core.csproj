@@ -20,7 +20,7 @@
 			- Models     : Models contains the objects like ledgers, groups , vouchers and their Childs
 		</Description>
 		<RepositoryType>git</RepositoryType>
-		<VersionPrefix>2.0.4</VersionPrefix>
+		<VersionPrefix>2.0.5</VersionPrefix>
 		<VersionSuffix>rc</VersionSuffix>
 		<GeneratePackageOnBuild>True</GeneratePackageOnBuild>
 		<GenerateDocumentationFile>True</GenerateDocumentationFile>

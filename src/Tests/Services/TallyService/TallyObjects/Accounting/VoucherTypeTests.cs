@@ -13,4 +13,9 @@ public class VoucherTypeTests : BaseTallyServiceTest
     {
         var k = await _tallyService.GetVoucherTypeAsync<VoucherType>("POS Sales");
     }
+    [Test]
+    public async Task GetAllVoucherTypes()
+    {
+        var k = await _tallyService.GetAllObjectsAsync<VoucherType>();
+    }
 }

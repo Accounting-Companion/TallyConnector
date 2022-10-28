@@ -278,7 +278,7 @@ public class Voucher : BasicTallyObject, ITallyObject
     public List<InventoryinAllocations>? InventoriesIn { get; set; }
 
     [XmlElement(ElementName = "CATEGORYENTRY.LIST")]
-    public CategoryEntry? CategoryEntries { get; set; }
+    public CategoryEntry? CategoryEntry { get; set; }
 
     [XmlElement(ElementName = "ATTENDANCEENTRIES.LIST")]
     public List<AttendanceEntry>? AttendanceEntries { get; set; }
@@ -394,10 +394,10 @@ public class EVoucherLedger : VoucherLedger
 }
 
 [XmlRoot(ElementName = "ALLLEDGERENTRIES.LIST")]
-public class VoucherLedger : TallyBaseObject
+public class BaseVoucherLedger : TallyBaseObject
 {
 
-    public VoucherLedger()
+    public BaseVoucherLedger()
     {
     }
 
@@ -436,11 +436,23 @@ public class VoucherLedger : TallyBaseObject
         set { }
     }
 
-    [XmlElement(ElementName = "SWIFTCODE")]
-    public string? SWIFTCode { get; set; }
+
 
     [XmlElement(ElementName = "AMOUNT")]
     public TallyAmount? Amount { get; set; }
+    
+
+    [XmlElement(ElementName = "CATEGORYALLOCATIONS.LIST")]
+    public List<CostCategoryAllocations>? CostCategoryAllocations { get; set; }
+
+}
+
+[XmlRoot(ElementName = "ALLLEDGERENTRIES.LIST")]
+
+public class VoucherLedger : BaseVoucherLedger
+{
+    [XmlElement(ElementName = "SWIFTCODE")]
+    public string? SWIFTCode { get; set; }
 
     [XmlElement(ElementName = "BANKALLOCATIONS.LIST")]
     public List<BankAllocation> BankAllocations { get; set; }
@@ -450,12 +462,6 @@ public class VoucherLedger : TallyBaseObject
 
     [XmlElement(ElementName = "INVENTORYALLOCATIONS.LIST")]
     public List<InventoryAllocations>? InventoryAllocations { get; set; }
-
-    [XmlElement(ElementName = "CATEGORYALLOCATIONS.LIST")]
-    public List<CostCategoryAllocations>? CostCategoryAllocations { get; set; }
-
-
-
 }
 
 [XmlRoot(ElementName = "BILLALLOCATIONS.LIST")]
@@ -503,7 +509,7 @@ public class InventoryoutAllocations : InventoryAllocations
 public class AllInventoryAllocations : InventoryAllocations
 {
     [XmlElement(ElementName = "ACCOUNTINGALLOCATIONS.LIST")]
-    public List<VoucherLedger>? Ledgers { get; set; }
+    public List<BaseVoucherLedger>? Ledgers { get; set; }
 }
 [XmlRoot(ElementName = "INVENTORYENTRIES.LIST")]
 public class InventoryEntries : AllInventoryAllocations
