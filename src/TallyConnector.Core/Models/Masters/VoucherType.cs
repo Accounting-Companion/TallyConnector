@@ -81,6 +81,9 @@ public class VoucherType : BasicTallyObject, IAliasTallyObject
     [XmlElement(ElementName = "VCHPRINTTITLE")]
     public string? VchPrintTitle { get; set; }
 
+    [XmlElement(ElementName = "TAXUNITNAME")]
+    public string? TaxUnitName { get; set; }
+
     [XmlElement(ElementName = "VCHPRINTJURISDICTION")]
     public string? VchPrintJurisdiction { get; set; }
 
@@ -116,6 +119,8 @@ public class VoucherType : BasicTallyObject, IAliasTallyObject
     [Column(TypeName = "nvarchar(3)")]
     public TallyYesNo? IsforJobworkIn { get; set; }
 
+    [XmlElement(ElementName = "VOUCHERCLASSLIST.LIST")]
+    public List<VoucherClass>? VoucherClasses { get; set; }
 
     [XmlElement(ElementName = "DEFAULTVOUCHERCATEGORY")]
     public DefaultVoucherCategory? DefaultVoucherCategory { get; set; }
@@ -157,6 +162,198 @@ public class VoucherType : BasicTallyObject, IAliasTallyObject
     {
         return $"VoucherType - {Name}";
     }
+}
+
+
+public class VoucherClass
+{
+    [XmlElement(ElementName = "CLASSNAME")]
+    public string ClassName { get; set; }
+
+    [XmlElement(ElementName = "POSCARDLEDGER")]
+    public string? POSCardLedger { get; set; }
+
+    [XmlElement(ElementName = "POSCASHLEDGER")]
+    public string? POSCashLedger { get; set; }
+
+    [XmlElement(ElementName = "POSGIFTLEDGER")]
+    public string? POSGiftLedger { get; set; }
+
+    [XmlElement(ElementName = "POSCHEQUELEDGER")]
+    public string? POSChequeLedger { get; set; }
+
+    [XmlElement(ElementName = "FORJOBCOSTING")]
+    public TallyYesNo ForJobCosting { get; set; }
+
+    [XmlElement(ElementName = "USEFORINTEREST")]
+    public TallyYesNo UseforInterest { get; set; }
+
+    [XmlElement(ElementName = "USEFORGAINLOSS")]
+    public TallyYesNo UseforGainLoss { get; set; }
+
+    [XmlElement(ElementName = "USEFORGODOWNTRANSFER")]
+    public TallyYesNo UseforGodownTransfer { get; set; }
+
+    [XmlElement(ElementName = "USEFORCOMPOUND")]
+    public TallyYesNo UseforCompound { get; set; }
+
+    [XmlElement(ElementName = "CLASSFORVAT")]
+    public TallyYesNo ClassforVAT { get; set; }
+
+    [XmlElement(ElementName = "USEFORFBT")]
+    public TallyYesNo UseforFBT { get; set; }
+
+    [XmlElement(ElementName = "POSENABLECARDLEDGER")]
+    public TallyYesNo POSEnableCardLedger { get; set; }
+
+    [XmlElement(ElementName = "POSENABLECASHLEDGER")]
+    public TallyYesNo POSEnableCashLedger { get; set; }
+
+    [XmlElement(ElementName = "POSENABLEGIFTLEDGER")]
+    public TallyYesNo POSEnableGiftLedger { get; set; }
+
+    [XmlElement(ElementName = "POSENABLECHEQUELEDGER")]
+    public TallyYesNo PosEnableChequeLedger { get; set; }
+
+    [XmlElement(ElementName = "USEFOREXCISECOMMERCIALINVOICE")]
+    public TallyYesNo UseforExcisECommercialInvoice { get; set; }
+
+    [XmlElement(ElementName = "USEFORSERVICETAX")]
+    public TallyYesNo UseforServiceTax { get; set; }
+
+    [XmlElement(ElementName = "CLASSFOREXCISE")]
+    public TallyYesNo ClassforExcise { get; set; }
+
+    [XmlElement(ElementName = "CLASSFORDEALEREXCISESHORTAGE")]
+    public TallyYesNo ClassforDealerExciseShortage { get; set; }
+
+    [XmlElement(ElementName = "POSENABLEONACCOUNTLEDGER")]
+    public TallyYesNo POSEnableOnAccountLedger { get; set; }
+
+    [XmlElement(ElementName = "USEBANKALLOCFORCC")]
+    public TallyYesNo UseBankAllocforcc { get; set; }
+
+    [XmlElement(ElementName = "ISDEFAULTCLASS")]
+    public TallyYesNo IsDefaultClass { get; set; }
+
+    [XmlElement(ElementName = "ADJDIFFINFIRSTLEDGER")]
+    public TallyYesNo AdjDiffinFirstLedger { get; set; }
+
+    [XmlElement(ElementName = "ADJDIFFINFIRSTLEDGERITEM")]
+    public TallyYesNo AdjDiffinFirstLedgerItem { get; set; }
+
+    [XmlElement(ElementName = "LEDGERFORINVENTORYLIST.LIST")]
+    public List<VoucherClassLedger>? LedgersforInventory { get; set; }
+
+    [XmlElement(ElementName = "LEDGERENTRIESLIST.LIST")]
+    public List<VoucherClassLedger>? LedgerEntries { get; set; }
+
+    [XmlElement(ElementName = "DEFAULTACCALLOCFORITEM.LIST")]
+    public List<DefaultAllocforItem>? StockEntries { get; set; }
+
+}
+public class VoucherClassLedger
+{
+    [XmlElement(ElementName = "NAME")]
+    public string Name { get; set; }
+
+    [XmlElement(ElementName = "ROUNDTYPE")]
+    public RoundType? RoundType { get; set; }
+
+    [XmlElement(ElementName = "GSTCLASSIFICATIONNATURE")]
+    public string? GSTClassificationNature { get; set; }
+
+    [XmlElement(ElementName = "METHODTYPE")]
+    public CalculationMethod? MethodType { get; set; }
+
+    [XmlElement(ElementName = "CLASSRATE")]
+    public decimal ClassRate { get; set; }
+
+    /// <summary>
+    /// Override using Item Default
+    /// </summary>
+    [XmlElement(ElementName = "LEDGERFROMITEM")]
+    public TallyYesNo LedgerfromItem { get; set; }
+
+    [XmlElement(ElementName = "REMOVEZEROENTRIES")]
+    public TallyYesNo RemoveZeroEntries { get; set; }
+
+    [XmlElement(ElementName = "ROUNDLIMIT")]
+    public decimal? Roundlimit { get; set; }
+}
+
+public class DefaultAllocforItem
+{
+    [XmlElement(ElementName = "STOCKITEMNAME")]
+    public string StockItemName { get; set; }
+
+    /// <summary>
+    /// Override using Item Default
+    /// </summary>
+    [XmlElement(ElementName = "LEDGERFROMITEM")]
+    public TallyYesNo LedgerfromItem { get; set; }
+
+    [XmlElement(ElementName = "DEFAULTACCALLOCFORITEM.LIST")]
+    public List<VoucherClassLedger>? LedgerEntries { get; set; }
+}
+public enum CalculationMethod
+{
+    [XmlEnum(Name = "")]
+    None,
+    [XmlEnum(Name = "GST")]
+    GST = 1,
+    [XmlEnum(Name = "TCS")]
+    TCS = 2,
+    [XmlEnum(Name = "TDS")]
+    TDS = 3,
+    [XmlEnum(Name = "Excise")]
+    Excise = 4,
+    [XmlEnum(Name = "FBT")]
+    FBT = 5,
+    [XmlEnum(Name = "Service Tax")]
+    ServiceTax = 6,
+    [XmlEnum(Name = "VAT")]
+    VAT = 7,
+    [XmlEnum(Name = "Default")]
+    Default = 8,
+    [XmlEnum(Name = "CST")]
+    CST = 9,
+    [XmlEnum(Name = "CENVAT")]
+    CENVAT = 10,
+    [XmlEnum(Name = "Krishi Kalyan Cess")]
+    KrishiKalyanCess = 11,
+    [XmlEnum(Name = "Swachh Bharat Cess")]
+    SwachhBharatCess = 12,
+    [XmlEnum(Name = "Additional Tax")]
+    AdditionalTax,
+    [XmlEnum(Name = "Surcharge On VAT")]
+    SurchargeOnVAT,
+    [XmlEnum(Name = "Cess On VAT")]
+    CessOnVAT,
+    [XmlEnum(Name = "NHIL")]
+    NHIL,
+    [XmlEnum(Name = "On Item Rate")]
+    OnItemRate,
+    [XmlEnum(Name = "On Total Sales")]
+    OnTotalSales,
+    [XmlEnum(Name = "On Current SubTotal")]
+    OnCurrentSubTotal,
+    [XmlEnum(Name = "As Surcharge")]
+    AsSurcharge,
+    [XmlEnum(Name = "As Additional Excise")]
+    AsExciseSurcharge,
+    [XmlEnum(Name = "Based on Quantity")]
+    OnQuantity,
+    [XmlEnum(Name = "As Flat Rate")]
+    AsFlatRate,
+    [XmlEnum(Name = "As User Defined Value")]
+    AsUserDefined,
+    [XmlEnum(Name = "As Total Amount Rounding")]
+    AsRounding,
+    [XmlEnum(Name = "On VAT Rate")]
+    OnVATRate,
+    [XmlEnum(Name = "On Sales Tax Rate")]
+    OnSalesTaxRate
 }
 
 public enum DefaultVoucherCategory
