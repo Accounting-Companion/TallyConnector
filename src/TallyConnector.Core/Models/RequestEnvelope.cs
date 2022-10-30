@@ -113,7 +113,7 @@ public class TDLMessage
                            colType: colType,
                            childOf: childof,
                            nativeFields: nativeFields,
-                           filters: filters?.Select(c => c.FilterName).ToList()!,
+                           filters: filters?.Where(f => !f.ExcludeinCollection).Select(c => c.FilterName).ToList()!,
                            computevar: computevar,
                            compute: compute,
                            Isintialize: isInitialize));
@@ -223,7 +223,7 @@ public class TDLMessage
                 rootreportField.CollectionType!,
                 null,
                 new() { string.Join(",", Fetchlist) },
-                filters?.Select(c => c.FilterName).ToList()!)
+                filters?.Where(f => !f.ExcludeinCollection).Select(c => c.FilterName).ToList()!)
         };
 
     }

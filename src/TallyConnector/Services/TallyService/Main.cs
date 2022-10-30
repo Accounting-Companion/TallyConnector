@@ -352,7 +352,7 @@ public partial class TallyService : ITallyService
         requestEnvelope.Body.Desc.FunctionParams = new() { Param = new() { CollectionName } };
         requestEnvelope.Body.Desc.TDL.TDLMessage.Collection.Add(new(CollectionName,
                                                                     options.CollectionType,
-                                                                    filters: options.Filters?.Select(c => c.FilterName).ToList()!));
+                                                                    filters: options.Filters?.Where(f => !f.ExcludeinCollection).Select(c => c.FilterName).ToList()!));
 
 
         options.Filters?.ForEach(filter => requestEnvelope.Body.Desc.TDL.TDLMessage.System?.Add(new(name: filter.FilterName!,
@@ -425,8 +425,8 @@ public partial class TallyService : ITallyService
 
             ColEnvelope.Body.Desc.TDL.TDLMessage.Collection.Add(new()
             {
-                Name = ColEnvelope.Header.ID + "PAGINATED",
-                Collections = ColEnvelope.Header!.ID,
+                Name = ColEnvelope.Header?.ID + "PAGINATED",
+                Collections = ColEnvelope.Header?.ID,
                 Compute = new() { "LineIndex : ##vLineIndex" },
                 ComputeVar = new() { "vLineIndex: Number : IF $$IsEmpty:##vLineIndex THEN 1 ELSE ##vLineIndex + 1" },
                 NativeFields = new() { "*" },
