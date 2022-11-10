@@ -53,8 +53,8 @@ public partial class TallyService
             },
             Collection = new()
             {
-                new(colName:"MastersCollection",colType:"Masters",nativeFields:new(){"ALTERID"}){Sort="@@Default: -$Alterid"},
-                new(colName:"VouchersCollection",colType:"Vouchers",nativeFields:new(){"ALTERID"}){Sort="@@Default: -$Alterid"}
+                new(colName:"MastersCollection",colType:"Masters",nativeFields:new(){"ALTERID"}){Sort=new(){"@@Default: -$Alterid" } },
+                new(colName:"VouchersCollection",colType:"Vouchers",nativeFields:new(){"ALTERID"}){Sort=new(){"@@Default: -$Alterid" } }
             }
         };
         tdlMessage.Part![0].SetAttributes();

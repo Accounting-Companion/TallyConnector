@@ -434,7 +434,7 @@ public partial class TallyService : ITallyService
             });
             ColEnvelope.Body.Desc.TDL.TDLMessage.System?.Add(new("Pagination", collectionOptions.Pagination.GetFilterFormulae()));
             ColEnvelope.Header!.ID += "PAGINATED";
-            //collectionOptions.Filters.Add(new("Pagination", collectionOptions.Pagination.GetFilterFormulae()));
+
 
         }
         string Reqxml = ColEnvelope.GetXML(indent: indented);

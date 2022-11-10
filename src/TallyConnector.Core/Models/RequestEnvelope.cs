@@ -121,7 +121,7 @@ public class TDLMessage
         filters?.ForEach(filter => System.Add(new(name: filter.FilterName!,
                                                  text: filter.FilterFormulae!)));
 
-
+        
     }
 
 
@@ -611,7 +611,7 @@ public class Collection : DCollection
     public List<string>? ComputeVar { get; set; }
 
     [XmlElement(ElementName = "SORT")]
-    public string? Sort { get; set; }
+    public List<string>? Sort { get; set; }
 
     [XmlElement(ElementName = "FILTERS")]
     public List<string>? Filters { get; set; }
@@ -624,7 +624,7 @@ public class Collection : DCollection
     [XmlAttribute(AttributeName = "NAME")]
     public string? Name { get; set; }
 
-    
+
 
 
 }
