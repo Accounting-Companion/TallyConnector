@@ -11,15 +11,15 @@ internal class GroupTests : BaseTallyServiceTest
 
         var Groups = await _tallyService.GetObjectsAsync<TCMA.Group>(new() { FetchList = new() { "*" } });
         Assert.That(Groups, Is.Not.Null);
-        Assert.That(Groups, Has.Count.EqualTo(73));
+        Assert.That(Groups, Has.Count.EqualTo(62));
     }
     [Test]
     public async Task CheckGetAllGroups2()
     {
 
-        var Groups = await _tallyService.GetAllObjectsAsync<TCMA.Group>(new() { FetchList = new() { "*" } });
+        var Groups = await _tallyService.GetAllObjectsAsync<TCMA.BaseGroup>(new() { FetchList = new() { "Parent,MasterId" } });
         Assert.That(Groups, Is.Not.Null);
-        Assert.That(Groups, Has.Count.EqualTo(73));
+        Assert.That(Groups, Has.Count.EqualTo(62));
     }
     [Test]
     public async Task CheckGetAllGroupsbyPaginate()

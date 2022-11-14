@@ -379,6 +379,16 @@ public class Voucher : BasicTallyObject, ITallyObject
         {
             EWayBillDetails = null;
         }
+        AttendanceEntries = AttendanceEntries?.Where(attndentry => !attndentry.IsNull())?.ToList();
+        if (AttendanceEntries != null && AttendanceEntries.Count == 0)
+        {
+            AttendanceEntries = null;
+        }
+        Ledgers = Ledgers?.Where(ledg => !ledg.IsNull())?.ToList();
+        if (Ledgers != null && Ledgers.Count == 0)
+        {
+            Ledgers = null;
+        }
     }
 
     public override string ToString()
@@ -440,7 +450,7 @@ public class BaseVoucherLedger : TallyBaseObject
 
     [XmlElement(ElementName = "AMOUNT")]
     public TallyAmount? Amount { get; set; }
-    
+
 
     [XmlElement(ElementName = "CATEGORYALLOCATIONS.LIST")]
     public List<CostCategoryAllocations>? CostCategoryAllocations { get; set; }
@@ -455,13 +465,27 @@ public class VoucherLedger : BaseVoucherLedger
     public string? SWIFTCode { get; set; }
 
     [XmlElement(ElementName = "BANKALLOCATIONS.LIST")]
-    public List<BankAllocation> BankAllocations { get; set; }
+    public List<BankAllocation>? BankAllocations { get; set; }
 
     [XmlElement(ElementName = "BILLALLOCATIONS.LIST")]
     public List<BillAllocations>? BillAllocations { get; set; }
 
     [XmlElement(ElementName = "INVENTORYALLOCATIONS.LIST")]
     public List<InventoryAllocations>? InventoryAllocations { get; set; }
+
+    internal bool IsNull()
+    {
+        if (string.IsNullOrEmpty(LedgerName))
+        {
+            return true;
+        }
+        BankAllocations = BankAllocations?.Where(bankalloc => !bankalloc.IsNull())?.ToList();
+        if (BankAllocations != null && BankAllocations.Count == 0)
+        {
+            BankAllocations = null;
+        }
+        return false;
+    }
 }
 
 [XmlRoot(ElementName = "BILLALLOCATIONS.LIST")]
@@ -677,6 +701,15 @@ public class AttendanceEntry
     [XmlElement(ElementName = "ATTDTYPEVALUE")]
     public TallyQuantity? AttendanceTypeValue { get; set; }
 
+    public bool IsNull()
+    {
+        if (string.IsNullOrEmpty(Name) &&
+            string.IsNullOrEmpty(AttendanceType) && AttendanceTypeValue == null)
+        {
+            return true;
+        }
+        return false;
+    }
 }
 
 [XmlRoot(ElementName = "INVOICEDELNOTES.LIST")]
@@ -899,6 +932,15 @@ public class BankAllocation
 
     [XmlElement(ElementName = "AMOUNT")]
     public TallyAmount? Amount { get; set; }
+
+    internal bool IsNull()
+    {
+        if (Date == null && BankersDate == null && InstrumentDate == null)
+        {
+            return true;
+        }
+        return false;
+    }
 }
 public enum VoucherLookupField
 {

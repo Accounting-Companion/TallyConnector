@@ -22,6 +22,7 @@ jobs:
           dotnet-version: |
             5.0.x
             6.0.x
+            7.0.x
       - name: Restore dependencies
         run: dotnet restore ${{ env.PROJECT1_PATH }} && dotnet restore ${{ env.PROJECT2_PATH }}
       - name: "Build projects"

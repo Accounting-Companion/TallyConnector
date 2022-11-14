@@ -1,21 +1,24 @@
-﻿namespace TallyConnector.Core.Models.Masters;
+﻿using System.Xml.Linq;
 
+namespace TallyConnector.Core.Models.Masters;
 
 [XmlRoot("GROUP")]
-public class Group : BasicTallyObject, IAliasTallyObject
+public class BaseGroup : BasicTallyObject, IAliasTallyObject
 {
     private string? name;
 
-    public Group()
+    public BaseGroup()
     {
         LanguageNameList = new();
     }
+
+
 
     /// <summary>
     /// Create New Group Under Primary
     /// </summary>
     /// <param name="name">Name Of the Group</param>
-    public Group(string name)
+    public BaseGroup(string name)
     {
         Name = name;
         LanguageNameList = new();
@@ -26,12 +29,13 @@ public class Group : BasicTallyObject, IAliasTallyObject
     /// </summary>
     /// <param name="name">Name Of the Group</param>
     /// <param name="parent">Name of Base Group</param>
-    public Group(string name, string parent)
+    public BaseGroup(string name, string parent)
     {
         Name = name;
         LanguageNameList = new();
         Parent = parent;
     }
+
 
     //Use Old Name Only When you are altering Existing Group
     [XmlAttribute(AttributeName = "NAME")]
@@ -52,6 +56,12 @@ public class Group : BasicTallyObject, IAliasTallyObject
         set => name = value;
     }
 
+
+    [XmlIgnore]
+    [Column(TypeName = $"nvarchar({Constants.MaxNameLength})")]
+    public string? Alias { get; set; }
+
+
     [XmlElement(ElementName = "PARENT")]
     [Column(TypeName = $"nvarchar({Constants.MaxNameLength})")]
     public string? Parent { get; set; }
@@ -61,53 +71,11 @@ public class Group : BasicTallyObject, IAliasTallyObject
     [TDLXMLSet(Set = "$GUID:Group:$Parent")]
     public string? ParentId { get; set; }
 
-    [XmlIgnore]
-    [Column(TypeName = $"nvarchar({Constants.MaxNameLength})")]
-    public string? Alias { get; set; }
-
-
-    /// <summary>
-    /// Tally Field - Used for Calculation
-    /// </summary>
-    [XmlElement(ElementName = "BASICGROUPISCALCULABLE")]
-    [Column(TypeName = "nvarchar(3)")]
-    public TallyYesNo? IsCalculable { get; set; }
-
-    /// <summary>
-    /// Tally Field - Net Debit/Credit Balances for Reporting 
-    /// </summary>
-    [XmlElement(ElementName = "ISADDABLE")]
-    [Column(TypeName = "nvarchar(3)")]
-    public TallyYesNo? IsAddable { get; set; }
-
-    /// <summary>
-    /// Tally Field - Method to Allocate when used in purchase invoice
-    /// </summary>
-    [XmlElement(ElementName = "ADDLALLOCTYPE")]
-    [Column(TypeName = "nvarchar(25)")]
-    public AdAllocType? AddlAllocType { get; set; }
-
-    [XmlElement(ElementName = "ISSUBLEDGER")]
-    [Column(TypeName = "nvarchar(3)")]
-    public TallyYesNo? IsSubledger { get; set; }
-
-    [XmlElement(ElementName = "ISREVENUE")]
-    [Column(TypeName = "nvarchar(3)")]
-    public TallyYesNo? IsRevenue { get; set; }
-
-    [XmlElement(ElementName = "AFFECTSGROSSPROFIT")]
-    [Column(TypeName = "nvarchar(3)")]
-    public TallyYesNo? AffectGrossProfit { get; set; }
-
-
-    [XmlElement(ElementName = "CANDELETE")]
-    [Column(TypeName = "nvarchar(3)")]
-    public TallyYesNo? CanDelete { get; set; }
-
     [JsonIgnore]
     [XmlElement(ElementName = "LANGUAGENAME.LIST")]
     [TDLCollection(CollectionName = "LanguageName")]
     public List<LanguageNameList> LanguageNameList { get; set; }
+
 
 
     public void CreateNamesList()
@@ -149,6 +117,61 @@ public class Group : BasicTallyObject, IAliasTallyObject
     {
         return $"Group - {Name}";
     }
+
+}
+[XmlRoot("GROUP")]
+public class Group : BaseGroup
+{
+    public Group() : base()
+    {
+
+    }
+
+    public Group(string name) : base(name)
+    {
+    }
+    public Group(string name, string parent) : base(name, parent)
+    {
+    }
+
+    /// <summary>
+    /// Tally Field - Used for Calculation
+    /// </summary>
+    [XmlElement(ElementName = "BASICGROUPISCALCULABLE")]
+    [Column(TypeName = "nvarchar(3)")]
+    public TallyYesNo? IsCalculable { get; set; }
+
+    /// <summary>
+    /// Tally Field - Net Debit/Credit Balances for Reporting 
+    /// </summary>
+    [XmlElement(ElementName = "ISADDABLE")]
+    [Column(TypeName = "nvarchar(3)")]
+    public TallyYesNo? IsAddable { get; set; }
+
+    /// <summary>
+    /// Tally Field - Method to Allocate when used in purchase invoice
+    /// </summary>
+    [XmlElement(ElementName = "ADDLALLOCTYPE")]
+    [Column(TypeName = "nvarchar(25)")]
+    public AdAllocType? AddlAllocType { get; set; }
+
+    [XmlElement(ElementName = "ISSUBLEDGER")]
+    [Column(TypeName = "nvarchar(3)")]
+    public TallyYesNo? IsSubledger { get; set; }
+
+    [XmlElement(ElementName = "ISREVENUE")]
+    [Column(TypeName = "nvarchar(3)")]
+    public TallyYesNo? IsRevenue { get; set; }
+
+    [XmlElement(ElementName = "AFFECTSGROSSPROFIT")]
+    [Column(TypeName = "nvarchar(3)")]
+    public TallyYesNo? AffectGrossProfit { get; set; }
+
+
+    [XmlElement(ElementName = "CANDELETE")]
+    [Column(TypeName = "nvarchar(3)")]
+    public TallyYesNo? CanDelete { get; set; }
+
 
 
 }
