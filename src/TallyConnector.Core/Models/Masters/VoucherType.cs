@@ -183,64 +183,64 @@ public class VoucherClass
     public string? POSChequeLedger { get; set; }
 
     [XmlElement(ElementName = "FORJOBCOSTING")]
-    public TallyYesNo ForJobCosting { get; set; }
+    public TallyYesNo? ForJobCosting { get; set; }
 
     [XmlElement(ElementName = "USEFORINTEREST")]
-    public TallyYesNo UseforInterest { get; set; }
+    public TallyYesNo? UseforInterest { get; set; }
 
     [XmlElement(ElementName = "USEFORGAINLOSS")]
-    public TallyYesNo UseforGainLoss { get; set; }
+    public TallyYesNo? UseforGainLoss { get; set; }
 
     [XmlElement(ElementName = "USEFORGODOWNTRANSFER")]
     public TallyYesNo UseforGodownTransfer { get; set; }
 
     [XmlElement(ElementName = "USEFORCOMPOUND")]
-    public TallyYesNo UseforCompound { get; set; }
+    public TallyYesNo? UseforCompound { get; set; }
 
     [XmlElement(ElementName = "CLASSFORVAT")]
-    public TallyYesNo ClassforVAT { get; set; }
+    public TallyYesNo? ClassforVAT { get; set; }
 
     [XmlElement(ElementName = "USEFORFBT")]
-    public TallyYesNo UseforFBT { get; set; }
+    public TallyYesNo? UseforFBT { get; set; }
 
     [XmlElement(ElementName = "POSENABLECARDLEDGER")]
-    public TallyYesNo POSEnableCardLedger { get; set; }
+    public TallyYesNo? POSEnableCardLedger { get; set; }
 
     [XmlElement(ElementName = "POSENABLECASHLEDGER")]
-    public TallyYesNo POSEnableCashLedger { get; set; }
+    public TallyYesNo? POSEnableCashLedger { get; set; }
 
     [XmlElement(ElementName = "POSENABLEGIFTLEDGER")]
-    public TallyYesNo POSEnableGiftLedger { get; set; }
+    public TallyYesNo? POSEnableGiftLedger { get; set; }
 
     [XmlElement(ElementName = "POSENABLECHEQUELEDGER")]
-    public TallyYesNo PosEnableChequeLedger { get; set; }
+    public TallyYesNo? PosEnableChequeLedger { get; set; }
 
     [XmlElement(ElementName = "USEFOREXCISECOMMERCIALINVOICE")]
-    public TallyYesNo UseforExcisECommercialInvoice { get; set; }
+    public TallyYesNo? UseforExcisECommercialInvoice { get; set; }
 
     [XmlElement(ElementName = "USEFORSERVICETAX")]
-    public TallyYesNo UseforServiceTax { get; set; }
+    public TallyYesNo? UseforServiceTax { get; set; }
 
     [XmlElement(ElementName = "CLASSFOREXCISE")]
-    public TallyYesNo ClassforExcise { get; set; }
+    public TallyYesNo? ClassforExcise { get; set; }
 
     [XmlElement(ElementName = "CLASSFORDEALEREXCISESHORTAGE")]
-    public TallyYesNo ClassforDealerExciseShortage { get; set; }
+    public TallyYesNo? ClassforDealerExciseShortage { get; set; }
 
     [XmlElement(ElementName = "POSENABLEONACCOUNTLEDGER")]
-    public TallyYesNo POSEnableOnAccountLedger { get; set; }
+    public TallyYesNo? POSEnableOnAccountLedger { get; set; }
 
     [XmlElement(ElementName = "USEBANKALLOCFORCC")]
-    public TallyYesNo UseBankAllocforcc { get; set; }
+    public TallyYesNo? UseBankAllocforcc { get; set; }
 
     [XmlElement(ElementName = "ISDEFAULTCLASS")]
-    public TallyYesNo IsDefaultClass { get; set; }
+    public TallyYesNo? IsDefaultClass { get; set; }
 
     [XmlElement(ElementName = "ADJDIFFINFIRSTLEDGER")]
-    public TallyYesNo AdjDiffinFirstLedger { get; set; }
+    public TallyYesNo? AdjDiffinFirstLedger { get; set; }
 
     [XmlElement(ElementName = "ADJDIFFINFIRSTLEDGERITEM")]
-    public TallyYesNo AdjDiffinFirstLedgerItem { get; set; }
+    public TallyYesNo? AdjDiffinFirstLedgerItem { get; set; }
 
     [XmlElement(ElementName = "LEDGERFORINVENTORYLIST.LIST")]
     public List<VoucherClassLedger>? LedgersforInventory { get; set; }
@@ -267,6 +267,7 @@ public class VoucherClassLedger
     public CalculationMethod? MethodType { get; set; }
 
     [XmlElement(ElementName = "CLASSRATE")]
+    [Column(TypeName = "decimal(10,4)")]
     public decimal ClassRate { get; set; }
 
     /// <summary>
@@ -279,6 +280,7 @@ public class VoucherClassLedger
     public TallyYesNo RemoveZeroEntries { get; set; }
 
     [XmlElement(ElementName = "ROUNDLIMIT")]
+    [Column(TypeName = "decimal(10,4)")]
     public decimal? Roundlimit { get; set; }
 }
 

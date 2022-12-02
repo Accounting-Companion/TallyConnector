@@ -205,7 +205,7 @@ public class Mappings
     {
         new TallyObjectMapping(masterType : TallyObjectType.Vouchers,
                                tallyMasterType : "Voucher",
-                               defaultPaginateCount : 500,
+                               defaultPaginateCount : 1000,
                                filters : null,
                                computeFields : new()
                                {

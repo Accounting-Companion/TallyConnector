@@ -316,6 +316,22 @@ public class Voucher : BasicTallyObject, ITallyObject
     }
 
 
+    [JsonIgnore]
+    [NotMapped]
+    [XmlAttribute(AttributeName = "MASTERID")]
+    public string? _MasterId
+    {
+        get
+        {
+            return MasterId.ToString();
+        }
+        set
+        {
+
+        }
+    }
+
+
 
     public void OrderLedgers()
     {
@@ -461,6 +477,15 @@ public class BaseVoucherLedger : TallyBaseObject
 
 public class VoucherLedger : BaseVoucherLedger
 {
+    public VoucherLedger(string name, TallyAmount amount)
+    {
+        LedgerName = name;
+        Amount = amount;
+    }
+    public VoucherLedger()
+    {
+    }
+
     [XmlElement(ElementName = "SWIFTCODE")]
     public string? SWIFTCode { get; set; }
 
@@ -644,6 +669,11 @@ public class CostCategoryAllocations : TallyBaseObject
     public CostCategoryAllocations()
     {
     }
+    public CostCategoryAllocations(string name, List<CostCenterAllocations> costCenterAllocations)
+    {
+        CostCategoryName = name;
+        CostCenterAllocations = costCenterAllocations;
+    }
 
     [XmlElement(ElementName = "CATEGORY")]
     [Column(TypeName = $"nvarchar({Constants.MaxNameLength})")]
@@ -660,6 +690,15 @@ public class CostCategoryAllocations : TallyBaseObject
 [XmlRoot(ElementName = "COSTCENTREALLOCATIONS.LIST")]
 public class CostCenterAllocations : TallyBaseObject
 {
+    public CostCenterAllocations()
+    {
+    }
+    public CostCenterAllocations(string name, TallyAmount amount)
+    {
+        Name = name;
+        Amount = amount;
+    }
+
     [XmlElement(ElementName = "NAME")]
     [Column(TypeName = $"nvarchar({Constants.MaxNameLength})")]
     public string? Name { get; set; }
@@ -696,6 +735,7 @@ public class AttendanceEntry
     public string AttendanceTypeId { get; set; }
 
     [XmlElement(ElementName = "ATTDTYPETIMEVALUE")]
+    [Column(TypeName = "decimal(10,4)")]
     public decimal? AttendanceTypeTimeValue { get; set; }
 
     [XmlElement(ElementName = "ATTDTYPEVALUE")]

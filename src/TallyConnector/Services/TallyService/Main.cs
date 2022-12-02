@@ -329,10 +329,7 @@ public partial class TallyService : ITallyService
                 IsInitialize = objectOptions?.IsInitialize ?? YesNo.No,
             };
             var tempobjects = await GetObjectsAsync<ObjType>(options);
-            if (tempobjects != null)
-            {
-                tempobjects.AsParallel().ForAll(t => objects.Add(t));
-            }
+            tempobjects?.AsParallel().ForAll(t => objects.Add(t));
             progress?.Report(new(tpagination.TotalCount, tpagination.End - tpagination.Start, tpagination.End));
         }
         //await Task.WhenAll(tasks.ToArray());

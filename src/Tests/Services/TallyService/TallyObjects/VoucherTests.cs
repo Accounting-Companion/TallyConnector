@@ -31,26 +31,26 @@ internal class VoucherTests : BaseTallyServiceTest
         }
         var value = ActngVchrs.GroupBy(c => c.VchType).ToDictionary(c => c.Key, c => c.ToList());
 
-        foreach (var v in value)
-        {
-            var Subdict = v.Value.GroupBy(c => c.View).ToDictionary(c => c.Key, c => c.ToList());
-            foreach (var item in Subdict)
-            {
-                string json = JsonSerializer.Serialize(item.Value, new JsonSerializerOptions()
-                {
-                    WriteIndented = true,
-                    //DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingDefault,
-                    PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
-                    Converters = { new JsonStringEnumConverter(), new TallyDateJsonConverter() }
-                });
-                await File.WriteAllTextAsync("json/" + v.Key + "_" + item.Key + ".json", json);
-            }
+        //foreach (var v in value)
+        //{
+        //    var Subdict = v.Value.GroupBy(c => c.View).ToDictionary(c => c.Key, c => c.ToList());
+        //    foreach (var item in Subdict)
+        //    {
+        //        string json = JsonSerializer.Serialize(item.Value, new JsonSerializerOptions()
+        //        {
+        //            WriteIndented = true,
+        //            //DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingDefault,
+        //            PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+        //            Converters = { new JsonStringEnumConverter(), new TallyDateJsonConverter() }
+        //        });
+        //        await File.WriteAllTextAsync("json/" + v.Key + "_" + item.Key + ".json", json);
+        //    }
 
-        }
+        //}
 
-        Assert.That(ActngVchrs, Is.Not.Null);   
-        Assert.That(ActngVchrs.Count, Is.EqualTo(1464));
-        Assert.That(count, Is.EqualTo(1464));
+        Assert.That(ActngVchrs, Is.Not.Null);
+        Assert.That(ActngVchrs, Has.Count.EqualTo(8636));
+        Assert.That(count, Is.EqualTo(8636));
     }
 
 
@@ -129,5 +129,18 @@ internal class VoucherTests : BaseTallyServiceTest
     }
 
 
+    [Test]
+    public async Task GetVoucher()
+    {
+        var vouche = await _tallyService.GetVoucherAsync<Voucher>("910", new() { LookupField = VoucherLookupField.MasterId });
+        vouche.ReferenceDate = vouche.Date;
+        vouche.OtherFields = null;
+        vouche.OtherAttributes = null;
+        TallyResult tallyResult = await _tallyService.PostVoucherAsync(new Voucher()
+        {
+            MasterId = vouche.MasterId,
+            Action = TallyConnector.Core.Models.Action.Delete
+        });
+    }
 }
 
