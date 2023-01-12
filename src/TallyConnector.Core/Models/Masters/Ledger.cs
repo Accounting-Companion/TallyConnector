@@ -30,10 +30,12 @@ public class Ledger : BasicTallyObject, IAliasTallyObject
     [JsonIgnore]
     [Column(TypeName = $"nvarchar({Constants.MaxNameLength})")]
     public string? OldName { get; set; }
-
+    /// <summary>
+    /// Name of Ledger
+    /// </summary>
     [XmlElement(ElementName = "NAME")]
     [Required]
-    [Column(TypeName = $"nvarchar({Constants.MaxNameLength})")]
+    [Column(TypeName = $"nvarchar({Constants.MaxNameLength})")]    
     public string Name
     {
         get
@@ -76,7 +78,6 @@ public class Ledger : BasicTallyObject, IAliasTallyObject
 
     [XmlElement(ElementName = "OPENINGBALANCE")]
     public TallyAmount? OpeningBal { get; set; }
-
 
 
     private string? _Currency;

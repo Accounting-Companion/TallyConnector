@@ -51,7 +51,6 @@ public interface ITallyService
     /// <summary>
     /// Gets List of companies that are in Default Data Path of Tally
     /// </summary>
-    /// <typeparam name="CompanyType"></typeparam>
     /// <returns></returns>
     Task<List<CompanyOnDisk>?> GetCompaniesinDefaultPathAsync();
 
@@ -92,12 +91,129 @@ public interface ITallyService
 
     Task<GroupType> GetGroupAsync<GroupType>(string lookupValue, MasterRequestOptions? groupOptions = null) where GroupType : Group;
     Task<LedgerType> GetLedgerAsync<LedgerType>(string LookupValue, MasterRequestOptions? ledgerOptions = null) where LedgerType : Ledger;
+
     Task<VChTypeType> GetVoucherTypeAsync<VChTypeType>(string LookupValue, MasterRequestOptions? voucherTypeOptions = null) where VChTypeType : VoucherType;
 
     Task<CostCategoryType> GetCostCategoryAsync<CostCategoryType>(string LookupValue, MasterRequestOptions? costCategoryOptions = null) where CostCategoryType : CostCategory;
     Task<CostCentreType> GetCostCentreAsync<CostCentreType>(string LookupValue, MasterRequestOptions? costCenterOptions = null) where CostCentreType : CostCenter;
     #endregion
 
+    /*
+     * Bulk Get Methods of Accounting Masters by Pagination - Currency, Group, Ledger,VoucherType, Cost Category, CostCetre
+     * To Get Items with default type use Get[Name]sPaginatedAsync<Type>(options);
+     * To Get Items with custom type use Get[Name]sPaginatedAsync(options);
+     * Ex:To Get Groups with default type use - await GetGroupsPaginatedAsync(options);
+     * Ex:To Get Groups with custom type use - await GetGroupsPaginatedAsync<Group>(options);
+     */
+    #region Bulk GetPaginated - Methods 
+
+    /// <inheritdoc cref="GetCurrenciesAsync(RequestOptions)" />
+    Task<List<CurrencyType>?> GetCurrenciesAsync<CurrencyType>(PaginatedRequestOptions ReqOptions) where CurrencyType : Currency;
+
+    /// <inheritdoc cref="GetCurrenciesAsync(RequestOptions)" />
+    Task<List<Currency>?> GetCurrenciesAsync(PaginatedRequestOptions ReqOptions);
+
+    /// <inheritdoc cref="GetGroupsAsync(RequestOptions)" />
+    Task<List<GroupType>?> GetGroupsAsync<GroupType>(PaginatedRequestOptions ReqOptions) where GroupType : Group;
+
+    /// <inheritdoc cref="GetGroupsAsync(RequestOptions)" />
+    Task<List<Group>?> GetGroupsAsync(PaginatedRequestOptions ReqOptions);
+
+    /// <inheritdoc cref="GetLedgersAsync(RequestOptions)" />
+    Task<List<LedgerType>?> GetLedgersAsync<LedgerType>(PaginatedRequestOptions ReqOptions) where LedgerType : Ledger;
+
+    /// <summary>
+    /// Get All Ledgers
+    /// </summary>
+    /// <param name="ReqOptions">Options to Get Ledgers</param>
+    /// <returns></returns>
+    Task<List<Ledger>?> GetLedgersAsync(PaginatedRequestOptions ReqOptions);
+
+    /// <inheritdoc cref="GetVoucherTypesAsync(RequestOptions)" />
+    Task<List<VChTypeType>?> GetVoucherTypesAsync<VChTypeType>(PaginatedRequestOptions ReqOptions) where VChTypeType : VoucherType;
+
+    /// <inheritdoc cref="GetVoucherTypesAsync(RequestOptions)" />
+    Task<List<VoucherType>?> GetVoucherTypesAsync(PaginatedRequestOptions ReqOptions);
+    /// <inheritdoc cref="GetCostCategoriesAsync(RequestOptions)" />
+    Task<List<CostCategoryType>?> GetCostCategoriesAsync<CostCategoryType>(PaginatedRequestOptions ReqOptions) where CostCategoryType : CostCategory;
+    /// <inheritdoc cref="GetCostCategoriesAsync(RequestOptions)" />
+    Task<List<CostCategory>?> GetCostCategoriesAsync(PaginatedRequestOptions ReqOptions);
+
+    /// <inheritdoc cref="GetCostCentresAsync(RequestOptions)" />
+    Task<List<CostCentreType>?> GetCostCentresAsync<CostCentreType>(PaginatedRequestOptions ReqOptions) where CostCentreType : CostCenter;
+
+    /// <inheritdoc cref="GetCostCentresAsync(RequestOptions)" />
+    Task<List<CostCenter>?> GetCostCentresAsync(PaginatedRequestOptions ReqOptions);
+
+    #endregion
+
+    /*
+     * Bulk Get Methods of Accounting Masters without Pagination - Currency, Group, Ledger,VoucherType, Cost Category, CostCetre
+     * To Get Items use Get[Name]sAsync<Type>(options);
+     * Ex:To Get Groups use - await GetGroupsAsync<Group>(options);
+     */
+    #region Bulk Get - Methods
+
+    /// <typeparam name="CurrencyType">type of currency</typeparam>
+    /// <returns cref="List{CurrencyType}"></returns>
+    /// <inheritdoc cref="GetCurrenciesAsync(RequestOptions)" />
+    Task<List<CurrencyType>?> GetCurrenciesAsync<CurrencyType>(RequestOptions? ReqOptions = null) where CurrencyType : Currency;
+
+    /// <summary>
+    /// Gets All Currencies
+    /// </summary>
+    /// <param name="ReqOptions">options to configure this request</param>
+    /// <returns cref="List{Currency}">List of Currencies</returns>
+    Task<List<Currency>?> GetCurrenciesAsync(RequestOptions? ReqOptions = null);
+
+    /// <inheritdoc cref="GetGroupsAsync(RequestOptions)" />
+    Task<List<GroupType>?> GetGroupsAsync<GroupType>(RequestOptions? ReqOptions = null) where GroupType : Group;
+
+    /// <summary>
+    /// Gets all Groups
+    /// </summary>
+    /// <param name="ReqOptions">options to configure this request</param>
+    /// <returns></returns>
+    Task<List<Group>?> GetGroupsAsync(RequestOptions? ReqOptions = null);
+
+    /// <inheritdoc cref="GetLedgersAsync(RequestOptions)" />
+    Task<List<LedgerType>?> GetLedgersAsync<LedgerType>(RequestOptions? ReqOptions = null) where LedgerType : Ledger;
+    /// <summary>
+    /// Gets all Ledgers
+    /// </summary>
+    /// <param name="ReqOptions">options to configure this request</param>
+    /// <returns></returns>
+    Task<List<Ledger>?> GetLedgersAsync(RequestOptions? ReqOptions = null);
+
+    /// <inheritdoc cref="GetVoucherTypesAsync(RequestOptions)" />
+    Task<List<VChTypeType>?> GetVoucherTypesAsync<VChTypeType>(RequestOptions? ReqOptions = null) where VChTypeType : VoucherType;
+    /// <summary>
+    /// Gets all VoucherTypes
+    /// </summary>
+    /// <param name="ReqOptions">options to configure this request</param>
+    /// <returns></returns>
+    Task<List<VoucherType>?> GetVoucherTypesAsync(RequestOptions? ReqOptions = null);
+
+    /// <inheritdoc cref="GetCostCategoriesAsync(RequestOptions)" />
+    Task<List<CostCategoryType>?> GetCostCategoriesAsync<CostCategoryType>(RequestOptions? ReqOptions = null) where CostCategoryType : CostCategory;
+    /// <summary>
+    /// Gets all CostCategories
+    /// </summary>
+    /// <param name="ReqOptions">options to configure this request</param>
+    /// <returns></returns>
+    Task<List<CostCategory>?> GetCostCategoriesAsync(RequestOptions? ReqOptions = null);
+
+    /// <inheritdoc cref="GetCostCentresAsync(RequestOptions)" />
+    Task<List<CostCentreType>?> GetCostCentresAsync<CostCentreType>(RequestOptions? ReqOptions = null) where CostCentreType : CostCenter;
+    /// <summary>
+    /// Gets all CostCentres
+    /// </summary>
+    /// <param name="ReqOptions">options to configure this request</param>
+    /// <returns></returns>
+    Task<List<CostCenter>?> GetCostCentresAsync(RequestOptions? ReqOptions = null);
+
+
+    #endregion
 
     #region Post-Methods
     Task<TallyResult> PostCurrencyAsync<CurrencyType>(CurrencyType currency, PostRequestOptions? postRequestOptions = null) where CurrencyType : Currency;
@@ -194,6 +310,11 @@ public interface ITallyService
 
     #endregion
 
+    /// <summary>
+    /// Get Count of collection Type
+    /// </summary>
+    /// <param name="options">options to configure this requests</param>
+    /// <returns></returns>
     Task<int?> GetObjectCountAync(CountRequestOptions options);
 
     /// <summary>
@@ -212,6 +333,10 @@ public interface ITallyService
     /// <returns></returns>
     string? CheckTallyError(string ResXml);
 
-
+    /// <summary>
+    /// Parse response in XML and return TallyResult
+    /// </summary>
+    /// <param name="tallyResult"></param>
+    /// <returns></returns>
     TallyResult ParseResponse(TallyResult tallyResult);
 }

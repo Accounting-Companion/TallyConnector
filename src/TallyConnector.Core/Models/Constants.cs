@@ -12,7 +12,7 @@ public static class Constants
     public const string MaxRateLength = "9";
     public const string MaxUnitLength = "3";
     public const string MaxNarrLength = "250";
-    public const string MaxNameLength = "51";
+    public const string MaxNameLength = "100";
     public const string MaxDateLength = "25";
     public const string MaxParticularsLength = "30";
     public const string GUIDLength = "100";

@@ -46,7 +46,7 @@ public class VoucherRequestOptions : RequestOptions
     public VoucherLookupField LookupField { get; set; } = VoucherLookupField.VoucherNumber;
 }
 
-public class CollectionRequestOptions : PaginatedRequestOptions
+public class CollectionRequestOptions : RequestOptions
 {
     public CollectionRequestOptions()
     {
@@ -57,6 +57,7 @@ public class CollectionRequestOptions : PaginatedRequestOptions
         CollectionType = collectionType;
     }
 
+    public Pagination? Pagination { get; set; }
     public string CollectionType { get; set; }
     public string? ChildOf { get; set; }
 

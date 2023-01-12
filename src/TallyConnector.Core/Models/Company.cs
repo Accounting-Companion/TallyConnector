@@ -1,12 +1,18 @@
 ﻿namespace TallyConnector.Core.Models;
-
+/// <summary>
+/// Base Model for Company
+/// </summary>
 [XmlRoot(ElementName = "COMPANY")]
+
 public class BaseCompany : TallyXmlJson
 {
+    /// <summary>
+    /// Name of Company
+    /// </summary>
     [XmlElement(ElementName = "NAME")]
     [Column(TypeName = $"nvarchar({Constants.MaxNameLength})")]
     public string? Name { get; set; }
-
+    
     [XmlElement(ElementName = "GUID")]
     [Column(TypeName = $"nvarchar({Constants.GUIDLength})")]
     public string? GUID { get; set; }

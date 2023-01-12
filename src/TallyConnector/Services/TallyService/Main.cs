@@ -1,7 +1,12 @@
 ﻿using System.Collections.Concurrent;
 using System.Data;
+using TallyConnector.Core.Models.Masters;
+using TallyConnector.Core.Models.Masters.CostCenter;
 
 namespace TallyConnector.Services;
+/// <summary>
+/// contains API to interact with Tally
+/// </summary>
 public partial class TallyService : ITallyService
 {
     private readonly HttpClient _httpClient;
@@ -138,7 +143,7 @@ public partial class TallyService : ITallyService
         }
         List<Filter> filters = new() { new Filter() { FilterName = "Objfilter", FilterFormulae = filterformulae } };
 
-        CollectionRequestOptions collectionRequestOptions = new() { FetchList = requestOptions.FetchList, Filters = filters };
+        PaginatedRequestOptions collectionRequestOptions = new() { FetchList = requestOptions.FetchList, Filters = filters };
 
         List<ObjType>? objects = await GetObjectsAsync<ObjType>(collectionRequestOptions);
         if (objects != null && objects.Count > 0)
@@ -201,7 +206,7 @@ public partial class TallyService : ITallyService
             CollectionType = RootElemet ?? typeof(ObjType).Name,
             FromDate = objectOptions?.FromDate,
             ToDate = objectOptions?.ToDate,
-            FetchList = (objectOptions?.FetchList) != null ? new(objectOptions.FetchList) : null,
+            FetchList = (objectOptions?.FetchList) != null ? new(objectOptions.FetchList) : new() { "MasterId", "CanDelete", "*" },
             Filters = (objectOptions?.Filters) != null ? new(objectOptions.Filters) : null,
             Compute = (objectOptions?.Compute) != null ? new(objectOptions.Compute) : null,
             ComputeVar = (objectOptions?.ComputeVar) != null ? new(objectOptions.ComputeVar) : null,
@@ -589,5 +594,5 @@ public partial class TallyService : ITallyService
         }
         return null;
     }
-
+        
 }
