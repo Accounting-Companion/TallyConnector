@@ -1,29 +1,20 @@
 ﻿namespace TallyConnector.Core.Models;
-public class Pagination
+public class Pagination : PaginationBase
 {
 
-    public Pagination(int totalCount, int pageSize = 100)
+    public Pagination(int totalCount, int pageSize = 100) : base(totalCount,pageSize)
     {
-        TotalCount = totalCount;
-        PageSize = pageSize;
-        PageNum = 1;
+        
         IntialCalculate();
     }
 
-    public Pagination(int totalCount, int pageSize = 100, int pageNum = 1)
+    public Pagination(int totalCount, int pageSize = 100, int pageNum = 1) : base(totalCount,pageSize,pageNum) 
     {
-        TotalCount = totalCount;
-        PageNum = pageNum;
-        PageSize = pageSize;
+        
         IntialCalculate();
         GoToPage(PageNum);
     }
 
-
-    public int TotalCount { get; }
-    public int TotalPages { get; private set; }
-    public int PageSize { get; }
-    public int PageNum { get; private set; }
     public int Start { get; private set; }
     public int End { get; private set; }
 

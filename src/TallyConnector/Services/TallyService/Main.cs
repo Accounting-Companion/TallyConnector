@@ -247,19 +247,17 @@ public partial class TallyService : ITallyService
         catch (Exception ex)
         {
         }
-
-
+        collectionOptions.Pagination ??= await GetFirstPagePagination(collectionOptions, mapping?.DefaultPaginateCount);
         var objects = await GetCustomCollectionAsync<ObjType>(collectionOptions);
         objects?.ForEach(obj =>
         {
             obj.RemoveNullChilds();
             if (obj is IAliasTallyObject AliasObj)
             {
-                AliasObj.Alias = AliasObj.LanguageNameList?.First()?.LanguageAlias;
+                AliasObj.Alias = AliasObj.LanguageNameList != null && AliasObj.LanguageNameList.Count > 1 ? AliasObj.LanguageNameList?.First()?.LanguageAlias : string.Empty;
             }
 
         });
-
         return objects;
 
     }
@@ -295,20 +293,13 @@ public partial class TallyService : ITallyService
                 collectionOptions.Filters.AddRange(mapping.Filters);
             }
         }
-        int? TotalCount = await GetObjectCountAync(new()
-        {
-            CollectionType = collectionOptions.CollectionType,
-            FromDate = collectionOptions.FromDate,
-            ToDate = collectionOptions.ToDate,
-            Filters = collectionOptions.Filters,
-        });
-        Pagination pagination = new(TotalCount ?? 0, mapping?.DefaultPaginateCount ?? 1000);
+        Pagination pagination = await GetFirstPagePagination(collectionOptions, mapping?.DefaultPaginateCount ?? 1000);
         ConcurrentBag<ObjType> objects = new();
         List<Task> tasks = new();
         for (int i = 0; i < pagination.TotalPages; i++)
         {
 
-            Pagination tpagination = new(TotalCount ?? 0, mapping?.DefaultPaginateCount ?? 1000, i + 1);
+            Pagination tpagination = new(pagination.TotalCount, mapping?.DefaultPaginateCount ?? 1000, i + 1);
             _logger?.LogInformation("getting {type} from {start} to {end} (Page {cur} of {Total})",
                                     mapping!.MasterType,
                                     tpagination.Start,
@@ -335,7 +326,17 @@ public partial class TallyService : ITallyService
         //await Task.WhenAll(tasks.ToArray());
         return objects.ToList();
     }
-
+    private async Task<Pagination> GetFirstPagePagination(CollectionRequestOptions collectionOptions, int? defaultCount)
+    {
+        int? TotalCount = await GetObjectCountAync(new()
+        {
+            CollectionType = collectionOptions.CollectionType,
+            FromDate = collectionOptions.FromDate,
+            ToDate = collectionOptions.ToDate,
+            Filters = collectionOptions.Filters,
+        });
+        return new(TotalCount ?? 0, defaultCount ?? 1000);
+    }
     /// <inheritdoc/>
     public async Task<int?> GetObjectCountAync(CountRequestOptions options)
     {
