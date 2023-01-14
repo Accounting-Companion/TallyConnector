@@ -28,7 +28,10 @@ public partial class TallyService
             }
         });
     }
-
+    public async Task<List<Company>?> GetCompaniesAsync()
+    {
+        return await GetCompaniesAsync<Company>();
+    }
     /// <inheritdoc/>
     public async Task<LastAlterIdsRoot?> GetLastAlterIdsAsync()
     {

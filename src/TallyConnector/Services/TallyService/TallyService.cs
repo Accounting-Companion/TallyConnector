@@ -2,11 +2,30 @@
 using System.Data;
 using TallyConnector.Core.Models.Masters;
 using TallyConnector.Core.Models.Masters.CostCenter;
+using TallyConnector.Core.Models.Masters.Inventory;
+using TallyConnector.Core.Models.Masters.Payroll;
 
 namespace TallyConnector.Services;
 /// <summary>
 /// contains API to interact with Tally
 /// </summary>
+[GenerateHelperMethods<Currency>(PluralName = "Currencies")]
+[GenerateHelperMethods<Group>()]
+[GenerateHelperMethods<Ledger>()]
+[GenerateHelperMethods<CostCategory>(PluralName = "CostCategories")]
+[GenerateHelperMethods<CostCenter>()]
+[GenerateHelperMethods<VoucherType>(TypeName = "VchType")]
+[GenerateHelperMethods<Voucher>()]
+
+[GenerateHelperMethods<Unit>()]
+[GenerateHelperMethods<Godown>()]
+[GenerateHelperMethods<StockGroup>()]
+[GenerateHelperMethods<StockCategory>()]
+[GenerateHelperMethods<StockItem>()]
+
+[GenerateHelperMethods<AttendanceType>(TypeName = "AtndType")]
+[GenerateHelperMethods<EmployeeGroup>()]
+[GenerateHelperMethods<Employee>()]
 public partial class TallyService : ITallyService
 {
     private readonly HttpClient _httpClient;
@@ -111,6 +130,18 @@ public partial class TallyService : ITallyService
     public async Task<TallyResult> PostObjectToTallyAsync<ObjType>(ObjType Object,
                                                                    PostRequestOptions? postRequestOptions = null) where ObjType : TallyXmlJson, ITallyObject
     {
+        if (Object is Voucher vch)
+        {
+            postRequestOptions ??= new();
+            postRequestOptions.XMLAttributeOverrides ??= new();
+
+            if (vch.View != VoucherViewType.AccountingVoucherView)
+            {
+                XmlAttributes xmlattribute = new();
+                xmlattribute.XmlElements.Add(new("LEDGERENTRIES.LIST"));
+                postRequestOptions.XMLAttributeOverrides.Add(typeof(Voucher), "Ledgers", xmlattribute);
+            }
+        }
         Object.PrepareForExport();
         Envelope<ObjType> Objectenvelope = new(Object,
                                                new()
@@ -131,7 +162,7 @@ public partial class TallyService : ITallyService
     {
         // If received FetchList in collectionOptions we will use that else use default fetchlist
         requestOptions ??= new();
-        requestOptions.FetchList ??= new() { "MasterId", "CanDelete", "*" };
+        requestOptions.FetchList ??= Constants.DefaultFetchList;
         string filterformulae;
         if (requestOptions.LookupField is MasterLookupField.MasterId or MasterLookupField.AlterId)
         {
@@ -164,11 +195,7 @@ public partial class TallyService : ITallyService
     {
         // If received FetchList in collectionOptions we will use that else use default fetchlist
         requestOptions ??= new();
-        requestOptions.FetchList ??=
-                new List<string>()
-                {
-                    "MasterId", "*",
-                };
+        requestOptions.FetchList ??=Constants.DefaultFetchList;
         string filterformulae;
         if (requestOptions.LookupField is VoucherLookupField.MasterId or VoucherLookupField.AlterId)
         {
@@ -594,5 +621,6 @@ public partial class TallyService : ITallyService
         }
         return null;
     }
-        
+
+
 }

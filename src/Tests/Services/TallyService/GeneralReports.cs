@@ -1,12 +1,11 @@
 ﻿using TallyConnector.Core.Models;
-
 namespace Tests.Services.TallyService;
 internal class GeneralReports : BaseTallyServiceTest
 {
     [Test]
     public async Task TestGetCompaniesList()
     {
-        var Companies = await _tallyService.GetCompaniesAsync<Company>();
+        var Companies = await _tallyService.GetCompaniesAsync();
         Assert.That(Companies, Has.Count.EqualTo(1));
     }
 

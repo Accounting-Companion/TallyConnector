@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using TallyConnector.Reports.Models.Static;
+﻿using TallyConnector.Reports.Models.Static;
 using Tests.Services.TallyService;
 
 namespace Tests.Reports.Static;

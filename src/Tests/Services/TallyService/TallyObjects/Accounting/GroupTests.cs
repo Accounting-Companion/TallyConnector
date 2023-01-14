@@ -1,7 +1,4 @@
-﻿using System.Xml.Linq;
-using Tests.Services.TallyService;
-
-namespace Tests.Services.TallyService.TallyObjects.Accounting;
+﻿namespace Tests.Services.TallyService.TallyObjects.Accounting;
 internal class GroupTests : BaseTallyServiceTest
 {
 
@@ -9,7 +6,7 @@ internal class GroupTests : BaseTallyServiceTest
     public async Task CheckGetAllGroups()
     {
 
-        var Groups = await _tallyService.GetObjectsAsync<TCMA.Group>(new() { FetchList = new() { "*" } });
+        var Groups = await _tallyService.GetGroupsAsync();
         Assert.That(Groups, Is.Not.Null);
         Assert.That(Groups, Has.Count.EqualTo(62));
     }
@@ -30,12 +27,12 @@ internal class GroupTests : BaseTallyServiceTest
         TCM.Pagination pagination = new(50, 100);
         for (int i = 0; i < pagination.TotalPages; i++)
         {
-            var TGroups = await _tallyService.GetObjectsAsync<TCMA.Group>(new() { Pagination = pagination });
+            var TGroups = await _tallyService.GetGroupsAsync(new() { Pagination = pagination });
             Groups.AddRange(TGroups);
             pagination.NextPage();
         }
         Assert.That(Groups, Is.Not.Null);
-        Assert.That(Groups, Has.Count.EqualTo(73));
+        Assert.That(Groups, Has.Count.EqualTo(62));
     }
 
     [Test]
@@ -55,7 +52,7 @@ internal class GroupTests : BaseTallyServiceTest
         TCM.TallyResult tallyResult = await _tallyService.PostGroupAsync(group);
         Assert.That(tallyResult.Status, Is.EqualTo(TCM.RespStatus.Sucess));
         //Reading
-        var Tgroup = await _tallyService.GetGroupAsync<TCMA.Group>(group.Name);
+        var Tgroup = await _tallyService.GetGroupAsync(group.Name);
 
         Assert.Multiple(() =>
         {

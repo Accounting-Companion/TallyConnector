@@ -1,6 +1,4 @@
-﻿using TallyConnector.Core.Models.Masters;
-
-namespace Tests.Services.TallyService.TallyObjects.Accounting;
+﻿namespace Tests.Services.TallyService.TallyObjects.Accounting;
 internal class LedgerTests : BaseTallyServiceTest
 {
     [Test]

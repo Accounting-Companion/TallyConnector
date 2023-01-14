@@ -1,6 +1,5 @@
 ﻿using System.Globalization;
 using System.Xml.Schema;
-using TallyConnector.Core.Models;
 
 namespace TallyConnector.Core.Converters.XMLConverterHelpers;
 [JsonConverter(typeof(TallyDueDateJsonConverter))]

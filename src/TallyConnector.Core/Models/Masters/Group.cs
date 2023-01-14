@@ -1,6 +1,4 @@
-﻿using System.Xml.Linq;
-
-namespace TallyConnector.Core.Models.Masters;
+﻿namespace TallyConnector.Core.Models.Masters;
 
 [XmlRoot("GROUP")]
 public class BaseGroup : BasicTallyObject, IAliasTallyObject

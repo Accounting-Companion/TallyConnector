@@ -95,7 +95,7 @@ public interface ITallyService
     Task<VChTypeType> GetVoucherTypeAsync<VChTypeType>(string LookupValue, MasterRequestOptions? voucherTypeOptions = null) where VChTypeType : VoucherType;
 
     Task<CostCategoryType> GetCostCategoryAsync<CostCategoryType>(string LookupValue, MasterRequestOptions? costCategoryOptions = null) where CostCategoryType : CostCategory;
-    Task<CostCentreType> GetCostCentreAsync<CostCentreType>(string LookupValue, MasterRequestOptions? costCenterOptions = null) where CostCentreType : CostCenter;
+    Task<CostCentreType> GetCostCenterAsync<CostCentreType>(string LookupValue, MasterRequestOptions? costCenterOptions = null) where CostCentreType : CostCenter;
     #endregion
 
     /*
@@ -139,11 +139,11 @@ public interface ITallyService
     /// <inheritdoc cref="GetCostCategoriesAsync(RequestOptions)" />
     Task<List<CostCategory>?> GetCostCategoriesAsync(PaginatedRequestOptions ReqOptions);
 
-    /// <inheritdoc cref="GetCostCentresAsync(RequestOptions)" />
-    Task<List<CostCentreType>?> GetCostCentresAsync<CostCentreType>(PaginatedRequestOptions ReqOptions) where CostCentreType : CostCenter;
+    /// <inheritdoc cref="GetCostCentersAsync(RequestOptions)" />
+    Task<List<CostCentreType>?> GetCostCentersAsync<CostCentreType>(PaginatedRequestOptions ReqOptions) where CostCentreType : CostCenter;
 
-    /// <inheritdoc cref="GetCostCentresAsync(RequestOptions)" />
-    Task<List<CostCenter>?> GetCostCentresAsync(PaginatedRequestOptions ReqOptions);
+    /// <inheritdoc cref="GetCostCentersAsync(RequestOptions)" />
+    Task<List<CostCenter>?> GetCostCentersAsync(PaginatedRequestOptions ReqOptions);
 
     #endregion
 
@@ -203,14 +203,14 @@ public interface ITallyService
     /// <returns></returns>
     Task<List<CostCategory>?> GetCostCategoriesAsync(RequestOptions? ReqOptions = null);
 
-    /// <inheritdoc cref="GetCostCentresAsync(RequestOptions)" />
-    Task<List<CostCentreType>?> GetCostCentresAsync<CostCentreType>(RequestOptions? ReqOptions = null) where CostCentreType : CostCenter;
+    /// <inheritdoc cref="GetCostCentersAsync(RequestOptions)" />
+    Task<List<CostCentreType>?> GetCostCentersAsync<CostCentreType>(RequestOptions? ReqOptions = null) where CostCentreType : CostCenter;
     /// <summary>
     /// Gets all CostCentres
     /// </summary>
     /// <param name="ReqOptions">options to configure this request</param>
     /// <returns></returns>
-    Task<List<CostCenter>?> GetCostCentresAsync(RequestOptions? ReqOptions = null);
+    Task<List<CostCenter>?> GetCostCentersAsync(RequestOptions? ReqOptions = null);
 
 
     #endregion
@@ -224,7 +224,7 @@ public interface ITallyService
     Task<TallyResult> PostVoucherTypeAsync<VChTypeType>(VChTypeType voucherType, PostRequestOptions? postRequestOptions = null) where VChTypeType : VoucherType;
 
     Task<TallyResult> PostCostCategoryAsync<CostCategoryType>(CostCategoryType costCategory, PostRequestOptions? postRequestOptions = null) where CostCategoryType : CostCategory;
-    Task<TallyResult> PostCostCentreAsync<CostCentreType>(CostCentreType costCenter, PostRequestOptions? postRequestOptions = null) where CostCentreType : CostCenter;
+    Task<TallyResult> PostCostCenterAsync<CostCentreType>(CostCentreType costCenter, PostRequestOptions? postRequestOptions = null) where CostCentreType : CostCenter;
     #endregion
 
     #endregion
@@ -237,6 +237,23 @@ public interface ITallyService
     Task<StockCategoryType> GetStockCategoryAsync<StockCategoryType>(string LookupValue, MasterRequestOptions? stockCategoryOptions = null) where StockCategoryType : StockCategory;
     Task<StockGroupType> GetStockGroupAsync<StockGroupType>(string LookupValue, MasterRequestOptions? stockGroupOptions = null) where StockGroupType : StockGroup;
     Task<StckItmType> GetStockItemAsync<StckItmType>(string LookupValue, MasterRequestOptions? stockItemOptions = null) where StckItmType : StockItem;
+
+    #region Bulk GetPaginated - Methods 
+    Task<List<UnitType>?> GetUnitsAsync<UnitType>(PaginatedRequestOptions ReqOptions) where UnitType : Unit;
+    Task<List<Unit>?> GetUnitsAsync(PaginatedRequestOptions ReqOptions);
+
+    #endregion
+    #region Bulk Get - Methods 
+    /// <summary>
+    /// Get All Units
+    /// </summary>
+    /// <param name="ReqOptions"></param>
+    /// <returns></returns>
+    Task<List<UnitType>?> GetUnitsAsync<UnitType>(RequestOptions? ReqOptions = null) where UnitType : Unit;
+
+    Task<List<Unit>?> GetUnitsAsync(RequestOptions? ReqOptions = null);
+
+    #endregion
 
     #endregion
 
