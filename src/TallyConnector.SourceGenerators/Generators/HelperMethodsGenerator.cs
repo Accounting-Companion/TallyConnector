@@ -1,19 +1,22 @@
-﻿namespace TallyConnector.SourceGenerators.Generators;
+﻿using TallyConnector.SourceGenerators.Models;
+
+namespace TallyConnector.SourceGenerators.Generators;
 public static class HelperMethodsGenerator
 {
-    public static string Generate(string objectNamespace, string objectName, string pluralName, string genericTypeName)
+    public static string Generate(HelperMethodArgs helperMethodArgs)
     {
-        string BulkGetMethodName = $"Get{pluralName ?? (objectName + "s")}Async";
+        var objectNamespace = helperMethodArgs.ObjectNameSpace;
+        var objectName = helperMethodArgs.ObjectName;
+        string BulkGetMethodName = $"Get{helperMethodArgs.PluralName ?? (objectName + "s")}Async";
         string GetMethodName = $"Get{objectName}Async";
         string PostMethodName = $"Post{objectName}Async";
-        string TypeName = $"{genericTypeName ?? objectName}Type";
+        string TypeName = $"{helperMethodArgs.GenericTypeName ?? objectName}Type";
+
         CompilationUnitSyntax compilationUnitSyntax = CompilationUnit()
           .WithMembers(
             SingletonList(
               (MemberDeclarationSyntax)FileScopedNamespaceDeclaration(
-                QualifiedName(
-                  IdentifierName("TallyConnector"),
-                  IdentifierName("Services")))
+                  IdentifierName(helperMethodArgs.NameSpace))
               .WithNamespaceKeyword(
                 Token(
                   TriviaList(
@@ -25,7 +28,7 @@ public static class HelperMethodsGenerator
                   TriviaList()))
               .WithMembers(
                 SingletonList(
-                  (MemberDeclarationSyntax)ClassDeclaration("TallyService")
+                  (MemberDeclarationSyntax)ClassDeclaration(helperMethodArgs.ClassName)
                   .WithModifiers(
                     TokenList(
                       new[] {
@@ -884,5 +887,6 @@ public static class HelperMethodsGenerator
                                                             Argument(
                                                                 IdentifierName("options"))))))))));
     }
+
 
 }

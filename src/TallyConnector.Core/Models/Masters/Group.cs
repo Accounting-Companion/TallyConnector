@@ -118,7 +118,7 @@ public class BaseGroup : BasicTallyObject, IAliasTallyObject
 
 }
 [XmlRoot("GROUP")]
-public class Group : BaseGroup
+public partial class Group : BaseGroup
 {
     public Group() : base()
     {

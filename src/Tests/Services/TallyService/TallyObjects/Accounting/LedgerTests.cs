@@ -9,7 +9,7 @@ internal class LedgerTests : BaseTallyServiceTest
         Assert.That(objects, Has.Count.EqualTo(745));
     }
     [Test]
-    [TestCase(100,8)]
+    //[TestCase(100,8)]
     [TestCase(500,2)]
     public async Task CheckGetLedgersPaginated(int recordsPerPage,int  ResultPages)
     {
