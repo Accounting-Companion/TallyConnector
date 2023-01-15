@@ -108,42 +108,42 @@ public interface ITallyService
     #region Bulk GetPaginated - Methods 
 
     /// <inheritdoc cref="GetCurrenciesAsync(RequestOptions)" />
-    Task<List<CurrencyType>?> GetCurrenciesAsync<CurrencyType>(PaginatedRequestOptions ReqOptions) where CurrencyType : Currency;
+    Task<PaginatedResponse<CurrencyType>?> GetCurrenciesAsync<CurrencyType>(PaginatedRequestOptions ReqOptions) where CurrencyType : Currency;
 
     /// <inheritdoc cref="GetCurrenciesAsync(RequestOptions)" />
-    Task<List<Currency>?> GetCurrenciesAsync(PaginatedRequestOptions ReqOptions);
+    Task<PaginatedResponse<Currency>?> GetCurrenciesAsync(PaginatedRequestOptions ReqOptions);
 
     /// <inheritdoc cref="GetGroupsAsync(RequestOptions)" />
-    Task<List<GroupType>?> GetGroupsAsync<GroupType>(PaginatedRequestOptions ReqOptions) where GroupType : Group;
+    Task<PaginatedResponse<GroupType>?> GetGroupsAsync<GroupType>(PaginatedRequestOptions ReqOptions) where GroupType : Group;
 
     /// <inheritdoc cref="GetGroupsAsync(RequestOptions)" />
-    Task<List<Group>?> GetGroupsAsync(PaginatedRequestOptions ReqOptions);
+    Task<PaginatedResponse<Group>?> GetGroupsAsync(PaginatedRequestOptions ReqOptions);
 
     /// <inheritdoc cref="GetLedgersAsync(RequestOptions)" />
-    Task<List<LedgerType>?> GetLedgersAsync<LedgerType>(PaginatedRequestOptions ReqOptions) where LedgerType : Ledger;
+    Task<PaginatedResponse<LedgerType>?> GetLedgersAsync<LedgerType>(PaginatedRequestOptions ReqOptions) where LedgerType : Ledger;
 
     /// <summary>
     /// Get All Ledgers
     /// </summary>
     /// <param name="ReqOptions">Options to Get Ledgers</param>
     /// <returns></returns>
-    Task<List<Ledger>?> GetLedgersAsync(PaginatedRequestOptions ReqOptions);
+    Task<PaginatedResponse<Ledger>?> GetLedgersAsync(PaginatedRequestOptions ReqOptions);
 
     /// <inheritdoc cref="GetVoucherTypesAsync(RequestOptions)" />
-    Task<List<VChTypeType>?> GetVoucherTypesAsync<VChTypeType>(PaginatedRequestOptions ReqOptions) where VChTypeType : VoucherType;
+    Task<PaginatedResponse<VChTypeType>?> GetVoucherTypesAsync<VChTypeType>(PaginatedRequestOptions ReqOptions) where VChTypeType : VoucherType;
 
     /// <inheritdoc cref="GetVoucherTypesAsync(RequestOptions)" />
-    Task<List<VoucherType>?> GetVoucherTypesAsync(PaginatedRequestOptions ReqOptions);
+    Task<PaginatedResponse<VoucherType>?> GetVoucherTypesAsync(PaginatedRequestOptions ReqOptions);
     /// <inheritdoc cref="GetCostCategoriesAsync(RequestOptions)" />
-    Task<List<CostCategoryType>?> GetCostCategoriesAsync<CostCategoryType>(PaginatedRequestOptions ReqOptions) where CostCategoryType : CostCategory;
+    Task<PaginatedResponse<CostCategoryType>?> GetCostCategoriesAsync<CostCategoryType>(PaginatedRequestOptions ReqOptions) where CostCategoryType : CostCategory;
     /// <inheritdoc cref="GetCostCategoriesAsync(RequestOptions)" />
-    Task<List<CostCategory>?> GetCostCategoriesAsync(PaginatedRequestOptions ReqOptions);
+    Task<PaginatedResponse<CostCategory>?> GetCostCategoriesAsync(PaginatedRequestOptions ReqOptions);
 
     /// <inheritdoc cref="GetCostCentersAsync(RequestOptions)" />
-    Task<List<CostCentreType>?> GetCostCentersAsync<CostCentreType>(PaginatedRequestOptions ReqOptions) where CostCentreType : CostCenter;
+    Task<PaginatedResponse<CostCentreType>?> GetCostCentersAsync<CostCentreType>(PaginatedRequestOptions ReqOptions) where CostCentreType : CostCenter;
 
     /// <inheritdoc cref="GetCostCentersAsync(RequestOptions)" />
-    Task<List<CostCenter>?> GetCostCentersAsync(PaginatedRequestOptions ReqOptions);
+    Task<PaginatedResponse<CostCenter>?> GetCostCentersAsync(PaginatedRequestOptions ReqOptions);
 
     #endregion
 
@@ -239,8 +239,8 @@ public interface ITallyService
     Task<StckItmType> GetStockItemAsync<StckItmType>(string LookupValue, MasterRequestOptions? stockItemOptions = null) where StckItmType : StockItem;
 
     #region Bulk GetPaginated - Methods 
-    Task<List<UnitType>?> GetUnitsAsync<UnitType>(PaginatedRequestOptions ReqOptions) where UnitType : Unit;
-    Task<List<Unit>?> GetUnitsAsync(PaginatedRequestOptions ReqOptions);
+    Task<PaginatedResponse<UnitType>?> GetUnitsAsync<UnitType>(PaginatedRequestOptions ReqOptions) where UnitType : Unit;
+    Task<PaginatedResponse<Unit>?> GetUnitsAsync(PaginatedRequestOptions ReqOptions);
 
     #endregion
     #region Bulk Get - Methods 
@@ -313,11 +313,11 @@ public interface ITallyService
     /// <param name="indented"></param>
     /// <returns></returns>
     string GenerateCollectionXML(CollectionRequestOptions collectionOptions, bool indented = false);
-    Task<List<ObjType>?> GetCustomCollectionAsync<ObjType>(CollectionRequestOptions collectionOptions) where ObjType : TallyBaseObject;
+    Task<PaginatedResponse<ObjType>?> GetCustomCollectionAsync<ObjType>(CollectionRequestOptions collectionOptions) where ObjType : TallyBaseObject;
 
     Task<ObjType> GetObjectAsync<ObjType>(string lookupValue, MasterRequestOptions? requestOptions = null) where ObjType : TallyBaseObject, INamedTallyObject;
     Task<ObjType> GetObjectAsync<ObjType>(string lookupValue, VoucherRequestOptions? requestOptions = null) where ObjType : Voucher;
-    Task<List<ObjType>?> GetObjectsAsync<ObjType>(PaginatedRequestOptions? objectOptions = null) where ObjType : TallyBaseObject;
+    Task<PaginatedResponse<ObjType>?> GetObjectsAsync<ObjType>(PaginatedRequestOptions? objectOptions = null) where ObjType : TallyBaseObject;
     Task<List<ObjType>> GetAllObjectsAsync<ObjType>(RequestOptions? objectOptions = null, IProgress<ReportProgressHelper>? progress = null) where ObjType : TallyBaseObject;
 
     Task<ReturnType?> GetTDLReportAsync<ReportType, ReturnType>(DateFilterRequestOptions? requestOptions = null);

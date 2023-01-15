@@ -1,4 +1,4 @@
-﻿namespace TallyConnector.Core.Models;
+﻿namespace TallyConnector.Core.Models.Pagination;
 
 public class PaginationBase
 {
@@ -11,6 +11,7 @@ public class PaginationBase
         TotalCount = totalCount;
         PageSize = pageSize;
         PageNum = 1;
+        TotalPages = (int)Math.Ceiling((decimal)TotalCount / PageSize);
     }
 
     public PaginationBase(int totalCount, int pageSize, int pageNum) : this(totalCount, pageSize)
@@ -34,4 +35,6 @@ public class PaginationBase
 
     public int TotalCount { get; }
     public int TotalPages { get; internal set; }
+
+ 
 }

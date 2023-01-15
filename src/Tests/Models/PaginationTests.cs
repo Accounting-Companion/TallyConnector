@@ -1,11 +1,13 @@
-﻿namespace Tests.Models;
+﻿using TallyConnector.Core.Models.Pagination;
+
+namespace Tests.Models;
 internal class PaginationTests
 {
 
     [Test]
     public void TestConstructor()
     {
-        TCM.Pagination pagination = new(500, 100);
+        Pagination pagination = new(500, 100);
         Assert.Multiple(() =>
         {
             Assert.That(pagination.TotalCount, Is.EqualTo(500));
@@ -19,7 +21,7 @@ internal class PaginationTests
     [Test]
     public void TestConstructorVariant2()
     {
-        TCM.Pagination pagination = new(750, 100);
+        Pagination pagination = new(750, 100);
 
 
         Assert.Multiple(() =>
@@ -35,7 +37,7 @@ internal class PaginationTests
     [Test]
     public void TestNextPage()
     {
-        TCM.Pagination pagination = new(750, 100);
+        Pagination pagination = new(750, 100);
 
         Assert.Multiple(() =>
         {
@@ -57,7 +59,7 @@ internal class PaginationTests
     [Test]
     public void TestNextPageVariant2()
     {
-        TCM.Pagination pagination = new(785, 50);
+        Pagination pagination = new(785, 50);
 
         Assert.Multiple(() =>
         {
@@ -81,7 +83,7 @@ internal class PaginationTests
     [Test]
     public void TestLastPage()
     {
-        TCM.Pagination pagination = new(150, 100);
+        Pagination pagination = new(150, 100);
 
         Assert.Multiple(() =>
         {
@@ -105,7 +107,7 @@ internal class PaginationTests
     [Test]
     public void TestLastPageVariant2()
     {
-        TCM.Pagination pagination = new(75, 40);
+        Pagination pagination = new(75, 40);
 
 
         Assert.Multiple(() =>
@@ -127,7 +129,7 @@ internal class PaginationTests
     [Test]
     public void TestGoToPage()
     {
-        TCM.Pagination pagination = new(452, 40);
+        TCM.Pagination.Pagination pagination = new(452, 40);
 
         Assert.Multiple(() =>
         {

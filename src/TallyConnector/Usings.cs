@@ -8,4 +8,5 @@ global using TallyConnector.Core.Attributes;
 global using TallyConnector.Core.Converters.XMLConverterHelpers;
 global using TallyConnector.Core.Exceptions;
 global using TallyConnector.Core.Models;
+global using TallyConnector.Core.Models.Pagination;
 

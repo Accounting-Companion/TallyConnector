@@ -24,11 +24,11 @@ internal class GroupTests : BaseTallyServiceTest
         List<TCMA.Group> Groups = new();
         var Stat = await _tallyService.GetMasterStatisticsAsync();
         var TotalCount = Stat.FirstOrDefault(c => c.Name == TCM.TallyObjectType.Groups.ToString()).Count;
-        TCM.Pagination pagination = new(50, 100);
+        TCM.Pagination.Pagination pagination = new(50, 100);
         for (int i = 0; i < pagination.TotalPages; i++)
         {
-            var TGroups = await _tallyService.GetGroupsAsync(new() { Pagination = pagination });
-            Groups.AddRange(TGroups);
+            var TGroups = await _tallyService.GetGroupsAsync(new() { PageNum = 1 });
+            Groups.AddRange(TGroups.Data);
             pagination.NextPage();
         }
         Assert.That(Groups, Is.Not.Null);

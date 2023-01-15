@@ -9,12 +9,22 @@ internal class LedgerTests : BaseTallyServiceTest
         Assert.That(objects, Has.Count.EqualTo(745));
     }
     [Test]
-    public async Task CheckGetLedgersPaginated()
+    [TestCase(100,8)]
+    [TestCase(500,2)]
+    public async Task CheckGetLedgersPaginated(int recordsPerPage,int  ResultPages)
     {
-        var objects = await _tallyService.GetLedgersAsync(new() { });
-        Assert.That(objects, Is.Not.Null);
-        Assert.That(objects, Has.Count.EqualTo(500));
+        TCM.Pagination.PaginatedResponse<TCMA.Ledger> paginatedResponse = await _tallyService.GetLedgersAsync(new() {RecordsPerPage= recordsPerPage });
+        var objects = paginatedResponse.Data;
+        Assert.Multiple(() =>
+        {
+            Assert.That(paginatedResponse.PageNum, Is.EqualTo(1));
+            Assert.That(paginatedResponse.TotalCount, Is.EqualTo(745));
+            Assert.That(paginatedResponse.TotalPages, Is.EqualTo(ResultPages));
+            Assert.That(objects, Is.Not.Null);
+        });
+        Assert.That(objects, Has.Count.EqualTo(recordsPerPage));
     }
+
     [Test]
     public async Task CheckGetAllLedgerswithOptions()
     {

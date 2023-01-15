@@ -74,8 +74,18 @@ public class Data<T>
 public class Colllection<T>
 {
     public List<T>? Objects { get; set; }
-}
+    [XmlElement(ElementName = "PAGINATION")]
+    public PaginationData? PaginationData { get; set; }
 
+
+}
+[XmlRoot(ElementName = "PAGINATION")]
+public class PaginationData
+{
+    [XmlElement(ElementName = "TOTALCOUNT")]
+    public int TotalCount { get; set; }
+
+}
 [XmlRoot(ElementName = "TALLYMESSAGE")]
 public class Message<T>
 {

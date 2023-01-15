@@ -432,7 +432,7 @@ public static class HelperMethodsGenerator
                                   SingletonSeparatedList<TypeSyntax>(
                                     NullableType(
                                       GenericName(
-                                        Identifier("List"))
+                                        Identifier("global::TallyConnector.Core.Models.Pagination.PaginatedResponse"))
                                       .WithTypeArgumentList(
                                         TypeArgumentList(
                                           SingletonSeparatedList<TypeSyntax>(
@@ -784,7 +784,7 @@ public static class HelperMethodsGenerator
                                         SingletonSeparatedList<TypeSyntax>(
                                             NullableType(
                                                 GenericName(
-                                                    Identifier("List"))
+                                                    Identifier("global::TallyConnector.Core.Models.Pagination.PaginatedResponse"))
                                                 .WithTypeArgumentList(
                                                     TypeArgumentList(
                                                         SingletonSeparatedList<TypeSyntax>(

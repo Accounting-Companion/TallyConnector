@@ -20,7 +20,7 @@ namespace TallyConnector.Services;
 [GenerateHelperMethods<Unit>()]
 [GenerateHelperMethods<Godown>()]
 [GenerateHelperMethods<StockGroup>()]
-[GenerateHelperMethods<StockCategory>()]
+[GenerateHelperMethods<StockCategory>(PluralName = "StockCategories")]
 [GenerateHelperMethods<StockItem>()]
 
 [GenerateHelperMethods<AttendanceType>(TypeName = "AtndType")]
@@ -176,7 +176,7 @@ public partial class TallyService : ITallyService
 
         PaginatedRequestOptions collectionRequestOptions = new() { FetchList = requestOptions.FetchList, Filters = filters };
 
-        List<ObjType>? objects = await GetObjectsAsync<ObjType>(collectionRequestOptions);
+        List<ObjType>? objects = (await GetObjectsAsync<ObjType>(collectionRequestOptions))?.Data;
         if (objects != null && objects.Count > 0)
         {
             return objects[0];
@@ -195,7 +195,7 @@ public partial class TallyService : ITallyService
     {
         // If received FetchList in collectionOptions we will use that else use default fetchlist
         requestOptions ??= new();
-        requestOptions.FetchList ??=Constants.DefaultFetchList;
+        requestOptions.FetchList ??= Constants.DefaultFetchList;
         string filterformulae;
         if (requestOptions.LookupField is VoucherLookupField.MasterId or VoucherLookupField.AlterId)
         {
@@ -209,7 +209,7 @@ public partial class TallyService : ITallyService
 
         PaginatedRequestOptions paginatedRequestOptions = new() { FetchList = requestOptions.FetchList, Filters = filters, Objects = requestOptions.Objects };
 
-        List<ObjType>? objects = await GetObjectsAsync<ObjType>(paginatedRequestOptions);
+        List<ObjType>? objects = (await GetObjectsAsync<ObjType>(paginatedRequestOptions))?.Data;
         if (objects != null && objects.Count > 0)
         {
             return objects[0];
@@ -222,7 +222,7 @@ public partial class TallyService : ITallyService
     }
 
     /// <inheritdoc/>
-    public async Task<List<ObjType>?> GetObjectsAsync<ObjType>(PaginatedRequestOptions? objectOptions = null) where ObjType : TallyBaseObject
+    public async Task<PaginatedResponse<ObjType>?> GetObjectsAsync<ObjType>(PaginatedRequestOptions? objectOptions = null) where ObjType : TallyBaseObject
     {
         //Gets Root attribute of ReturnObject
         string? RootElemet = AttributeHelper.GetXmlRootElement(typeof(ObjType), _logger);
@@ -237,8 +237,10 @@ public partial class TallyService : ITallyService
             Filters = (objectOptions?.Filters) != null ? new(objectOptions.Filters) : null,
             Compute = (objectOptions?.Compute) != null ? new(objectOptions.Compute) : null,
             ComputeVar = (objectOptions?.ComputeVar) != null ? new(objectOptions.ComputeVar) : null,
-            Pagination = objectOptions?.Pagination,
             Objects = objectOptions?.Objects,
+            PageNum = objectOptions?.PageNum ?? 1,
+            Pagination = true,
+            RecordsPerPage = objectOptions?.RecordsPerPage,
             XMLAttributeOverrides = objectOptions?.XMLAttributeOverrides,
             IsInitialize = objectOptions?.IsInitialize ?? YesNo.No,
         };
@@ -257,16 +259,13 @@ public partial class TallyService : ITallyService
             {
                 collectionOptions.Filters.AddRange(mapping.Filters);
             }
-            if (mapping.Objects != null)
-            {
-                mapping.Objects.ForEach(obj =>
+            mapping.Objects?.ForEach(obj =>
                 {
                     if (!collectionOptions.Objects.Contains(obj))
                     {
                         collectionOptions.Objects.Add(obj);
                     }
                 });
-            }
         }
         //Adding xmlelement name according to RootElement name of ReturnObject
         collectionOptions.XMLAttributeOverrides ??= new();
@@ -279,9 +278,14 @@ public partial class TallyService : ITallyService
         catch (Exception ex)
         {
         }
-        collectionOptions.Pagination ??= await GetFirstPagePagination(collectionOptions, mapping?.DefaultPaginateCount);
-        var objects = await GetCustomCollectionAsync<ObjType>(collectionOptions);
-        objects?.ForEach(obj =>
+        //collectionOptions.Pagination = await GetFirstPagePagination(collectionOptions, objectOptions?.RecordsPerPage ?? mapping?.DefaultPaginateCount);
+        //if (objectOptions != null && objectOptions.PageNum != 1)
+        //{
+        //    collectionOptions.Pagination.GoToPage(objectOptions.PageNum);
+        //}
+        collectionOptions.RecordsPerPage ??= mapping?.DefaultPaginateCount;
+        var paginatedData = await GetCustomCollectionAsync<ObjType>(collectionOptions);
+        paginatedData?.Data?.ForEach(obj =>
         {
             obj.RemoveNullChilds();
             if (obj is IAliasTallyObject AliasObj)
@@ -290,8 +294,14 @@ public partial class TallyService : ITallyService
             }
 
         });
-        return objects;
-
+        if (paginatedData != null && paginatedData.Data != null)
+        {
+            return paginatedData;
+        }
+        else
+        {
+            return null;
+        }
     }
 
     /// <inheritdoc/>
@@ -325,19 +335,14 @@ public partial class TallyService : ITallyService
                 collectionOptions.Filters.AddRange(mapping.Filters);
             }
         }
-        Pagination pagination = await GetFirstPagePagination(collectionOptions, mapping?.DefaultPaginateCount ?? 1000);
+        //Pagination pagination = await GetFirstPagePagination(collectionOptions, mapping?.DefaultPaginateCount ?? 1000);
         ConcurrentBag<ObjType> objects = new();
         List<Task> tasks = new();
-        for (int i = 0; i < pagination.TotalPages; i++)
-        {
+        int TotalPages = 0;
+        int CurrentPage = 1;
 
-            Pagination tpagination = new(pagination.TotalCount, mapping?.DefaultPaginateCount ?? 1000, i + 1);
-            _logger?.LogInformation("getting {type} from {start} to {end} (Page {cur} of {Total})",
-                                    mapping!.MasterType,
-                                    tpagination.Start,
-                                    tpagination.End,
-                                    tpagination.PageNum,
-                                    tpagination.TotalPages);
+        do
+        {
             var options = new PaginatedRequestOptions()
             {
                 FromDate = objectOptions?.FromDate,
@@ -347,28 +352,28 @@ public partial class TallyService : ITallyService
                 Compute = objectOptions?.Compute,
                 ComputeVar = objectOptions?.ComputeVar,
                 Objects = objectOptions?.Objects,
-                Pagination = tpagination,
+                PageNum = CurrentPage,
+                RecordsPerPage = mapping?.DefaultPaginateCount,
                 XMLAttributeOverrides = objectOptions?.XMLAttributeOverrides,
                 IsInitialize = objectOptions?.IsInitialize ?? YesNo.No,
             };
-            var tempobjects = await GetObjectsAsync<ObjType>(options);
-            tempobjects?.AsParallel().ForAll(t => objects.Add(t));
-            progress?.Report(new(tpagination.TotalCount, tpagination.End - tpagination.Start, tpagination.End));
+            var paginatedResp = await GetObjectsAsync<ObjType>(options);
+            _logger?.LogInformation("Received {type} from {start} to {end} (Page {cur} of {Total})",
+                                    mapping!.MasterType,
+                                    (CurrentPage - 1) * options.RecordsPerPage,
+                                    CurrentPage * options.RecordsPerPage,
+                                    CurrentPage,
+                                    paginatedResp?.TotalPages);
+            TotalPages = paginatedResp?.TotalPages ?? TotalPages;
+            CurrentPage++;
+            paginatedResp?.Data?.AsParallel().ForAll(t => objects.Add(t));
+            progress?.Report(new(paginatedResp!.TotalCount, options.RecordsPerPage ?? 0, objects.Count));
         }
+        while (CurrentPage <= TotalPages);
         //await Task.WhenAll(tasks.ToArray());
         return objects.ToList();
     }
-    private async Task<Pagination> GetFirstPagePagination(CollectionRequestOptions collectionOptions, int? defaultCount)
-    {
-        int? TotalCount = await GetObjectCountAync(new()
-        {
-            CollectionType = collectionOptions.CollectionType,
-            FromDate = collectionOptions.FromDate,
-            ToDate = collectionOptions.ToDate,
-            Filters = collectionOptions.Filters,
-        });
-        return new(TotalCount ?? 0, defaultCount ?? 1000);
-    }
+
     /// <inheritdoc/>
     public async Task<int?> GetObjectCountAync(CountRequestOptions options)
     {
@@ -399,8 +404,9 @@ public partial class TallyService : ITallyService
     }
 
     /// <inheritdoc/>
-    public async Task<List<ObjType>?> GetCustomCollectionAsync<ObjType>(CollectionRequestOptions collectionOptions) where ObjType : TallyBaseObject
+    public async Task<PaginatedResponse<ObjType>?> GetCustomCollectionAsync<ObjType>(CollectionRequestOptions collectionOptions) where ObjType : TallyBaseObject
     {
+        collectionOptions.RecordsPerPage ??= 1000;
         string Reqxml = GenerateCollectionXML(collectionOptions);
 
         var Response = await SendRequestAsync(Reqxml);
@@ -410,8 +416,11 @@ public partial class TallyService : ITallyService
             {
                 Envelope<ObjType>? Envelope = XMLToObject.GetObjfromXml<Envelope<ObjType>>(Response.Response,
                                                                                            collectionOptions.XMLAttributeOverrides, _logger);
-                return Envelope?.Body.Data.Collection?.Objects;
-
+                // return Envelope?.Body.Data.Collection?.Objects;
+                var paginationData = Envelope?.Body.Data.Collection?.PaginationData;
+                return new PaginatedResponse<ObjType>(paginationData?.TotalCount ?? 0,
+                                                      collectionOptions.RecordsPerPage ?? 1000,
+                                                      Envelope?.Body.Data.Collection?.Objects);
             }
             catch (Exception)
             {
@@ -441,7 +450,7 @@ public partial class TallyService : ITallyService
         ColEnvelope.Body.Desc.TDL.TDLMessage = new(colName: CollectionName,
                                                    colType: collectionOptions.CollectionType,
                                                    childof: collectionOptions.ChildOf,
-                                                   nativeFields: collectionOptions.FetchList,
+                                                   nativeFields: collectionOptions.Pagination ? null : collectionOptions.FetchList,
                                                    filters: collectionOptions.Filters,
                                                    computevar: collectionOptions.ComputeVar,
                                                    compute: collectionOptions.Compute,
@@ -450,20 +459,34 @@ public partial class TallyService : ITallyService
 
 
 
-        if (collectionOptions.Pagination != null)
+        if (collectionOptions.Pagination)
         {
-
+            ColEnvelope.Body.Desc.TDL.TDLMessage.Object = new()
+            {
+                new("Pagination",new(){ $"TotalCount:$$NUMITEMS:{ColEnvelope.Header?.ID}"})
+            };
             ColEnvelope.Body.Desc.TDL.TDLMessage.Collection.Add(new()
             {
                 Name = ColEnvelope.Header?.ID + "PAGINATED",
                 Collections = ColEnvelope.Header?.ID,
                 Compute = new() { "LineIndex : ##vLineIndex" },
                 ComputeVar = new() { "vLineIndex: Number : IF $$IsEmpty:##vLineIndex THEN 1 ELSE ##vLineIndex + 1" },
-                NativeFields = new() { "*" },
-                Filters = new() { "Pagination" }
+                NativeFields = collectionOptions.FetchList,
+                Filters = new() { "PaginationFilter" }
             });
-            ColEnvelope.Body.Desc.TDL.TDLMessage.System?.Add(new("Pagination", collectionOptions.Pagination.GetFilterFormulae()));
-            ColEnvelope.Header!.ID += "PAGINATED";
+            int? Start = collectionOptions.RecordsPerPage * (collectionOptions.PageNum - 1);
+            ColEnvelope.Body.Desc.TDL.TDLMessage.System?.Add(new("PaginationFilter",
+                                                                 $"##vLineIndex <= {Start + collectionOptions.RecordsPerPage} AND ##vLineIndex > {Start}"));
+
+            ColEnvelope.Body.Desc.TDL.TDLMessage.Collection.Add(new()
+            {
+                Name = ColEnvelope.Header?.ID + "WITHPAGINATED",
+                Collections = ColEnvelope.Header?.ID + "PAGINATED",
+                NativeFields = collectionOptions.FetchList,
+                Objects = "Pagination",
+            });
+            ColEnvelope.Header!.ID += "WITHPAGINATED";
+
 
 
         }

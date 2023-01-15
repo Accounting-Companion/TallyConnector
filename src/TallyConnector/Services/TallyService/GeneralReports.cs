@@ -19,7 +19,7 @@ public partial class TallyService
 
     public async Task<List<CompanyType>?> GetCompaniesAsync<CompanyType>() where CompanyType : BaseCompany
     {
-        return await GetObjectsAsync<CompanyType>(new()
+        return await GetAllObjectsAsync<CompanyType>(new()
         {
             IsInitialize = YesNo.Yes,
             FetchList = new()
@@ -79,7 +79,7 @@ public partial class TallyService
     }
     public async Task<List<CompanyOnDisk>?> GetCompaniesinDefaultPathAsync()
     {
-        return await GetObjectsAsync<CompanyOnDisk>(new()
+        return await GetAllObjectsAsync<CompanyOnDisk>(new()
         {
             IsInitialize = YesNo.Yes,
             FetchList = new()
@@ -96,10 +96,10 @@ public partial class TallyService
             Filters = new() { new("ActiveCompFilt", "$Name = ##SVCURRENTCOMPANY") },
             IsInitialize = YesNo.Yes,
         };
-        var Companies = await GetObjectsAsync<BaseCompany>(paginatedRequestOptions);
-        if (Companies != null && Companies.Count > 0)
+        var PaginatedResp = await GetObjectsAsync<BaseCompany>(paginatedRequestOptions);
+        if (PaginatedResp != null && PaginatedResp.Data.Count > 0)
         {
-            return Companies[0];
+            return PaginatedResp.Data[0];
         }
         else
         {
