@@ -3,7 +3,7 @@
 
 [XmlRoot(ElementName = "VOUCHERTYPE")]
 [TDLCollection(CollectionName = "STATVchType", Include = false)]
-public class VoucherTypeStat : BaseStatistics
+public class VoucherTypeStat : BaseStatistics , IReportInterfaceGenerator<MasterTypeStat>
 {
 
     [XmlElement(ElementName = "CANCELLEDCOUNT")]
@@ -11,6 +11,16 @@ public class VoucherTypeStat : BaseStatistics
     public int CancelledCount { get; set; }
 
     public int TotalCount => CancelledCount + Count;
+
+    public IEnumerable<string> GetFields()
+    {
+        throw new NotImplementedException();
+    }
+
+    public string GetXMLTDLReport()
+    {
+        throw new NotImplementedException();
+    }
 
     public override string ToString()
     {
@@ -22,8 +32,18 @@ public class VoucherTypeStat : BaseStatistics
 
 [XmlRoot(ElementName = "MASTERTYPE")]
 [TDLCollection(CollectionName = "STATObjects")]
-public class MasterTypeStat : BaseStatistics
+public class MasterTypeStat : BaseStatistics, IReportInterfaceGenerator
 {
+    public IEnumerable<string> GetFields()
+    {
+        throw new NotImplementedException();
+    }
+
+    public string GetXMLTDLReport()
+    {
+        throw new NotImplementedException();
+    }
+
     public override string ToString()
     {
 

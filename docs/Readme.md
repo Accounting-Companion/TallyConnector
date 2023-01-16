@@ -20,7 +20,7 @@ ___
 
 ## Supported Environments
 
-1. .Net Core 7.0 | .Net Core 6.0 | .Net Core 5.0
+1. .Net Core 7.0 | .Net Core 6.0
 2. .Net Framework 4.8
 3. Visual Basic
 
@@ -30,8 +30,8 @@ ___
 
 | Name| Framework |
 | --- | --- |
-| **TallyConnector.Core**  <br/>Core Library that used in TallyConnector.<br/> Contains models,converters,attributes | ![NET7](https://img.shields.io/badge/.NET-7.0-white) ![NET6](https://img.shields.io/badge/.NET-6.0-red) ![NET5](https://img.shields.io/badge/.NET-5.0-blue) ![NETFramework48](https://img.shields.io/badge/.NET%20Framework-4.8-orange)|
-| **TallyConnector**  <br/>We can use this library to interact with Tally Erp9 / Tally prime using C# objects  | ![NET7](https://img.shields.io/badge/.NET-7.0-white) ![NET6](https://img.shields.io/badge/.NET-6.0-red) ![NET5](https://img.shields.io/badge/.NET-5.0-blue) ![NETFramework48](https://img.shields.io/badge/.NET%20Framework-4.8-orange)|
+| **TallyConnector.Core**  <br/>Core Library that used in TallyConnector.<br/> Contains models,converters,attributes | ![NET7](https://img.shields.io/badge/.NET-7.0-white) ![NET6](https://img.shields.io/badge/.NET-6.0-red) ![NETFramework48](https://img.shields.io/badge/.NET%20Framework-4.8-orange)|
+| **TallyConnector**  <br/>We can use this library to interact with Tally Erp9 / Tally prime using C# objects  | ![NET7](https://img.shields.io/badge/.NET-7.0-white) ![NET6](https://img.shields.io/badge/.NET-6.0-red) ![NETFramework48](https://img.shields.io/badge/.NET%20Framework-4.8-orange)|
 ___
 
 ## Other Useful Resources Related to Tally Integration

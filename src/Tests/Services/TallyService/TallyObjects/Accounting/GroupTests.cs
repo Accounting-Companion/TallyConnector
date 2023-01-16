@@ -8,7 +8,7 @@ internal class GroupTests : BaseTallyServiceTest
 
         var Groups = await _tallyService.GetGroupsAsync();
         Assert.That(Groups, Is.Not.Null);
-        Assert.That(Groups, Has.Count.EqualTo(62));
+        Assert.That(Groups, Has.Count.EqualTo(63));
     }
     [Test]
     public async Task CheckGetAllGroups2()
