@@ -15,7 +15,10 @@ You can use **[Tally Connector](https://github.com/saivineeth100/TallyConnector/
 
 1. Tally Prime
 2. Tally ERP9
-
+___
+## Getting Started
+1. [Getting Started with C#](https://github.com/Accounting-Companion/TallyConnector_Samples/blob/master/1.GettingStrated.ipynb)
+2. [Getting Started with Python](https://github.com/saivineeth100/Python_Tally/blob/main/Tally.ipynb)
 ___
 
 ## Supported Environments
