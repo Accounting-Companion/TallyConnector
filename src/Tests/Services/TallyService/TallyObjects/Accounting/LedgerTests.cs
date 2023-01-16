@@ -1,19 +1,23 @@
-﻿namespace Tests.Services.TallyService.TallyObjects.Accounting;
+﻿using TallyConnector.Core.Extensions;
+
+namespace Tests.Services.TallyService.TallyObjects.Accounting;
 internal class LedgerTests : BaseTallyServiceTest
 {
     [Test]
     public async Task CheckGetAllLedgers()
     {
         var objects = await _tallyService.GetLedgersAsync();
+        //string v = objects.ToJson(new());
+        //string tv = JsonSerializer.Serialize(objects);
         Assert.That(objects, Is.Not.Null);
         Assert.That(objects, Has.Count.EqualTo(745));
     }
     [Test]
     //[TestCase(100,8)]
-    [TestCase(500,2)]
-    public async Task CheckGetLedgersPaginated(int recordsPerPage,int  ResultPages)
+    [TestCase(500, 2)]
+    public async Task CheckGetLedgersPaginated(int recordsPerPage, int ResultPages)
     {
-        TCM.Pagination.PaginatedResponse<TCMA.Ledger> paginatedResponse = await _tallyService.GetLedgersAsync(new() {RecordsPerPage= recordsPerPage });
+        TCM.Pagination.PaginatedResponse<TCMA.Ledger> paginatedResponse = await _tallyService.GetLedgersAsync(new() { RecordsPerPage = recordsPerPage });
         var objects = paginatedResponse.Data;
         Assert.Multiple(() =>
         {

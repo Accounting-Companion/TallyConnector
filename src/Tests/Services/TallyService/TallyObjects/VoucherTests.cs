@@ -1,4 +1,6 @@
-﻿using TallyConnector.Core.Models;
+﻿using System.Text.Json.Serialization;
+using TallyConnector.Core.Extensions;
+using TallyConnector.Core.Models;
 
 namespace Tests.Services.TallyService.TallyObjects;
 internal class VoucherTests : BaseTallyServiceTest
@@ -24,23 +26,18 @@ internal class VoucherTests : BaseTallyServiceTest
         }
         var value = ActngVchrs.GroupBy(c => c.VchType).ToDictionary(c => c.Key, c => c.ToList());
 
-        //foreach (var v in value)
-        //{
-        //    var Subdict = v.Value.GroupBy(c => c.View).ToDictionary(c => c.Key, c => c.ToList());
-        //    foreach (var item in Subdict)
-        //    {
-        //        string json = JsonSerializer.Serialize(item.Value, new JsonSerializerOptions()
-        //        {
-        //            WriteIndented = true,
-        //            //DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingDefault,
-        //            PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
-        //            Converters = { new JsonStringEnumConverter(), new TallyDateJsonConverter() }
-        //        });
-        //        await File.WriteAllTextAsync("json/" + v.Key + "_" + item.Key + ".json", json);
-        //    }
+        foreach (var v in value)
+        {
+            var Subdict = v.Value.GroupBy(c => c.View).ToDictionary(c => c.Key, c => c.ToList());
+            foreach (var item in Subdict)
+            {
+                string json = item.Value.ToJson();
+                var k = json.FromJson<Voucher>();
+                await File.WriteAllTextAsync("json/" + v.Key + "_" + item.Key + ".json", json);
+            }
 
-        //}
-
+        }
+        
         Assert.That(ActngVchrs, Is.Not.Null);
         Assert.That(ActngVchrs, Has.Count.EqualTo(8636));
         //Assert.That(count, Is.EqualTo(8636));

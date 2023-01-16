@@ -43,11 +43,11 @@ internal class GroupTests : BaseTallyServiceTest
             AddlAllocType = TCM.AdAllocType.AppropriateByQty,
             IsCalculable = false
         };
-        XmlDocument xmlDocument = new();
-        XmlElement xmlElement = xmlDocument.CreateElement("Test");
-        xmlElement.Value = "sdfg";
+        //XmlDocument xmlDocument = new();
+        //XmlElement xmlElement = xmlDocument.CreateElement("Test");
+        //xmlElement.Value = "sdfg";
         //xmlElement.Attributes.na = "TallyUDF";
-        group.OtherFields = new XmlElement[] { xmlElement };
+        //group.OtherFields = new XmlElement[] { xmlElement };
         //Creating 
         TCM.TallyResult tallyResult = await _tallyService.PostGroupAsync(group);
         Assert.That(tallyResult.Status, Is.EqualTo(TCM.RespStatus.Sucess));

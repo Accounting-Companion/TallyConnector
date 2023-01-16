@@ -450,7 +450,7 @@ public partial class TallyService : ITallyService
         ColEnvelope.Body.Desc.TDL.TDLMessage = new(colName: CollectionName,
                                                    colType: collectionOptions.CollectionType,
                                                    childof: collectionOptions.ChildOf,
-                                                   nativeFields: collectionOptions.Pagination ? null : collectionOptions.FetchList,
+                                                   nativeFields: collectionOptions.FetchList,
                                                    filters: collectionOptions.Filters,
                                                    computevar: collectionOptions.ComputeVar,
                                                    compute: collectionOptions.Compute,
@@ -471,7 +471,7 @@ public partial class TallyService : ITallyService
                 Collections = ColEnvelope.Header?.ID,
                 Compute = new() { "LineIndex : ##vLineIndex" },
                 ComputeVar = new() { "vLineIndex: Number : IF $$IsEmpty:##vLineIndex THEN 1 ELSE ##vLineIndex + 1" },
-                NativeFields = collectionOptions.FetchList,
+                NativeFields = new() { "*"},
                 Filters = new() { "PaginationFilter" }
             });
             int? Start = collectionOptions.RecordsPerPage * (collectionOptions.PageNum - 1);
@@ -482,7 +482,7 @@ public partial class TallyService : ITallyService
             {
                 Name = ColEnvelope.Header?.ID + "WITHPAGINATED",
                 Collections = ColEnvelope.Header?.ID + "PAGINATED",
-                NativeFields = collectionOptions.FetchList,
+                NativeFields = new() { "*" },
                 Objects = "Pagination",
             });
             ColEnvelope.Header!.ID += "WITHPAGINATED";

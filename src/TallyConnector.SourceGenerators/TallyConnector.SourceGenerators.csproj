@@ -9,6 +9,7 @@
 		<!-- Generates a package at build -->
 		<IncludeBuildOutput>false</IncludeBuildOutput>
 		<VersionPrefix>2.0.1</VersionPrefix>
+		<Nullable>enable</Nullable>
 	</PropertyGroup>
 
 	<ItemGroup>

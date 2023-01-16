@@ -5,4 +5,5 @@ public static class Constants
 
     public const string AttrubuteName = "GenerateHelperMethods";
     public const string SourceGeneratorVersion = "1.0.0";
+
 }

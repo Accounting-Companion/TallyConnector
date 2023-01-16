@@ -1,4 +1,5 @@
-﻿using TallyConnector.Core.Models;
+﻿using TallyConnector.Core.Extensions;
+using TallyConnector.Core.Models;
 namespace Tests.Services.TallyService;
 internal class GeneralReports : BaseTallyServiceTest
 {
@@ -6,6 +7,7 @@ internal class GeneralReports : BaseTallyServiceTest
     public async Task TestGetCompaniesList()
     {
         var Companies = await _tallyService.GetCompaniesAsync();
+        string v = Companies.ToJson();
         Assert.That(Companies, Has.Count.EqualTo(1));
     }
 

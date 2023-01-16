@@ -1,5 +1,6 @@
-﻿using System.Diagnostics;
-using TallyConnector.SourceGenerators.Attributes;
+﻿using Microsoft.CodeAnalysis.CSharp.Syntax;
+using System.Diagnostics;
+using TallyConnector.SourceGenerators.Extensions;
 using TallyConnector.SourceGenerators.Generators;
 using TallyConnector.SourceGenerators.Models;
 
@@ -12,6 +13,44 @@ public class SourceGenerator : ISourceGenerator
     public void Execute(GeneratorExecutionContext context)
     {
         MainSyntaxReceiver receiver = (MainSyntaxReceiver)context.SyntaxReceiver;
+        ExcuteHelperMethodsGenerator(context, receiver);
+        ExecuteXMLTDLReportGenerator(context, receiver);
+    }
+
+    private static void ExecuteXMLTDLReportGenerator(GeneratorExecutionContext context, MainSyntaxReceiver receiver)
+    {
+        //Debugger.Launch();
+        foreach (var item in receiver.Classes.ReportClasses)
+        {
+            SemanticModel semanticModel = context.Compilation.GetSemanticModel(item.SyntaxTree);
+            INamedTypeSymbol? namedTypeSymbol = semanticModel.GetDeclaredSymbol(item);
+            if (namedTypeSymbol != null)
+            {
+                var propertyDeclarationSyntaxs = item.Members.OfType<PropertyDeclarationSyntax>();
+                System.Collections.Immutable.ImmutableArray<ISymbol> symbols = namedTypeSymbol.GetMembers();
+                System.Collections.Immutable.ImmutableArray<AttributeData> attributeDatas = namedTypeSymbol.GetAttributes();
+                foreach (var attributeData in attributeDatas)
+                {
+                    System.Collections.Immutable.ImmutableArray<TypedConstant> constructorArguments = attributeData.ConstructorArguments;
+                }
+                List<object> members = new();
+                foreach (var member in item.Members)
+                {
+                    IEnumerable<object> enumerable = member.AttributeLists
+                        .Where(c => c.Attributes.Count > 0)
+                        .SelectMany(k => k.Attributes)
+                        .SelectMany(c => c.ArgumentList.Arguments);
+                    //.Select(c => ((LiteralExpressionSyntax)c.Expression).Token.ValueText);
+                    members.AddRange(enumerable);
+                }
+                var unused = string.Join(",", members);
+            }
+            //Debugger.Launch();
+        }
+    }
+
+    private void ExcuteHelperMethodsGenerator(GeneratorExecutionContext context, MainSyntaxReceiver receiver)
+    {
         foreach (var t in receiver.BulkGetMethodAttributes.Syntaxes)
         {
             var classDeclaration = ((ClassDeclarationSyntax)t.Parent.Parent);
@@ -41,23 +80,10 @@ public class SourceGenerator : ISourceGenerator
             string ObjectName = typeInfo.Type.Name;
             arguments.TryGetValue("PluralName", out string PluralName);
             arguments.TryGetValue("TypeName", out string GenericTypeName);
-            HelperMethodsGeneratorArgs helperMethodArgs = new (nameSpace,className,ObjectNamespace, ObjectName, PluralName, GenericTypeName);
+            HelperMethodArgs helperMethodArgs = new(nameSpace, className, ObjectNamespace, ObjectName, PluralName, GenericTypeName);
             context.AddSource($"TallyService_HelperMethods_{TypeName}.g.cs", HelperMethodsGenerator.Generate(helperMethodArgs));
         }
-
-        foreach (var item in receiver.Classes.Syntaxes)
-        {
-            List<string> members = new();
-            foreach (var member in item.Members)
-            {
-                IEnumerable<string> enumerable = member.AttributeLists.Where(c=>c.Attributes.Count>0).SelectMany(k=>k.Attributes.Where(k=>((IdentifierNameSyntax)k.Name).Identifier.ValueText == "XmlElement")).SelectMany(c=>c.ArgumentList.Arguments).Select(c=>((LiteralExpressionSyntax)c.Expression).Token.ValueText);
-                members.AddRange(enumerable);
-            }
-            var unused = string.Join(",", members);
-            //Debugger.Launch();
-        }
     }
-
 
     public void Initialize(GeneratorInitializationContext context)
     {
@@ -68,11 +94,12 @@ public class SourceGenerator : ISourceGenerator
 
     private void PostInitializationCallback(GeneratorPostInitializationContext context)
     {
-        context.AddSource("GenerateGetMethodAttribute.g.cs", GenerateBulkGetMethodsAttribute.Generate());
+        //context.AddSource("GenerateGetMethodAttribute.g.cs", GenerateBulkGetMethodsAttribute.Generate());
     }
 
 
 }
+
 public class MainSyntaxReceiver : ISyntaxReceiver
 {
     public BulkGetMethodSyntaxReceiver BulkGetMethodAttributes { get; } = new();
@@ -105,15 +132,27 @@ public class BulkGetMethodSyntaxReceiver : ISyntaxReceiver
 
 public class ClassSyntaxReceiver : ISyntaxReceiver
 {
-    public List<ClassDeclarationSyntax> Syntaxes = new();
+    public List<ClassDeclarationSyntax> ReportClasses = new();
 
     public void OnVisitSyntaxNode(SyntaxNode syntaxNode)
     {
-        if (syntaxNode is not ClassDeclarationSyntax { Identifier.Value: "Ledger" } cls)
+
+        if (syntaxNode is not ClassDeclarationSyntax cls)
         {
             return;
         }
-        //Debugger.Launch();
-        Syntaxes.Add(cls);
+
+        if (cls.BaseList != null && cls.BaseList.Types.Count > 0)
+        {
+            IEnumerable<BaseTypeSyntax> enumerable = cls.BaseList.Types.Where(type => type.GetBaseTypeName() == "IReportInterfaceGenerator" || type.GetGenericBaseTypeName() == "IReportInterfaceGenerator");
+            if (enumerable.Count() > 0)
+            {
+                //Debugger.Launch();
+                ReportClasses.Add(cls);
+            }
+
+        }
+
+
     }
 }
