@@ -1,5 +1,4 @@
-﻿using System.Text.Json.Serialization;
-using TallyConnector.Core.Extensions;
+﻿using TallyConnector.Core.Extensions;
 using TallyConnector.Core.Models;
 
 namespace Tests.Services.TallyService.TallyObjects;
@@ -37,7 +36,7 @@ internal class VoucherTests : BaseTallyServiceTest
             }
 
         }
-        
+
         Assert.That(ActngVchrs, Is.Not.Null);
         Assert.That(ActngVchrs, Has.Count.EqualTo(8636));
         //Assert.That(count, Is.EqualTo(8636));
@@ -122,7 +121,7 @@ internal class VoucherTests : BaseTallyServiceTest
     [Test]
     public async Task GetVoucher()
     {
-        var vouche = await _tallyService.GetVoucherAsync<Voucher>("910", new() { LookupField = VoucherLookupField.MasterId });
+        var vouche = await _tallyService.GetVoucherAsync("910", new() { LookupField = VoucherLookupField.MasterId });
         vouche.ReferenceDate = vouche.Date;
         vouche.OtherFields = null;
         vouche.OtherAttributes = null;
@@ -131,6 +130,25 @@ internal class VoucherTests : BaseTallyServiceTest
             MasterId = vouche.MasterId,
             Action = TallyConnector.Core.Models.Action.Delete
         });
+    }
+
+    [Test]
+    public async Task CheckAlterVoucher()
+    {
+
+        Voucher vch = await _tallyService.GetVoucherAsync("5211", new() { FetchList = TCM.Constants.Voucher.AccountingViewFetchList.All, LookupField = VoucherLookupField.MasterId });
+
+        vch.Ledgers.First().Amount = -25000;
+        vch.Ledgers.Skip(1).First().Amount = 25000;
+        XmlDocument doc = new XmlDocument();
+        XmlAttribute TagNameAttribute = doc.CreateAttribute("TAGNAME");
+        TagNameAttribute.Value = "MasterId";
+        XmlAttribute TagValueAttribute = doc.CreateAttribute("TAGVALUE");
+        TagValueAttribute.Value = vch.MasterId.ToString();
+
+        vch.OtherAttributes = new XmlAttribute[] { TagNameAttribute, TagValueAttribute };
+        TallyResult tallyResult = await _tallyService.PostVoucherAsync(vch);
+
     }
 }
 
