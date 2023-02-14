@@ -109,7 +109,8 @@ internal class VoucherTests : BaseTallyServiceTest
                                                                        new()
                                                                        {
                                                                            LookupField = VoucherLookupField.MasterId,
-                                                                           FetchList = Constants.Voucher.InvoiceViewFetchList.All
+                                                                           FetchList = Constants.Voucher.InvoiceViewFetchList.All,
+                                                                           FromDate = new DateTime(2021,4,1)
                                                                        });
 
 

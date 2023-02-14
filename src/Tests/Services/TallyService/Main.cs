@@ -1,4 +1,6 @@
-﻿namespace Tests.Services.TallyService;
+﻿using Microsoft.VisualBasic;
+
+namespace Tests.Services.TallyService;
 internal class Main : BaseTallyServiceTest
 {
 
@@ -31,6 +33,20 @@ internal class Main : BaseTallyServiceTest
         var voucherstat = await _tallyService.GetVoucherStatisticsAsync(new() { FromDate = new DateTime(2009, 04, 01),ToDate= new DateTime(2023, 03, 31) });
         Assert.That(voucherstat, Has.Count.EqualTo(vouchertypecount));
     }
+    [Test]
+    public async Task Test()
+    {
+        XmlSerializer xmlSerializer = new(typeof(A));
+        StringWriter streamWriter = new StringWriter();
+        xmlSerializer.Serialize(streamWriter, new A() { strings = new List<string>() { "A", "B" } });
+        var k = streamWriter.ToString();
+    }
 
 
+}
+[XmlRoot(ElementName = "Root")]
+public class A
+{
+    [XmlArray]
+    public List<string> strings;
 }

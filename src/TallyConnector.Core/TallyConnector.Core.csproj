@@ -65,7 +65,12 @@
 		<PackageReference Include="System.Text.Json" Version="7.0.2" />
 	</ItemGroup>
 	<ItemGroup>
+		<ProjectReference Include="..\..\..\..\OpenSource\MappingSourceGenerator\src\Mapper.Core\Mapper.Core.csproj" />
 		<ProjectReference Include="..\TallyConnector.SourceGenerators\TallyConnector.SourceGenerators.csproj" OutputItemType="Analyzer" />
+	</ItemGroup>
+	<ItemGroup>
+	  <Folder Include="Models\Request\" />
+	  <Folder Include="Models\SourceGenerator\" />
 	</ItemGroup>
 
 

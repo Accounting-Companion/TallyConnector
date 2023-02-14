@@ -85,14 +85,14 @@ public static class TDLReportHelper
         if (xmlTag != null)
         {
             TDLReport ChildField = new(xmlTag);
-            TDLXMLSetAttribute? tDLXMLSet = AttributeHelper.GetTDLXMLSetAttributeValue(propertyInfo);
+            XMLTDLFieldAttribute? tDLXMLSet = AttributeHelper.GetTDLXMLSetAttributeValue(propertyInfo);
             if (tDLXMLSet != null)
             {
                 if (tDLXMLSet.Set != string.Empty)
                 {
                     ChildField.SetExp = tDLXMLSet.Set;
                 }
-                ChildField.IncludeinFetch = tDLXMLSet.IncludeInFetch;
+                ChildField.IncludeinFetch = tDLXMLSet.ExcludeInFetch;
 
             }
 

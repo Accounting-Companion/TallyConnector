@@ -46,9 +46,9 @@ public static class AttributeHelper
         return null;
     }
 
-    public static TDLXMLSetAttribute? GetTDLXMLSetAttributeValue(PropertyInfo propertyinfo)
+    public static XMLTDLFieldAttribute? GetTDLXMLSetAttributeValue(PropertyInfo propertyinfo)
     {
-        TDLXMLSetAttribute[] CElement = (TDLXMLSetAttribute[])Attribute.GetCustomAttributes(propertyinfo, typeof(TDLXMLSetAttribute));//propertyinfo.CustomAttributes.FirstOrDefault(Attributedata => Attributedata.AttributeType == typeof(XmlAttributeAttribute));
+        XMLTDLFieldAttribute[] CElement = (XMLTDLFieldAttribute[])Attribute.GetCustomAttributes(propertyinfo, typeof(XMLTDLFieldAttribute));//propertyinfo.CustomAttributes.FirstOrDefault(Attributedata => Attributedata.AttributeType == typeof(XmlAttributeAttribute));
         if (CElement.Length > 0)
         {
             return CElement[0];

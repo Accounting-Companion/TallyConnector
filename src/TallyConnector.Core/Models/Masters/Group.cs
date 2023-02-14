@@ -66,7 +66,7 @@ public class BaseGroup : BasicTallyObject, IAliasTallyObject
 
     [XmlElement(ElementName = "PARENTID")]
     [Column(TypeName = $"nvarchar({Constants.GUIDLength})")]
-    [TDLXMLSet(Set = "$GUID:Group:$Parent")]
+    [XMLTDLField(Set = "$GUID:Group:$Parent")]
     public string? ParentId { get; set; }
 
     [JsonIgnore]

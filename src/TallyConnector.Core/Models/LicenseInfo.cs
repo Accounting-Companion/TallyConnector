@@ -6,71 +6,71 @@ namespace TallyConnector.Core.Models;
 public class LicenseInfo : TallyXmlJson
 {
     [XmlElement(ElementName = "SERIALNUMBER")]
-    [TDLXMLSet("$$LicenseInfo:SerialNumber")]
+    [XMLTDLField("$$LicenseInfo:SerialNumber")]
     public string? SerialNumber { get; set; }
 
     [XmlElement(ElementName = "REMOTESERIALNUMBER")]
-    [TDLXMLSet("$$LicenseInfo:RemoteSerialNumber")]
+    [XMLTDLField("$$LicenseInfo:RemoteSerialNumber")]
     public string? RemoteSerialNumber { get; set; }
 
     [XmlElement(ElementName = "ACCOUNTID")]
-    [TDLXMLSet("$$LicenseInfo:AccountID")]
+    [XMLTDLField("$$LicenseInfo:AccountID")]
     public string? AccountId { get; set; }
 
     [XmlElement(ElementName = "ADMINMAILID")]
-    [TDLXMLSet("$$LicenseInfo:AdminEmailID")]
+    [XMLTDLField("$$LicenseInfo:AdminEmailID")]
     public string? AdminMailId { get; set; }
 
     [XmlElement(ElementName = "ISADMIN")]
-    [TDLXMLSet("$$LicenseInfo:IsAdmin")]
+    [XMLTDLField("$$LicenseInfo:IsAdmin")]
     public TallyYesNo? IsAdmin { get; set; }
 
     [XmlElement(ElementName = "ISEDUCATIONALMODE")]
-    [TDLXMLSet("$$LicenseInfo:IsEducationalMode")]
+    [XMLTDLField("$$LicenseInfo:IsEducationalMode")]
     public TallyYesNo? IsEducationalMode { get; set; }
 
     [XmlElement(ElementName = "ISSILVER")]
-    [TDLXMLSet("$$LicenseInfo:IsAdmin")]
+    [XMLTDLField("$$LicenseInfo:IsAdmin")]
     public TallyYesNo? IsSilver { get; set; }
 
     [XmlElement(ElementName = "ISGOLD")]
-    [TDLXMLSet("$$LicenseInfo:IsAdmin")]
+    [XMLTDLField("$$LicenseInfo:IsAdmin")]
     public TallyYesNo? IsGold { get; set; }
 
     [XmlElement(ElementName = "PLANNAME")]
-    [TDLXMLSet("If $$LicenseInfo:IsEducationalMode Then \"Educational Version\" ELSE  If $$LicenseInfo:IsSilver Then \"Silver\" ELSE  If $$LicenseInfo:IsGold Then \"Gold\" else \"\"")]
+    [XMLTDLField("If $$LicenseInfo:IsEducationalMode Then \"Educational Version\" ELSE  If $$LicenseInfo:IsSilver Then \"Silver\" ELSE  If $$LicenseInfo:IsGold Then \"Gold\" else \"\"")]
     public string? PlanName { get; set; }
 
     [XmlElement(ElementName = "ISINDIAN")]
-    [TDLXMLSet("$$LicenseInfo:IsAdmin")]
+    [XMLTDLField("$$LicenseInfo:IsAdmin")]
     public TallyYesNo? IsIndian { get; set; }
 
     [XmlElement(ElementName = "ISREMOTEACCESSMODE")]
-    [TDLXMLSet("$$LicenseInfo:IsRemoteAccessMode")]
+    [XMLTDLField("$$LicenseInfo:IsRemoteAccessMode")]
     public TallyYesNo? IsRemoteAccessMode { get; set; }
 
     [XmlElement(ElementName = "ISLICCLIENTMODE")]
-    [TDLXMLSet("$$LicenseInfo:IsLicClientMode")]
+    [XMLTDLField("$$LicenseInfo:IsLicClientMode")]
     public TallyYesNo? IsLicenseClientMode { get; set; }
 
     [XmlElement(ElementName = "APPLICATIONPATH")]
-    [TDLXMLSet("$$SysInfo:ApplicationPath")]
+    [XMLTDLField("$$SysInfo:ApplicationPath")]
     public string? ApplicationPath { get; set; }
 
     [XmlElement(ElementName = "DATAPATH")]
-    [TDLXMLSet("##SVCurrentPath")]
+    [XMLTDLField("##SVCurrentPath")]
     public string? DataPath { get; set; }
 
     [XmlElement(ElementName = "USERLEVEL")]
-    [TDLXMLSet("$$cmpuserlevel")]
+    [XMLTDLField("$$cmpuserlevel")]
     public string? UserLevel { get; set; }
 
     [XmlElement(ElementName = "USERNAME")]
-    [TDLXMLSet("$$cmpusername")]
+    [XMLTDLField("$$cmpusername")]
     public string? UserName { get; set; }
 
     [XmlElement(ElementName = "TALLYVERSION")]
-    [TDLXMLSet(Constants.License)]
+    [XMLTDLField(Constants.License)]
     public string? TallyVersion { get; set; }
 
     public string? TallyShortVersion => Regex.Replace(Regex.Match(TallyVersion, "[a-zA-Z. 0-9-]+").Value, "(\\s([a-zA-Z]+\\s)+)", "");

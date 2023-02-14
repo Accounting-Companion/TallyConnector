@@ -56,7 +56,7 @@ public class BaseStatistics
     public string Name { get; set; }
 
     [XmlElement(ElementName = "COUNT")]
-    [TDLXMLSet(Set = "if $$ISEMPTY:$StatVal then 0 else $StatVal")]
+    [TDLXMLSet(Set = "$StatVal")]
     public int Count { get; set; }
 }
 
