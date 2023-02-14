@@ -65,7 +65,7 @@
 		<PackageReference Include="System.Text.Json" Version="7.0.0" />
 	</ItemGroup>
 	<ItemGroup>
-		<ProjectReference Include="..\TallyConnector.SourceGenerators\TallyConnector.SourceGenerators.csproj" OutputItemType="Analyzer"/>
+		<ProjectReference Include="..\TallyConnector.SourceGenerators\TallyConnector.SourceGenerators.csproj" OutputItemType="Analyzer" />
 	</ItemGroup>
 
 

@@ -161,6 +161,10 @@ public partial class Group : BaseGroup
     [Column(TypeName = "nvarchar(3)")]
     public TallyYesNo? IsRevenue { get; set; }
 
+    [XmlElement(ElementName = "ISDEEMEDPOSITIVE")]
+    [Column(TypeName = "nvarchar(3)")]
+    public TallyYesNo? IsDeemedPositive { get; set; }
+
     [XmlElement(ElementName = "AFFECTSGROSSPROFIT")]
     [Column(TypeName = "nvarchar(3)")]
     public TallyYesNo? AffectGrossProfit { get; set; }

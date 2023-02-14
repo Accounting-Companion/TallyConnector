@@ -65,9 +65,9 @@ public class TallyYesNo : IXmlSerializable
     {
         return tallyYesNo.Value;
     }
-    public static implicit operator bool?(TallyYesNo tallyYesNo)
+    public static implicit operator bool?(TallyYesNo? tallyYesNo)
     {
-        return tallyYesNo.Value;
+        return tallyYesNo?.Value ?? false;
     }
 
     public override string ToString()

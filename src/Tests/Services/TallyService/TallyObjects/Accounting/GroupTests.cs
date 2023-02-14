@@ -40,9 +40,11 @@ internal class GroupTests : BaseTallyServiceTest
     {
         TCMA.Group group = new("Test NA")
         {
+            
             AddlAllocType = TCM.AdAllocType.AppropriateByQty,
-            IsCalculable = false
+            OldName= "Test NA",
         };
+        
         //XmlDocument xmlDocument = new();
         //XmlElement xmlElement = xmlDocument.CreateElement("Test");
         //xmlElement.Value = "sdfg";
@@ -53,12 +55,12 @@ internal class GroupTests : BaseTallyServiceTest
         Assert.That(tallyResult.Status, Is.EqualTo(TCM.RespStatus.Sucess));
         //Reading
         var Tgroup = await _tallyService.GetGroupAsync(group.Name);
-
+        var c = Tgroup.GetJson();
         Assert.Multiple(() =>
         {
             Assert.That(Tgroup.Name, Is.EqualTo(group.Name));
             Assert.That(Tgroup.AddlAllocType, Is.EqualTo(group.AddlAllocType));
-            Assert.That((bool)Tgroup.IsCalculable, Is.EqualTo((bool)group.IsCalculable));
+            Assert.That((bool?)Tgroup.IsCalculable, Is.EqualTo((bool?)group.IsCalculable));
         });
 
         Tgroup.AddlAllocType = TCM.AdAllocType.NotApplicable;
