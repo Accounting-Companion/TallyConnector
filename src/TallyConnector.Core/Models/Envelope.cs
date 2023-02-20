@@ -42,7 +42,7 @@ public class Envelope<T> : TallyXmlJson
         XmlAttributes attrs = new();
         attrs.XmlElements.Add(new(TallyType));
         attrOverrides.Add(typeof(Message<T>), "Objects", attrs);
-        return base.GetXML(attrOverrides, indent);
+       return base.GetXML(attrOverrides, indent);
     }
 }
 

@@ -33,6 +33,9 @@ public class Voucher : BasicTallyObject, ITallyObject
     [Column(TypeName = $"nvarchar(30)")]
     public VoucherViewType View { get; set; }
 
+    [XmlElement(ElementName = "ISINVOICE")]
+    public TallyYesNo IsInvoice { get; set; }
+
     [XmlElement(ElementName = "VOUCHERNUMBER")]
     [Column(TypeName = $"nvarchar({Constants.MaxNameLength})")]
     public string? VoucherNumber { get; set; }

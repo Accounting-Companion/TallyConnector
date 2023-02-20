@@ -1,5 +1,6 @@
 ﻿using System.Collections.Concurrent;
 using System.Data;
+using System.Linq;
 using TallyConnector.Core.Models.Masters;
 using TallyConnector.Core.Models.Masters.CostCenter;
 using TallyConnector.Core.Models.Masters.Inventory;
@@ -137,9 +138,19 @@ public partial class TallyService : ITallyService
 
             if (vch.View != VoucherViewType.AccountingVoucherView)
             {
+                vch.IsInvoice= true;
+                var attributes = postRequestOptions.XMLAttributeOverrides[typeof(ObjType), "Ledgers"];
                 XmlAttributes xmlattribute = new();
+                if (attributes != null)
+                {
+                    xmlattribute = attributes;                   
+                }
+                else
+                {
+                    postRequestOptions.XMLAttributeOverrides.Add(typeof(ObjType), "Ledgers", xmlattribute);
+                }
                 xmlattribute.XmlElements.Add(new("LEDGERENTRIES.LIST"));
-                postRequestOptions.XMLAttributeOverrides.Add(typeof(Voucher), "Ledgers", xmlattribute);
+
             }
         }
         Object.PrepareForExport();
@@ -358,12 +369,16 @@ public partial class TallyService : ITallyService
                 IsInitialize = objectOptions?.IsInitialize ?? YesNo.No,
             };
             var paginatedResp = await GetObjectsAsync<ObjType>(options);
-            _logger?.LogInformation("Received {type} from {start} to {end} (Page {cur} of {Total})",
-                                    mapping!.MasterType,
+            if (mapping != null)
+            {
+                _logger?.LogInformation("Received {type} from {start} to {end} (Page {cur} of {Total})",
+                                    mapping?.MasterType,
                                     (CurrentPage - 1) * options.RecordsPerPage,
                                     CurrentPage * options.RecordsPerPage,
                                     CurrentPage,
                                     paginatedResp?.TotalPages);
+            }
+
             TotalPages = paginatedResp?.TotalPages ?? TotalPages;
             CurrentPage++;
             paginatedResp?.Data?.AsParallel().ForAll(t => objects.Add(t));
@@ -471,7 +486,7 @@ public partial class TallyService : ITallyService
                 Collections = ColEnvelope.Header?.ID,
                 Compute = new() { "LineIndex : ##vLineIndex" },
                 ComputeVar = new() { "vLineIndex: Number : IF $$IsEmpty:##vLineIndex THEN 1 ELSE ##vLineIndex + 1" },
-                NativeFields = new() { "*"},
+                NativeFields = new() { "*" },
                 Filters = new() { "PaginationFilter" }
             });
             int? Start = collectionOptions.RecordsPerPage * (collectionOptions.PageNum - 1);
