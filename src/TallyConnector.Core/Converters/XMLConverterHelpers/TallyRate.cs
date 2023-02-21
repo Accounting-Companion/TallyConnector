@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics;
+using System.Globalization;
 using System.Text.RegularExpressions;
 using System.Xml.Schema;
 
@@ -82,11 +83,11 @@ public class TallyRate : IXmlSerializable
     {
         if (ForexAmount != null && ForexAmount != 0)
         {
-            return $"{ForeignCurrency} {ForexAmount} = {RatePerUnit}/{Unit}";
+            return $"{ForeignCurrency?.ToString(CultureInfo.InvariantCulture)} {ForexAmount?.ToString(CultureInfo.InvariantCulture)} = {RatePerUnit.ToString(CultureInfo.InvariantCulture)}/{Unit?.ToString(CultureInfo.InvariantCulture)}";
         }
         else
         {
-            return $"{RatePerUnit}/{Unit}";
+            return $"{RatePerUnit.ToString(CultureInfo.InvariantCulture)}/{Unit?.ToString(CultureInfo.InvariantCulture)}";
         }
     }
 }

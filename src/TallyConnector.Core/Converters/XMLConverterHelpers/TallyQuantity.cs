@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics;
+using System.Globalization;
 using System.Text.RegularExpressions;
 using System.Xml.Schema;
 using TallyConnector.Core.Models.Masters.Inventory;
@@ -77,7 +78,7 @@ public class TallyQuantity : IXmlSerializable
                     var splittedtext = content.Split('=');
                     if (!content.Contains('='))
                     {
-                        splittedtext = new string[] { content.Substring(0,content.Length/2), content.Substring(content.Length / 2) };
+                        splittedtext = new string[] { content.Substring(0, content.Length / 2), content.Substring(content.Length / 2) };
                     }
                     PrimaryUnits = new(Number, splittedtext.First().Trim().Split(' ').Last().Trim());
                     SecondaryUnits = new(decimal.Parse(matches[1].Value), splittedtext.Last().Trim().Split(' ').Last().Trim());
@@ -90,7 +91,7 @@ public class TallyQuantity : IXmlSerializable
                 }
             }
         }
-        
+
     }
 
     public void WriteXml(XmlWriter writer)
@@ -102,11 +103,11 @@ public class TallyQuantity : IXmlSerializable
     {
         if (SecondaryUnits != null)
         {
-            return $"{PrimaryUnits?.Number} {PrimaryUnits?.Unit} = {SecondaryUnits?.Number} {SecondaryUnits?.Unit}";
+            return $"{PrimaryUnits?.Number.ToString(CultureInfo.InvariantCulture)} {PrimaryUnits?.Unit.ToString(CultureInfo.InvariantCulture)} = {SecondaryUnits?.Number.ToString(CultureInfo.InvariantCulture)} {SecondaryUnits?.Unit.ToString(CultureInfo.InvariantCulture)}";
         }
         else
         {
-            return $"{PrimaryUnits?.Number} {PrimaryUnits?.Unit}";
+            return $"{PrimaryUnits?.Number.ToString(CultureInfo.InvariantCulture)} {PrimaryUnits?.Unit.ToString(CultureInfo.InvariantCulture)}";
         }
     }
 }

@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics;
+using System.Globalization;
 using System.Text.RegularExpressions;
 using System.Xml.Schema;
 
@@ -113,15 +114,15 @@ public class TallyAmount : IXmlSerializable
         {
             if (IsDebit || ForexAmount < 0)
             {
-                return $"-{Currency} {ForexAmount.ToString()!.Replace("-", "")} @ {RateOfExchange.ToString()!.Replace("-", "")}";
+                return $"-{Currency} {ForexAmount?.ToString(CultureInfo.InvariantCulture)!.Replace("-", "")} @ {RateOfExchange?.ToString(CultureInfo.InvariantCulture)!.Replace("-", "")}";
             }
-            return $"{Currency} {ForexAmount} @ {RateOfExchange}";
+            return $"{Currency} {ForexAmount?.ToString(CultureInfo.InvariantCulture)} @ {RateOfExchange?.ToString(CultureInfo.InvariantCulture)}";
         }
         if (IsDebit)
         {
-            return (Amount * -1).ToString();
+            return (Amount * -1).ToString(CultureInfo.InvariantCulture);
         }
-        return Amount.ToString();
+        return Amount.ToString(CultureInfo.InvariantCulture);
     }
 
 
