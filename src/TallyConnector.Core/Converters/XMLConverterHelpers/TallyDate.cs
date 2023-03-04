@@ -20,7 +20,7 @@ public class TallyDate : IXmlSerializable
 
     public static implicit operator TallyDate?(DateTime? date)
     {
-        if (date !=null)
+        if (date != null)
         {
             return new((DateTime)date);
         }
@@ -77,17 +77,14 @@ public class TallyDate : IXmlSerializable
         if (this.Date != null)
         {
             writer.WriteAttributeString("TYPE", "Date");
-            writer.WriteString(this.ToString());
+            writer.WriteString(ToString());
         }
     }
 
     public override string? ToString()
     {
-        return Date.ToShortDateString();
+        return Date.ToString("dd-MM-yyyy");
     }
-    public string? ToString(string? format)
-    {
-        return Date.ToString(format);
-    }
+    
 }
 

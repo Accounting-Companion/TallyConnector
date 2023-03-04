@@ -138,12 +138,12 @@ public partial class TallyService : ITallyService
 
             if (vch.View != VoucherViewType.AccountingVoucherView)
             {
-                vch.IsInvoice= true;
+                vch.IsInvoice = true;
                 var attributes = postRequestOptions.XMLAttributeOverrides[typeof(ObjType), "Ledgers"];
                 XmlAttributes xmlattribute = new();
                 if (attributes != null)
                 {
-                    xmlattribute = attributes;                   
+                    xmlattribute = attributes;
                 }
                 else
                 {
@@ -219,7 +219,17 @@ public partial class TallyService : ITallyService
         }
         List<Filter> filters = new() { new Filter() { FilterName = "Objfilter", FilterFormulae = filterformulae } };
 
-        PaginatedRequestOptions paginatedRequestOptions = new() { FetchList = requestOptions.FetchList, Filters = filters, Objects = requestOptions.Objects };
+        PaginatedRequestOptions paginatedRequestOptions = new()
+        {
+            FetchList = requestOptions.FetchList,
+            Filters = filters,
+            Objects = requestOptions.Objects,
+            FromDate = requestOptions.FromDate,
+            ToDate = requestOptions.ToDate,
+            Company = requestOptions.Company,
+            Compute = requestOptions.Compute,
+            ComputeVar = requestOptions.ComputeVar,
+        };
 
         List<ObjType>? objects = (await GetObjectsAsync<ObjType>(paginatedRequestOptions))?.Data;
         if (objects != null && objects.Count > 0)
@@ -457,7 +467,7 @@ public partial class TallyService : ITallyService
         StaticVariables staticVariables = new()
         {
             SVCompany = collectionOptions.Company ?? Company?.Name,
-            SVFromDate = collectionOptions.FromDate ?? Company?.BooksFrom!,
+            SVFromDate = collectionOptions.FromDate ?? Company?.BooksFrom,
             SVToDate = collectionOptions.ToDate ?? (collectionOptions.FromDate == null ? null : DateTime.Now),
         };
         string CollectionName = $"CUSTOM{collectionOptions.CollectionType.ToUpper()}COL";
