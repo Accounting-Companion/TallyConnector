@@ -105,7 +105,7 @@ internal class VoucherTests : BaseTallyServiceTest
     {
 
         // TallyResult tallyResult = await _tallyService.PostVoucherAsync<Voucher>(new() { MasterId= 4393,Action=TCM.Action.Delete });
-        Voucher voucher = await _tallyService.GetVoucherAsync<Voucher>("4393",
+        Voucher voucher = await _tallyService.GetVoucherAsync<Voucher>("5154",
                                                                        new()
                                                                        {
                                                                            LookupField = VoucherLookupField.MasterId,

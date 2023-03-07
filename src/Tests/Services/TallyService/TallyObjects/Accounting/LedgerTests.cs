@@ -1,4 +1,6 @@
-﻿namespace Tests.Services.TallyService.TallyObjects.Accounting;
+﻿using TallyConnector.Core.Models.Masters;
+
+namespace Tests.Services.TallyService.TallyObjects.Accounting;
 internal class LedgerTests : BaseTallyServiceTest
 {
     [Test]
@@ -41,14 +43,14 @@ internal class LedgerTests : BaseTallyServiceTest
         Assert.That(objects, Has.Count.EqualTo(745));
     }
 
-    //[Test]
-    //public async Task CheckLedger_Create_Read_Delete()
-    //{
-    //    var createresult = await _tallyService.PostLedgerAsync(new Ledger() { Name = "Test From Server", Group = "Sundry Debtors" });
-    //    //var createresult2 = await _tallyService.PostLedgerAsync(new Ledger() { Name = "Test \"name\" in Quotes", Group = "Sundry Debtors" });
-    //    var result = await _tallyService.GetObjectAsync<TCMA.Ledger>("Test From Server");
+    [Test]
+    public async Task CheckLedger_Create_Read_Delete()
+    {
+        var createresult = await _tallyService.PostLedgerAsync(new Ledger() { Name = "Test From Server", Group = "Sundry Debtors" });
+        //var createresult2 = await _tallyService.PostLedgerAsync(new Ledger() { Name = "Test \"name\" in Quotes", Group = "Sundry Debtors" });
+        var result = await _tallyService.GetObjectAsync<TCMA.Ledger>("Test From Server");
 
-    //    Assert.That(result, Is.Not.Null);
-    //    Assert.That(result.Name, Is.EqualTo("Test From Server"));
-    //}
+        Assert.That(result, Is.Not.Null);
+        Assert.That(result.Name, Is.EqualTo("Test From Server"));
+    }
 }

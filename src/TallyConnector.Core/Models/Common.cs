@@ -53,8 +53,8 @@ public enum AdAllocType
 
 public enum TaxType
 {
-    [XmlEnum(Name = "Others")]
-    Others = 0,
+    [XmlEnum(Name = "")]
+    None = 0,
     [XmlEnum(Name = "GST")]
     GST = 1,
     [XmlEnum(Name = "TCS")]
@@ -79,6 +79,9 @@ public enum TaxType
     KrishiKalyanCess = 11,
     [XmlEnum(Name = "Swachh Bharat Cess")]
     SwachhBharatCess = 12,
+
+    [XmlEnum(Name = "Others")]
+    Others = 13,
 }
 
 public enum GSTTaxType

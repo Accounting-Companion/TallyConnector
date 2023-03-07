@@ -574,7 +574,9 @@ public class InventoryAllocations : TallyBaseObject
     public InventoryAllocations()
     {
     }
-
+    [XmlArray("BASICUSERDESCRIPTION.LIST")]
+    [XmlArrayItem(ElementName = "BASICUSERDESCRIPTION")]
+    public List<string> UserDescriptions { get; set; }
     [XmlElement(ElementName = "INDEXNUMBER")]
     public int IndexNumber { get; set; }
 
