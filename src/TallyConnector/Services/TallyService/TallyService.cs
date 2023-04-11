@@ -446,7 +446,8 @@ public partial class TallyService : ITallyService
                 var paginationData = Envelope?.Body.Data.Collection?.PaginationData;
                 return new PaginatedResponse<ObjType>(paginationData?.TotalCount ?? 0,
                                                       collectionOptions.RecordsPerPage ?? 1000,
-                                                      Envelope?.Body.Data.Collection?.Objects);
+                                                      Envelope?.Body.Data.Collection?.Objects,
+                                                      collectionOptions.PageNum);
             }
             catch (Exception)
             {
@@ -487,10 +488,10 @@ public partial class TallyService : ITallyService
 
         if (collectionOptions.Pagination)
         {
-            ColEnvelope.Body.Desc.TDL.TDLMessage.Object = new()
-            {
-                new("Pagination",new(){ $"TotalCount:$$NUMITEMS:{ColEnvelope.Header?.ID}"})
-            };
+            // ColEnvelope.Body.Desc.TDL.TDLMessage.Collection.First().Sort = new() { "@@Default : $MASTERID" };
+            ColEnvelope.Body.Desc.TDL.TDLMessage.Object ??= new();
+            ColEnvelope.Body.Desc.TDL.TDLMessage.Object!.Add(new("Pagination", new() { $"TotalCount:$$NUMITEMS:{ColEnvelope.Header?.ID}" }));
+
             ColEnvelope.Body.Desc.TDL.TDLMessage.Collection.Add(new()
             {
                 Name = ColEnvelope.Header?.ID + "PAGINATED",

@@ -1,7 +1,7 @@
 ﻿namespace TallyConnector.Core.Models.Pagination;
 public class PaginatedResponse<T> : PaginationBase where T : TallyBaseObject
 {
-    public PaginatedResponse(int totalCount, int pageSize, List<T>? data) : base(totalCount, pageSize)
+    public PaginatedResponse(int totalCount, int pageSize, List<T>? data, int pageNum) : base(totalCount, pageSize,pageNum)
     {
         Data = data;
     }
