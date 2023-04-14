@@ -29,6 +29,10 @@ public class TallyObjectMapping
 
 public class ViewTypeMapping
 {
+    public ViewTypeMapping()
+    {
+    }
+
     public ViewTypeMapping(VoucherViewType viewType,
                            List<string> fetchList,
                            Filter filter)

@@ -26,6 +26,7 @@ internal class GeneralReports : BaseTallyServiceTest
     [Test]
     public async Task TestGetAlterIds()
     {
+        _tallyService.Setup("http://localhost",900);
         LastAlterIdsRoot lastMasterIdsRoot = await _tallyService.GetLastAlterIdsAsync();
         Assert.That(lastMasterIdsRoot, Is.Not.Null);
     }

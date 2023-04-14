@@ -143,7 +143,17 @@ public static class HelperMethodsGenerator
                             .WithDefault(
                                 EqualsValueClause(
                                     LiteralExpression(
-                                        SyntaxKind.NullLiteralExpression)))
+                                        SyntaxKind.NullLiteralExpression))),
+                              Token(SyntaxKind.CommaToken),
+                            Parameter(
+                                Identifier("token"))
+                            .WithType(
+                                IdentifierName("CancellationToken"))
+                            .WithDefault(
+                                EqualsValueClause(
+                                    LiteralExpression(
+                                        SyntaxKind.DefaultLiteralExpression,
+                                        Token(SyntaxKind.DefaultKeyword))))
                              })))
                               .WithConstraintClauses(
                                 SingletonList<TypeParameterConstraintClauseSyntax>(
@@ -171,7 +181,10 @@ public static class HelperMethodsGenerator
                                         Argument(IdentifierName(LowerobjectName)),
                                                   Token(SyntaxKind.CommaToken),
                                                   Argument(
-                                                    IdentifierName("postRequestOptions"))
+                                                    IdentifierName("postRequestOptions")),
+                                                  Token(SyntaxKind.CommaToken),
+                                                  Argument(
+                                                    IdentifierName("token"))
                                               }))))))));
     }
     private static MethodDeclarationSyntax GetMethod(string objectNamespace, string objectName, string methodName, string typeName)
@@ -267,7 +280,17 @@ public static class HelperMethodsGenerator
                             .WithDefault(
                                 EqualsValueClause(
                                     LiteralExpression(
-                                        SyntaxKind.NullLiteralExpression)))
+                                        SyntaxKind.NullLiteralExpression))),
+                            Token(SyntaxKind.CommaToken),
+                            Parameter(
+                                Identifier("token"))
+                            .WithType(
+                                IdentifierName("CancellationToken"))
+                            .WithDefault(
+                                EqualsValueClause(
+                                    LiteralExpression(
+                                        SyntaxKind.DefaultLiteralExpression,
+                                        Token(SyntaxKind.DefaultKeyword))))
                              })))
                               .WithConstraintClauses(
                                 SingletonList<TypeParameterConstraintClauseSyntax>(
@@ -295,7 +318,10 @@ public static class HelperMethodsGenerator
                                         Argument(IdentifierName("lookupValue")),
                                                   Token(SyntaxKind.CommaToken),
                                                   Argument(
-                                                    IdentifierName("options"))
+                                                    IdentifierName("options")),
+                                                  Token(SyntaxKind.CommaToken),
+                                                  Argument(
+                                                    IdentifierName("token"))
                                               }))))))));
     }
     private static MethodDeclarationSyntax GetBulkMethod(string objectNamespace, string objectName, string methodName, string typeName)
@@ -399,7 +425,17 @@ public static class HelperMethodsGenerator
                                 .WithDefault(
                                   EqualsValueClause(
                                     LiteralExpression(
-                                      SyntaxKind.NullLiteralExpression)))
+                                      SyntaxKind.NullLiteralExpression))),
+                                        Token(SyntaxKind.CommaToken),
+                            Parameter(
+                                Identifier("token"))
+                            .WithType(
+                                IdentifierName("CancellationToken"))
+                            .WithDefault(
+                                EqualsValueClause(
+                                    LiteralExpression(
+                                        SyntaxKind.DefaultLiteralExpression,
+                                        Token(SyntaxKind.DefaultKeyword))))
                                     })))
                               .WithConstraintClauses(
                                 SingletonList<TypeParameterConstraintClauseSyntax>(
@@ -425,7 +461,12 @@ public static class HelperMethodsGenerator
                                             SeparatedList<ArgumentSyntax>(
                                               new SyntaxNodeOrToken[] {
                                         Argument(
-                                          IdentifierName("options")) }))))))));
+                                          IdentifierName("options")) ,
+                                                  Token(SyntaxKind.CommaToken),
+                                                  Argument(
+                                                    IdentifierName("token")).WithNameColon(
+                                            NameColon(
+                                                IdentifierName("token")))}))))))));
     }
     private static MethodDeclarationSyntax GetBulkPaginatedMethod(string objectNamespace, string objectName, string methodName, string typeName)
     {
@@ -523,7 +564,17 @@ public static class HelperMethodsGenerator
                                             IdentifierName("TallyConnector")),
                                           IdentifierName("Core")),
                                         IdentifierName("Models")),
-                                      IdentifierName("PaginatedRequestOptions")))
+                                      IdentifierName("PaginatedRequestOptions"))),
+                              Token(SyntaxKind.CommaToken),
+                            Parameter(
+                                Identifier("token"))
+                            .WithType(
+                                IdentifierName("CancellationToken"))
+                            .WithDefault(
+                                EqualsValueClause(
+                                    LiteralExpression(
+                                        SyntaxKind.DefaultLiteralExpression,
+                                        Token(SyntaxKind.DefaultKeyword))))
                                     })))
                               .WithConstraintClauses(
                                 SingletonList<TypeParameterConstraintClauseSyntax>(
@@ -549,7 +600,10 @@ public static class HelperMethodsGenerator
                                             SeparatedList<ArgumentSyntax>(
                                               new SyntaxNodeOrToken[] {
                                         Argument(
-                                          IdentifierName("options")) }))))))));
+                                          IdentifierName("options")),
+                                                  Token(SyntaxKind.CommaToken),
+                                                  Argument(
+                                                    IdentifierName("token")) }))))))));
     }
 
     private static MethodDeclarationSyntax GetMethodWithExactType(string objectNamespace, string objectName, string methodName, string typeName)
@@ -640,7 +694,17 @@ public static class HelperMethodsGenerator
                             .WithDefault(
                                 EqualsValueClause(
                                     LiteralExpression(
-                                        SyntaxKind.NullLiteralExpression)))
+                                        SyntaxKind.NullLiteralExpression))),
+                              Token(SyntaxKind.CommaToken),
+                            Parameter(
+                                Identifier("token"))
+                            .WithType(
+                                IdentifierName("CancellationToken"))
+                            .WithDefault(
+                                EqualsValueClause(
+                                    LiteralExpression(
+                                        SyntaxKind.DefaultLiteralExpression,
+                                        Token(SyntaxKind.DefaultKeyword))))
                              })))
                             .WithBody(
                                 Block(
@@ -661,7 +725,10 @@ public static class HelperMethodsGenerator
                                         Argument(IdentifierName("lookupValue")),
                                                   Token(SyntaxKind.CommaToken),
                                                   Argument(
-                                                    IdentifierName("options"))
+                                                    IdentifierName("options")),
+                                                  Token(SyntaxKind.CommaToken),
+                                                  Argument(
+                                                    IdentifierName("token"))
                                               }))))))));
     }
     private static MethodDeclarationSyntax GetBulkMethodWithExactType(string objectNamespace, string objectName, string methodName, string typeName)
@@ -742,8 +809,9 @@ public static class HelperMethodsGenerator
                                         Token(SyntaxKind.AsyncKeyword)}))
                             .WithParameterList(
                                 ParameterList(
-                                    SingletonSeparatedList<ParameterSyntax>(
-                                        Parameter(
+                                    SeparatedList<ParameterSyntax>(
+                        new SyntaxNodeOrToken[] {
+                            Parameter(
                                             Identifier("options"))
                                         .WithType(
                                            NullableType(QualifiedName(QualifiedName(
@@ -758,7 +826,19 @@ public static class HelperMethodsGenerator
                                         .WithDefault(
                                   EqualsValueClause(
                                     LiteralExpression(
-                                      SyntaxKind.NullLiteralExpression))))))
+                                      SyntaxKind.NullLiteralExpression))),
+                              Token(SyntaxKind.CommaToken),
+                            Parameter(
+                                Identifier("token"))
+                            .WithType(
+                                IdentifierName("CancellationToken"))
+                            .WithDefault(
+                                EqualsValueClause(
+                                    LiteralExpression(
+                                        SyntaxKind.DefaultLiteralExpression,
+                                        Token(SyntaxKind.DefaultKeyword))))
+
+                        })))
                             .WithBody(
                                 Block(
                                     SingletonList<StatementSyntax>(
@@ -773,9 +853,14 @@ public static class HelperMethodsGenerator
                                                                 QualifiedName(IdentifierName($"global::{objectNamespace}"), IdentifierName(objectName))))))
                                                 .WithArgumentList(
                                                     ArgumentList(
-                                                        SingletonSeparatedList<ArgumentSyntax>(
-                                                            Argument(
-                                                                IdentifierName("options"))))))))));
+                                                          SeparatedList<ArgumentSyntax>(
+                                              new SyntaxNodeOrToken[] {Argument(
+                                                                IdentifierName("options")),
+                                                  Token(SyntaxKind.CommaToken),
+                                                  Argument(
+                                                    IdentifierName("token")).WithNameColon(
+                                            NameColon(
+                                                IdentifierName("token"))) }))))))));
     }
     private static MethodDeclarationSyntax GetBulkPaginatedMethodWithExactType(string objectNamespace, string objectName, string methodName, string typeName)
     {
@@ -855,8 +940,9 @@ public static class HelperMethodsGenerator
                                         Token(SyntaxKind.AsyncKeyword)}))
                             .WithParameterList(
                                 ParameterList(
-                                    SingletonSeparatedList<ParameterSyntax>(
-                                        Parameter(
+                                    SeparatedList<ParameterSyntax>(
+                        new SyntaxNodeOrToken[] {
+                              Parameter(
                                             Identifier("options"))
                                         .WithType(
                                            QualifiedName(QualifiedName(
@@ -867,8 +953,18 @@ public static class HelperMethodsGenerator
                                             IdentifierName("TallyConnector")),
                                           IdentifierName("Core")),
                                         IdentifierName("Models")),
-                                      IdentifierName("PaginatedRequestOptions")))
-                                        )))
+                                      IdentifierName("PaginatedRequestOptions"))),
+                              Token(SyntaxKind.CommaToken),
+                            Parameter(
+                                Identifier("token"))
+                            .WithType(
+                                IdentifierName("CancellationToken"))
+                            .WithDefault(
+                                EqualsValueClause(
+                                    LiteralExpression(
+                                        SyntaxKind.DefaultLiteralExpression,
+                                        Token(SyntaxKind.DefaultKeyword))))
+                        })))
                             .WithBody(
                                 Block(
                                     SingletonList<StatementSyntax>(
@@ -883,9 +979,14 @@ public static class HelperMethodsGenerator
                                                                 QualifiedName(IdentifierName($"global::{objectNamespace}"), IdentifierName(objectName))))))
                                                 .WithArgumentList(
                                                     ArgumentList(
-                                                        SingletonSeparatedList<ArgumentSyntax>(
-                                                            Argument(
-                                                                IdentifierName("options"))))))))));
+                                                          SeparatedList<ArgumentSyntax>(
+                                              new SyntaxNodeOrToken[] {Argument(
+                                                                IdentifierName("options")),
+                                                  Token(SyntaxKind.CommaToken),
+                                                  Argument(
+                                                    IdentifierName("token")).WithNameColon(
+                                            NameColon(
+                                                IdentifierName("token"))) }))))))));
     }
 
 

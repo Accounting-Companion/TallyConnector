@@ -1,23 +1,23 @@
 ﻿namespace TallyConnector.Services;
 public partial class TallyService
 {
-    public async Task<List<MasterTypeStat>?> GetMasterStatisticsAsync(BaseRequestOptions? requestOptions = null)
+    public async Task<List<MasterTypeStat>?> GetMasterStatisticsAsync(BaseRequestOptions? requestOptions = null, CancellationToken token = default)
     {
         MasterStatistics? masterStatistics = await GetTDLReportAsync<MasterTypeStat, MasterStatistics>(new()
         {
             Company = requestOptions?.Company,
             XMLAttributeOverrides = requestOptions?.XMLAttributeOverrides
-        });
+        }, token);
         return masterStatistics?.MasterStats;
     }
 
-    public async Task<List<VoucherTypeStat>?> GetVoucherStatisticsAsync(DateFilterRequestOptions? requestOptions = null)
+    public async Task<List<VoucherTypeStat>?> GetVoucherStatisticsAsync(DateFilterRequestOptions? requestOptions = null, CancellationToken token = default)
     {
-        VoucherStatistics? statistics = await GetTDLReportAsync<VoucherTypeStat, VoucherStatistics>(requestOptions);
+        VoucherStatistics? statistics = await GetTDLReportAsync<VoucherTypeStat, VoucherStatistics>(requestOptions, token);
         return statistics?.VoucherStats;
     }
 
-    public async Task<List<CompanyType>?> GetCompaniesAsync<CompanyType>() where CompanyType : BaseCompany
+    public async Task<List<CompanyType>?> GetCompaniesAsync<CompanyType>(CancellationToken token = default) where CompanyType : BaseCompany
     {
         return await GetAllObjectsAsync<CompanyType>(new()
         {
@@ -28,14 +28,14 @@ public partial class TallyService
             }
         });
     }
-    public async Task<List<Company>?> GetCompaniesAsync()
+    public async Task<List<Company>?> GetCompaniesAsync(CancellationToken token = default)
     {
-        return await GetCompaniesAsync<Company>();
+        return await GetCompaniesAsync<Company>(token);
     }
     /// <inheritdoc/>
-    public async Task<LastAlterIdsRoot?> GetLastAlterIdsAsync()
+    public async Task<LastAlterIdsRoot?> GetLastAlterIdsAsync(CancellationToken token = default)
     {
-        _logger?.LogInformation("Getting Last MasterIds from Tally");
+        _logger?.LogInformation("Getting Last AlterIds from Tally");
         string reportName = "AlterIdsReport";
         RequestEnvelope requestEnvelope = new(HType.Data, reportName, new()
         {
@@ -65,11 +65,11 @@ public partial class TallyService
         requestEnvelope.Body.Desc.TDL.TDLMessage = tdlMessage;
         string xml = requestEnvelope.GetXML();
 
-        TallyResult result = await SendRequestAsync(xml);
+        TallyResult result = await SendRequestAsync(xml, token);
         if (result.Status == RespStatus.Sucess)
         {
             LastAlterIdsRoot? lastMasterIdsRoot = XMLToObject.GetObjfromXml<LastAlterIdsRoot>(result.Response!);
-            _logger?.LogInformation("Received Last MasterIds from Tally");
+            _logger?.LogInformation("Received Last AlterIds from Tally");
             return lastMasterIdsRoot;
         }
         else
@@ -77,7 +77,7 @@ public partial class TallyService
             return null;
         }
     }
-    public async Task<List<CompanyOnDisk>?> GetCompaniesinDefaultPathAsync()
+    public async Task<List<CompanyOnDisk>?> GetCompaniesinDefaultPathAsync(CancellationToken token = default)
     {
         return await GetAllObjectsAsync<CompanyOnDisk>(new()
         {
@@ -86,9 +86,9 @@ public partial class TallyService
             {
                 "NAME", "STARTINGFROM", "ENDINGAT","COMPANYNUMBER"
             }
-        });
+        }, token: token);
     }
-    public async Task<BaseCompany?> GetActiveCompanyAsync()
+    public async Task<BaseCompany?> GetActiveCompanyAsync(CancellationToken token = default)
     {
         PaginatedRequestOptions? paginatedRequestOptions = new()
         {
@@ -96,7 +96,7 @@ public partial class TallyService
             Filters = new() { new("ActiveCompFilt", "$Name = ##SVCURRENTCOMPANY") },
             IsInitialize = YesNo.Yes,
         };
-        var PaginatedResp = await GetObjectsAsync<BaseCompany>(paginatedRequestOptions);
+        var PaginatedResp = await GetObjectsAsync<BaseCompany>(paginatedRequestOptions, token);
         if (PaginatedResp != null && PaginatedResp.Data.Count > 0)
         {
             return PaginatedResp.Data[0];

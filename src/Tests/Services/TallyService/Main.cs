@@ -28,7 +28,7 @@ internal class Main : BaseTallyServiceTest
         var masterstats = await _tallyService.GetMasterStatisticsAsync();
         //Get Vouchertype count from Master Statistics
         var vouchertypecount = masterstats.FirstOrDefault(C => C.Name.Replace(" ", "") == TCM.TallyObjectType.VoucherTypes.ToString()).Count;
-        var voucherstat = await _tallyService.GetVoucherStatisticsAsync(new() { FromDate = new DateTime(2010, 04, 01) });
+        var voucherstat = await _tallyService.GetVoucherStatisticsAsync(new() { FromDate = new DateTime(2009, 04, 01),ToDate= new DateTime(2023, 03, 31) });
         Assert.That(voucherstat, Has.Count.EqualTo(vouchertypecount));
     }
 

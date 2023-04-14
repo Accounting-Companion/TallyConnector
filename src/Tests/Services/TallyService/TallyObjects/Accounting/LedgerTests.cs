@@ -46,7 +46,7 @@ internal class LedgerTests : BaseTallyServiceTest
     [Test]
     public async Task CheckLedger_Create_Read_Delete()
     {
-        var createresult = await _tallyService.PostLedgerAsync(new Ledger() { Name = "Test From Server", Group = "Sundry Debtors" });
+        var createresult = await _tallyService.PostLedgerAsync(new Ledger() { Name = "Test WrongData ", Group = "Duties & Taxes",TaxType=TallyConnector.Core.Models.TaxType.GST });
         //var createresult2 = await _tallyService.PostLedgerAsync(new Ledger() { Name = "Test \"name\" in Quotes", Group = "Sundry Debtors" });
         var result = await _tallyService.GetObjectAsync<TCMA.Ledger>("Test From Server");
 
