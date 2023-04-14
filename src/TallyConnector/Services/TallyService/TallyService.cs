@@ -467,7 +467,7 @@ public partial class TallyService : ITallyService
     {
         StaticVariables staticVariables = new()
         {
-            SVCompany = collectionOptions.Company ?? Company?.Name,
+            SVCompany = collectionOptions.Company ?? Company?.Name ?? "##SVCurrentCompany",
             SVFromDate = collectionOptions.FromDate ?? Company?.BooksFrom,
             SVToDate = collectionOptions.ToDate ?? (collectionOptions.FromDate == null ? null : DateTime.Now),
         };
