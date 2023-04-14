@@ -538,7 +538,7 @@ public partial class TallyService : ITallyService
         TallyResult Response = await SendRequestAsync(Reqxml);
         if (Response.Status == RespStatus.Sucess && Response.Response != null)
         {
-            ReturnType? tallyReport = XMLToObject.GetObjfromXml<ReturnType>(Response.Response);
+            ReturnType tallyReport = XMLToObject.GetObjfromXml<ReturnType>(Response.Response);
             return tallyReport;
         }
 
@@ -588,14 +588,18 @@ public partial class TallyService : ITallyService
         catch (HttpRequestException exc)
         {
             result.Response = exc.Message;
-            throw new TallyConnectivityException("Tally is not running", FullURL);
+            throw new TallyConnectivityException("Tally is not running", FullURL, exc);
+        }
+        catch (OperationCanceledException)
+        {
+            throw;
         }
         catch (Exception exc)
         {
             result.Status = RespStatus.Failure;
             result.Response = exc.Message;
             Logger?.TallyReqError(exc.Message);
-            //throw new TallyConnectivityException("Tally is not running", FullURL);
+            throw;
         }
         return result;
     }

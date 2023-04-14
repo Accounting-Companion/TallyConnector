@@ -1,11 +1,13 @@
-﻿using System.Xml.Xsl;
+﻿using System.Text.RegularExpressions;
+using System.Xml.Xsl;
 
 namespace TallyConnector.Services;
 public static class XMLToObject
 {
+    public static Regex XmlIndexRegex = new("[0-9]+", RegexOptions.Compiled);
     //Converts to given object from Xml
     public static Dictionary<string, XmlSerializer> _cache = new();
-    public static T? GetObjfromXml<T>(string Xml, XmlAttributeOverrides? attrOverrides = null, ILogger? Logger = null)
+    public static T GetObjfromXml<T>(string Xml, XmlAttributeOverrides? attrOverrides = null, ILogger? Logger = null)
     {
         string re = @"(?!₹)[^\x09\x0A\x0D\x20-\xD7FF\xE000-\xFFFD\x10000-x10FFFF]";
         //string re = @"[^\x0\]";
@@ -22,7 +24,8 @@ public static class XMLToObject
             CheckCharacters = false,
             ConformanceLevel = ConformanceLevel.Fragment
         };
-        XmlReader rd = XmlReader.Create(new StringReader(Xml), xset, context);
+        StringReader stringReader = new StringReader(Xml);
+        XmlReader rd = XmlReader.Create(stringReader, xset, context);
         //StringReader XmlStream = new StringReader(Xml);
         if (typeof(T).Name.Contains("VoucherEnvelope"))
         {
@@ -36,14 +39,36 @@ public static class XMLToObject
         }
         try
         {
-            T? obj = (T?)XMLSer.Deserialize(rd);
+            T obj = (T)XMLSer.Deserialize(rd);
             return obj;
+        }
+        catch (InvalidOperationException ex)
+        {
+            GroupCollection groups = XmlIndexRegex.Match(ex.Message).Groups;
+            string XMLPart = string.Empty;
+            string ExceptionMessage = ex.Message;
+            if (groups.Count > 0)
+            {
+                string? value = groups[0].Value;
+                if (value != null)
+                {
+                    int StartIndex = int.Parse(value) - 1;
+                    string[] Splittedstrings = Xml.Split(new string[] { Environment.NewLine }, StringSplitOptions.None);
+                    IEnumerable<string> values = Splittedstrings.Skip(StartIndex - 10).Take(20);
+                    XMLPart = string.Join(Environment.NewLine, values);
+                    ExceptionMessage = $"{ExceptionMessage} - {Splittedstrings[StartIndex]}";
+                }
+            }
+            TallyXMLParsingException tallyXMLParsingException = new(ExceptionMessage, ex, XMLPart, GetInnerError(ex).Reverse());
+            Logger?.LogError(tallyXMLParsingException.Message);
+            Logger?.LogError("Error - {errs}", tallyXMLParsingException.ExceptionTrace);
+            throw tallyXMLParsingException;
         }
         catch (Exception ex)
         {
             Logger?.LogError(ex.Message);
             Logger?.LogError("Error - {errs}", GetInnerError(ex).Reverse().Take(2));
-            return default;
+            throw ex;
         }
 
     }

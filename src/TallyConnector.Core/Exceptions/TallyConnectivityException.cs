@@ -17,6 +17,11 @@ public class TallyConnectivityException : Exception
     {
 
     }
+    public TallyConnectivityException(string message, string Url,Exception innerException) :
+        base($"{message} at {Url}", innerException)
+    {
+
+    }
     public TallyConnectivityException(string message, Exception innerException) : base(message, innerException)
     {
     }
