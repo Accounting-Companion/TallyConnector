@@ -137,7 +137,7 @@ public class StaticVariables : TallyBaseObject
 
     public StaticVariables()
     {
-
+        SVExportFormat = "XML";
     }
 
     [XmlElement(ElementName = "SVEXPORTFORMAT")]

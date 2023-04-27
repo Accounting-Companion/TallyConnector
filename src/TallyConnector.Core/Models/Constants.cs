@@ -4,6 +4,7 @@ public static class Constants
     // Source - "DEFTDL:src\..\..\tdl.core\src\..\..\tdl.template\src\formula\formula.tdl"
     // Search with Const Name 
 
+    public const string Prefix = "TC_";
     public const string MaxNumberLength = "31";
     public const string MaxAmountLength = "26";
     public const int IMaxAmountLength = 26;
@@ -37,7 +38,7 @@ public static class Constants
                 public static Filter InvoiceVoucherFilter = new("ViewType", $"$PERSISTEDVIEW = $$SysName:{ViewType.InvoiceVoucherView}");
                 public static Filter InventoryVoucherFilter = new("ViewType", $"$PERSISTEDVIEW = $$SysName:{ViewType.InventoryVoucherView}");
                 public static Filter MfgJournalVoucherFilter = new("ViewType", $"$PERSISTEDVIEW = $$SysName:{ViewType.MfgJournalVoucherView}");
-                public static Filter AttndVoucherFilter = new("ViewType", $"$PERSISTEDVIEW = $$SysName:{ViewType.AccountingVoucherView} AND $$IsAttendance:$VOUCHERTYPENAME");
+                public static Filter AttndVoucherFilter = new("AttndViewType", $"$PERSISTEDVIEW = $$SysName:{ViewType.AccountingVoucherView} AND $$IsAttendance:$VOUCHERTYPENAME");
                 public static Filter PayslipVoucherFilter = new("ViewType", $"$PERSISTEDVIEW = $$SysName:{ViewType.PayrollVoucherView}");
             }
         }

@@ -255,6 +255,7 @@ public partial class TallyService : ITallyService
         CollectionRequestOptions collectionOptions = new()
         {
             CollectionType = RootElemet ?? typeof(ObjType).Name,
+            Company = objectOptions?.Company,
             FromDate = objectOptions?.FromDate,
             ToDate = objectOptions?.ToDate,
             FetchList = (objectOptions?.FetchList) != null ? new(objectOptions.FetchList) : new() { "MasterId", "CanDelete", "*" },
@@ -597,6 +598,11 @@ public partial class TallyService : ITallyService
         {
             result.Response = exc.Message;
             throw new TallyConnectivityException("Tally is not running", FullURL, exc);
+        }
+        catch (TaskCanceledException ex)
+        {
+            _logger?.LogError(ex.Message);
+            throw;
         }
         catch (OperationCanceledException)
         {

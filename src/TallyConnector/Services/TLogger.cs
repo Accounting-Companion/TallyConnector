@@ -16,7 +16,15 @@ internal class TLogger
         }
         else
         {
-            _logger?.LogInformation("Sending request to tally");
+            if (rXML == null)
+            {
+                _logger?.LogInformation("Sending test request to tally..");
+            }
+            else
+            {
+                _logger?.LogInformation("Sending request to tally");
+            }
+
         }
 
     }
@@ -35,7 +43,7 @@ internal class TLogger
 
     internal void BuildingOptions(Type type)
     {
-        _logger?.LogDebug("Building {name}",type.Name);
+        _logger?.LogDebug("Building {name}", type.Name);
     }
 
     internal void TallyReqError(string message)

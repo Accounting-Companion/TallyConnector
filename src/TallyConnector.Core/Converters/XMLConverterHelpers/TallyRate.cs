@@ -55,7 +55,7 @@ public class TallyRate : IXmlSerializable
 
             if (content != null && content != string.Empty)
             {
-                var matches = Regex.Matches(content, @"[0-9.]+");
+                var matches = Regex.Matches(content, @"\b[0-9.]+\b");
                 if (matches.Count == 2)
                 {
                     ForexAmount = decimal.Parse(matches[0].Value);

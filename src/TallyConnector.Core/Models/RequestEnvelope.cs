@@ -189,9 +189,9 @@ public class TDLMessage
             }
             else
             {
-                var FieldName = subField.FieldName!;
+                var FieldName = Constants.Prefix + subField.FieldName!;
                 tfields.Add(FieldName);
-                Field?.Add(new(FieldName, FieldName, subField.SetExp));
+                Field?.Add(new(FieldName, subField.FieldName!, subField.SetExp));
             }
         });
     }

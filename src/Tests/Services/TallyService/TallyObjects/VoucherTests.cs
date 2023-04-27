@@ -19,7 +19,7 @@ internal class VoucherTests : BaseTallyServiceTest
                 FromDate = new(2009, 4, 1),
                 FetchList = mapping.FetchList,
                 Filters = new List<Filter>() { mapping.Filter }
-
+               
             }, progress);
             ActngVchrs.AddRange(vchs);
         }
