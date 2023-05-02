@@ -447,15 +447,18 @@ public partial class TallyService : ITallyService
                 Envelope<ObjType>? Envelope = XMLToObject.GetObjfromXml<Envelope<ObjType>>(Response.Response,
                                                                                            collectionOptions.XMLAttributeOverrides, _logger);
                 // return Envelope?.Body.Data.Collection?.Objects;
-                var paginationData = Envelope?.Body.Data.Collection?.PaginationData;
-                return new PaginatedResponse<ObjType>(paginationData?.TotalCount ?? 0,
+                int? v = await GetObjectCountAync(new CountRequestOptions()
+                {
+                    CollectionType = collectionOptions.CollectionType,
+                    Filters = collectionOptions.Filters,
+                });
+                return new PaginatedResponse<ObjType>(v ?? 0,
                                                       collectionOptions.RecordsPerPage ?? 1000,
                                                       Envelope?.Body.Data.Collection?.Objects,
                                                       collectionOptions.PageNum);
             }
             catch (Exception)
             {
-
                 throw;
             }
         }
@@ -494,7 +497,7 @@ public partial class TallyService : ITallyService
         {
             // ColEnvelope.Body.Desc.TDL.TDLMessage.Collection.First().Sort = new() { "@@Default : $MASTERID" };
             ColEnvelope.Body.Desc.TDL.TDLMessage.Object ??= new();
-            ColEnvelope.Body.Desc.TDL.TDLMessage.Object!.Add(new("Pagination", new() { $"TotalCount:$$NUMITEMS:{ColEnvelope.Header?.ID}" }));
+            //ColEnvelope.Body.Desc.TDL.TDLMessage.Object!.Add(new("Pagination", new() { $"TotalCount:$$NUMITEMS:{ColEnvelope.Header?.ID}" }));
 
             ColEnvelope.Body.Desc.TDL.TDLMessage.Collection.Add(new()
             {
@@ -509,16 +512,14 @@ public partial class TallyService : ITallyService
             ColEnvelope.Body.Desc.TDL.TDLMessage.System?.Add(new("PaginationFilter",
                                                                  $"##vLineIndex <= {Start + collectionOptions.RecordsPerPage} AND ##vLineIndex > {Start}"));
 
-            ColEnvelope.Body.Desc.TDL.TDLMessage.Collection.Add(new()
-            {
-                Name = ColEnvelope.Header?.ID + "WITHPAGINATED",
-                Collections = ColEnvelope.Header?.ID + "PAGINATED",
-                NativeFields = new() { "*" },
-                Objects = "Pagination",
-            });
-            ColEnvelope.Header!.ID += "WITHPAGINATED";
-
-
+            //ColEnvelope.Body.Desc.TDL.TDLMessage.Collection.Add(new()
+            //{
+            //    Name = ColEnvelope.Header?.ID + "WITHPAGINATED",
+            //    Collections = ColEnvelope.Header?.ID + "PAGINATED",
+            //    NativeFields = new() { "*" },
+            //    
+            //});
+            ColEnvelope.Header!.ID += "PAGINATED";
 
         }
         string Reqxml = ColEnvelope.GetXML(indent: indented);
