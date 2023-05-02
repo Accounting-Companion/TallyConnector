@@ -35,7 +35,7 @@ public class Voucher : BasicTallyObject, ITallyObject
 
     [XmlElement(ElementName = "VCHENTRYMODE")]
     [Column(TypeName = $"nvarchar(30)")]
-    public string VoucherEntryMode { get; set; }
+    public string? VoucherEntryMode { get; set; }
 
     [XmlElement(ElementName = "ISINVOICE")]
     public TallyYesNo IsInvoice { get; set; }
@@ -505,7 +505,7 @@ public class VoucherLedger : BaseVoucherLedger
     [XmlElement(ElementName = "INVENTORYALLOCATIONS.LIST")]
     public List<InventoryAllocations>? InventoryAllocations { get; set; }
 
-    internal bool IsNull()
+    public bool IsNull()
     {
         if (string.IsNullOrEmpty(LedgerName))
         {
