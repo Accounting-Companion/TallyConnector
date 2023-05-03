@@ -8,7 +8,7 @@ internal class GeneralReports : BaseTallyServiceTest
     {
         var Companies = await _tallyService.GetCompaniesAsync();
         string v = Companies.ToJson();
-        Assert.That(Companies, Has.Count.EqualTo(1));
+        Assert.That(Companies, Has.Count.EqualTo(3));
     }
 
     [Test]
