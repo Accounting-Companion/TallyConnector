@@ -1,4 +1,5 @@
-﻿using System.Text.RegularExpressions;
+﻿using System.Reflection;
+using System.Text.RegularExpressions;
 using System.Xml.Xsl;
 
 namespace TallyConnector.Services;
@@ -44,22 +45,57 @@ public static class XMLToObject
         }
         catch (InvalidOperationException ex)
         {
+            IEnumerable<string>? internalErrors = GetInnerError(ex);
             GroupCollection groups = XmlIndexRegex.Match(ex.Message).Groups;
             string XMLPart = string.Empty;
             string ExceptionMessage = ex.Message;
+
             if (groups.Count > 0)
             {
                 string? value = groups[0].Value;
                 if (value != null)
                 {
+                    Type type = typeof(T);
+                    string RootElement = string.Empty;
+                    if (type.IsGenericType)
+                    {
+                        Type? internalType = type.GetGenericArguments().FirstOrDefault();
+                        if (internalType != null)
+                        {
+                            XmlRootAttribute? xmlRootAttribute = internalType.GetCustomAttribute<XmlRootAttribute>();
+                            RootElement = xmlRootAttribute?.ElementName ?? string.Empty;
+                        }
+                    }
                     int StartIndex = int.Parse(value) - 1;
                     string[] Splittedstrings = Xml.Split(new string[] { Environment.NewLine }, StringSplitOptions.None);
-                    IEnumerable<string> values = Splittedstrings.Skip(StartIndex - 10).Take(20);
+                    IEnumerable<string> values;
+                    if (!string.IsNullOrEmpty(RootElement))
+                    {
+                        var beforeLines = Splittedstrings.Take(StartIndex).Reverse();
+                        int linenum = StartIndex;
+                        foreach (string line in beforeLines)
+                        {
+
+                            linenum--;
+                            if (line.Contains(RootElement))
+                            {
+                                internalErrors = new List<string>(internalErrors) { $"Error in {line.Trim()}" };
+                                break;
+                            };
+                        }
+                        values = Splittedstrings.Skip(linenum).Take(StartIndex - linenum + 1);
+                    }
+                    else
+                    {
+                        values = Splittedstrings.Skip(StartIndex - 10).Take(20);
+
+                    }
                     XMLPart = string.Join(Environment.NewLine, values);
-                    ExceptionMessage = $"{ExceptionMessage} - {Splittedstrings[StartIndex]}";
+                    ExceptionMessage = $"{ExceptionMessage} - {Splittedstrings[StartIndex].Trim()}";
                 }
             }
-            TallyXMLParsingException tallyXMLParsingException = new(ExceptionMessage, ex, XMLPart, GetInnerError(ex).Reverse());
+
+            TallyXMLParsingException tallyXMLParsingException = new(ExceptionMessage, ex, XMLPart, internalErrors.Reverse());
             Logger?.LogError(tallyXMLParsingException.Message);
             Logger?.LogError("Error - {errs}", tallyXMLParsingException.ExceptionTrace);
             throw tallyXMLParsingException;
