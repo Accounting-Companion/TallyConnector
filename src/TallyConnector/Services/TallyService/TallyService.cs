@@ -437,7 +437,7 @@ public partial class TallyService : ITallyService
     public async Task<PaginatedResponse<ObjType>?> GetCustomCollectionAsync<ObjType>(CollectionRequestOptions collectionOptions, CancellationToken token) where ObjType : TallyBaseObject
     {
         collectionOptions.RecordsPerPage ??= 1000;
-        string Reqxml = GenerateCollectionXML(collectionOptions);
+        string Reqxml = await GenerateCollectionXML(collectionOptions);
 
         var Response = await SendRequestAsync(Reqxml, token);
         if (Response.Status == RespStatus.Sucess && Response.Response != null)
@@ -470,11 +470,11 @@ public partial class TallyService : ITallyService
     }
 
     /// <inheritdoc/>
-    public string GenerateCollectionXML(CollectionRequestOptions collectionOptions, bool indented = false)
+    public async Task<string> GenerateCollectionXML(CollectionRequestOptions collectionOptions, bool indented = false)
     {
         StaticVariables staticVariables = new()
         {
-            SVCompany = collectionOptions.Company ?? Company?.Name ?? "##SVCurrentCompany",
+            SVCompany = collectionOptions.Company ?? Company?.Name ?? await GetActiveSimpleCompanyNameAsync(),
             SVFromDate = collectionOptions.FromDate ?? Company?.BooksFrom,
             SVToDate = collectionOptions.ToDate ?? (collectionOptions.FromDate == null ? null : DateTime.Now),
         };
@@ -531,7 +531,7 @@ public partial class TallyService : ITallyService
     {
         StaticVariables sv = new()
         {
-            SVCompany = requestOptions?.Company ?? Company?.Name,
+            SVCompany = requestOptions?.Company ?? Company?.Name ?? await GetActiveSimpleCompanyNameAsync(token),
             SVExportFormat = "XML",
             SVFromDate = requestOptions?.FromDate,
             SVToDate = requestOptions?.ToDate

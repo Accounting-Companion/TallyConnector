@@ -35,6 +35,8 @@ public interface ITallyService
     /// <returns></returns>
     Task<BaseCompany?> GetActiveCompanyAsync(CancellationToken token = default);
 
+    Task<string?> GetActiveSimpleCompanyNameAsync(CancellationToken token = default);
+
     /// <summary>
     /// Gets List of companies that are opened in Tally
     /// </summary>
@@ -320,7 +322,7 @@ public interface ITallyService
     /// <param name="collectionOptions"></param>
     /// <param name="indented"></param>
     /// <returns></returns>
-    string GenerateCollectionXML(CollectionRequestOptions collectionOptions, bool indented = false);
+    Task<string> GenerateCollectionXML(CollectionRequestOptions collectionOptions, bool indented = false);
     Task<PaginatedResponse<ObjType>?> GetCustomCollectionAsync<ObjType>(CollectionRequestOptions collectionOptions, CancellationToken token = default) where ObjType : TallyBaseObject;
 
     Task<ObjType> GetObjectAsync<ObjType>(string lookupValue, MasterRequestOptions? requestOptions = null, CancellationToken token = default) where ObjType : TallyBaseObject, INamedTallyObject;

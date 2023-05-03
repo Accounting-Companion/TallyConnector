@@ -91,14 +91,17 @@ public partial class TallyService
     }
     public async Task<BaseCompany?> GetActiveCompanyAsync(CancellationToken token = default)
     {
+        XmlAttributeOverrides xmlAttributeOverrides = new();
         PaginatedRequestOptions? paginatedRequestOptions = new()
         {
+            Company = await GetActiveSimpleCompanyNameAsync(token),
             FetchList = new() { "NAME", "GUID", "BOOKSFROM", "STARTINGFROM", "COMPANYNUMBER", "ENDINGAT" },
             Filters = new() { new("ActiveCompFilt", "$Name = ##SVCURRENTCOMPANY") },
             IsInitialize = YesNo.Yes,
+            XMLAttributeOverrides = xmlAttributeOverrides
         };
         var PaginatedResp = await GetObjectsAsync<BaseCompany>(paginatedRequestOptions, token);
-        if (PaginatedResp != null && PaginatedResp.Data.Count > 0)
+        if (PaginatedResp != null && PaginatedResp.Data?.Count > 0)
         {
             return PaginatedResp.Data[0];
         }
@@ -107,5 +110,21 @@ public partial class TallyService
             return null;
         }
     }
+    public async Task<string?> GetActiveSimpleCompanyNameAsync(CancellationToken token = default)
+    {
+
+        RequestEnvelope requestEnvelope = new(HType.Function, "$$CurrentSimpleCompany");
+
+        string Reqxml = requestEnvelope.GetXML();
+        TallyResult tallyResult = await SendRequestAsync(Reqxml);
+        if (tallyResult.Status == RespStatus.Sucess && tallyResult.Response != null)
+        {
+            Envelope<string>? Envelope = XMLToObject.GetObjfromXml<Envelope<string>>(tallyResult.Response, null, _logger);
+            return Envelope?.Body?.Data?.FuncResult?.Result;
+        }
+        return null;
+    }
+
+
 
 }
