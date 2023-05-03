@@ -25,7 +25,7 @@ public static class JsonExtesnions
     public static string ToJson<T>(this List<T> list, JsonSerializerOptions? jsonSerializerOptions = null) where T : TallyXmlJson
     {
         jsonSerializerOptions ??= new() { Converters = { new JsonStringEnumConverter() } };
-        JsonContext jsonContext = new(jsonSerializerOptions);
+        JsonContext jsonContext = jsonSerializerOptions == null ? JsonContext.Default : new(jsonSerializerOptions);
         string result = JsonSerializer.Serialize(list, typeof(List<T>), jsonContext);
         return result;
     }
@@ -33,7 +33,7 @@ public static class JsonExtesnions
     public static IEnumerable<T>? FromJson<T>(this string json, JsonSerializerOptions? jsonSerializerOptions = null) where T : TallyXmlJson
     {
         jsonSerializerOptions ??= new() { Converters = { new JsonStringEnumConverter() } };
-        JsonContext jsonContext = new(jsonSerializerOptions);
+        JsonContext jsonContext = jsonSerializerOptions == null ? JsonContext.Default : new(jsonSerializerOptions);
         IEnumerable<T>? result = (IEnumerable<T>?)JsonSerializer.Deserialize(json, typeof(IEnumerable<T>), jsonContext);
         return result;
     }
@@ -46,8 +46,8 @@ public static class JsonExtesnions
 
 [JsonSerializable(typeof(Company))]
 [JsonSerializable(typeof(Company[]))]
-[JsonSerializable(typeof(List<BaseCompany>))]
-[JsonSerializable(typeof(IEnumerable<BaseCompany>))]
+[JsonSerializable(typeof(List<Company>))]
+[JsonSerializable(typeof(IEnumerable<Company>))]
 
 
 [JsonSerializable(typeof(Currency))]
