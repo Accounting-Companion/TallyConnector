@@ -25,7 +25,8 @@ public partial class TallyService
             FetchList = new()
             {
                 "Name", "StartingFrom", "GUID", "MobileNo, RemoteFullListName", "*"
-            }
+            },
+            Filters = new() { new("SimpleCompany", "",false)}
         });
     }
     public async Task<List<Company>?> GetCompaniesAsync(CancellationToken token = default)
