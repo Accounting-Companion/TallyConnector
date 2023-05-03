@@ -92,7 +92,8 @@ public partial class TallyService : ITallyService
     /// <inheritdoc/>
     public async Task<bool> CheckAsync(CancellationToken token = default)
     {
-        TallyResult tallyResult = await SendRequestAsync(token: token);
+        TallyResult tallyResult = await SendRequestAsync(requestType: "Test Request",
+                                                         token: token);
         if (tallyResult.Status == RespStatus.Sucess)
         {
             return true;
@@ -129,6 +130,7 @@ public partial class TallyService : ITallyService
     /// <inheritdoc/>
     public async Task<TallyResult> PostObjectToTallyAsync<ObjType>(ObjType Object,
                                                                    PostRequestOptions? postRequestOptions = null,
+                                                                   string? objectType = null,
                                                                    CancellationToken token = default) where ObjType : TallyXmlJson, ITallyObject
     {
         if (Object is Voucher vch)
@@ -161,7 +163,9 @@ public partial class TallyService : ITallyService
                                                });
         string ReqXml = Objectenvelope.GetXML(postRequestOptions?.XMLAttributeOverrides);
 
-        TallyResult tallyResult = await SendRequestAsync(ReqXml, token);
+        TallyResult tallyResult = await SendRequestAsync(xml: ReqXml,
+                                                         requestType: string.IsNullOrEmpty(objectType) ? null : $"Sending {objectType} to Tally",
+                                                         token: token);
         if (tallyResult.Status == RespStatus.Sucess)
         {
             return ParseResponse(tallyResult);
@@ -309,7 +313,7 @@ public partial class TallyService : ITallyService
         //    collectionOptions.Pagination.GoToPage(objectOptions.PageNum);
         //}
         collectionOptions.RecordsPerPage ??= mapping?.DefaultPaginateCount;
-        var paginatedData = await GetCustomCollectionAsync<ObjType>(collectionOptions, token);
+        var paginatedData = await GetCustomCollectionAsync<ObjType>(collectionOptions, string.Empty, token);
         paginatedData?.Data?.ForEach(obj =>
         {
             obj.RemoveNullChilds();
@@ -405,7 +409,7 @@ public partial class TallyService : ITallyService
     }
 
     /// <inheritdoc/>
-    public async Task<int?> GetObjectCountAync(CountRequestOptions options, CancellationToken token = default)
+    public async Task<int?> GetObjectCountAync(CountRequestOptions options, string? requestType = null, CancellationToken token = default)
     {
         RequestEnvelope requestEnvelope = new(HType.Function, "$$NUMITEMS", new()
         {
@@ -424,22 +428,28 @@ public partial class TallyService : ITallyService
                                                  text: filter.FilterFormulae!)));
 
         string Reqxml = requestEnvelope.GetXML();
-        var Response = await SendRequestAsync(Reqxml, token);
+        var Response = await SendRequestAsync(xml: Reqxml,
+                                              requestType: requestType ?? $"Count of {options.CollectionType}",
+                                              token: token);
         if (Response.Status == RespStatus.Sucess && Response.Response != null)
         {
             Envelope<string>? Envelope = XMLToObject.GetObjfromXml<Envelope<string>>(Response.Response, null, _logger);
-            return int.Parse(Envelope?.Body?.Data?.FuncResult?.Result);
+            return int.Parse(Envelope?.Body?.Data?.FuncResult?.Result ?? "0");
         }
         return 0;
     }
 
     /// <inheritdoc/>
-    public async Task<PaginatedResponse<ObjType>?> GetCustomCollectionAsync<ObjType>(CollectionRequestOptions collectionOptions, CancellationToken token) where ObjType : TallyBaseObject
+    public async Task<PaginatedResponse<ObjType>?> GetCustomCollectionAsync<ObjType>(CollectionRequestOptions collectionOptions,
+                                                                                     string? requestType = null,
+                                                                                     CancellationToken token = default) where ObjType : TallyBaseObject
     {
         collectionOptions.RecordsPerPage ??= 1000;
         string Reqxml = await GenerateCollectionXML(collectionOptions);
 
-        var Response = await SendRequestAsync(Reqxml, token);
+        var Response = await SendRequestAsync(xml: Reqxml,
+                                              requestType: requestType ?? $"Collection of {collectionOptions.CollectionType}",
+                                              token: token);
         if (Response.Status == RespStatus.Sucess && Response.Response != null)
         {
             try
@@ -527,7 +537,9 @@ public partial class TallyService : ITallyService
     }
 
     /// <inheritdoc/>
-    public async Task<ReturnType?> GetTDLReportAsync<ReportType, ReturnType>(DateFilterRequestOptions? requestOptions = null, CancellationToken token = default)
+    public async Task<ReturnType?> GetTDLReportAsync<ReportType, ReturnType>(DateFilterRequestOptions? requestOptions = null,
+                                                                             string? requestType = null,
+                                                                             CancellationToken token = default)
     {
         StaticVariables sv = new()
         {
@@ -540,7 +552,9 @@ public partial class TallyService : ITallyService
 
         RequestEnvelope requestEnvelope = new(report, sv);
         var Reqxml = requestEnvelope.GetXML();
-        TallyResult Response = await SendRequestAsync(Reqxml, token);
+        TallyResult Response = await SendRequestAsync(xml: Reqxml,
+                                                      requestType: requestType ?? $"Getting Custom TDL Report - {report.FieldName}",
+                                                      token: token);
         if (Response.Status == RespStatus.Sucess && Response.Response != null)
         {
             ReturnType tallyReport = XMLToObject.GetObjfromXml<ReturnType>(Response.Response);
@@ -551,18 +565,19 @@ public partial class TallyService : ITallyService
     }
 
     /// <inheritdoc/>
-    public async Task<ReturnType?> GetTDLReportAsync<ReturnType>(DateFilterRequestOptions? requestOptions = null, CancellationToken token = default) where ReturnType : TallyBaseObject
+    public async Task<ReturnType?> GetTDLReportAsync<ReturnType>(DateFilterRequestOptions? requestOptions = null,
+                                                                 CancellationToken token = default) where ReturnType : TallyBaseObject
     {
-        return await GetTDLReportAsync<ReturnType, ReturnType>(requestOptions, token);
+        return await GetTDLReportAsync<ReturnType, ReturnType>(requestOptions: requestOptions, requestType: string.Empty, token: token);
     }
 
     /// <inheritdoc/>
-    public async Task<TallyResult> SendRequestAsync(string? xml = null, CancellationToken token = default)
+    public async Task<TallyResult> SendRequestAsync(string? xml = null, string? requestType = null, CancellationToken token = default)
     {
         TallyResult result = new();
         HttpRequestMessage requestMessage = new(HttpMethod.Post, FullURL);
         //Check whether xml is null or empty
-        Logger?.LogTallyRequest(xml);
+        Logger?.LogTallyRequest(xml, requestType);
         if (xml != null && xml != string.Empty)
         {
             //Tally requires UTF-16/Unicode encoding
@@ -584,7 +599,7 @@ public partial class TallyService : ITallyService
                 //using StreamReader streamReader = new(resp, Encoding.Unicode);
                 //resXml = streamReader.ReadToEnd();
 
-                Logger?.LogTallyResponse(resXml);
+                Logger?.LogTallyResponse(resXml,requestType);
                 //CheckTallyError(resXml);
                 result.Status = RespStatus.Sucess;
                 result.Response = resXml;

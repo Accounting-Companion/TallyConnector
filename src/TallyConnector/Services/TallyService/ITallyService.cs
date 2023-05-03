@@ -323,16 +323,16 @@ public interface ITallyService
     /// <param name="indented"></param>
     /// <returns></returns>
     Task<string> GenerateCollectionXML(CollectionRequestOptions collectionOptions, bool indented = false);
-    Task<PaginatedResponse<ObjType>?> GetCustomCollectionAsync<ObjType>(CollectionRequestOptions collectionOptions, CancellationToken token = default) where ObjType : TallyBaseObject;
+    Task<PaginatedResponse<ObjType>?> GetCustomCollectionAsync<ObjType>(CollectionRequestOptions collectionOptions, string? requestType = null, CancellationToken token = default) where ObjType : TallyBaseObject;
 
     Task<ObjType> GetObjectAsync<ObjType>(string lookupValue, MasterRequestOptions? requestOptions = null, CancellationToken token = default) where ObjType : TallyBaseObject, INamedTallyObject;
     Task<ObjType> GetObjectAsync<ObjType>(string lookupValue, VoucherRequestOptions? requestOptions = null, CancellationToken token = default) where ObjType : Voucher;
     Task<PaginatedResponse<ObjType>?> GetObjectsAsync<ObjType>(PaginatedRequestOptions? objectOptions = null, CancellationToken token = default) where ObjType : TallyBaseObject;
     Task<List<ObjType>> GetAllObjectsAsync<ObjType>(RequestOptions? objectOptions = null, IProgress<ReportProgressHelper>? progress = null, CancellationToken token = default) where ObjType : TallyBaseObject;
 
-    Task<ReturnType?> GetTDLReportAsync<ReportType, ReturnType>(DateFilterRequestOptions? requestOptions = null, CancellationToken token = default);
+    Task<ReturnType?> GetTDLReportAsync<ReportType, ReturnType>(DateFilterRequestOptions? requestOptions = null, string? requestType = null, CancellationToken token = default);
 
-    Task<TallyResult> PostObjectToTallyAsync<ObjType>(ObjType Object, PostRequestOptions? postRequestOptions = null, CancellationToken token = default) where ObjType : TallyXmlJson, ITallyObject;
+    Task<TallyResult> PostObjectToTallyAsync<ObjType>(ObjType Object, PostRequestOptions? postRequestOptions = null, string? requestType = null, CancellationToken token = default) where ObjType : TallyXmlJson, ITallyObject;
 
 
     #endregion
@@ -341,19 +341,21 @@ public interface ITallyService
     /// Get Count of collection Type
     /// </summary>
     /// <param name="options">options to configure this requests</param>
+    /// <param name="requestType">options to configure this requests</param>
     /// <param name="token"></param>
     /// <returns></returns>
-    Task<int?> GetObjectCountAync(CountRequestOptions options, CancellationToken token = default);
+    Task<int?> GetObjectCountAync(CountRequestOptions options, string? requestType = null, CancellationToken token = default);
 
 
     /// <summary>
     /// A helper function to send request to Tally
     /// </summary>
     /// <param name="xml">xml that is required to send to Tally</param>
+    /// <param name="requestType">xml that is required to send to Tally</param>
     /// <param name="token"></param>
     /// <returns></returns>
     /// <exception cref="TallyConnectivityException"></exception>
-    Task<TallyResult> SendRequestAsync(string? xml = null, CancellationToken token = default);
+    Task<TallyResult> SendRequestAsync(string? xml = null, string? requestType = null, CancellationToken token = default);
 
     /// <summary>
     /// Checks whether xml as linerror and returns error
