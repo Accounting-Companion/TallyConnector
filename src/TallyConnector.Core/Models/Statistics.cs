@@ -3,14 +3,13 @@
 
 [XmlRoot(ElementName = "VOUCHERTYPE")]
 [TDLCollection(CollectionName = "STATVchType", Include = false)]
-public class VoucherTypeStat : BaseStatistics , IReportInterfaceGenerator<MasterTypeStat>
+public class VoucherTypeStat : BaseStatistics, IReportInterfaceGenerator<MasterTypeStat>
 {
-
     [XmlElement(ElementName = "CANCELLEDCOUNT")]
-    [TDLXMLSet(Set = "$CancVal")]
+    [TDLXMLSet(Set = "if $$ISEMPTY:$CancVal then 0 else $CancVal")]
     public int CancelledCount { get; set; }
 
-    public int TotalCount => CancelledCount + Count;
+    public int NetCount => Count - CancelledCount;
 
     public IEnumerable<string> GetFields()
     {
@@ -25,7 +24,7 @@ public class VoucherTypeStat : BaseStatistics , IReportInterfaceGenerator<Master
     public override string ToString()
     {
 
-        return $"{Name} - {TotalCount}(C-{CancelledCount}) ";
+        return $"{Name} - {NetCount}(C-{CancelledCount}) ";
     }
 
 }
@@ -57,13 +56,13 @@ public class BaseStatistics
     public string Name { get; set; }
 
     [XmlElement(ElementName = "COUNT")]
-    [TDLXMLSet(Set = "$StatVal")]
+    [TDLXMLSet(Set = "if $$ISEMPTY:$StatVal then 0 else $StatVal")]
     public int Count { get; set; }
 }
 
 
 [XmlRoot(ElementName = "VOUCHERTYPESTAT.LIST")]
-public class VoucherStatistics:TallyBaseObject
+public class VoucherStatistics : TallyBaseObject
 {
     [XmlElement(ElementName = "VOUCHERTYPESTAT")]
     public List<VoucherTypeStat>? VoucherStats { get; set; }
@@ -96,7 +95,7 @@ public class Statistics
 
     public void CalculateTotals()
     {
-        VoucherTypeStats?.ForEach((VchStat) => TotalVouchersCount += VchStat.TotalCount);
+        VoucherTypeStats?.ForEach((VchStat) => TotalVouchersCount += VchStat.NetCount);
         MasterStats?.ForEach((MastStat) => TotalMastersCount += MastStat.Count);
     }
 }
