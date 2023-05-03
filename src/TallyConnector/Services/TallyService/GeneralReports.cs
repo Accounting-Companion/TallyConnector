@@ -3,17 +3,36 @@ public partial class TallyService
 {
     public async Task<List<MasterTypeStat>?> GetMasterStatisticsAsync(BaseRequestOptions? requestOptions = null, CancellationToken token = default)
     {
-        MasterStatistics? masterStatistics = await GetTDLReportAsync<MasterTypeStat, MasterStatistics>(new()
+        string requestType = "Master Statistics";
+        if (requestOptions != null)
+        {
+            if (requestOptions.Company != null)
+            {
+                requestType = $"Master Statistics ({requestOptions.Company})";
+            }
+        }
+        MasterStatistics? masterStatistics = await GetTDLReportAsync<MasterTypeStat, MasterStatistics>(requestOptions: new()
         {
             Company = requestOptions?.Company,
             XMLAttributeOverrides = requestOptions?.XMLAttributeOverrides
-        }, token);
+        }, requestType: requestType, token: token);
         return masterStatistics?.MasterStats;
     }
 
     public async Task<List<VoucherTypeStat>?> GetVoucherStatisticsAsync(DateFilterRequestOptions? requestOptions = null, CancellationToken token = default)
     {
-        VoucherStatistics? statistics = await GetTDLReportAsync<VoucherTypeStat, VoucherStatistics>(requestOptions, token);
+        string requestType = "Voucher Statistics";
+        if (requestOptions != null)
+        {
+            if (requestOptions.FromDate != null && requestOptions.ToDate != null && requestOptions.Company != null)
+            {
+                requestType = $"Voucher Statistics ({requestOptions.Company} - {requestOptions.FromDate:dd-MM-yyyy} to {requestOptions.ToDate:dd-MM-yyyy})";
+            }
+            //requestType = $"Voucher Statistics";
+        }
+        VoucherStatistics? statistics = await GetTDLReportAsync<VoucherTypeStat, VoucherStatistics>(requestOptions: requestOptions,
+                                                                                                    requestType: requestType,
+                                                                                                    token: token);
         return statistics?.VoucherStats;
     }
 
@@ -26,7 +45,7 @@ public partial class TallyService
             {
                 "Name", "StartingFrom", "GUID", "MobileNo, RemoteFullListName", "*"
             },
-            Filters = new() { new("SimpleCompany", "",false)}
+            Filters = new() { new("SimpleCompany", "", false) }
         });
     }
     public async Task<List<Company>?> GetCompaniesAsync(CancellationToken token = default)
@@ -66,7 +85,7 @@ public partial class TallyService
         requestEnvelope.Body.Desc.TDL.TDLMessage = tdlMessage;
         string xml = requestEnvelope.GetXML();
 
-        TallyResult result = await SendRequestAsync(xml, token);
+        TallyResult result = await SendRequestAsync(xml: xml, requestType: "last AlterIds Report", token: token);
         if (result.Status == RespStatus.Sucess)
         {
             LastAlterIdsRoot? lastMasterIdsRoot = XMLToObject.GetObjfromXml<LastAlterIdsRoot>(result.Response!);
@@ -116,7 +135,7 @@ public partial class TallyService
         RequestEnvelope requestEnvelope = new(HType.Function, "$$CurrentSimpleCompany");
 
         string Reqxml = requestEnvelope.GetXML();
-        TallyResult tallyResult = await SendRequestAsync(Reqxml);
+        TallyResult tallyResult = await SendRequestAsync(Reqxml, "Active Simple Company Name");
         if (tallyResult.Status == RespStatus.Sucess && tallyResult.Response != null)
         {
             Envelope<string>? Envelope = XMLToObject.GetObjfromXml<Envelope<string>>(tallyResult.Response, null, _logger);

@@ -184,6 +184,14 @@ public static class HelperMethodsGenerator
                                                     IdentifierName("postRequestOptions")),
                                                   Token(SyntaxKind.CommaToken),
                                                   Argument(
+                                                    LiteralExpression(
+                                                        SyntaxKind.StringLiteralExpression,
+                                                        Literal(objectName)))
+                                                .WithNameColon(
+                                                    NameColon(
+                                                        IdentifierName("objectType"))),
+                                                Token(SyntaxKind.CommaToken),
+                                                  Argument(
                                                     IdentifierName("token"))
                                               }))))))));
     }
