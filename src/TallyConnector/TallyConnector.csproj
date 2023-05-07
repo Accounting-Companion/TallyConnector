@@ -33,9 +33,11 @@
 
 		<Platforms>AnyCPU;x64</Platforms>
 
-		<GenerateDocumentationFile>True</GenerateDocumentationFile>
-		<!--<EmitCompilerGeneratedFiles>true</EmitCompilerGeneratedFiles>
-		<CompilerGeneratedFilesOutputPath>Generated</CompilerGeneratedFilesOutputPath>-->
+		<!--<GenerateDocumentationFile>true</GenerateDocumentationFile>-->
+
+	</PropertyGroup>
+	<PropertyGroup>
+
 	</PropertyGroup>
 
 
@@ -46,8 +48,7 @@
 
 	<ItemGroup>
 		<ProjectReference Include="..\TallyConnector.Core\TallyConnector.Core.csproj" />
-		<ProjectReference Include="..\TallyConnector.SourceGenerators\TallyConnector.SourceGenerators.csproj" OutputItemType="Analyzer"
-                       />
+		<ProjectReference Include="..\TallyConnector.SourceGenerators\TallyConnector.SourceGenerators.csproj"  ReferenceOutputAssembly="false" OutputItemType="Analyzer"/>
 	</ItemGroup>
 
 

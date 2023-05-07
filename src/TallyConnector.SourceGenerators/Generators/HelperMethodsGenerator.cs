@@ -1,1001 +1,287 @@
-﻿using TallyConnector.SourceGenerators.Models;
+﻿using Microsoft.CodeAnalysis;
+using System.Collections.Immutable;
+using System.Diagnostics;
+using System.Linq;
+using System.Runtime.CompilerServices;
+using System.Text.RegularExpressions;
+using System.Threading;
+using System.Xml.Linq;
+using TallyConnector.SourceGenerators.Extensions.Symbols;
+using TallyConnector.SourceGenerators.Models;
 
 namespace TallyConnector.SourceGenerators.Generators;
-public static class HelperMethodsGenerator
+public class HelperMethodArgsComparer
+   : IEqualityComparer<HelperMethodArgs>
 {
-    public static string Generate(HelperMethodArgs helperMethodArgs)
+    public bool Equals(
+       HelperMethodArgs x,
+       HelperMethodArgs y)
     {
-        var objectNamespace = helperMethodArgs.ObjectNameSpace;
-        var objectName = helperMethodArgs.ObjectName;
-        string BulkGetMethodName = $"Get{helperMethodArgs.PluralName ?? (objectName + "s")}Async";
-        string GetMethodName = $"Get{objectName}Async";
-        string PostMethodName = $"Post{objectName}Async";
-        string TypeName = $"{helperMethodArgs.GenericTypeName ?? objectName}Type";
-
-        CompilationUnitSyntax compilationUnitSyntax = CompilationUnit()
-          .WithMembers(
-            SingletonList(
-              (MemberDeclarationSyntax)FileScopedNamespaceDeclaration(
-                  IdentifierName(helperMethodArgs.NameSpace))
-              .WithNamespaceKeyword(
-                Token(
-                  TriviaList(
-                    Trivia(
-                      NullableDirectiveTrivia(
-                        Token(SyntaxKind.EnableKeyword),
-                        true))),
-                  SyntaxKind.NamespaceKeyword,
-                  TriviaList()))
-              .WithMembers(
-                SingletonList(
-                  (MemberDeclarationSyntax)ClassDeclaration(helperMethodArgs.ClassName)
-                  .WithModifiers(
-                    TokenList(
-                      new[] {
-                    Token(SyntaxKind.PublicKeyword),
-                      Token(SyntaxKind.PartialKeyword)
-                      }))
-                  .WithMembers(
-                    List(
-                      new MemberDeclarationSyntax[] {
-                          PostMethod(objectNamespace, objectName,PostMethodName,TypeName),
-                          GetMethod(objectNamespace, objectName,GetMethodName,TypeName),
-                          GetMethodWithExactType(objectNamespace, objectName,GetMethodName,TypeName),
-                          GetBulkMethod(objectNamespace, objectName,BulkGetMethodName,TypeName),
-                          GetBulkMethodWithExactType(objectNamespace, objectName,BulkGetMethodName,TypeName),
-                          GetBulkPaginatedMethod(objectNamespace, objectName,BulkGetMethodName,TypeName),
-                          GetBulkPaginatedMethodWithExactType(objectNamespace, objectName,BulkGetMethodName,TypeName)
-                      }))))))
-          .NormalizeWhitespace();
-        return compilationUnitSyntax.ToFullString();
+        return x.ClassName.Equals(y.ClassName);
     }
 
-    private static MethodDeclarationSyntax PostMethod(string objectNamespace, string objectName, string methodName, string typeName)
+    public int GetHashCode(HelperMethodArgs obj)
     {
-        string LowerobjectName = objectName.ToLower();
-        return MethodDeclaration(
-                                GenericName(Identifier("Task"))
-                                .WithTypeArgumentList(TypeArgumentList(
-                                  SingletonSeparatedList<TypeSyntax>(
-                                            QualifiedName(IdentifierName($"global::TallyConnector.Core.Models"), IdentifierName("TallyResult"))))),
-                                Identifier(methodName))
-                              .WithAttributeLists(
-                                SingletonList<AttributeListSyntax>(
-                                  AttributeList(
-                                    SingletonSeparatedList<AttributeSyntax>(
-                                      Attribute(
-                                        QualifiedName(
-                                          QualifiedName(
-                                            QualifiedName(
-                                              AliasQualifiedName(
-                                                IdentifierName(
-                                                  Token(SyntaxKind.GlobalKeyword)),
-                                                IdentifierName("System")),
-                                              IdentifierName("CodeDom")),
-                                            IdentifierName("Compiler")),
-                                          IdentifierName("GeneratedCode")))
-                                      .WithArgumentList(
-                                        AttributeArgumentList(
-                                          SeparatedList<AttributeArgumentSyntax>(
-                                            new SyntaxNodeOrToken[] {
-                                      AttributeArgument(
-                                          LiteralExpression(
-                                            SyntaxKind.StringLiteralExpression,
-                                            Literal(SourceGeneratorName))),
-                                        Token(SyntaxKind.CommaToken),
-                                        AttributeArgument(
-                                          LiteralExpression(
-                                            SyntaxKind.StringLiteralExpression,
-                                            Literal(SourceGeneratorVersion)))
-                                            })))))))
-                              .WithModifiers(
-                                TokenList(
-                                  new[] {
-                            Token(
-                                TriviaList(
-                                  Trivia(
-                                    DocumentationCommentTrivia(
-                                      SyntaxKind.SingleLineDocumentationCommentTrivia,
-                                      List < XmlNodeSyntax > (
-                                        new XmlNodeSyntax[] {
-                                          XmlText()
-                                            .WithTextTokens(
-                                              TokenList(
-                                                XmlTextLiteral(
-                                                  TriviaList(
-                                                    DocumentationCommentExterior("///")),
-                                                  " ",
-                                                  " ",
-                                                  TriviaList()))),
-                                            XmlEmptyElement("inheritdoc"),
-                                            XmlText()
-                                            .WithTextTokens(
-                                              TokenList(
-                                                XmlTextNewLine(
-                                                  TriviaList(),
-                                                  Environment.NewLine,
-                                                  Environment.NewLine,
-                                                  TriviaList())))
-                                        })))),
-                                SyntaxKind.PublicKeyword,
-                                TriviaList()),
-                              Token(SyntaxKind.AsyncKeyword)
-                                  }))
-                              .WithTypeParameterList(
-                                TypeParameterList(
-                                  SingletonSeparatedList<TypeParameterSyntax>(
-                                    TypeParameter(
-                                      Identifier(typeName)))))
-                              .WithParameterList(
-                                ParameterList(
-                                  SeparatedList<ParameterSyntax>(
-                                    new SyntaxNodeOrToken[] {
-                                        Parameter(
-                                Identifier(LowerobjectName))
-                            .WithType(
-                                IdentifierName(typeName)),
-                            Token(SyntaxKind.CommaToken),
-                            Parameter(
-                                Identifier("postRequestOptions"))
-                            .WithType(
-                                NullableType(
-                                    QualifiedName(IdentifierName($"global::TallyConnector.Core.Models"), IdentifierName("PostRequestOptions"))))
-                            .WithDefault(
-                                EqualsValueClause(
-                                    LiteralExpression(
-                                        SyntaxKind.NullLiteralExpression))),
-                              Token(SyntaxKind.CommaToken),
-                            Parameter(
-                                Identifier("token"))
-                            .WithType(
-                                IdentifierName("CancellationToken"))
-                            .WithDefault(
-                                EqualsValueClause(
-                                    LiteralExpression(
-                                        SyntaxKind.DefaultLiteralExpression,
-                                        Token(SyntaxKind.DefaultKeyword))))
-                             })))
-                              .WithConstraintClauses(
-                                SingletonList<TypeParameterConstraintClauseSyntax>(
-                                  TypeParameterConstraintClause(
-                                    IdentifierName(typeName))
-                                  .WithConstraints(
-                                    SingletonSeparatedList<TypeParameterConstraintSyntax>(
-                                      TypeConstraint(QualifiedName(IdentifierName($"global::{objectNamespace}"), IdentifierName(objectName)))))))
-                              .WithBody(
-                                Block(
-                                  SingletonList<StatementSyntax>(
-                                    ReturnStatement(
-                                      AwaitExpression(
-                                        InvocationExpression(
-                                          GenericName(
-                                            Identifier("PostObjectToTallyAsync"))
-                                          .WithTypeArgumentList(
-                                            TypeArgumentList(
-                                              SingletonSeparatedList<TypeSyntax>(
-                                                IdentifierName(typeName)))))
-                                        .WithArgumentList(
-                                          ArgumentList(
-                                            SeparatedList<ArgumentSyntax>(
-                                              new SyntaxNodeOrToken[] {
-                                        Argument(IdentifierName(LowerobjectName)),
-                                                  Token(SyntaxKind.CommaToken),
-                                                  Argument(
-                                                    IdentifierName("postRequestOptions")),
-                                                  Token(SyntaxKind.CommaToken),
-                                                  Argument(
-                                                    LiteralExpression(
-                                                        SyntaxKind.StringLiteralExpression,
-                                                        Literal(objectName)))
-                                                .WithNameColon(
-                                                    NameColon(
-                                                        IdentifierName("objectType"))),
-                                                Token(SyntaxKind.CommaToken),
-                                                  Argument(
-                                                    IdentifierName("token"))
-                                              }))))))));
+        return obj.ClassName.GetHashCode();
     }
-    private static MethodDeclarationSyntax GetMethod(string objectNamespace, string objectName, string methodName, string typeName)
+}
+[Generator(LanguageNames.CSharp)]
+public partial class HelperMethodsGenerator : IIncrementalGenerator
+{
+    public void Initialize(IncrementalGeneratorInitializationContext context)
     {
-        return MethodDeclaration(
-                                GenericName(Identifier("Task"))
-                                .WithTypeArgumentList(TypeArgumentList(
-                                  SingletonSeparatedList<TypeSyntax>(
-                                            IdentifierName(typeName)))),
-                                Identifier(methodName))
-                              .WithAttributeLists(
-                                SingletonList<AttributeListSyntax>(
-                                  AttributeList(
-                                    SingletonSeparatedList<AttributeSyntax>(
-                                      Attribute(
-                                        QualifiedName(
-                                          QualifiedName(
-                                            QualifiedName(
-                                              AliasQualifiedName(
-                                                IdentifierName(
-                                                  Token(SyntaxKind.GlobalKeyword)),
-                                                IdentifierName("System")),
-                                              IdentifierName("CodeDom")),
-                                            IdentifierName("Compiler")),
-                                          IdentifierName("GeneratedCode")))
-                                      .WithArgumentList(
-                                        AttributeArgumentList(
-                                          SeparatedList<AttributeArgumentSyntax>(
-                                            new SyntaxNodeOrToken[] {
-                                      AttributeArgument(
-                                          LiteralExpression(
-                                            SyntaxKind.StringLiteralExpression,
-                                            Literal(SourceGeneratorName))),
-                                        Token(SyntaxKind.CommaToken),
-                                        AttributeArgument(
-                                          LiteralExpression(
-                                            SyntaxKind.StringLiteralExpression,
-                                            Literal(SourceGeneratorVersion)))
-                                            })))))))
-                              .WithModifiers(
-                                TokenList(
-                                  new[] {
-                            Token(
-                                TriviaList(
-                                  Trivia(
-                                    DocumentationCommentTrivia(
-                                      SyntaxKind.SingleLineDocumentationCommentTrivia,
-                                      List < XmlNodeSyntax > (
-                                        new XmlNodeSyntax[] {
-                                          XmlText()
-                                            .WithTextTokens(
-                                              TokenList(
-                                                XmlTextLiteral(
-                                                  TriviaList(
-                                                    DocumentationCommentExterior("///")),
-                                                  " ",
-                                                  " ",
-                                                  TriviaList()))),
-                                            XmlEmptyElement("inheritdoc"),
-                                            XmlText()
-                                            .WithTextTokens(
-                                              TokenList(
-                                                XmlTextNewLine(
-                                                  TriviaList(),
-                                                  Environment.NewLine,
-                                                  Environment.NewLine,
-                                                  TriviaList())))
-                                        })))),
-                                SyntaxKind.PublicKeyword,
-                                TriviaList()),
-                              Token(SyntaxKind.AsyncKeyword)
-                                  }))
-                              .WithTypeParameterList(
-                                TypeParameterList(
-                                  SingletonSeparatedList<TypeParameterSyntax>(
-                                    TypeParameter(
-                                      Identifier(typeName)))))
-                              .WithParameterList(
-                                ParameterList(
-                                  SeparatedList<ParameterSyntax>(
-                                    new SyntaxNodeOrToken[] {
-                                        Parameter(
-                                Identifier("lookupValue"))
-                            .WithType(
-                                PredefinedType(
-                                    Token(SyntaxKind.StringKeyword))),
-                            Token(SyntaxKind.CommaToken),
-                            Parameter(
-                                Identifier("options"))
-                            .WithType(
-                                NullableType(
-                                    IdentifierName(objectName == "Voucher" ?"VoucherRequestOptions" :"MasterRequestOptions")))
-                            .WithDefault(
-                                EqualsValueClause(
-                                    LiteralExpression(
-                                        SyntaxKind.NullLiteralExpression))),
-                            Token(SyntaxKind.CommaToken),
-                            Parameter(
-                                Identifier("token"))
-                            .WithType(
-                                IdentifierName("CancellationToken"))
-                            .WithDefault(
-                                EqualsValueClause(
-                                    LiteralExpression(
-                                        SyntaxKind.DefaultLiteralExpression,
-                                        Token(SyntaxKind.DefaultKeyword))))
-                             })))
-                              .WithConstraintClauses(
-                                SingletonList<TypeParameterConstraintClauseSyntax>(
-                                  TypeParameterConstraintClause(
-                                    IdentifierName(typeName))
-                                  .WithConstraints(
-                                    SingletonSeparatedList<TypeParameterConstraintSyntax>(
-                                      TypeConstraint(QualifiedName(IdentifierName($"global::{objectNamespace}"), IdentifierName(objectName)))))))
-                              .WithBody(
-                                Block(
-                                  SingletonList<StatementSyntax>(
-                                    ReturnStatement(
-                                      AwaitExpression(
-                                        InvocationExpression(
-                                          GenericName(
-                                            Identifier("GetObjectAsync"))
-                                          .WithTypeArgumentList(
-                                            TypeArgumentList(
-                                              SingletonSeparatedList<TypeSyntax>(
-                                                IdentifierName(typeName)))))
-                                        .WithArgumentList(
-                                          ArgumentList(
-                                            SeparatedList<ArgumentSyntax>(
-                                              new SyntaxNodeOrToken[] {
-                                        Argument(IdentifierName("lookupValue")),
-                                                  Token(SyntaxKind.CommaToken),
-                                                  Argument(
-                                                    IdentifierName("options")),
-                                                  Token(SyntaxKind.CommaToken),
-                                                  Argument(
-                                                    IdentifierName("token"))
-                                              }))))))));
-    }
-    private static MethodDeclarationSyntax GetBulkMethod(string objectNamespace, string objectName, string methodName, string typeName)
-    {
-        return MethodDeclaration(
-                                GenericName(Identifier("Task"))
-                                .WithTypeArgumentList(TypeArgumentList(
-                                  SingletonSeparatedList<TypeSyntax>(
-                                    NullableType(
-                                      GenericName(
-                                        Identifier("List"))
-                                      .WithTypeArgumentList(
-                                        TypeArgumentList(
-                                          SingletonSeparatedList<TypeSyntax>(
-                                            IdentifierName(typeName)))))))),
-                                Identifier(methodName))
-                              .WithAttributeLists(
-                                SingletonList<AttributeListSyntax>(
-                                  AttributeList(
-                                    SingletonSeparatedList<AttributeSyntax>(
-                                      Attribute(
-                                        QualifiedName(
-                                          QualifiedName(
-                                            QualifiedName(
-                                              AliasQualifiedName(
-                                                IdentifierName(
-                                                  Token(SyntaxKind.GlobalKeyword)),
-                                                IdentifierName("System")),
-                                              IdentifierName("CodeDom")),
-                                            IdentifierName("Compiler")),
-                                          IdentifierName("GeneratedCode")))
-                                      .WithArgumentList(
-                                        AttributeArgumentList(
-                                          SeparatedList<AttributeArgumentSyntax>(
-                                            new SyntaxNodeOrToken[] {
-                                      AttributeArgument(
-                                          LiteralExpression(
-                                            SyntaxKind.StringLiteralExpression,
-                                            Literal(SourceGeneratorName))),
-                                        Token(SyntaxKind.CommaToken),
-                                        AttributeArgument(
-                                          LiteralExpression(
-                                            SyntaxKind.StringLiteralExpression,
-                                            Literal(SourceGeneratorVersion)))
-                                            })))))))
-                              .WithModifiers(
-                                TokenList(
-                                  new[] {
-                            Token(
-                                TriviaList(
-                                  Trivia(
-                                    DocumentationCommentTrivia(
-                                      SyntaxKind.SingleLineDocumentationCommentTrivia,
-                                      List < XmlNodeSyntax > (
-                                        new XmlNodeSyntax[] {
-                                          XmlText()
-                                            .WithTextTokens(
-                                              TokenList(
-                                                XmlTextLiteral(
-                                                  TriviaList(
-                                                    DocumentationCommentExterior("///")),
-                                                  " ",
-                                                  " ",
-                                                  TriviaList()))),
-                                            XmlEmptyElement("inheritdoc"),
-                                            XmlText()
-                                            .WithTextTokens(
-                                              TokenList(
-                                                XmlTextNewLine(
-                                                  TriviaList(),
-                                                  Environment.NewLine,
-                                                  Environment.NewLine,
-                                                  TriviaList())))
-                                        })))),
-                                SyntaxKind.PublicKeyword,
-                                TriviaList()),
-                              Token(SyntaxKind.AsyncKeyword)
-                                  }))
-                              .WithTypeParameterList(
-                                TypeParameterList(
-                                  SingletonSeparatedList<TypeParameterSyntax>(
-                                    TypeParameter(
-                                      Identifier(typeName)))))
-                              .WithParameterList(
-                                ParameterList(
-                                  SeparatedList<ParameterSyntax>(
-                                    new SyntaxNodeOrToken[] {
-                              Parameter(
-                                  Identifier("options"))
-                                .WithType(
-                                  NullableType(
-                                    QualifiedName(QualifiedName(
-                                        QualifiedName(
-                                          AliasQualifiedName(
-                                            IdentifierName(
-                                              Token(SyntaxKind.GlobalKeyword)),
-                                            IdentifierName("TallyConnector")),
-                                          IdentifierName("Core")),
-                                        IdentifierName("Models")),
-                                      IdentifierName("RequestOptions"))))
-                                .WithDefault(
-                                  EqualsValueClause(
-                                    LiteralExpression(
-                                      SyntaxKind.NullLiteralExpression))),
-                                        Token(SyntaxKind.CommaToken),
-                            Parameter(
-                                Identifier("token"))
-                            .WithType(
-                                IdentifierName("CancellationToken"))
-                            .WithDefault(
-                                EqualsValueClause(
-                                    LiteralExpression(
-                                        SyntaxKind.DefaultLiteralExpression,
-                                        Token(SyntaxKind.DefaultKeyword))))
-                                    })))
-                              .WithConstraintClauses(
-                                SingletonList<TypeParameterConstraintClauseSyntax>(
-                                  TypeParameterConstraintClause(
-                                    IdentifierName(typeName))
-                                  .WithConstraints(
-                                    SingletonSeparatedList<TypeParameterConstraintSyntax>(
-                                      TypeConstraint(QualifiedName(IdentifierName($"global::{objectNamespace}"), IdentifierName(objectName)))))))
-                              .WithBody(
-                                Block(
-                                  SingletonList<StatementSyntax>(
-                                    ReturnStatement(
-                                      AwaitExpression(
-                                        InvocationExpression(
-                                          GenericName(
-                                            Identifier("GetAllObjectsAsync"))
-                                          .WithTypeArgumentList(
-                                            TypeArgumentList(
-                                              SingletonSeparatedList<TypeSyntax>(
-                                                IdentifierName(typeName)))))
-                                        .WithArgumentList(
-                                          ArgumentList(
-                                            SeparatedList<ArgumentSyntax>(
-                                              new SyntaxNodeOrToken[] {
-                                        Argument(
-                                          IdentifierName("options")) ,
-                                                  Token(SyntaxKind.CommaToken),
-                                                  Argument(
-                                                    IdentifierName("token")).WithNameColon(
-                                            NameColon(
-                                                IdentifierName("token")))}))))))));
-    }
-    private static MethodDeclarationSyntax GetBulkPaginatedMethod(string objectNamespace, string objectName, string methodName, string typeName)
-    {
-        return MethodDeclaration(
-                                GenericName(Identifier("Task"))
-                                .WithTypeArgumentList(TypeArgumentList(
-                                  SingletonSeparatedList<TypeSyntax>(
-                                    NullableType(
-                                      GenericName(
-                                        Identifier("global::TallyConnector.Core.Models.Pagination.PaginatedResponse"))
-                                      .WithTypeArgumentList(
-                                        TypeArgumentList(
-                                          SingletonSeparatedList<TypeSyntax>(
-                                            IdentifierName(typeName)))))))),
-                                Identifier(methodName))
-                              .WithAttributeLists(
-                                SingletonList<AttributeListSyntax>(
-                                  AttributeList(
-                                    SingletonSeparatedList<AttributeSyntax>(
-                                      Attribute(
-                                        QualifiedName(
-                                          QualifiedName(
-                                            QualifiedName(
-                                              AliasQualifiedName(
-                                                IdentifierName(
-                                                  Token(SyntaxKind.GlobalKeyword)),
-                                                IdentifierName("System")),
-                                              IdentifierName("CodeDom")),
-                                            IdentifierName("Compiler")),
-                                          IdentifierName("GeneratedCode")))
-                                      .WithArgumentList(
-                                        AttributeArgumentList(
-                                          SeparatedList<AttributeArgumentSyntax>(
-                                            new SyntaxNodeOrToken[] {
-                                      AttributeArgument(
-                                          LiteralExpression(
-                                            SyntaxKind.StringLiteralExpression,
-                                            Literal(SourceGeneratorName))),
-                                        Token(SyntaxKind.CommaToken),
-                                        AttributeArgument(
-                                          LiteralExpression(
-                                            SyntaxKind.StringLiteralExpression,
-                                            Literal(SourceGeneratorVersion)))
-                                            })))))))
-                              .WithModifiers(
-                                TokenList(
-                                  new[] {
-                            Token(
-                                TriviaList(
-                                  Trivia(
-                                    DocumentationCommentTrivia(
-                                      SyntaxKind.SingleLineDocumentationCommentTrivia,
-                                      List < XmlNodeSyntax > (
-                                        new XmlNodeSyntax[] {
-                                          XmlText()
-                                            .WithTextTokens(
-                                              TokenList(
-                                                XmlTextLiteral(
-                                                  TriviaList(
-                                                    DocumentationCommentExterior("///")),
-                                                  " ",
-                                                  " ",
-                                                  TriviaList()))),
-                                            XmlEmptyElement("inheritdoc"),
-                                            XmlText()
-                                            .WithTextTokens(
-                                              TokenList(
-                                                XmlTextNewLine(
-                                                  TriviaList(),
-                                                  Environment.NewLine,
-                                                  Environment.NewLine,
-                                                  TriviaList())))
-                                        })))),
-                                SyntaxKind.PublicKeyword,
-                                TriviaList()),
-                              Token(SyntaxKind.AsyncKeyword)
-                                  }))
-                              .WithTypeParameterList(
-                                TypeParameterList(
-                                  SingletonSeparatedList<TypeParameterSyntax>(
-                                    TypeParameter(
-                                      Identifier(typeName)))))
-                              .WithParameterList(
-                                ParameterList(
-                                  SeparatedList<ParameterSyntax>(
-                                    new SyntaxNodeOrToken[] {
-                              Parameter(
-                                  Identifier("options"))
-                                .WithType(
-                                    QualifiedName(QualifiedName(
-                                        QualifiedName(
-                                          AliasQualifiedName(
-                                            IdentifierName(
-                                              Token(SyntaxKind.GlobalKeyword)),
-                                            IdentifierName("TallyConnector")),
-                                          IdentifierName("Core")),
-                                        IdentifierName("Models")),
-                                      IdentifierName("PaginatedRequestOptions"))),
-                              Token(SyntaxKind.CommaToken),
-                            Parameter(
-                                Identifier("token"))
-                            .WithType(
-                                IdentifierName("CancellationToken"))
-                            .WithDefault(
-                                EqualsValueClause(
-                                    LiteralExpression(
-                                        SyntaxKind.DefaultLiteralExpression,
-                                        Token(SyntaxKind.DefaultKeyword))))
-                                    })))
-                              .WithConstraintClauses(
-                                SingletonList<TypeParameterConstraintClauseSyntax>(
-                                  TypeParameterConstraintClause(
-                                    IdentifierName(typeName))
-                                  .WithConstraints(
-                                    SingletonSeparatedList<TypeParameterConstraintSyntax>(
-                                      TypeConstraint(QualifiedName(IdentifierName($"global::{objectNamespace}"), IdentifierName(objectName)))))))
-                              .WithBody(
-                                Block(
-                                  SingletonList<StatementSyntax>(
-                                    ReturnStatement(
-                                      AwaitExpression(
-                                        InvocationExpression(
-                                          GenericName(
-                                            Identifier("GetObjectsAsync"))
-                                          .WithTypeArgumentList(
-                                            TypeArgumentList(
-                                              SingletonSeparatedList<TypeSyntax>(
-                                                IdentifierName(typeName)))))
-                                        .WithArgumentList(
-                                          ArgumentList(
-                                            SeparatedList<ArgumentSyntax>(
-                                              new SyntaxNodeOrToken[] {
-                                        Argument(
-                                          IdentifierName("options")),
-                                                  Token(SyntaxKind.CommaToken),
-                                                  Argument(
-                                                    IdentifierName("token")) }))))))));
+        //if (!Debugger.IsAttached)
+        //{
+        //    Debugger.Launch();
+        //}
+        IncrementalValuesProvider<HelperMethodArgs> syntaxProvider = context.SyntaxProvider
+           .CreateSyntaxProvider(SyntaxPredicate, SematicTransform)
+           .Where(static (type) => type != null)!;
+        //var c = context.CompilationProvider.Combine(syntaxProvider.Collect());
+        context.RegisterSourceOutput(syntaxProvider, Execute);
     }
 
-    private static MethodDeclarationSyntax GetMethodWithExactType(string objectNamespace, string objectName, string methodName, string typeName)
+    private void Execute(SourceProductionContext sourceProductionContext, HelperMethodArgs helperMethodArgs)
     {
-        return MethodDeclaration(
-                                GenericName(
-                                    Identifier("Task"))
-                                .WithTypeArgumentList(
-                                    TypeArgumentList(
-                                        SingletonSeparatedList<TypeSyntax>(
-                                            QualifiedName(IdentifierName($"global::{objectNamespace}"), IdentifierName(objectName))))),
-                                Identifier(methodName))
-            .WithAttributeLists(
-                                SingletonList<AttributeListSyntax>(
-                                  AttributeList(
-                                    SingletonSeparatedList<AttributeSyntax>(
-                                      Attribute(
-                                        QualifiedName(
-                                          QualifiedName(
-                                            QualifiedName(
-                                              AliasQualifiedName(
-                                                IdentifierName(
-                                                  Token(SyntaxKind.GlobalKeyword)),
-                                                IdentifierName("System")),
-                                              IdentifierName("CodeDom")),
-                                            IdentifierName("Compiler")),
-                                          IdentifierName("GeneratedCode")))
-                                      .WithArgumentList(
-                                        AttributeArgumentList(
-                                          SeparatedList<AttributeArgumentSyntax>(
-                                            new SyntaxNodeOrToken[] {
-                                      AttributeArgument(
-                                          LiteralExpression(
-                                            SyntaxKind.StringLiteralExpression,
-                                            Literal(SourceGeneratorName))),
-                                        Token(SyntaxKind.CommaToken),
-                                        AttributeArgument(
-                                          LiteralExpression(
-                                            SyntaxKind.StringLiteralExpression,
-                                            Literal(SourceGeneratorVersion)))
-                                            })))))))
-                            .WithModifiers(
-                                TokenList(
-                                    new[]{
-                                        Token(
-                                            TriviaList(
-                                                Trivia(
-                                                    DocumentationCommentTrivia(
-                                                        SyntaxKind.SingleLineDocumentationCommentTrivia,
-                                                        List<XmlNodeSyntax>(
-                                                            new XmlNodeSyntax[]{
-                                                                XmlText()
-                                                                .WithTextTokens(
-                                                                    TokenList(
-                                                                        XmlTextLiteral(
-                                                                            TriviaList(
-                                                                                DocumentationCommentExterior("///")),
-                                                                            " ",
-                                                                            " ",
-                                                                            TriviaList()))),
-                                                                XmlEmptyElement("inheritdoc"),
-                                                                XmlText()
-                                                                .WithTextTokens(
-                                                                    TokenList(
-                                                                        XmlTextNewLine(
-                                                                            TriviaList(),
-                                                                            Environment.NewLine,
-                                                                            Environment.NewLine,
-                                                                            TriviaList())))})))),
-                                            SyntaxKind.PublicKeyword,
-                                            TriviaList()),
-                                        Token(SyntaxKind.AsyncKeyword)}))
-                            .WithParameterList(
-                                ParameterList(
-                                  SeparatedList<ParameterSyntax>(
-                                    new SyntaxNodeOrToken[] {
-                                        Parameter(
-                                Identifier("lookupValue"))
-                            .WithType(
-                                PredefinedType(
-                                    Token(SyntaxKind.StringKeyword))),
-                            Token(SyntaxKind.CommaToken),
-                            Parameter(
-                                Identifier("options"))
-                            .WithType(
-                                NullableType(
-                                    IdentifierName(objectName == "Voucher" ?"VoucherRequestOptions" :"MasterRequestOptions")))
-                            .WithDefault(
-                                EqualsValueClause(
-                                    LiteralExpression(
-                                        SyntaxKind.NullLiteralExpression))),
-                              Token(SyntaxKind.CommaToken),
-                            Parameter(
-                                Identifier("token"))
-                            .WithType(
-                                IdentifierName("CancellationToken"))
-                            .WithDefault(
-                                EqualsValueClause(
-                                    LiteralExpression(
-                                        SyntaxKind.DefaultLiteralExpression,
-                                        Token(SyntaxKind.DefaultKeyword))))
-                             })))
-                            .WithBody(
-                                Block(
-                                    SingletonList<StatementSyntax>(
-                                        ReturnStatement(
-                                            AwaitExpression(
-                                                InvocationExpression(
-                                                    GenericName(
-                                                        Identifier(methodName))
-                                                    .WithTypeArgumentList(
-                                                        TypeArgumentList(
-                                                            SingletonSeparatedList<TypeSyntax>(
-                                                                QualifiedName(IdentifierName($"global::{objectNamespace}"), IdentifierName(objectName))))))
-                                                .WithArgumentList(
-                                          ArgumentList(
-                                            SeparatedList<ArgumentSyntax>(
-                                              new SyntaxNodeOrToken[] {
-                                        Argument(IdentifierName("lookupValue")),
-                                                  Token(SyntaxKind.CommaToken),
-                                                  Argument(
-                                                    IdentifierName("options")),
-                                                  Token(SyntaxKind.CommaToken),
-                                                  Argument(
-                                                    IdentifierName("token"))
-                                              }))))))));
-    }
-    private static MethodDeclarationSyntax GetBulkMethodWithExactType(string objectNamespace, string objectName, string methodName, string typeName)
-    {
-        return MethodDeclaration(
-                                GenericName(
-                                    Identifier("Task"))
-                                .WithTypeArgumentList(
-                                    TypeArgumentList(
-                                        SingletonSeparatedList<TypeSyntax>(
-                                            NullableType(
-                                                GenericName(
-                                                    Identifier("List"))
-                                                .WithTypeArgumentList(
-                                                    TypeArgumentList(
-                                                        SingletonSeparatedList<TypeSyntax>(
-                                                            QualifiedName(IdentifierName($"global::{objectNamespace}"), IdentifierName(objectName))))))))),
-                                Identifier(methodName))
-            .WithAttributeLists(
-                                SingletonList<AttributeListSyntax>(
-                                  AttributeList(
-                                    SingletonSeparatedList<AttributeSyntax>(
-                                      Attribute(
-                                        QualifiedName(
-                                          QualifiedName(
-                                            QualifiedName(
-                                              AliasQualifiedName(
-                                                IdentifierName(
-                                                  Token(SyntaxKind.GlobalKeyword)),
-                                                IdentifierName("System")),
-                                              IdentifierName("CodeDom")),
-                                            IdentifierName("Compiler")),
-                                          IdentifierName("GeneratedCode")))
-                                      .WithArgumentList(
-                                        AttributeArgumentList(
-                                          SeparatedList<AttributeArgumentSyntax>(
-                                            new SyntaxNodeOrToken[] {
-                                      AttributeArgument(
-                                          LiteralExpression(
-                                            SyntaxKind.StringLiteralExpression,
-                                            Literal(SourceGeneratorName))),
-                                        Token(SyntaxKind.CommaToken),
-                                        AttributeArgument(
-                                          LiteralExpression(
-                                            SyntaxKind.StringLiteralExpression,
-                                            Literal(SourceGeneratorVersion)))
-                                            })))))))
-                            .WithModifiers(
-                                TokenList(
-                                    new[]{
-                                        Token(
-                                            TriviaList(
-                                                Trivia(
-                                                    DocumentationCommentTrivia(
-                                                        SyntaxKind.SingleLineDocumentationCommentTrivia,
-                                                        List<XmlNodeSyntax>(
-                                                            new XmlNodeSyntax[]{
-                                                                XmlText()
-                                                                .WithTextTokens(
-                                                                    TokenList(
-                                                                        XmlTextLiteral(
-                                                                            TriviaList(
-                                                                                DocumentationCommentExterior("///")),
-                                                                            " ",
-                                                                            " ",
-                                                                            TriviaList()))),
-                                                                XmlEmptyElement("inheritdoc"),
-                                                                XmlText()
-                                                                .WithTextTokens(
-                                                                    TokenList(
-                                                                        XmlTextNewLine(
-                                                                            TriviaList(),
-                                                                            Environment.NewLine,
-                                                                            Environment.NewLine,
-                                                                            TriviaList())))})))),
-                                            SyntaxKind.PublicKeyword,
-                                            TriviaList()),
-                                        Token(SyntaxKind.AsyncKeyword)}))
-                            .WithParameterList(
-                                ParameterList(
-                                    SeparatedList<ParameterSyntax>(
-                        new SyntaxNodeOrToken[] {
-                            Parameter(
-                                            Identifier("options"))
-                                        .WithType(
-                                           NullableType(QualifiedName(QualifiedName(
-                                        QualifiedName(
-                                          AliasQualifiedName(
-                                            IdentifierName(
-                                              Token(SyntaxKind.GlobalKeyword)),
-                                            IdentifierName("TallyConnector")),
-                                          IdentifierName("Core")),
-                                        IdentifierName("Models")),
-                                      IdentifierName("RequestOptions"))))
-                                        .WithDefault(
-                                  EqualsValueClause(
-                                    LiteralExpression(
-                                      SyntaxKind.NullLiteralExpression))),
-                              Token(SyntaxKind.CommaToken),
-                            Parameter(
-                                Identifier("token"))
-                            .WithType(
-                                IdentifierName("CancellationToken"))
-                            .WithDefault(
-                                EqualsValueClause(
-                                    LiteralExpression(
-                                        SyntaxKind.DefaultLiteralExpression,
-                                        Token(SyntaxKind.DefaultKeyword))))
+        List<INamedTypeSymbol> RequestEnvelopeTypes = new List<INamedTypeSymbol>();
+        List<INamedTypeSymbol> GetTypes = new List<INamedTypeSymbol>();
+        GenerateXMLMethodsGenerator generateXMLMethodsGenerator = new (sourceProductionContext, helperMethodArgs.ClassName,helperMethodArgs.NameSpace);
 
-                        })))
-                            .WithBody(
-                                Block(
-                                    SingletonList<StatementSyntax>(
-                                        ReturnStatement(
-                                            AwaitExpression(
-                                                InvocationExpression(
-                                                    GenericName(
-                                                        Identifier(methodName))
-                                                    .WithTypeArgumentList(
-                                                        TypeArgumentList(
-                                                            SingletonSeparatedList<TypeSyntax>(
-                                                                QualifiedName(IdentifierName($"global::{objectNamespace}"), IdentifierName(objectName))))))
-                                                .WithArgumentList(
-                                                    ArgumentList(
-                                                          SeparatedList<ArgumentSyntax>(
-                                              new SyntaxNodeOrToken[] {Argument(
-                                                                IdentifierName("options")),
-                                                  Token(SyntaxKind.CommaToken),
-                                                  Argument(
-                                                    IdentifierName("token")).WithNameColon(
-                                            NameColon(
-                                                IdentifierName("token"))) }))))))));
-    }
-    private static MethodDeclarationSyntax GetBulkPaginatedMethodWithExactType(string objectNamespace, string objectName, string methodName, string typeName)
-    {
-        return MethodDeclaration(
-                                GenericName(
-                                    Identifier("Task"))
-                                .WithTypeArgumentList(
-                                    TypeArgumentList(
-                                        SingletonSeparatedList<TypeSyntax>(
-                                            NullableType(
-                                                GenericName(
-                                                    Identifier("global::TallyConnector.Core.Models.Pagination.PaginatedResponse"))
-                                                .WithTypeArgumentList(
-                                                    TypeArgumentList(
-                                                        SingletonSeparatedList<TypeSyntax>(
-                                                            QualifiedName(IdentifierName($"global::{objectNamespace}"), IdentifierName(objectName))))))))),
-                                Identifier(methodName))
-            .WithAttributeLists(
-                                SingletonList<AttributeListSyntax>(
-                                  AttributeList(
-                                    SingletonSeparatedList<AttributeSyntax>(
-                                      Attribute(
-                                        QualifiedName(
-                                          QualifiedName(
-                                            QualifiedName(
-                                              AliasQualifiedName(
-                                                IdentifierName(
-                                                  Token(SyntaxKind.GlobalKeyword)),
-                                                IdentifierName("System")),
-                                              IdentifierName("CodeDom")),
-                                            IdentifierName("Compiler")),
-                                          IdentifierName("GeneratedCode")))
-                                      .WithArgumentList(
-                                        AttributeArgumentList(
-                                          SeparatedList<AttributeArgumentSyntax>(
-                                            new SyntaxNodeOrToken[] {
-                                      AttributeArgument(
-                                          LiteralExpression(
-                                            SyntaxKind.StringLiteralExpression,
-                                            Literal(SourceGeneratorName))),
-                                        Token(SyntaxKind.CommaToken),
-                                        AttributeArgument(
-                                          LiteralExpression(
-                                            SyntaxKind.StringLiteralExpression,
-                                            Literal(SourceGeneratorVersion)))
-                                            })))))))
-                            .WithModifiers(
-                                TokenList(
-                                    new[]{
-                                        Token(
-                                            TriviaList(
-                                                Trivia(
-                                                    DocumentationCommentTrivia(
-                                                        SyntaxKind.SingleLineDocumentationCommentTrivia,
-                                                        List<XmlNodeSyntax>(
-                                                            new XmlNodeSyntax[]{
-                                                                XmlText()
-                                                                .WithTextTokens(
-                                                                    TokenList(
-                                                                        XmlTextLiteral(
-                                                                            TriviaList(
-                                                                                DocumentationCommentExterior("///")),
-                                                                            " ",
-                                                                            " ",
-                                                                            TriviaList()))),
-                                                                XmlEmptyElement("inheritdoc"),
-                                                                XmlText()
-                                                                .WithTextTokens(
-                                                                    TokenList(
-                                                                        XmlTextNewLine(
-                                                                            TriviaList(),
-                                                                            Environment.NewLine,
-                                                                            Environment.NewLine,
-                                                                            TriviaList())))})))),
-                                            SyntaxKind.PublicKeyword,
-                                            TriviaList()),
-                                        Token(SyntaxKind.AsyncKeyword)}))
-                            .WithParameterList(
-                                ParameterList(
-                                    SeparatedList<ParameterSyntax>(
-                        new SyntaxNodeOrToken[] {
-                              Parameter(
-                                            Identifier("options"))
-                                        .WithType(
-                                           QualifiedName(QualifiedName(
-                                        QualifiedName(
-                                          AliasQualifiedName(
-                                            IdentifierName(
-                                              Token(SyntaxKind.GlobalKeyword)),
-                                            IdentifierName("TallyConnector")),
-                                          IdentifierName("Core")),
-                                        IdentifierName("Models")),
-                                      IdentifierName("PaginatedRequestOptions"))),
-                              Token(SyntaxKind.CommaToken),
-                            Parameter(
-                                Identifier("token"))
-                            .WithType(
-                                IdentifierName("CancellationToken"))
-                            .WithDefault(
-                                EqualsValueClause(
-                                    LiteralExpression(
-                                        SyntaxKind.DefaultLiteralExpression,
-                                        Token(SyntaxKind.DefaultKeyword))))
-                        })))
-                            .WithBody(
-                                Block(
-                                    SingletonList<StatementSyntax>(
-                                        ReturnStatement(
-                                            AwaitExpression(
-                                                InvocationExpression(
-                                                    GenericName(
-                                                        Identifier(methodName))
-                                                    .WithTypeArgumentList(
-                                                        TypeArgumentList(
-                                                            SingletonSeparatedList<TypeSyntax>(
-                                                                QualifiedName(IdentifierName($"global::{objectNamespace}"), IdentifierName(objectName))))))
-                                                .WithArgumentList(
-                                                    ArgumentList(
-                                                          SeparatedList<ArgumentSyntax>(
-                                              new SyntaxNodeOrToken[] {Argument(
-                                                                IdentifierName("options")),
-                                                  Token(SyntaxKind.CommaToken),
-                                                  Argument(
-                                                    IdentifierName("token")).WithNameColon(
-                                            NameColon(
-                                                IdentifierName("token"))) }))))))));
+        foreach (var item in helperMethodArgs.AttributeArgs)
+        {
+            if (!RequestEnvelopeTypes.Contains(item.RequestEnvelopeType))
+            {
+                RequestEnvelopeTypes.Add(item.RequestEnvelopeType);
+            }
+            if (!GetTypes.Contains(item.GetObjType))
+            {
+                GetTypes.Add(item.GetObjType);
+            }
+            //Execute(sourceProductionContext, item);
+        }
+        generateXMLMethodsGenerator.GenerateEnvelopeXmlGenerator(RequestEnvelopeTypes);
     }
 
+    private bool SyntaxPredicate(SyntaxNode node, CancellationToken arg)
+    {
+        //Debugger.Launch();
+        return node is ClassDeclarationSyntax
+        {
 
+        } candidate
+        && candidate.Modifiers.Any(SyntaxKind.PartialKeyword)
+        && !candidate.Modifiers.Any(SyntaxKind.StaticKeyword);
+    }
+
+    private HelperMethodArgs? SematicTransform(GeneratorSyntaxContext context, CancellationToken cancellation)
+    {
+        var classDeclaration = Unsafe.As<ClassDeclarationSyntax>(context.Node);
+        ISymbol? symbol = context.SemanticModel.GetDeclaredSymbol(classDeclaration, cancellation);
+        //if (!Debugger.IsAttached)
+        //{
+        //    Debugger.Launch();
+        //}
+        if (symbol is INamedTypeSymbol type && (type.CheckInterface("TallyConnector.Services.IBaseTallyService")))
+        {
+            if (classDeclaration.BaseList?.Types == null)
+            {
+                return null;
+            }
+            else
+            {
+                if (classDeclaration.BaseList.Types.Count > 0)
+                {
+                    bool match = false;
+                    foreach (BaseTypeSyntax baseTypeSyntax in classDeclaration.BaseList.Types)
+                    {
+                        var candidate = context.SemanticModel.GetSymbolInfo(baseTypeSyntax.Type).Symbol as INamedTypeSymbol;
+                        if (candidate != null && candidate.GetClassMetaName() == "TallyConnector.Services.BaseTallyService")
+                        {
+                            match = true;
+                            break;
+                        }
+                    }
+                    if (!match)
+                    {
+                        return null;
+                    }
+                }
+                else
+                {
+                    return null;
+                }
+            }
+            System.Collections.Immutable.ImmutableArray<AttributeData> Attributes = symbol.GetAttributes();
+            HelperMethodArgs args = new(type.ContainingNamespace.ToString(), type.MetadataName.ToString());
+            foreach (var Attribute in Attributes)
+            {
+                if (Attribute.GetAttrubuteMetaName() == "TallyConnector.Core.Attributes.GenerateHelperMethodAttribute")
+                {
+                    ImmutableArray<ITypeSymbol> typeArguments = Attribute.AttributeClass!.TypeArguments;
+                    //Debugger.Launch();
+                    INamedTypeSymbol ReturnType = (INamedTypeSymbol)typeArguments[0];
+                    INamedTypeSymbol GetType = (INamedTypeSymbol)typeArguments[1];
+                    INamedTypeSymbol PostType = (INamedTypeSymbol)typeArguments[2];
+
+                    if (typeArguments.Count() == 3)
+                    {
+                        INamedTypeSymbol RequestEnvelopeType = (INamedTypeSymbol)Attribute.AttributeClass.BaseType!.TypeArguments[3];
+                        args.AttributeArgs.Add(new(ReturnType, GetType, PostType, RequestEnvelopeType));
+                    }
+                    else
+                    {
+                        INamedTypeSymbol RequestEnvelopeType = (INamedTypeSymbol)typeArguments[3];
+                        args.AttributeArgs.Add(new(ReturnType, GetType, PostType, RequestEnvelopeType));
+                    }
+
+                }
+            }
+            return args;
+        }
+        return null;
+    }
+
+    //public void Execute(SourceProductionContext sourceProductionContext, HelperMethodArgs args)
+    //{
+
+    //    INamedTypeSymbol getType = args.GetObjType;
+
+    //    IEnumerable<ISymbol> info = GetInfo(getType);
+    //    INamedTypeSymbol RequestEnvelopeType = args.RequestEnvelopeType;
+    //    MethodDeclarationSyntax methodDeclarationSyntax = CreateGenerateGetRequestXML(RequestEnvelopeType);
+
+
+    //    TDLReportParams tDLReportParams = new();
+
+    //    foreach (ISymbol symbol in info)
+    //    {
+    //        GenerateTDLReportParams(tDLReportParams, symbol);
+    //    }
+    //    CompilationUnitSyntax compilationUnitSyntax = CompilationUnit()
+    //        .WithMembers(SingletonList<MemberDeclarationSyntax>(FileScopedNamespaceDeclaration(IdentifierName(args.NameSpace))
+    //        .WithNamespaceKeyword(Token(TriviaList(Trivia(NullableDirectiveTrivia(Token(SyntaxKind.EnableKeyword),
+    //                                                                               true))),
+    //              SyntaxKind.NamespaceKeyword,
+    //              TriviaList()))
+    //        .WithMembers(List<MemberDeclarationSyntax>(
+    //            new MemberDeclarationSyntax[]
+    //            {
+    //                ClassDeclaration(args.ClassName)
+    //                .WithModifiers(TokenList(new[]{Token(SyntaxKind.PublicKeyword),Token(SyntaxKind.PartialKeyword)}))
+    //                .WithMembers(List<MemberDeclarationSyntax>(new MemberDeclarationSyntax[]
+    //                {
+    //                    methodDeclarationSyntax
+    //                }))
+    //            }))
+    //        )
+    //        ).NormalizeWhitespace();
+    //    string source = compilationUnitSyntax.ToFullString();
+    //    //if(!Debugger.IsAttached)
+    //    //{
+    //    //   // Debugger.Launch();
+    //    //}
+    //    //sourceProductionContext.AddSource($"Test_{Guid.NewGuid()}.g.cs", $"//sdsfd{args.ClassName}.{getType.Name}.g.cs");
+    //    sourceProductionContext.AddSource($"{args.ClassName}.{getType.Name}.g.cs", source);
+    //}
+
+
+
+    private void GenerateTDLReportParams(TDLReportParams tDLReportParams, ISymbol symbol)
+    {
+        if (symbol is IPropertySymbol propertySymbol && !propertySymbol.IsReadOnly)
+        {
+            bool isPrimitive = propertySymbol.Type.SpecialType != SpecialType.None;
+            if (isPrimitive)
+            {
+                TDLField TField = GetTDLFieldFromPrimitivePropertySymbol(symbol);
+                tDLReportParams.Fields.Add(TField);
+            }
+            else
+            {
+                TDLPart tDLPart = new();
+                // Debugger.Launch();
+                if (propertySymbol.Type is INamedTypeSymbol namedTypeSymbol && namedTypeSymbol.IsGenericType)
+                {
+                    INamedTypeSymbol typeSymbol = (INamedTypeSymbol)namedTypeSymbol.TypeArguments.First();
+                    bool isGenericTypePrimitive = typeSymbol.SpecialType != SpecialType.None;
+                    if (isGenericTypePrimitive)
+                    {
+                        tDLPart.Fields.Add(GetTDLFieldFromPrimitivePropertySymbol(typeSymbol));
+                    }
+                    else
+                    {
+                        tDLPart.Parts.Add(GetTDLPart(typeSymbol));
+                    }
+                }
+                else
+                {
+                    tDLPart.Parts.Add(GetTDLPart((INamedTypeSymbol)propertySymbol));
+                }
+                tDLReportParams.Parts.Add(tDLPart);
+            }
+        }
+    }
+
+    private TDLPart GetTDLPart(INamedTypeSymbol namedTypeSymbol)
+    {
+        TDLPart tDLPart = new();
+        IEnumerable<ISymbol> symbols = GetInfo(namedTypeSymbol);
+        foreach (ISymbol symbol in symbols)
+        {
+            if (symbol is IPropertySymbol propertySymbol && !propertySymbol.IsReadOnly)
+            {
+                if (propertySymbol.Type is INamedTypeSymbol propertynamedTypeSymbol && propertynamedTypeSymbol.IsGenericType)
+                {
+                    INamedTypeSymbol typeSymbol = (INamedTypeSymbol)propertynamedTypeSymbol.TypeArguments.First();
+                    bool isGenericTypePrimitive = typeSymbol.SpecialType != SpecialType.None;
+                    if (isGenericTypePrimitive)
+                    {
+                        tDLPart.Fields.Add(GetTDLFieldFromPrimitivePropertySymbol(typeSymbol));
+                    }
+                    else
+                    {
+                        tDLPart.Parts.Add(GetTDLPart(typeSymbol));
+                    }
+                }
+                else
+                {
+                    bool isPrimitive = propertySymbol.Type.SpecialType != SpecialType.None;
+                    if (isPrimitive)
+                    {
+                        TDLField TField = GetTDLFieldFromPrimitivePropertySymbol(symbol);
+                        tDLPart.Fields.Add(TField);
+                    }
+                    else
+                    {
+                        tDLPart.Parts.Add(GetTDLPart((INamedTypeSymbol)propertySymbol.Type));
+                    }
+                }
+
+            }
+        }
+        return tDLPart;
+
+    }
+
+    private static TDLField GetTDLFieldFromPrimitivePropertySymbol(ISymbol symbol)
+    {
+        var xmlTag = symbol.Name;
+        TDLField TField = new()
+        {
+            Name = $"{TDLPrefix}{symbol.Name}",
+            XmlTag = xmlTag,
+            Set = xmlTag,
+        };
+        return TField;
+    }
+
+    private IEnumerable<ISymbol> GetInfo(INamedTypeSymbol getType)
+    {
+        IEnumerable<ISymbol> info = getType.GetPropertiesAndFields();
+        if (getType.BaseType != null)
+        {
+            info = info.Concat(GetInfo(getType.BaseType));
+        }
+        return info;
+    }
 }

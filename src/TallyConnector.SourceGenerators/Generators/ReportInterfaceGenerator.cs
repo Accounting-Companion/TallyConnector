@@ -1,1 +1,0 @@
-﻿namespace TallyConnector.SourceGenerators.Generators;
