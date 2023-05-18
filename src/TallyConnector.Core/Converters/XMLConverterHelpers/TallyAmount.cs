@@ -8,6 +8,8 @@ namespace TallyConnector.Core.Converters.XMLConverterHelpers;
 [JsonConverter(typeof(TallyAmountJsonConverter))]
 public class TallyAmount : IXmlSerializable
 {
+
+
     public TallyAmount(decimal amount, bool? isDebit = null)
     {
         Amount = amount;
@@ -15,13 +17,20 @@ public class TallyAmount : IXmlSerializable
         {
             isDebit = Amount < 0;
         }
+        else
+        {
+            PreserveAmount = true;
+        }
         IsDebit = (bool)isDebit;
-        Amount = Amount < 0 ? Amount * -1 : Amount;
+        if (!PreserveAmount)
+        {
+            Amount = Amount < 0 ? Amount * -1 : Amount;
+        }
     }
 
     public TallyAmount(decimal? forexAmount,
                        decimal? rateOfExchage,
-                       string currency, bool? isDebit = null, decimal amount = 0)
+                       string currency,decimal amount = 0, bool? isDebit = null )
     {
         ForexAmount = forexAmount;
         RateOfExchange = rateOfExchage;
@@ -31,9 +40,16 @@ public class TallyAmount : IXmlSerializable
         {
             isDebit = ForexAmount < 0;
         }
+        else
+        {
+            PreserveAmount = true;
+        }
         IsDebit = (bool)isDebit;
         ForexAmount = ForexAmount < 0 ? ForexAmount * -1 : ForexAmount;
-        Amount = Amount < 0 ? Amount * -1 : Amount;
+        if (!PreserveAmount)
+        {
+            Amount = Amount < 0 ? Amount * -1 : Amount;
+        }
     }
 
     public TallyAmount()
@@ -53,6 +69,7 @@ public class TallyAmount : IXmlSerializable
     public string? Currency { get; private set; }
 
     public bool IsDebit { get; private set; }
+    public bool PreserveAmount { get; private set; }
 
     public XmlSchema? GetSchema()
     {
@@ -112,14 +129,16 @@ public class TallyAmount : IXmlSerializable
             && Currency != null
             && Currency != String.Empty)
         {
-            if (IsDebit || ForexAmount < 0)
+            if (!PreserveAmount && IsDebit || ForexAmount < 0)
             {
                 return $"-{Currency} {ForexAmount?.ToString(CultureInfo.InvariantCulture)!.Replace("-", "")} @ {RateOfExchange?.ToString(CultureInfo.InvariantCulture)!.Replace("-", "")}";
             }
             return $"{Currency} {ForexAmount?.ToString(CultureInfo.InvariantCulture)} @ {RateOfExchange?.ToString(CultureInfo.InvariantCulture)}";
         }
-        if (IsDebit)
+
+        if (!PreserveAmount && IsDebit)
         {
+
             return (Amount * -1).ToString(CultureInfo.InvariantCulture);
         }
         return Amount.ToString(CultureInfo.InvariantCulture);
