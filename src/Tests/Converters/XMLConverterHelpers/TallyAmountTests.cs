@@ -51,7 +51,34 @@ public class TallyAmountTests
             Assert.That(Amount.IsDebit, Is.EqualTo(true));
         });
     }
-
+    [Test]
+    public async Task CheckPreserveAmount()
+    {
+        TallyAmount tallyAmount = new(5000,true);
+        TextWriter textWriter = new StringWriter();
+        var writer = XmlWriter.Create(textWriter, settings);
+        xmlSerializer.Serialize(writer, tallyAmount);
+        string xml = textWriter.ToString();
+        Assert.Multiple(() =>
+        {
+            Assert.That(tallyAmount.IsDebit, Is.EqualTo(true));
+            Assert.That(xml, Is.EqualTo("<AMOUNT>5000</AMOUNT>"));
+        });
+    }
+    [Test]
+    public async Task CheckPreserveAmount2()
+    {
+        TallyAmount tallyAmount = new(-5000,false);
+        TextWriter textWriter = new StringWriter();
+        var writer = XmlWriter.Create(textWriter, settings);
+        xmlSerializer.Serialize(writer, tallyAmount);
+        string xml = textWriter.ToString();
+        Assert.Multiple(() =>
+        {
+            Assert.That(tallyAmount.IsDebit, Is.EqualTo(false));
+            Assert.That(xml, Is.EqualTo("<AMOUNT>-5000</AMOUNT>"));
+        });
+    }
     [Test]
     public void CheckTallyAmountConverterforNoAmount()
     {
@@ -147,7 +174,7 @@ public class TallyAmountTests
     [Test]
     public void CheckConstructorwithForeignCurrency()
     {
-        TallyAmount tallyAmount = new(500, 50, "$", false, 500 * 50);
+        TallyAmount tallyAmount = new(500, 50, "$", 500 * 50);
         TextWriter textWriter = new StringWriter();
         var writer = XmlWriter.Create(textWriter, settings);
         xmlSerializer.Serialize(writer, tallyAmount);
@@ -162,7 +189,7 @@ public class TallyAmountTests
     [Test]
     public void CheckConstructorwithDebitForeignCurrency()
     {
-        TallyAmount tallyAmount = new(-500, 50, "$", true, -500 * 50);
+        TallyAmount tallyAmount = new(-500, 50, "$", -500 * 50);
         TextWriter textWriter = new StringWriter();
         var writer = XmlWriter.Create(textWriter, settings);
         xmlSerializer.Serialize(writer, tallyAmount);
@@ -191,7 +218,7 @@ public class TallyAmountTests
         Assert.Multiple(() =>
         {
             Assert.That(TLedger.Name, Is.EqualTo(ledgerName));
-            Assert.That(TLedger.OpeningBal.Amount, Is.EqualTo(0));
+            Assert.That(TLedger.OpeningBal?.Amount, Is.EqualTo(null));
         });
         var delResp = await tally.PostLedgerAsync(new Ledger() { Action = TCM.Action.Delete, OldName = "TesttoTallyAmount" });
 

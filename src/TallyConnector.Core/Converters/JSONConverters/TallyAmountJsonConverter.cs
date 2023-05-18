@@ -27,7 +27,7 @@ public class TallyAmountJsonConverter : JsonConverter<TallyAmount>
         {
             if (reader.TokenType == JsonTokenType.EndObject)
             {
-                return new TallyAmount(ForexAmount, RateOfExchange, Currency, Isdebit, amount: (decimal)Amount);
+                return new TallyAmount(ForexAmount, RateOfExchange, Currency, amount: (decimal)Amount, Isdebit);
             }
             if (reader.TokenType == JsonTokenType.PropertyName)
             {
