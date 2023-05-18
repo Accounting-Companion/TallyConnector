@@ -534,6 +534,12 @@ public class Field : DCollection
 
     [XmlElement(ElementName = "OPTION")]
     public List<string>? Option { get; set; }
+
+    [XmlElement(ElementName = "TYPE")]
+    public string Type { get; set; }
+
+    [XmlElement(ElementName = "USE")]
+    public string Use { get; set; }
 }
 
 
