@@ -27,13 +27,23 @@ public class Tests
         value.Header = new() { Id = "dzfd", Type = "Collection" };
         value.Body = new() { Description = new() { TDL = new() { Reports = new() { new() { Name = "cvgbh" }, new() { Name = "asdfr" } } ,Fields=new() { new() { Name="sdfg"} } } } };
         string v = await tc.GetRequestEnvelopeXMLAsync(value);
-
+       
     }
     [Test]
-    public async Task Test2()
+    public void Test2()
     {
         RequestEnvelope value = new();
         value.Header = new() { Id = "dzfd", Type = "Collection" };
+        value.Body = new() { Description = new() { TDL = new() { Reports = new() { new() { Name = "cvgbh" }, new() { Name = "asdfr" } } ,Fields=new() { new() { Name="sdfg"} } } } };
+      string v =  tc.GetRequestEnvelopeXML(value);
+       
+    }
+    [Test]
+    public async Task Test3()
+    {
+        RequestEnvelope value = new();
+        value.Header = new() { Id = "dzfd", Type = "Collection" };
+        value.Body = new() { Description = new() { TDL = new() { Reports = new() { new() { Name = "cvgbh" }, new() { Name = "asdfr" } }, Fields = new() { new() { Name = "sdfg" } } } } };
         using StringWriter stringWriter = new StringWriter();
         xmlSerializer.Serialize(stringWriter, value);
         var k = stringWriter.ToString();

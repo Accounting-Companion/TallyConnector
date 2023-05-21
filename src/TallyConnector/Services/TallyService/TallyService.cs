@@ -1,4 +1,6 @@
-﻿namespace TallyConnector.Services;
+﻿using System.IO;
+
+namespace TallyConnector.Services;
 [GenerateHelperMethod<Group, Group, GroupCreate>]
 [GenerateHelperMethod<GroupCreate, BaseTallyGroup, GroupCreate>]
 
@@ -16,11 +18,13 @@ public partial class TallyService
         //    await writer.WriteStartElementAsync(null, "test", null);
         //    await writer.WriteEndElementAsync();
         //}
-        await writer.WriteStartElementAsync(null, "test", null);
+        await writer.WriteStartElementAsync("dsfdgfg", "test", null);
         await writer.WriteStringAsync("test");
-        writer.WriteStartAttribute( "test");
+        writer.WriteElementStringAsync("dsfdgfg", "test", null,"");
+        writer.WriteAttributeString("", "", "");
         writer.WriteEndAttribute();
-        //writer.writestr()
+        //bool c = false;
+        //c?.ToString();
         await writer.WriteEndElementAsync();
         await writer.WriteEndDocumentAsync();
         await writer.FlushAsync();

@@ -120,73 +120,31 @@ public class GenerateXMLMethodsGenerator
 
     private List<MethodDeclarationSyntax> GetMemberDeclarationSyntax(XMLMethodGenerateArgs generateArg)
     {
-        string MethodName = $"Get{generateArg.Name.Substring(0, 1).ToUpper()}{generateArg.Name.Substring(1, generateArg.Name.Length - 1)}XMLAsync";
+        string name = $"{generateArg.Name.Substring(0, 1).ToUpper()}{generateArg.Name.Substring(1, generateArg.Name.Length - 1)}";
+        string AsyncMethodName = $"Get{name}XMLAsync";
+        string MethodName = $"Get{name}XML";
 
         List<MethodDeclarationSyntax> methodDeclarationSyntaxes = new();
+        IEnumerable<StatementSyntax> collectionAsync = CreateExpressionForItem(generateArg, true);
         IEnumerable<StatementSyntax> collection = CreateExpressionForItem(generateArg);
 
-        List<StatementSyntax> statements = new();
-        statements.AddRange(new StatementSyntax[]
+        List<StatementSyntax> asyncStatements = new();
+        List<StatementSyntax> Statements = new();
+
+        asyncStatements.AddRange(new StatementSyntax[]
         {
             LocalDeclarationStatement(VariableDeclaration(IdentifierName("global::System.IO.StringWriter"))
-                      .WithVariables(SingletonSeparatedList<VariableDeclaratorSyntax>(VariableDeclarator(Identifier("stringWriter"))
+                      .WithVariables(SingletonSeparatedList(VariableDeclarator(Identifier("stringWriter"))
                       .WithInitializer(EqualsValueClause(ImplicitObjectCreationExpression()
 
                   )))))
                   .WithUsingKeyword(Token(SyntaxKind.UsingKeyword)),
-
-                  LocalDeclarationStatement(
-                                  VariableDeclaration(
-                                      IdentifierName("global::System.Xml.XmlWriterSettings"))
-                                  .WithVariables(
-                                      SingletonSeparatedList<VariableDeclaratorSyntax>(
-                                          VariableDeclarator(
-                                              Identifier("settings"))
-                                          .WithInitializer(
-                                              EqualsValueClause(
-                                                  ImplicitObjectCreationExpression()
-                                                  .WithInitializer(
-                                                      InitializerExpression(
-                                                          SyntaxKind.ObjectInitializerExpression,
-                                                          SeparatedList<ExpressionSyntax>(
-                                                              new SyntaxNodeOrToken[]{
-                                                                AssignmentExpression(
-                                                                    SyntaxKind.SimpleAssignmentExpression,
-                                                                    IdentifierName("Indent"),
-                                                                    LiteralExpression(
-                                                                        SyntaxKind.TrueLiteralExpression)),
-                                                                Token(SyntaxKind.CommaToken),
-                                                                AssignmentExpression(
-                                                                    SyntaxKind.SimpleAssignmentExpression,
-                                                                    IdentifierName("Async"),
-                                                                    LiteralExpression(
-                                                                        SyntaxKind.TrueLiteralExpression)),
-                                                                Token(SyntaxKind.CommaToken),
-                                                                AssignmentExpression(
-                                                                    SyntaxKind.SimpleAssignmentExpression,
-                                                                    IdentifierName("OmitXmlDeclaration"),
-                                                                    LiteralExpression(
-                                                                        SyntaxKind.TrueLiteralExpression)),
-                                                                Token(SyntaxKind.CommaToken),
-                                                                AssignmentExpression(
-                                                                    SyntaxKind.SimpleAssignmentExpression,
-                                                                    IdentifierName("Encoding"),
-                                                                    MemberAccessExpression(
-                                                                        SyntaxKind.SimpleMemberAccessExpression,
-                                                                        IdentifierName("Encoding"),
-                                                                        IdentifierName("Unicode"))),
-                                                                Token(SyntaxKind.CommaToken),
-                                                                AssignmentExpression(
-                                                                    SyntaxKind.SimpleAssignmentExpression,
-                                                                    IdentifierName("CheckCharacters"),
-                                                                    LiteralExpression(
-                                                                        SyntaxKind.FalseLiteralExpression))})))))))),
-
+                  GetXmlSettingsDeclaration(true),
                   LocalDeclarationStatement(
                       VariableDeclaration(
                                       IdentifierName("global::System.Xml.XmlWriter"))
                                   .WithVariables(
-                                      SingletonSeparatedList<VariableDeclaratorSyntax>(
+                                      SingletonSeparatedList(
                                           VariableDeclarator(
                                               Identifier("writer"))
                                           .WithInitializer(
@@ -209,17 +167,72 @@ public class GenerateXMLMethodsGenerator
                                   Token(SyntaxKind.UsingKeyword)),
                               ExpressionStatement(
                                   AwaitExpression(
+                                      AddConfigureAwait(
+                                             InvocationExpression( MemberAccessExpression(
+                                              SyntaxKind.SimpleMemberAccessExpression,
+                                              IdentifierName("writer"),
+                                              IdentifierName("WriteStartDocumentAsync"))))
+                                      ))
+        });
+        Statements.AddRange(new StatementSyntax[]
+        {
+            LocalDeclarationStatement(VariableDeclaration(IdentifierName("global::System.IO.StringWriter"))
+                      .WithVariables(SingletonSeparatedList(VariableDeclarator(Identifier("stringWriter"))
+                      .WithInitializer(EqualsValueClause(ImplicitObjectCreationExpression()
+
+                  )))))
+                  .WithUsingKeyword(Token(SyntaxKind.UsingKeyword)),
+                  GetXmlSettingsDeclaration(),
+                  LocalDeclarationStatement(
+                      VariableDeclaration(
+                                      IdentifierName("global::System.Xml.XmlWriter"))
+                                  .WithVariables(
+                                      SingletonSeparatedList(
+                                          VariableDeclarator(
+                                              Identifier("writer"))
+                                          .WithInitializer(
+                                              EqualsValueClause(
+                                                  InvocationExpression(
+                                                      MemberAccessExpression(
+                                                          SyntaxKind.SimpleMemberAccessExpression,
+                                                          IdentifierName("XmlWriter"),
+                                                          IdentifierName("Create")))
+                                                  .WithArgumentList(
+                                                      ArgumentList(
+                                                          SeparatedList<ArgumentSyntax>(
+                                                              new SyntaxNodeOrToken[]{
+                                                                Argument(
+                                                                    IdentifierName("stringWriter")),
+                                                                Token(SyntaxKind.CommaToken),
+                                                                Argument(
+                                                                    IdentifierName("settings"))}))))))))
+                              .WithUsingKeyword(
+                                  Token(SyntaxKind.UsingKeyword)),
+                              ExpressionStatement(
                                       InvocationExpression(
                                           MemberAccessExpression(
                                               SyntaxKind.SimpleMemberAccessExpression,
                                               IdentifierName("writer"),
-                                              IdentifierName("WriteStartDocumentAsync")))))
+                                              IdentifierName("WriteStartDocument"))))
         });
 
-        statements.Add(CreateStartElement(generateArg.XmlTag));
-
-        statements.Add(ExpressionStatement(
+        asyncStatements.Add(CreateStartElement(generateArg.XmlTag, true));
+        Statements.Add(CreateStartElement(generateArg.XmlTag));
+        asyncStatements.Add(ExpressionStatement(
                                 AwaitExpression(
+                                     AddConfigureAwait(
+                                    InvocationExpression(
+                                        IdentifierName(AsyncMethodName))
+                                    .WithArgumentList(
+                                        ArgumentList(
+                                            SeparatedList<ArgumentSyntax>(
+                                                new SyntaxNodeOrToken[]{
+                                                    Argument(
+                                                        IdentifierName("writer")),
+                                                    Token(SyntaxKind.CommaToken),
+                                                    Argument(
+                                                        IdentifierName("value"))})))))));
+        Statements.Add(ExpressionStatement(
                                     InvocationExpression(
                                         IdentifierName(MethodName))
                                     .WithArgumentList(
@@ -230,24 +243,47 @@ public class GenerateXMLMethodsGenerator
                                                         IdentifierName("writer")),
                                                     Token(SyntaxKind.CommaToken),
                                                     Argument(
-                                                        IdentifierName("value"))}))))));
-        statements.Add(CreateEndElement());
-        statements.AddRange(new StatementSyntax[]
+                                                        IdentifierName("value"))})))));
+
+        asyncStatements.Add(CreateEndElement(true));
+        Statements.Add(CreateEndElement());
+        asyncStatements.AddRange(new StatementSyntax[]
         {
             ExpressionStatement(
                                   AwaitExpression(
-                                      InvocationExpression(
+                                     AddConfigureAwait( InvocationExpression(
                                           MemberAccessExpression(
                                               SyntaxKind.SimpleMemberAccessExpression,
                                               IdentifierName("writer"),
-                                              IdentifierName("WriteEndDocumentAsync"))))),
+                                              IdentifierName("WriteEndDocumentAsync")))))),
                               ExpressionStatement(
                                   AwaitExpression(
+                                    AddConfigureAwait(  InvocationExpression(
+                                          MemberAccessExpression(
+                                              SyntaxKind.SimpleMemberAccessExpression,
+                                              IdentifierName("writer"),
+                                              IdentifierName("FlushAsync")))))),
+                              ReturnStatement(
+                                  InvocationExpression(
+                                      MemberAccessExpression(
+                                          SyntaxKind.SimpleMemberAccessExpression,
+                                          IdentifierName("stringWriter"),
+                                          IdentifierName("ToString"))))
+        });
+        Statements.AddRange(new StatementSyntax[]
+        {
+            ExpressionStatement(
                                       InvocationExpression(
                                           MemberAccessExpression(
                                               SyntaxKind.SimpleMemberAccessExpression,
                                               IdentifierName("writer"),
-                                              IdentifierName("FlushAsync"))))),
+                                              IdentifierName("WriteEndDocument")))),
+                              ExpressionStatement(
+                                      InvocationExpression(
+                                          MemberAccessExpression(
+                                              SyntaxKind.SimpleMemberAccessExpression,
+                                              IdentifierName("writer"),
+                                              IdentifierName("Flush")))),
                               ReturnStatement(
                                   InvocationExpression(
                                       MemberAccessExpression(
@@ -256,9 +292,9 @@ public class GenerateXMLMethodsGenerator
                                           IdentifierName("ToString"))))
         });
 
-        MethodDeclarationSyntax FullSerializeMethod = MethodDeclaration(GenericName("global::System.Threading.Tasks.Task")
+        MethodDeclarationSyntax FullSerializeMethodAsync = MethodDeclaration(GenericName("global::System.Threading.Tasks.Task")
                               .WithTypeArgumentList(TypeArgumentList(SingletonSeparatedList((TypeSyntax)PredefinedType(Token(SyntaxKind.StringKeyword))))),
-                            Identifier(MethodName))
+                            Identifier(AsyncMethodName))
               .WithModifiers(TokenList(
                   new[]
                   {
@@ -271,12 +307,27 @@ public class GenerateXMLMethodsGenerator
               })))
               .WithBody(
 
-            Block(statements));
+            Block(asyncStatements));
 
-        List<StatementSyntax> ChildSerializeStatements = new(collection);
-
-        MethodDeclarationSyntax ChildSerializeMethod = MethodDeclaration(IdentifierName("global::System.Threading.Tasks.Task"),
+        MethodDeclarationSyntax FullSerializeMethod = MethodDeclaration((TypeSyntax)PredefinedType(Token(SyntaxKind.StringKeyword)),
                             Identifier(MethodName))
+              .WithModifiers(TokenList(
+                  new[]
+                  {
+                    Token(SyntaxKind.PublicKeyword)
+                  }))
+              .WithParameterList(ParameterList(SeparatedList<ParameterSyntax>(new SyntaxNodeOrToken[]
+              {
+                Parameter(Identifier("value")).WithType(IdentifierName($"global::{generateArg.FullName}"))
+              })))
+              .WithBody(
+
+            Block(Statements));
+
+
+
+        MethodDeclarationSyntax ChildSerializeMethodAsync = MethodDeclaration(IdentifierName("global::System.Threading.Tasks.Task"),
+                            Identifier(AsyncMethodName))
               .WithModifiers(TokenList(
                   new[]
                   {
@@ -290,11 +341,26 @@ public class GenerateXMLMethodsGenerator
                 Parameter(Identifier("value")).WithType(IdentifierName($"global::{generateArg.FullName}"))
               })))
               .WithBody(
-            Block(ChildSerializeStatements));
+            Block(collectionAsync));
 
+        MethodDeclarationSyntax ChildSerializeMethod = MethodDeclaration(IdentifierName("void"),
+                            Identifier(MethodName))
+              .WithModifiers(TokenList(
+                  new[]
+                  {
+                    Token(SyntaxKind.PublicKeyword),
+                  }))
+              .WithParameterList(ParameterList(SeparatedList<ParameterSyntax>(new SyntaxNodeOrToken[]
+              {
+                Parameter(Identifier("writer")).WithType(IdentifierName($"global::System.Xml.XmlWriter")),
+                 Token(SyntaxKind.CommaToken),
+                Parameter(Identifier("value")).WithType(IdentifierName($"global::{generateArg.FullName}"))
+              })))
+              .WithBody(
+            Block(collection));
 
-        MethodDeclarationSyntax IEnumerableSerializeMethod = MethodDeclaration(IdentifierName("global::System.Threading.Tasks.Task")
-            , Identifier(MethodName))
+        MethodDeclarationSyntax IEnumerableSerializeMethodAsync = MethodDeclaration(IdentifierName("global::System.Threading.Tasks.Task")
+            , Identifier(AsyncMethodName))
              .WithModifiers(TokenList(
                   new[]
                   {
@@ -325,9 +391,55 @@ public class GenerateXMLMethodsGenerator
                                 Identifier("value"),
                                 IdentifierName("values"),
                                 Block(
-                                    CreateStartElement(generateArg.XmlTag),
+                                    CreateStartElement(generateArg.XmlTag, true),
                                     ExpressionStatement(
                                 AwaitExpression(
+                                  AddConfigureAwait(InvocationExpression(
+                                        IdentifierName(AsyncMethodName))
+                                    .WithArgumentList(
+                                        ArgumentList(
+                                            SeparatedList<ArgumentSyntax>(
+                                                new SyntaxNodeOrToken[]{
+                                                    Argument(
+                                                        IdentifierName("writer")),
+                                                    Token(SyntaxKind.CommaToken),
+                                                    Argument(
+                                                        IdentifierName("value"))})))))),
+                                    CreateEndElement(true)))));
+
+        MethodDeclarationSyntax IEnumerableSerializeMethod = MethodDeclaration(IdentifierName("void")
+            , Identifier(MethodName))
+             .WithModifiers(TokenList(
+                  new[]
+                  {
+                    Token(SyntaxKind.PublicKeyword),
+                  }))
+            .WithParameterList(ParameterList(SeparatedList<ParameterSyntax>(new SyntaxNodeOrToken[]
+              {
+                Parameter(Identifier("writer")).WithType(IdentifierName($"global::System.Xml.XmlWriter")),
+                 Token(SyntaxKind.CommaToken),
+                Parameter(Identifier("values")).WithType(IdentifierName($"global::System.Collections.Generic.IEnumerable<{generateArg.FullName}>"))
+              }))).WithBody(
+            Block(IfStatement(
+                                BinaryExpression(
+                                    SyntaxKind.EqualsExpression,
+                                    IdentifierName("values"),
+                                    LiteralExpression(
+                                        SyntaxKind.NullLiteralExpression)),
+                                Block(ReturnStatement())),
+                ForEachStatement(
+                                IdentifierName(
+                                    Identifier(
+                                        TriviaList(),
+                                        SyntaxKind.VarKeyword,
+                                        "var",
+                                        "var",
+                                        TriviaList())),
+                                Identifier("value"),
+                                IdentifierName("values"),
+                                Block(
+                                    CreateStartElement(generateArg.XmlTag),
+                                    ExpressionStatement(
                                     InvocationExpression(
                                         IdentifierName(MethodName))
                                     .WithArgumentList(
@@ -338,16 +450,68 @@ public class GenerateXMLMethodsGenerator
                                                         IdentifierName("writer")),
                                                     Token(SyntaxKind.CommaToken),
                                                     Argument(
-                                                        IdentifierName("value"))}))))),
+                                                        IdentifierName("value"))})))),
                                     CreateEndElement()))));
 
+        methodDeclarationSyntaxes.Add(FullSerializeMethodAsync);
         methodDeclarationSyntaxes.Add(FullSerializeMethod);
+        methodDeclarationSyntaxes.Add(ChildSerializeMethodAsync);
         methodDeclarationSyntaxes.Add(ChildSerializeMethod);
+        methodDeclarationSyntaxes.Add(IEnumerableSerializeMethodAsync);
         methodDeclarationSyntaxes.Add(IEnumerableSerializeMethod);
         return methodDeclarationSyntaxes;
     }
 
-    private IEnumerable<StatementSyntax> CreateExpressionForItem(XMLMethodGenerateArgs generateArg)
+    private static LocalDeclarationStatementSyntax GetXmlSettingsDeclaration(bool isAsync = false)
+    {
+        return LocalDeclarationStatement(
+                                          VariableDeclaration(
+                                              IdentifierName("global::System.Xml.XmlWriterSettings"))
+                                          .WithVariables(
+                                              SingletonSeparatedList<VariableDeclaratorSyntax>(
+                                                  VariableDeclarator(
+                                                      Identifier("settings"))
+                                                  .WithInitializer(
+                                                      EqualsValueClause(
+                                                          ImplicitObjectCreationExpression()
+                                                          .WithInitializer(
+                                                              InitializerExpression(
+                                                                  SyntaxKind.ObjectInitializerExpression,
+                                                                  SeparatedList<ExpressionSyntax>(
+                                                                      new SyntaxNodeOrToken[]{
+                                                                AssignmentExpression(
+                                                                    SyntaxKind.SimpleAssignmentExpression,
+                                                                    IdentifierName("Indent"),
+                                                                    LiteralExpression(
+                                                                        SyntaxKind.TrueLiteralExpression)),
+                                                                Token(SyntaxKind.CommaToken),
+                                                                AssignmentExpression(
+                                                                    SyntaxKind.SimpleAssignmentExpression,
+                                                                    IdentifierName("Async"),
+                                                                    LiteralExpression(
+                                                                        isAsync ? SyntaxKind.TrueLiteralExpression : SyntaxKind.FalseLiteralExpression)),
+                                                                Token(SyntaxKind.CommaToken),
+                                                                AssignmentExpression(
+                                                                    SyntaxKind.SimpleAssignmentExpression,
+                                                                    IdentifierName("OmitXmlDeclaration"),
+                                                                    LiteralExpression(SyntaxKind.TrueLiteralExpression)),
+                                                                Token(SyntaxKind.CommaToken),
+                                                                AssignmentExpression(
+                                                                    SyntaxKind.SimpleAssignmentExpression,
+                                                                    IdentifierName("Encoding"),
+                                                                    MemberAccessExpression(
+                                                                        SyntaxKind.SimpleMemberAccessExpression,
+                                                                        IdentifierName("Encoding"),
+                                                                        IdentifierName("Unicode"))),
+                                                                Token(SyntaxKind.CommaToken),
+                                                                AssignmentExpression(
+                                                                    SyntaxKind.SimpleAssignmentExpression,
+                                                                    IdentifierName("CheckCharacters"),
+                                                                    LiteralExpression(
+                                                                        SyntaxKind.FalseLiteralExpression))}))))))));
+    }
+
+    private IEnumerable<StatementSyntax> CreateExpressionForItem(XMLMethodGenerateArgs generateArg, bool isAsync = false)
     {
         List<StatementSyntax> expressionStatements = new();
         expressionStatements.Add(IfStatement(
@@ -361,29 +525,24 @@ public class GenerateXMLMethodsGenerator
         {
             if (!xmlField.IsMethod)
             {
+                expressionStatements.Add(CreateElement(xmlField, isAsync));
 
-                expressionStatements.Add(CreateStartElement(xmlField.XmlTag, !xmlField.IsAttribute, xmlField.IsAttribute));
-                expressionStatements.Add(CreateValueElement(xmlField.Name));
-                expressionStatements.Add(CreateEndElement(!xmlField.IsAttribute, xmlField.IsAttribute));
             }
             else
             {
                 string name = xmlField.TypeName;
-                string MethodName = $"Get{name.Substring(0, 1).ToUpper()}{name.Substring(1, name.Length - 1)}XMLAsync";
+                string MethodName = $"Get{name.Substring(0, 1).ToUpper()}{name.Substring(1, name.Length - 1)}XML{(isAsync ? "Async" : "")}";
                 if (!xmlField.IsList)
                 {
-                    expressionStatements.Add(CreateStartElement(xmlField.XmlTag, !xmlField.IsAttribute, xmlField.IsAttribute));
+                    expressionStatements.Add(CreateStartElement(xmlField.XmlTag, isAsync && !xmlField.IsAttribute, xmlField.IsAttribute));
                 }
 
-
-                expressionStatements.Add(ExpressionStatement(
-                                AwaitExpression(
-                                    InvocationExpression(
-                                        IdentifierName(MethodName))
-                                    .WithArgumentList(
-                                        ArgumentList(
-                                            SeparatedList<ArgumentSyntax>(
-                                                new SyntaxNodeOrToken[]{
+                InvocationExpressionSyntax methodExpression = InvocationExpression(
+                                                        IdentifierName(MethodName))
+                                                    .WithArgumentList(
+                                                        ArgumentList(
+                                                            SeparatedList<ArgumentSyntax>(
+                                                                new SyntaxNodeOrToken[]{
                                                     Argument(
                                                         IdentifierName("writer")),
                                                     Token(SyntaxKind.CommaToken),
@@ -391,14 +550,58 @@ public class GenerateXMLMethodsGenerator
                                                         MemberAccessExpression(
                                                             SyntaxKind.SimpleMemberAccessExpression,
                                                             IdentifierName("value"),
-                                                            IdentifierName(xmlField.Name)))}))))));
+                                                            IdentifierName(xmlField.Name)))})));
+                expressionStatements.Add(ExpressionStatement(
+                                isAsync ? AwaitExpression(
+                                    AddConfigureAwait(methodExpression)) : methodExpression));
                 if (!xmlField.IsList)
                 {
-                    expressionStatements.Add(CreateEndElement(!xmlField.IsAttribute, xmlField.IsAttribute));
+                    expressionStatements.Add(CreateEndElement(isAsync && !xmlField.IsAttribute, xmlField.IsAttribute));
                 }
             }
         }
         return expressionStatements;
+    }
+
+    private StatementSyntax CreateElement(XmlField xmlField, bool isAsync = false)
+    {
+        string Name = xmlField.IsAttribute ? $"WriteAttributeString{(isAsync ? "Async" : "")}" : $"WriteElementString{(isAsync ? "Async" : "")}";
+        MemberAccessExpressionSyntax memberExpression = MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression,
+                                                        IdentifierName("value"), IdentifierName(xmlField.Name));
+        InvocationExpressionSyntax expression = InvocationExpression(
+                                                    MemberAccessExpression(
+                                                        SyntaxKind.SimpleMemberAccessExpression,
+                                                        IdentifierName("writer"),
+                                                        IdentifierName(Name)))
+                                                .WithArgumentList(
+                                                    ArgumentList(
+                                                        SeparatedList<ArgumentSyntax>(
+                                                            new SyntaxNodeOrToken[]{
+                                                Argument(
+                                                    LiteralExpression(
+                                                        SyntaxKind.NullLiteralExpression)),
+                                                Token(SyntaxKind.CommaToken),
+                                                Argument(
+                                                    LiteralExpression(
+                                                        SyntaxKind.StringLiteralExpression,
+                                                        Literal(xmlField.XmlTag))),
+                                                Token(SyntaxKind.CommaToken),
+                                                Argument(
+                                                    LiteralExpression(
+                                                        SyntaxKind.NullLiteralExpression)),
+                                                Token(SyntaxKind.CommaToken),
+                                                Argument(
+                                               MemberAccessExpression( SyntaxKind.SimpleMemberAccessExpression,
+                                               memberExpression,IdentifierName("ToString()")))
+                                                            })));
+        IfStatementSyntax ifStatementSyntax = IfStatement(BinaryExpression(
+                                    SyntaxKind.NotEqualsExpression,
+                                    memberExpression,
+                                    LiteralExpression(
+                                        SyntaxKind.NullLiteralExpression)),
+                                       Block(isAsync ? ExpressionStatement(AwaitExpression(expression)) : ExpressionStatement(expression)));
+        return ifStatementSyntax;
+        //return isAsync ? ExpressionStatement(AwaitExpression(expression)) : ExpressionStatement(expression);
     }
 
     private StatementSyntax CreateValueElement(string name, bool isAsync = false, bool isAttribute = false)
@@ -444,7 +647,15 @@ public class GenerateXMLMethodsGenerator
                                                 Argument(
                                                     LiteralExpression(
                                                         SyntaxKind.NullLiteralExpression))})));
-        return isAsync ? ExpressionStatement(AwaitExpression(expression)) : ExpressionStatement(expression);
+
+        return isAsync ? ExpressionStatement(AwaitExpression(AddConfigureAwait(expression))) : ExpressionStatement(expression);
+    }
+
+    private static InvocationExpressionSyntax AddConfigureAwait(InvocationExpressionSyntax expression)
+    {
+        return InvocationExpression(MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression, expression, IdentifierName("ConfigureAwait")))
+                        .WithArgumentList(ArgumentList(
+                            SingletonSeparatedList<ArgumentSyntax>(Argument(LiteralExpression(SyntaxKind.FalseLiteralExpression)))));
     }
 
     public static ExpressionStatementSyntax CreateEndElement(bool isAsync = false, bool isAttribute = false)
@@ -455,9 +666,7 @@ public class GenerateXMLMethodsGenerator
                                                         SyntaxKind.SimpleMemberAccessExpression,
                                                         IdentifierName("writer"),
                                                         IdentifierName(Name)));
-        return isAsync ? ExpressionStatement(
-                                    AwaitExpression(
-                                        expression)) : ExpressionStatement(expression);
+        return isAsync ? ExpressionStatement(AwaitExpression(AddConfigureAwait(expression))) : ExpressionStatement(expression);
     }
 }
 
