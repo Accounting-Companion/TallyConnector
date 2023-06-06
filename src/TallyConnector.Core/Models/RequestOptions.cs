@@ -20,6 +20,8 @@ public class CountRequestOptions : DateFilterRequestOptions
     public List<Filter>? Filters { get; set; }
     public YesNo IsInitialize { get; set; } = YesNo.No;
 
+    public string ChildOf { get; set; }
+
     public string CollectionType { get; set; }
 }
 public class RequestOptions : DateFilterRequestOptions

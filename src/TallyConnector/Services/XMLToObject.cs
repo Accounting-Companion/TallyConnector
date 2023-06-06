@@ -123,7 +123,7 @@ public static class XMLToObject
 
     public static XmlSerializer GetSerializer(Type type, XmlAttributeOverrides attrOverrides)
     {
-        var hash = type.Name + type.GetGenericArguments()[0].Name;
+        var hash = type.Name + type.GetGenericArguments()[0].FullName;
         _ = _cache.TryGetValue(hash, out XmlSerializer? Serializer);
         if (Serializer == null)
         {

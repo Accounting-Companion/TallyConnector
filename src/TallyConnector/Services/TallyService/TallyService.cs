@@ -13,7 +13,7 @@ namespace TallyConnector.Services;
 [GenerateHelperMethods<Group>()]
 [GenerateHelperMethods<Ledger>()]
 [GenerateHelperMethods<CostCategory>(PluralName = "CostCategories")]
-[GenerateHelperMethods<CostCenter>()]
+[GenerateHelperMethods<CostCentre>(MethodName = "CostCenter")]
 [GenerateHelperMethods<VoucherType>(TypeName = "VchType")]
 [GenerateHelperMethods<Voucher>()]
 
@@ -57,7 +57,7 @@ public partial class TallyService : ITallyService
     /// <param name="timeoutMinutes">Request timeout in Minutes</param>
     public TallyService(string baseURL,
                         int port,
-                        int timeoutMinutes = 3)
+                        double timeoutMinutes = 3)
     {
         _httpClient = new();
         //Check if schema exists in URL, if not exists add http://
@@ -78,7 +78,7 @@ public partial class TallyService : ITallyService
     /// <param name="timeoutMinutes">Request timeout in Minutes</param>
     public TallyService(HttpClient httpClient,
                         ILogger<TallyService>? logger = null,
-                        int timeoutMinutes = 3)
+                        double timeoutMinutes = 3)
     {
         _httpClient = httpClient;
         _httpClient.Timeout = TimeSpan.FromMinutes(timeoutMinutes);
@@ -191,7 +191,7 @@ public partial class TallyService : ITallyService
         }
         List<Filter> filters = new() { new Filter() { FilterName = "Objfilter", FilterFormulae = filterformulae } };
 
-        PaginatedRequestOptions collectionRequestOptions = new() { FetchList = requestOptions.FetchList, Filters = filters };
+        PaginatedRequestOptions collectionRequestOptions = new() { FetchList = requestOptions.FetchList, Filters = filters, XMLAttributeOverrides = requestOptions.XMLAttributeOverrides };
 
         List<ObjType>? objects = (await GetObjectsAsync<ObjType>(collectionRequestOptions, token))?.Data;
         if (objects != null && objects.Count > 0)
@@ -256,9 +256,10 @@ public partial class TallyService : ITallyService
         string? RootElemet = AttributeHelper.GetXmlRootElement(typeof(ObjType), _logger);
         Logger?.BuildingOptions(typeof(CollectionRequestOptions));
 
+        string name = typeof(ObjType).Name;
         CollectionRequestOptions collectionOptions = new()
         {
-            CollectionType = RootElemet ?? typeof(ObjType).Name,
+            CollectionType = RootElemet ?? name,
             Company = objectOptions?.Company,
             FromDate = objectOptions?.FromDate,
             ToDate = objectOptions?.ToDate,
@@ -274,7 +275,7 @@ public partial class TallyService : ITallyService
             IsInitialize = objectOptions?.IsInitialize ?? YesNo.No,
         };
         var mapping = Mappings.TallyObjectMappings
-                .FirstOrDefault(map => map.TallyMasterType.Equals(collectionOptions.CollectionType, StringComparison.OrdinalIgnoreCase));
+                .FirstOrDefault(map => map.MasterType.ToString().Equals(name + "s", StringComparison.OrdinalIgnoreCase));
         collectionOptions.Compute ??= new();
         collectionOptions.Filters ??= new();
         collectionOptions.Objects ??= new();
@@ -313,7 +314,7 @@ public partial class TallyService : ITallyService
         //    collectionOptions.Pagination.GoToPage(objectOptions.PageNum);
         //}
         collectionOptions.RecordsPerPage ??= mapping?.DefaultPaginateCount;
-        var paginatedData = await GetCustomCollectionAsync<ObjType>(collectionOptions, string.Empty, token);
+        var paginatedData = await GetCustomCollectionAsync<ObjType>(collectionOptions,$"Getting {mapping?.MasterType} from Tally" , token);
         paginatedData?.Data?.ForEach(obj =>
         {
             obj.RemoveNullChilds();
@@ -421,6 +422,7 @@ public partial class TallyService : ITallyService
         requestEnvelope.Body.Desc.FunctionParams = new() { Param = new() { CollectionName } };
         requestEnvelope.Body.Desc.TDL.TDLMessage.Collection.Add(new(CollectionName,
                                                                     options.CollectionType,
+                                                                    options.ChildOf,
                                                                     filters: options.Filters?.Where(f => !f.ExcludeinCollection).Select(c => c.FilterName).ToList()!));
 
 
@@ -461,7 +463,11 @@ public partial class TallyService : ITallyService
                 {
                     CollectionType = collectionOptions.CollectionType,
                     Filters = collectionOptions.Filters,
-                });
+                    FromDate = collectionOptions.FromDate,
+                    ToDate = collectionOptions.ToDate,
+                    Company = collectionOptions.Company,
+
+                }, token: token);
                 return new PaginatedResponse<ObjType>(v ?? 0,
                                                       collectionOptions.RecordsPerPage ?? 1000,
                                                       Envelope?.Body.Data.Collection?.Objects,

@@ -69,6 +69,7 @@ public class TallyAmount : IXmlSerializable
     public string? Currency { get; private set; }
 
     public bool IsDebit { get; private set; }
+
     public bool PreserveAmount { get; private set; }
 
     public XmlSchema? GetSchema()

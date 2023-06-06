@@ -57,10 +57,11 @@ public partial class TallyService
     {
         _logger?.LogInformation("Getting Last AlterIds from Tally");
         string reportName = "AlterIdsReport";
+        DateTime now = DateTime.Now;
         RequestEnvelope requestEnvelope = new(HType.Data, reportName, new()
         {
             SVFromDate = Company?.StartingFrom,
-            SVToDate = Company?.StartingFrom is null ? null : DateTime.Now,
+            SVToDate = new DateTime(now.Month > 3 ? now.Year + 1 : now.Year, 3, 31),
             SVCompany = Company?.Name,
         });
         TDLMessage tdlMessage = new()

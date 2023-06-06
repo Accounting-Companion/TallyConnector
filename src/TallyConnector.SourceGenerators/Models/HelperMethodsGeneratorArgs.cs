@@ -6,7 +6,8 @@ public class HelperMethodArgs
                             string objectNamespace,
                             string objectName,
                             string pluralName,
-                            string genericTypeName)
+                            string genericTypeName,
+                            string methodName)
     {
         NameSpace = nameSpace;
         ClassName = className;
@@ -14,6 +15,7 @@ public class HelperMethodArgs
         ObjectName = objectName;
         PluralName = pluralName;
         GenericTypeName = genericTypeName;
+        MethodName = methodName;
     }
 
     public string NameSpace { get; }
@@ -22,4 +24,5 @@ public class HelperMethodArgs
     public string ObjectName { get; }
     public string PluralName { get; }
     public string GenericTypeName { get; }
+    public string MethodName { get; }
 }

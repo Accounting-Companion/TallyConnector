@@ -3,9 +3,9 @@
 
 [XmlRoot(ElementName = "COSTCENTRE")]
 [XmlType(AnonymousType = true)]
-public class CostCenter : BasicTallyObject, IAliasTallyObject
+public class CostCentre : BasicTallyObject, IAliasTallyObject
 {
-    public CostCenter()
+    public CostCentre()
     {
         LanguageNameList = new();
         CategoryId = string.Empty;

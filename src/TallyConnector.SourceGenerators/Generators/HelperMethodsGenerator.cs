@@ -7,9 +7,9 @@ public static class HelperMethodsGenerator
     {
         var objectNamespace = helperMethodArgs.ObjectNameSpace;
         var objectName = helperMethodArgs.ObjectName;
-        string BulkGetMethodName = $"Get{helperMethodArgs.PluralName ?? (objectName + "s")}Async";
-        string GetMethodName = $"Get{objectName}Async";
-        string PostMethodName = $"Post{objectName}Async";
+        string BulkGetMethodName = $"Get{helperMethodArgs.PluralName ?? ((helperMethodArgs.MethodName ?? objectName) + "s")}Async";
+        string GetMethodName = $"Get{helperMethodArgs.MethodName ?? objectName}Async";
+        string PostMethodName = $"Post{helperMethodArgs.MethodName ?? objectName}Async";
         string TypeName = $"{helperMethodArgs.GenericTypeName ?? objectName}Type";
 
         CompilationUnitSyntax compilationUnitSyntax = CompilationUnit()

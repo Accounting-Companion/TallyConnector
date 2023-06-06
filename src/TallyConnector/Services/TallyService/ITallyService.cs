@@ -99,7 +99,7 @@ public interface ITallyService
     Task<VChTypeType> GetVoucherTypeAsync<VChTypeType>(string LookupValue, MasterRequestOptions? voucherTypeOptions = null, CancellationToken token = default) where VChTypeType : VoucherType;
 
     Task<CostCategoryType> GetCostCategoryAsync<CostCategoryType>(string LookupValue, MasterRequestOptions? costCategoryOptions = null, CancellationToken token = default) where CostCategoryType : CostCategory;
-    Task<CostCentreType> GetCostCenterAsync<CostCentreType>(string LookupValue, MasterRequestOptions? costCenterOptions = null, CancellationToken token = default) where CostCentreType : CostCenter;
+    Task<CostCentreType> GetCostCenterAsync<CostCentreType>(string LookupValue, MasterRequestOptions? costCenterOptions = null, CancellationToken token = default) where CostCentreType : CostCentre;
     #endregion
 
     /*
@@ -144,10 +144,10 @@ public interface ITallyService
     Task<PaginatedResponse<CostCategory>?> GetCostCategoriesAsync(PaginatedRequestOptions ReqOptions, CancellationToken token = default);
 
     /// <inheritdoc cref="GetCostCentersAsync(RequestOptions,CancellationToken)" />
-    Task<PaginatedResponse<CostCentreType>?> GetCostCentersAsync<CostCentreType>(PaginatedRequestOptions ReqOptions, CancellationToken token = default) where CostCentreType : CostCenter;
+    Task<PaginatedResponse<CostCentreType>?> GetCostCentersAsync<CostCentreType>(PaginatedRequestOptions ReqOptions, CancellationToken token = default) where CostCentreType : CostCentre;
 
     /// <inheritdoc cref="GetCostCentersAsync(RequestOptions,CancellationToken)" />
-    Task<PaginatedResponse<CostCenter>?> GetCostCentersAsync(PaginatedRequestOptions ReqOptions, CancellationToken token = default);
+    Task<PaginatedResponse<CostCentre>?> GetCostCentersAsync(PaginatedRequestOptions ReqOptions, CancellationToken token = default);
 
     #endregion
 
@@ -212,14 +212,14 @@ public interface ITallyService
     Task<List<CostCategory>?> GetCostCategoriesAsync(RequestOptions? ReqOptions = null, CancellationToken token = default);
 
     /// <inheritdoc cref="GetCostCentersAsync(RequestOptions,CancellationToken)" />
-    Task<List<CostCentreType>?> GetCostCentersAsync<CostCentreType>(RequestOptions? ReqOptions = null, CancellationToken token = default) where CostCentreType : CostCenter;
+    Task<List<CostCentreType>?> GetCostCentersAsync<CostCentreType>(RequestOptions? ReqOptions = null, CancellationToken token = default) where CostCentreType : CostCentre;
     /// <summary>
     /// Gets all CostCentres
     /// </summary>
     /// <param name="ReqOptions">options to configure this request</param>
     /// <param name="token"></param>
     /// <returns></returns>
-    Task<List<CostCenter>?> GetCostCentersAsync(RequestOptions? ReqOptions = null, CancellationToken token = default);
+    Task<List<CostCentre>?> GetCostCentersAsync(RequestOptions? ReqOptions = null, CancellationToken token = default);
 
 
     #endregion
@@ -233,7 +233,7 @@ public interface ITallyService
     Task<TallyResult> PostVoucherTypeAsync<VChTypeType>(VChTypeType voucherType, PostRequestOptions? postRequestOptions = null, CancellationToken token = default) where VChTypeType : VoucherType;
 
     Task<TallyResult> PostCostCategoryAsync<CostCategoryType>(CostCategoryType costCategory, PostRequestOptions? postRequestOptions = null, CancellationToken token = default) where CostCategoryType : CostCategory;
-    Task<TallyResult> PostCostCenterAsync<CostCentreType>(CostCentreType costCenter, PostRequestOptions? postRequestOptions = null, CancellationToken token = default) where CostCentreType : CostCenter;
+    Task<TallyResult> PostCostCenterAsync<CostCentreType>(CostCentreType costCenter, PostRequestOptions? postRequestOptions = null, CancellationToken token = default) where CostCentreType : CostCentre;
     #endregion
 
     #endregion

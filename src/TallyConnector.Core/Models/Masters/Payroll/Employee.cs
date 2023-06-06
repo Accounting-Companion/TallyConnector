@@ -1,7 +1,7 @@
 ﻿namespace TallyConnector.Core.Models.Masters.Payroll;
 
 [XmlRoot(ElementName = "COSTCENTRE")]
-public class Employee : CostCenter.CostCenter
+public class Employee : CostCenter.CostCentre
 {
     public Employee()
     {

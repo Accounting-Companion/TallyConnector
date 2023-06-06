@@ -5,4 +5,5 @@ public class GenerateHelperMethodsAttribute<T> : Attribute where T : Models.Basi
     public string? PluralName { get; set; }
 
     public string? TypeName { get; set; }
+    public string? MethodName { get; set; }
 }

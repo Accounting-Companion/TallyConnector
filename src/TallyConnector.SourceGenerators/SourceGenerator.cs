@@ -1,4 +1,5 @@
-﻿using TallyConnector.SourceGenerators.Extensions;
+﻿using System.Diagnostics;
+using TallyConnector.SourceGenerators.Extensions;
 using TallyConnector.SourceGenerators.Generators;
 using TallyConnector.SourceGenerators.Models;
 
@@ -10,6 +11,10 @@ public class SourceGenerator : ISourceGenerator
 {
     public void Execute(GeneratorExecutionContext context)
     {
+        //if (!Debugger.IsAttached)
+        //{
+        //    Debugger.Launch();
+        //}
         MainSyntaxReceiver receiver = (MainSyntaxReceiver)context.SyntaxReceiver;
         ExcuteHelperMethodsGenerator(context, receiver);
         ExecuteXMLTDLReportGenerator(context, receiver);
@@ -78,7 +83,8 @@ public class SourceGenerator : ISourceGenerator
             string ObjectName = typeInfo.Type.Name;
             arguments.TryGetValue("PluralName", out string PluralName);
             arguments.TryGetValue("TypeName", out string GenericTypeName);
-            HelperMethodArgs helperMethodArgs = new(nameSpace, className, ObjectNamespace, ObjectName, PluralName, GenericTypeName);
+            arguments.TryGetValue("MethodName", out string MethodName);
+            HelperMethodArgs helperMethodArgs = new(nameSpace, className, ObjectNamespace, ObjectName, PluralName, GenericTypeName, MethodName);
             context.AddSource($"TallyService_HelperMethods_{TypeName}.g.cs", HelperMethodsGenerator.Generate(helperMethodArgs));
         }
     }
