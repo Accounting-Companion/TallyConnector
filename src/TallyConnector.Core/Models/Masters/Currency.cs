@@ -2,6 +2,7 @@
 
 [XmlRoot(ElementName = "CURRENCY")]
 [XmlType(AnonymousType = true)]
+[TallyObjectType(TallyObjectType.Currencies)]
 public class Currency : BasicTallyObject, INamedTallyObject
 {
     public Currency()

@@ -3,6 +3,7 @@
 
 [XmlRoot(ElementName = "COSTCATEGORY")]
 [XmlType(AnonymousType = true)]
+[TallyObjectType(TallyObjectType.CostCategories)]
 public class CostCategory : BasicTallyObject, IAliasTallyObject
 {
     public CostCategory()
@@ -68,14 +69,17 @@ public class CostCategory : BasicTallyObject, IAliasTallyObject
     public new string GetXML(XmlAttributeOverrides? attrOverrides = null, bool indent = false)
     {
         CreateNamesList();
-        return base.GetXML(attrOverrides,indent);
+        return base.GetXML(attrOverrides, indent);
     }
 
     public new void PrepareForExport()
     {
         CreateNamesList();
     }
-
+    public override void RemoveNullChilds()
+    {
+        base.RemoveNullChilds();
+    }
     public override string ToString()
     {
         return $"Cost Category - {Name}";

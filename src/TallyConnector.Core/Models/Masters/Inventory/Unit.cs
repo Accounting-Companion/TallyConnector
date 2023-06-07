@@ -3,6 +3,7 @@
 
 [XmlRoot(ElementName = "UNIT")]
 [XmlType(AnonymousType = true)]
+[TallyObjectType(TallyObjectType.Units)]
 public class Unit : BasicTallyObject, INamedTallyObject
 {
     [XmlAttribute(AttributeName = "NAME")]

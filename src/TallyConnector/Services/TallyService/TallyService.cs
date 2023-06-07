@@ -253,10 +253,11 @@ public partial class TallyService : ITallyService
                                                                             CancellationToken token = default) where ObjType : TallyBaseObject
     {
         //Gets Root attribute of ReturnObject
-        string? RootElemet = AttributeHelper.GetXmlRootElement(typeof(ObjType), _logger);
+        Type objType = typeof(ObjType);
+        string? RootElemet = AttributeHelper.GetXmlRootElement(objType, _logger);
         Logger?.BuildingOptions(typeof(CollectionRequestOptions));
 
-        string name = typeof(ObjType).Name;
+        string name = objType.Name;
         CollectionRequestOptions collectionOptions = new()
         {
             CollectionType = RootElemet ?? name,
@@ -274,8 +275,9 @@ public partial class TallyService : ITallyService
             XMLAttributeOverrides = objectOptions?.XMLAttributeOverrides,
             IsInitialize = objectOptions?.IsInitialize ?? YesNo.No,
         };
+        TallyObjectType? tallyObjType = AttributeHelper.GetTallyObjectTypeAttribute(objType);
         var mapping = Mappings.TallyObjectMappings
-                .FirstOrDefault(map => map.MasterType.ToString().Equals(name + "s", StringComparison.OrdinalIgnoreCase));
+                .FirstOrDefault(map => map.MasterType == tallyObjType);
         collectionOptions.Compute ??= new();
         collectionOptions.Filters ??= new();
         collectionOptions.Objects ??= new();
@@ -314,7 +316,7 @@ public partial class TallyService : ITallyService
         //    collectionOptions.Pagination.GoToPage(objectOptions.PageNum);
         //}
         collectionOptions.RecordsPerPage ??= mapping?.DefaultPaginateCount;
-        var paginatedData = await GetCustomCollectionAsync<ObjType>(collectionOptions,$"Getting {mapping?.MasterType} from Tally" , token);
+        var paginatedData = await GetCustomCollectionAsync<ObjType>(collectionOptions, $"Getting {mapping?.MasterType} from Tally", token);
         paginatedData?.Data?.ForEach(obj =>
         {
             obj.RemoveNullChilds();

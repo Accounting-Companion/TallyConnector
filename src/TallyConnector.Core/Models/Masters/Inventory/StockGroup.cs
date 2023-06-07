@@ -2,6 +2,7 @@
 
 [XmlRoot(ElementName = "STOCKGROUP")]
 [XmlType(AnonymousType = true)]
+[TallyObjectType(TallyObjectType.StockGroups)]
 public class StockGroup : BasicTallyObject, IAliasTallyObject
 {
     public StockGroup()

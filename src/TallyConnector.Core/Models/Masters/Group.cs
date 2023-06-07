@@ -1,6 +1,7 @@
 ﻿namespace TallyConnector.Core.Models.Masters;
 
 [XmlRoot("GROUP")]
+[TallyObjectType(TallyObjectType.Groups)]
 public class BaseGroup : BasicTallyObject, IAliasTallyObject
 {
     private string? name;

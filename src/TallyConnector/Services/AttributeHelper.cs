@@ -33,6 +33,19 @@ public static class AttributeHelper
         }
         return null;
     }
+    public static TallyObjectType? GetTallyObjectTypeAttribute(Type type, ILogger? _logger = null)
+    {
+        Type attributeType = typeof(TallyObjectTypeAttribute);
+        _logger?.LogDebug("Getting {Attribute} attribute of {objtype}", attributeType.Name, type.Name);
+        TallyObjectTypeAttribute[] elem = (TallyObjectTypeAttribute[])Attribute.GetCustomAttributes(type, attributeType);//propertyinfo.CustomAttributes.FirstOrDefault(Attributedata => Attributedata.AttributeType == typeof(XmlAttributeAttribute));
+        _logger?.LogDebug("{object} has {count} {Attribute}s", type.Name, elem.Length, attributeType.Name);
+        if (elem.Length > 0)
+        {
+            var objectType = elem[0].TallyObjectType;
+            return objectType;
+        }
+        return null;
+    }
     public static string? GetXmlRootElement(Type type, ILogger? _logger = null)
     {
         _logger?.LogDebug("Getting {Attribute} attribute of {objtype}", typeof(XmlRootAttribute).Name, type.Name);

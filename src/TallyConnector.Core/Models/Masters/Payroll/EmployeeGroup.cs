@@ -1,6 +1,7 @@
 ﻿namespace TallyConnector.Core.Models.Masters.Payroll;
 
 [XmlRoot(ElementName = "COSTCENTRE")]
+[TallyObjectType(TallyObjectType.EmployeeGroups)]
 public class EmployeeGroup : CostCenter.CostCentre
 {
     [XmlElement(ElementName = "FORPAYROLL")]

@@ -1,6 +1,7 @@
 ﻿namespace TallyConnector.Core.Models.Masters.Payroll;
 
 [XmlRoot(ElementName = "COSTCENTRE")]
+[TallyObjectType(TallyObjectType.Employees)]
 public class Employee : CostCenter.CostCentre
 {
     public Employee()

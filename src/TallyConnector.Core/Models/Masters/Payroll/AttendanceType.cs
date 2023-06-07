@@ -4,6 +4,7 @@
 
 [XmlRoot(ElementName = "ATTENDANCETYPE")]
 [XmlType(AnonymousType = true)]
+[TallyObjectType(TallyObjectType.AttendanceTypes)]
 public class AttendanceType : BasicTallyObject, IAliasTallyObject
 {
     public AttendanceType()

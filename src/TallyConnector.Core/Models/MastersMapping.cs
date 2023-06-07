@@ -167,6 +167,7 @@ public class Mappings
                                },
                                computeFields: new()
                                {
+                                   "NAME:$NAME",
                                    "CATEGORYID:$GUID:COSTCATEGORY:$CATEGORY",
                                    "PARENTID:$GUID:COSTCENTER:$Parent"
                                }),

@@ -3,6 +3,7 @@
 
 [XmlRoot(ElementName = "COSTCENTRE")]
 [XmlType(AnonymousType = true)]
+[TallyObjectType(TallyObjectType.CostCentres)]
 public class CostCentre : BasicTallyObject, IAliasTallyObject
 {
     public CostCentre()

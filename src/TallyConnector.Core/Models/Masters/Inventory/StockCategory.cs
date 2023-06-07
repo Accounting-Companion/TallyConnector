@@ -2,6 +2,7 @@
 
 [XmlRoot(ElementName = "STOCKCATEGORY")]
 [XmlType(AnonymousType = true)]
+[TallyObjectType(TallyObjectType.StockCategories)]
 public class StockCategory : BasicTallyObject, IAliasTallyObject
 {
     public StockCategory()
@@ -51,7 +52,7 @@ public class StockCategory : BasicTallyObject, IAliasTallyObject
     [XmlElement(ElementName = "LANGUAGENAME.LIST")]
     [TDLCollection(CollectionName = "LanguageName")]
     public List<LanguageNameList> LanguageNameList { get; set; }
-    
+
 
     public void CreateNamesList()
     {
@@ -80,7 +81,10 @@ public class StockCategory : BasicTallyObject, IAliasTallyObject
         }
         CreateNamesList();
     }
-
+    public override void RemoveNullChilds()
+    {
+        Name = name!;
+    }
     public override string ToString()
     {
         return $"Stock Category - {Name}";
