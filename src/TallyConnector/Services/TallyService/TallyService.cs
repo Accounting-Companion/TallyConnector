@@ -589,7 +589,7 @@ public partial class TallyService : ITallyService
         if (xml != null && xml != string.Empty)
         {
             //Tally requires UTF-16/Unicode encoding
-            requestMessage.Content = new StringContent(xml, Encoding.Unicode, "application/xml");
+            requestMessage.Content = new StringContent(ReplaceText(xml), Encoding.Unicode, "application/xml");
         }
         try
         {
@@ -647,6 +647,12 @@ public partial class TallyService : ITallyService
     {
         Xml = Xml.Replace("&#4; ", "");
         Xml = Xml.Replace("0x20B9", "");
+        return Xml;
+    }
+    /// <inheritdoc/>
+    public static string ReplaceText(string Xml)
+    {
+        Xml = Xml.Replace("&#x4;", "");
         return Xml;
     }
 
