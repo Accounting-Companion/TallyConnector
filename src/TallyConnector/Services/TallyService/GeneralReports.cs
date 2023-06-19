@@ -72,8 +72,8 @@ public partial class TallyService
             Line = new() { new(reportName, fields: new() { "MastersLastId", "VouchersLastId" }) },
             Field = new()
             {
-                new("MastersLastId", "MastersLastId", "$$CollectionField:$ALTERID:last:MastersCollection"),
-                new("VouchersLastId", "VouchersLastId", "$$CollectionField:$ALTERID:last:VouchersCollection")
+                new("MastersLastId", "MastersLastId", "if $$IsEmptyCollection:MastersCollection THEN 0 else $$CollectionField:$ALTERID:last:MastersCollection"),
+                new("VouchersLastId", "VouchersLastId", "if $$IsEmptyCollection:VouchersCollection THEN 0 else $$CollectionField:$ALTERID:last:VouchersCollection")
             },
             Collection = new()
             {
