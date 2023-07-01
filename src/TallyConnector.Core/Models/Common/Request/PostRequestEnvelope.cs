@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace TallyConnector.Core.Models.Common.Request;
-public class PostRequestEnvelope<tallyType> where tallyType : ITallyObject
+public class PostRequestEnvelope<tallyType> where tallyType : IPostTallyObject
 {
 }
 

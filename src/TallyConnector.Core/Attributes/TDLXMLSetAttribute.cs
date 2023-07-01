@@ -1,27 +1,17 @@
 ﻿namespace TallyConnector.Core.Attributes;
 
-[AttributeUsage(AttributeTargets.Property)]
+[AttributeUsage(AttributeTargets.Property, AllowMultiple = false)]
 public class TDLXMLSetAttribute : Attribute
 {
-    private string? _set;
+    public string Set { get; set; }
 
-    public string Set
+    public bool ExcludeInFetch { get; set; }
+
+    public string? Use { get; set; }
+    public string? TallyType { get; set; }
+    public string? Format { get; set; }
+    public TDLXMLSetAttribute(string set)
     {
-        get { return _set ?? string.Empty; }
-        set { _set = value; }
-    }
-
-    private bool _includeInFetch;
-
-    public bool IncludeInFetch
-    {
-        get { return _includeInFetch; }
-        set { _includeInFetch = value; }
-    }
-
-    public TDLXMLSetAttribute(string set, bool includeInFetch = false)
-    {
-        IncludeInFetch = includeInFetch;
         Set = set;
     }
 

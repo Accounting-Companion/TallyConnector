@@ -4,7 +4,7 @@
 public class TDLCollectionAttribute : Attribute
 {
     private string? _collectionName;
-    private string? _type;
+
     public string CollectionName
     {
         get { return _collectionName ?? string.Empty; }
@@ -15,12 +15,12 @@ public class TDLCollectionAttribute : Attribute
     public TDLCollectionAttribute(string? collectionName, string? type)
     {
         _collectionName = collectionName;
-        _type = type;
+        Type = type;
     }
     public TDLCollectionAttribute(string? collectionName, string? type, bool include)
     {
         _collectionName = collectionName;
-        _type = type;
+        Type = type;
         Include = include;
     }
     public TDLCollectionAttribute(string? collectionName, bool include)
@@ -29,18 +29,9 @@ public class TDLCollectionAttribute : Attribute
         Include = include;
     }
 
-    public string? Type
-    {
-        get { return _type; }
-        set { _type = value; }
-    }
+    public string? Type { get; set; }
 
-    private bool _include;
-
-    public bool Include
-    {
-        get { return _include; }
-        set { _include = value; }
-    }
+    public bool Include { get; set; }
+    public bool Initialize { get; set; }
 
 }

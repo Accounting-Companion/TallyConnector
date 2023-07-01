@@ -36,10 +36,10 @@ public static class INamedTypeSymbolExtensions
             });
     }
     // Get Properties of current class and Base class 
-    public static IEnumerable<ISymbol> GetAllPropertiesAndFields(this INamedTypeSymbol getType)
+    public static IEnumerable<ISymbol> GetAllPropertiesAndFields(this INamedTypeSymbol getType, bool onlycurrent = false)
     {
         IEnumerable<ISymbol> info = getType.GetPropertiesAndFields();
-        if (getType.BaseType != null)
+        if (getType.BaseType != null && getType.BaseType.OriginalDefinition.ToString() != "object" && !onlycurrent)
         {
             info = info.Concat(GetAllPropertiesAndFields(getType.BaseType));
         }

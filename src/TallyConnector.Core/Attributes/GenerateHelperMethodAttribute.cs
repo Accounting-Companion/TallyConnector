@@ -24,4 +24,9 @@ public class GenerateHelperMethodAttribute<ReturnObjectType, GetObjectType, Post
     where ResponseEnvelopeType : ResponseEnvelope<GetObjectType>
     where PostEnvelopeType : PostRequestEnvelope<PostObjectType>
 {
+    public HelperMethodGenerationMode GenerationMode { get; set; }
+
+    public GenerateHelperMethodAttribute()
+    {
+    }
 }

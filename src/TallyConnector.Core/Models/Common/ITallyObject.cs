@@ -5,16 +5,25 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace TallyConnector.Core.Models.Common;
-public interface ITallyObject
+public interface IBaseTallyObject
 {
-
+    string GUID { get; set; }
 }
-public interface IPostTallyObject : ITallyObject
+public interface ITallyObject : IBaseTallyObject
+{
+    string AlterId { get; set; }
+    string MasterId { get; set; }
+}
+public interface IPostTallyObject : IBaseTallyObject
 {
     public string Action { get; set; }
 }
-public abstract class TallyObject : ITallyObject
+public partial class BaseTallyObject : IBaseTallyObject
 {
-    public abstract string CollectionObjectType { get; }
-    public abstract string XmlRootTag { get; }
+    public string GUID { get; set; }
+}
+public abstract partial class TallyObject : BaseTallyObject, ITallyObject
+{
+    public string AlterId { get; set; }
+    public string MasterId { get; set; }
 }

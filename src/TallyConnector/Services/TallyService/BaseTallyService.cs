@@ -19,7 +19,7 @@ public interface IBaseTallyService
 /// <summary>
 /// Base Tally Service that implements logic to send and receive requests from Tally
 /// </summary>
-public class BaseTallyService : IBaseTallyService
+public partial class BaseTallyService : IBaseTallyService
 {
     private readonly HttpClient _httpClient;
     private readonly ILogger? _logger;
@@ -177,4 +177,9 @@ public class BaseTallyService : IBaseTallyService
         return Xml;
     }
 
+
+    internal static string GetBooleanXML(bool value)
+    {
+        return value ? "YES" : "NO";
+    }
 }

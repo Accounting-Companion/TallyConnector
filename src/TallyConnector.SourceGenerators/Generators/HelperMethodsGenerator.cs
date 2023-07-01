@@ -45,7 +45,7 @@ public partial class HelperMethodsGenerator : IIncrementalGenerator
     {
         List<INamedTypeSymbol> RequestEnvelopeTypes = new List<INamedTypeSymbol>();
         List<INamedTypeSymbol> GetTypes = new List<INamedTypeSymbol>();
-        GenerateXMLMethodsGenerator generateXMLMethodsGenerator = new (sourceProductionContext, helperMethodArgs.ClassName,helperMethodArgs.NameSpace);
+        GenerateXMLMethodsGenerator generateXMLMethodsGenerator = new(sourceProductionContext, helperMethodArgs.ClassName, helperMethodArgs.NameSpace);
 
         foreach (var item in helperMethodArgs.AttributeArgs)
         {
@@ -59,7 +59,10 @@ public partial class HelperMethodsGenerator : IIncrementalGenerator
             }
             //Execute(sourceProductionContext, item);
         }
-        generateXMLMethodsGenerator.GenerateEnvelopeXmlGenerator(RequestEnvelopeTypes);
+        generateXMLMethodsGenerator.GenerateEnvelopeXmlGeneratorArgs(RequestEnvelopeTypes);
+        generateXMLMethodsGenerator.CreateSerializeXmlMethodsforGetEnvelopeTypes();
+       // generateXMLMethodsGenerator.GenerateTDLReportsForGettingObject(GetTypes);
+        //generateXMLMethodsGenerator.CreateGetTDLReportHelperMethods();
     }
 
     private bool SyntaxPredicate(SyntaxNode node, CancellationToken arg)

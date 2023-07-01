@@ -70,6 +70,9 @@
 	<ItemGroup>
 	  <Folder Include="Models\Masters\" />
 	</ItemGroup>
+	<ItemGroup>
+	  <ProjectReference Include="..\TallyConnector.SourceGenerators\TallyConnector.SourceGenerators.csproj" ReferenceOutputAssembly="false" OutputItemType="Analyzer" />
+	</ItemGroup>
 
 
 </Project>

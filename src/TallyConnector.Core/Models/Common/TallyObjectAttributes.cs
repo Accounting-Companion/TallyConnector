@@ -1,14 +1,25 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace TallyConnector.Core.Models.Common;
+﻿namespace TallyConnector.Core.Models.Common;
 public class TallyObjectAttributes
 {
-    [XmlAttribute("NAME")]
-    public string Name { get; set; }
+    public TallyObjectAttributes(string name,
+                                 bool isModify = false,
+                                 bool isFixed = false,
+                                 bool isInitialize = false,
+                                 bool isOption = false,
+                                 bool isInternal = false)
+    {
+        Name = name;
+        IsModify = isModify;
+        IsFixed = isFixed;
+        IsInitialize = isInitialize;
+        IsOption = isOption;
+        IsInternal = isInternal;
+    }
+    public TallyObjectAttributes(string name, string? use) : this(name)
+    {
+        Use = use;
+    }
+
 
     [XmlAttribute(AttributeName = "ISMODIFY")]
     public bool IsModify { get; set; }
@@ -25,8 +36,11 @@ public class TallyObjectAttributes
     [XmlAttribute(AttributeName = "ISINTERNAL")]
     public bool IsInternal { get; set; }
 
+    [XmlAttribute("NAME")]
+    public string Name { get; set; }
+
     [XmlElement("USE")]
-    public string Use { get; set; }
+    public string? Use { get; set; }
 
     public void SetAttributes(bool ismodify = false,
                               bool isFixed = false,
