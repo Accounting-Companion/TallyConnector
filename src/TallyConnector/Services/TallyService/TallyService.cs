@@ -187,7 +187,7 @@ public partial class TallyService : ITallyService
         }
         else
         {
-            filterformulae = $"${requestOptions.LookupField} = \"{lookupValue}\"";
+            filterformulae = $"${requestOptions.LookupField} = \"{lookupValue.Replace("\"", "\" + $$StrByCharCode:34 + \"")}\"";
         }
         List<Filter> filters = new() { new Filter() { FilterName = "Objfilter", FilterFormulae = filterformulae } };
 
@@ -220,7 +220,7 @@ public partial class TallyService : ITallyService
         }
         else
         {
-            filterformulae = $"${requestOptions.LookupField} = \"{lookupValue}\"";
+            filterformulae = $"${requestOptions.LookupField} = \"{lookupValue.Replace("\"", "\" + $$StrByCharCode:34 + \"")}\"";
         }
         List<Filter> filters = new() { new Filter() { FilterName = "Objfilter", FilterFormulae = filterformulae } };
 
