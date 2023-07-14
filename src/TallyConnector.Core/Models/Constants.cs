@@ -27,6 +27,17 @@ public static class Constants
 
     public const string License = "if @@CapProductDetails contains \"Tally.ERP 9\" then " + TallyERP9License + " else " + TallyPrimeLicense;
 
+    public static class Periodicty
+    {
+        public const string Month = "Month";
+        public const string Day = "Day";
+        public const string Week = "Week";
+        public const string Fortnight = "Fortnight";
+        public const string ThreeMonth = "3 Month";
+        public const string SixMonth = "6 Month";
+        public const string Year = "Year";
+    }
+
     public static class Voucher
     {
 

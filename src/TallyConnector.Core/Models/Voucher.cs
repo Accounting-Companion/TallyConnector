@@ -2,6 +2,7 @@
 
 [Serializable]
 [XmlRoot(ElementName = "VOUCHER", Namespace = "")]
+[TallyObjectType(TallyObjectType.Vouchers)]
 public class Voucher : BasicTallyObject, ITallyObject
 {
     public Voucher()

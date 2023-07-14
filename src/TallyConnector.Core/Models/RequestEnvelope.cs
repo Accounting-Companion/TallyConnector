@@ -374,6 +374,9 @@ public class Form : DCollection
     [XmlElement(ElementName = "SET")]
     public List<string>? Set { get; set; }
 
+    [XmlElement(ElementName = "OPTION")]
+    public List<string> Option { get; set; }
+
 }
 
 
@@ -435,7 +438,7 @@ public class Line : DCollection
     {
         Name = lineName;
         Fields = new() { lineName };
-        Repeat = $"{lineName} : {CollectionName}";
+        Repeat = new() { $"{lineName} : {CollectionName}" };
         SetAttributes(isOption: YesNo.Yes);
     }
 
@@ -460,7 +463,7 @@ public class Line : DCollection
 
 
     [XmlElement(ElementName = "REPEAT")]
-    public string? Repeat { get; set; }
+    public List<string>? Repeat { get; set; }
 
     [XmlElement(ElementName = "SCROLLED")]
     public string? Scrolled => Repeat is null ? null : "Vertical";
@@ -491,7 +494,7 @@ public class Field : DCollection
 
     public Field(List<string> fields, Dictionary<string, string> repeatFields, string fieldName, string xmlTag)
     {
-        Fields = string.Join(",", fields);
+        Fields =  fields;
         Name = fieldName;
         Option = repeatFields.Select(kv => $"{kv.Value} : {kv.Key}").ToList();
 
@@ -500,7 +503,7 @@ public class Field : DCollection
     }
     public Field(List<string> fields, string fieldName, string xmltag)
     {
-        Fields = string.Join(",", fields);
+        Fields = fields;
         Name = fieldName;
         XMLTag = xmltag;
         SetAttributes();
@@ -520,7 +523,7 @@ public class Field : DCollection
     public string? Name { get; set; }
 
     [XmlElement(ElementName = "FIELDS")]
-    public string? Fields { get; set; }
+    public List<string>? Fields { get; set; }
 
     [XmlElement(ElementName = "XMLATTR")]
     public string? XMLAttr { get; set; }
@@ -592,6 +595,7 @@ public class Collection : DCollection
     {
         Name = objcollectionName;
         Objects = objects;
+        SetAttributes();
     }
 
 

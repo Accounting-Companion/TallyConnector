@@ -35,6 +35,102 @@ public partial class TallyService
                                                                                                     token: token);
         return statistics?.VoucherStats;
     }
+    public async Task<AutoVoucherStatisticsEnvelope> GetVoucherStatisticsAsync(AutoColumnReportPeriodRequestOprions? requestOptions = null, CancellationToken token = default)
+    {
+        StaticVariables sv = new()
+        {
+            SVCompany = requestOptions?.Company ?? Company?.Name ?? await GetActiveSimpleCompanyNameAsync(token),
+            SVExportFormat = "XML",
+            SVFromDate = requestOptions?.FromDate ?? Company?.StartingFrom,
+            SVToDate = requestOptions?.ToDate ?? GetToDate()
+        };
+        const string reportName = "TC_AutoColumnStats";
+        RequestEnvelope requestEnvelope = new(HType.Data, reportName, sv);
+        TDLMessage tDLMessage = requestEnvelope.Body.Desc.TDL.TDLMessage;
+        string periodicity = GetPeriodicty(requestOptions);
+        Report report = new(reportName)
+        {
+            Repeat = new() { " SVFromDate, SVToDate" },
+            Variable = new() { "DoSetAutoColumn,SVPeriodicity" },
+            Set = new()
+            {
+                "DoSetAutoColumn:No",
+                $"SVPeriodicity:\"{periodicity}\"",
+                "DSPRepeatCollection:\"Period Collection\""
+            }
+        };
+        string RequestType = $"VchType Auto Column Stats({periodicity}) of company - {sv.SVCompany} ({sv.SVFromDate} to {sv.SVToDate})";
+
+        tDLMessage.Report = new() { report };
+        Form form = new(reportName)
+        {
+            Option = new() { "TC_SETAUTOOPTION:$$SetAutoColumns:SVFromDATE,SVTODATE" }
+        };
+        tDLMessage.Form = new() { form, new("TC_SETAUTOOPTION") { IsOption = YesNo.Yes, PartName = string.Empty } };
+        const string CollectionName = "TC_VchTypeCollection";
+        Part part = new(reportName, CollectionName);
+        tDLMessage.Part = new() { part };
+        const string nameFieldName = "TC_VchTypeName";
+        const string totalCountFieldName = "TC_VchTypeTotalCount";
+        const string periodCountRootFieldName = "TC_VchTypePeriodStat";
+        const string fromDateFieldName = "TC_VchTypeFromDate";
+        const string toDateFieldName = "TC_VchTypeToDate";
+        const string cancelledCountFieldName = "TC_VchTypeCancCount";
+        const string optionalCountFieldName = "TC_VchTypeOptCount";
+        const string totalPeriodCountFieldName = "TC_VchTypeTotalPeriodCount";
+        List<string> rootFields = new() { nameFieldName, totalCountFieldName, periodCountRootFieldName };
+        Line line = new(reportName, rootFields, "VchTypeStat") { Repeat = new() { periodCountRootFieldName } };
+        tDLMessage.Line = new() { line };
+        tDLMessage.Field = new()
+        {
+            new(nameFieldName,"Name","$Name"),
+            new(totalCountFieldName,"TotalCount","$TotalCount"),
+            new(periodCountRootFieldName,"PeriodStat",null){Fields=new(){ fromDateFieldName,toDateFieldName,cancelledCountFieldName,optionalCountFieldName,totalPeriodCountFieldName } },
+            new(fromDateFieldName,"FromDate","##SVFromDate"){Use="Short Date Field"},
+            new(toDateFieldName,"ToDate","##SVToDate"){Use="Short Date Field"},
+            new(totalPeriodCountFieldName,"TotalCount","$TotalPeriodCount"),
+            new(optionalCountFieldName,"OtionalCount","$OptionalCount"),
+            new(cancelledCountFieldName,"CancelledCount","$CancelledCount")
+        };
+        tDLMessage.Collection = new()
+        {
+            new(colName:CollectionName,colType: "VoucherTypes")
+            {
+                Compute = new()
+                {
+                    "TotalPeriodCount :  $$DirectTotalVch:$Name",
+                    "CancelledCount : $$DirectCancVch:$Name",
+                    "OptionalCount :  $$DirectOptionalVch:$Name",
+                    "TotalCount : $$DirectAllVch:$Name",
+                }
+            }
+        };
+        string requestXml = requestEnvelope.GetXML();
+
+        TallyResult tallyResult = await SendRequestAsync(requestXml, RequestType, token);
+        if (tallyResult.Status == RespStatus.Sucess)
+        {
+            var k = XMLToObject.GetObjfromXml<AutoVoucherStatisticsEnvelope>(tallyResult.Response!);
+            return k;
+        }
+        else throw new Exception(tallyResult.Response);
+    }
+
+    private static string GetPeriodicty(AutoColumnReportPeriodRequestOprions? requestOptions)
+    {
+        return requestOptions?.Periodicity switch
+        {
+            PeriodicityType.Month => Constants.Periodicty.Month,
+            PeriodicityType.Day => Constants.Periodicty.Day,
+            PeriodicityType.Week => Constants.Periodicty.Week,
+            PeriodicityType.Fortnight => Constants.Periodicty.Fortnight,
+            PeriodicityType.ThreeMonth => Constants.Periodicty.ThreeMonth,
+            PeriodicityType.SixMonth => Constants.Periodicty.SixMonth,
+            PeriodicityType.Year => Constants.Periodicty.Year,
+            null => Constants.Periodicty.Month,
+            _ => throw new NotImplementedException()
+        };
+    }
 
     public async Task<List<CompanyType>?> GetCompaniesAsync<CompanyType>(CancellationToken token = default) where CompanyType : BaseCompany
     {
@@ -46,7 +142,7 @@ public partial class TallyService
                 "Name", "StartingFrom", "GUID", "MobileNo, RemoteFullListName", "*"
             },
             Filters = new() { new("SimpleCompany", "", false) }
-        });
+        }, token: token);
     }
     public async Task<List<Company>?> GetCompaniesAsync(CancellationToken token = default)
     {
@@ -57,11 +153,10 @@ public partial class TallyService
     {
         _logger?.LogInformation("Getting Last AlterIds from Tally");
         string reportName = "AlterIdsReport";
-        DateTime now = DateTime.Now;
         RequestEnvelope requestEnvelope = new(HType.Data, reportName, new()
         {
             SVFromDate = Company?.StartingFrom,
-            SVToDate = new DateTime(now.Month > 3 ? now.Year + 1 : now.Year, 3, 31),
+            SVToDate = GetToDate(),
             SVCompany = Company?.Name,
         });
         TDLMessage tdlMessage = new()
@@ -69,16 +164,16 @@ public partial class TallyService
             Report = new() { new(reportName) },
             Form = new() { new(reportName) },
             Part = new() { new() { Name = reportName, Lines = new() { reportName } } },
-            Line = new() { new(reportName, fields: new() { "MastersLastId", "VouchersLastId" }) },
+            Line = new() { new(reportName, fields: new() { "TC_MastersLastId", "TC_VouchersLastId" }) },
             Field = new()
             {
-                new("MastersLastId", "MastersLastId", "if $$IsEmptyCollection:MastersCollection THEN 0 else $$CollectionField:$ALTERID:last:MastersCollection"),
-                new("VouchersLastId", "VouchersLastId", "if $$IsEmptyCollection:VouchersCollection THEN 0 else $$CollectionField:$ALTERID:last:VouchersCollection")
+                new("TC_MastersLastId", "MastersLastId", "if $$IsEmptyCollection:TC_MastersCollection THEN 0 else $$CollectionField:$ALTERID:last:TC_MastersCollection"),
+                new("TC_VouchersLastId", "VouchersLastId", "if $$IsEmptyCollection:TC_VouchersCollection THEN 0 else $$CollectionField:$ALTERID:last:TC_VouchersCollection")
             },
             Collection = new()
             {
-                new(colName:"MastersCollection",colType:"Masters",nativeFields:new(){"ALTERID"}){Sort=new(){"@@Default: -$Alterid" } },
-                new(colName:"VouchersCollection",colType:"Vouchers",nativeFields:new(){"ALTERID"}){Sort=new(){"@@Default: -$Alterid" } }
+                new(colName:"TC_MastersCollection",colType:"Masters",nativeFields:new(){"ALTERID"}){Sort=new(){"@@Default: -$Alterid" } },
+                new(colName:"TC_VouchersCollection",colType:"Vouchers",nativeFields:new(){"ALTERID"}){Sort=new(){"@@Default: -$Alterid" } }
             }
         };
         tdlMessage.Part![0].SetAttributes();
@@ -97,6 +192,15 @@ public partial class TallyService
         {
             return null;
         }
+    }
+
+    private static DateTime GetToDate(DateTime now)
+    {
+        return new DateTime(now.Month > 3 ? now.Year + 1 : now.Year, 3, 31);
+    }
+    private static DateTime GetToDate()
+    {
+        return GetToDate(DateTime.Now);
     }
     public async Task<List<CompanyOnDisk>?> GetCompaniesinDefaultPathAsync(CancellationToken token = default)
     {

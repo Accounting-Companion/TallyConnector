@@ -87,4 +87,23 @@ public class TallyDate : IXmlSerializable
     }
     
 }
+public class TallyDMYYYYDate : TallyDate, IXmlSerializable
+{
+    public new void ReadXml(XmlReader reader)
+    {
+        bool isEmptyElement = reader.IsEmptyElement;
+        if (!isEmptyElement)
+        {
+            string content = reader.ReadElementContentAsString();
+            if (content != null)
+            {
+                bool v = DateTime.TryParseExact(content, "d-M-yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime date);
+                if (v)
+                {
+                    Date = date;
+                }
+            }
 
+        }
+    }
+}

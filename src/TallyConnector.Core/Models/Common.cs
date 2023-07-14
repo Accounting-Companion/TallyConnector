@@ -207,3 +207,20 @@ public enum RoundType
     Upward = 4,
 }
 
+public enum PeriodicityType
+{
+    [XmlEnum(Name = Constants.Periodicty.Month)]
+    Month = 0,
+    [XmlEnum(Name = Constants.Periodicty.Day)]
+    Day = 1,
+    [XmlEnum(Name = Constants.Periodicty.Week)]
+    Week = 2,
+    [XmlEnum(Name = Constants.Periodicty.Fortnight)]
+    Fortnight = 3,
+    [XmlEnum(Name = Constants.Periodicty.ThreeMonth)]
+    ThreeMonth = 4,
+    [XmlEnum(Name = Constants.Periodicty.SixMonth)]
+    SixMonth = 5,
+    [XmlEnum(Name = Constants.Periodicty.Year)]
+    Year = 6,
+}
