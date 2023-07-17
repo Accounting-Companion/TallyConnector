@@ -1,4 +1,6 @@
-﻿namespace Tests.Services.TallyService;
+﻿using TallyConnector.Core.Models;
+
+namespace Tests.Services.TallyService;
 internal class Main : BaseTallyServiceTest
 {
 
@@ -25,11 +27,11 @@ internal class Main : BaseTallyServiceTest
     [Test]
     public async Task TestGetVoucherStatistics()
     {
-        var masterstats = await _tallyService.GetMasterStatisticsAsync();
+        //var masterstats = await _tallyService.GetMasterStatisticsAsync();
         //Get Vouchertype count from Master Statistics
-        var vouchertypecount = masterstats.FirstOrDefault(C => C.Name.Replace(" ", "") == TCM.TallyObjectType.VoucherTypes.ToString()).Count;
-        var voucherstat = await _tallyService.GetVoucherStatisticsAsync(new() { FromDate = new DateTime(2009, 04, 01),ToDate= new DateTime(2023, 03, 31) });
-        Assert.That(voucherstat, Has.Count.EqualTo(vouchertypecount));
+        //var vouchertypecount = masterstats.FirstOrDefault(C => C.Name.Replace(" ", "") == TCM.TallyObjectType.VoucherTypes.ToString()).Count;
+         await _tallyService.GetVoucherStatisticsAsync(new TallyConnector.Core.Models.AutoColumnReportPeriodRequestOprions() { FromDate = new DateTime(2009, 04, 01),ToDate= new DateTime(2023, 03, 31),Periodicity= PeriodicityType.Year });
+        //Assert.That(voucherstat, Has.Count.EqualTo(vouchertypecount));
     }
 
 

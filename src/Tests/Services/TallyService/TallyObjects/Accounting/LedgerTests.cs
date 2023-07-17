@@ -53,4 +53,15 @@ internal class LedgerTests : BaseTallyServiceTest
         Assert.That(result, Is.Not.Null);
         Assert.That(result.Name, Is.EqualTo("Test From Server"));
     }
+
+    [Test]
+    public async Task CheckGetLedgerwithSpecialSymbols()
+    {
+        //var result = await _tallyService.PostLedgerAsync(new Ledger("Test & Ledger \".Sd\"fg", "Sundry Debtors"));
+        var result = await _tallyService.GetLedgerAsync("Test & Ledger \".Sd\"fg");
+
+        //var name = result.Alias;
+        //Assert.That(result, Is.Not.Null);
+        //Assert.That(result.Name, Is.EqualTo("Test From Server"));
+    }
 }

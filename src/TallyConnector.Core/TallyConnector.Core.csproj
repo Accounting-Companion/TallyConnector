@@ -20,7 +20,7 @@
 			- Models     : Models contains the objects like ledgers, groups , vouchers and their Childs
 		</Description>
 		<RepositoryType>git</RepositoryType>
-		<VersionPrefix>2.0.9</VersionPrefix>
+		<VersionPrefix>2.0.10</VersionPrefix>
 		<!--<VersionSuffix>rc</VersionSuffix>-->
 		<GeneratePackageOnBuild>True</GeneratePackageOnBuild>
 		<GenerateDocumentationFile>True</GenerateDocumentationFile>
@@ -62,7 +62,7 @@
 		<Reference Include="Microsoft.CSharp" />
 		<Reference Include="System.ComponentModel.DataAnnotations" />
 		<PackageReference Include="System.Net.Http" Version="4.3.4" />
-		<PackageReference Include="System.Text.Json" Version="7.0.2" />
+		<PackageReference Include="System.Text.Json" Version="7.0.3" />
 	</ItemGroup>
 	<ItemGroup>
 		<ProjectReference Include="..\TallyConnector.SourceGenerators\TallyConnector.SourceGenerators.csproj" OutputItemType="Analyzer" />

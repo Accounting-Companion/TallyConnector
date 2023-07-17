@@ -16,10 +16,11 @@ internal class CommonTests
         };
         stockItem.OpeningBal = new(stockItem, 50);
         stockItem.OpeningValue = new(-5000);
+        stockItem.GSTApplicable = "\u0004 Applicable";
         TCM.TallyResult result = await tally.PostStockItemAsync<TCMI.StockItem>(stockItem);
 
         Assert.That(result.Status, Is.EqualTo(TCM.RespStatus.Sucess));
-        TCMI.StockItem tStockItem = await tally.GetStockItemAsync<TCMI.StockItem>("Test StockItem");
+        TCMI.StockItem tStockItem = await tally.GetStockItemAsync<TCMI.StockItem>("30s COTTON SINKER BIOWASH");
         Assert.Multiple(() =>
         {
             Assert.That(tStockItem.Name, Is.EqualTo("Test StockItem"));

@@ -7,6 +7,7 @@ internal class GeneralReports : BaseTallyServiceTest
     public async Task TestGetCompaniesList()
     {
         var Companies = await _tallyService.GetCompaniesAsync();
+        var cs = await _tallyService.GetTaxUnitsAsync();
         string v = Companies.ToJson();
         Assert.That(Companies, Has.Count.EqualTo(3));
     }
@@ -20,7 +21,9 @@ internal class GeneralReports : BaseTallyServiceTest
     [Test]
     public async Task TestActiveCompany()
     {
+        _tallyService.Setup("http://localhost",900);
         var Company = await _tallyService.GetActiveCompanyAsync();
+        string v = await _tallyService.GetActiveSimpleCompanyNameAsync();
         Assert.That(Company, Is.Not.Null);
     }
     [Test]
