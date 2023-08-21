@@ -14,6 +14,7 @@ internal class Main : BaseTallyServiceTest
     [Test]
     public async Task TestGetLicenseInfo()
     {
+        //_tallyService.Setup("localhost",900);
         var licenseInfo = await _tallyService.GetLicenseInfoAsync();
         Assert.That((bool)licenseInfo.IsEducationalMode, Is.EqualTo(true));
     }

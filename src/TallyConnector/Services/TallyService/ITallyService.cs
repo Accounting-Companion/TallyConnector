@@ -43,7 +43,12 @@ public interface ITallyService
     /// <typeparam name="CompanyType"></typeparam>
     /// <returns></returns>
     Task<List<CompanyType>?> GetCompaniesAsync<CompanyType>(CancellationToken token = default) where CompanyType : BaseCompany;
-
+    /// <summary>
+    /// Gets List of companies that are opened in Tally
+    /// </summary>
+    /// <param name="token">cancellation Token</param>
+    /// <returns></returns>
+    Task<List<Company>?> GetCompaniesAsync(CancellationToken token = default);
     /// <summary>
     /// Gets Last AlterId in Master and Voucher
     /// </summary>
@@ -82,6 +87,7 @@ public interface ITallyService
     /// <returns></returns>
     Task<List<VoucherTypeStat>?> GetVoucherStatisticsAsync(DateFilterRequestOptions? requestOptions = null, CancellationToken token = default);
 
+    Task<AutoVoucherStatisticsEnvelope> GetVoucherStatisticsAsync(AutoColumnReportPeriodRequestOprions? requestOptions = null, CancellationToken token = default);
 
     #region Accounting Masters
     /*
@@ -92,14 +98,24 @@ public interface ITallyService
     #region Get - Methods 
 
     Task<CurrencyType> GetCurrencyAsync<CurrencyType>(string lookupValue, MasterRequestOptions? currencyOptions = null, CancellationToken token = default) where CurrencyType : Currency;
+    Task<Currency> GetCurrencyAsync(string lookupValue, MasterRequestOptions? currencyOptions = null, CancellationToken token = default);
 
     Task<GroupType> GetGroupAsync<GroupType>(string lookupValue, MasterRequestOptions? groupOptions = null, CancellationToken token = default) where GroupType : Group;
+    Task<Group> GetGroupAsync(string lookupValue, MasterRequestOptions? groupOptions = null, CancellationToken token = default);
+
     Task<LedgerType> GetLedgerAsync<LedgerType>(string LookupValue, MasterRequestOptions? ledgerOptions = null, CancellationToken token = default) where LedgerType : Ledger;
+    Task<Ledger> GetLedgerAsync(string LookupValue, MasterRequestOptions? ledgerOptions = null, CancellationToken token = default);
 
     Task<VChTypeType> GetVoucherTypeAsync<VChTypeType>(string LookupValue, MasterRequestOptions? voucherTypeOptions = null, CancellationToken token = default) where VChTypeType : VoucherType;
+    Task<VoucherType> GetVoucherTypeAsync(string LookupValue, MasterRequestOptions? voucherTypeOptions = null, CancellationToken token = default);
 
     Task<CostCategoryType> GetCostCategoryAsync<CostCategoryType>(string LookupValue, MasterRequestOptions? costCategoryOptions = null, CancellationToken token = default) where CostCategoryType : CostCategory;
+    Task<CostCategory> GetCostCategoryAsync(string LookupValue, MasterRequestOptions? costCategoryOptions = null, CancellationToken token = default);
     Task<CostCentreType> GetCostCenterAsync<CostCentreType>(string LookupValue, MasterRequestOptions? costCenterOptions = null, CancellationToken token = default) where CostCentreType : CostCentre;
+    Task<CostCentre> GetCostCenterAsync(string LookupValue, MasterRequestOptions? costCenterOptions = null, CancellationToken token = default);
+    Task<TaxUnitType> GetTaxUnitAsync<TaxUnitType>(string LookupValue, MasterRequestOptions? costCenterOptions = null, CancellationToken token = default) where TaxUnitType : TaxUnit;
+    Task<TaxUnit> GetTaxUnitAsync(string LookupValue, MasterRequestOptions? costCenterOptions = null, CancellationToken token = default);
+
     #endregion
 
     /*
@@ -148,6 +164,12 @@ public interface ITallyService
 
     /// <inheritdoc cref="GetCostCentersAsync(RequestOptions,CancellationToken)" />
     Task<PaginatedResponse<CostCentre>?> GetCostCentersAsync(PaginatedRequestOptions ReqOptions, CancellationToken token = default);
+
+    /// <inheritdoc cref="GetTaxUnitsAsync(RequestOptions,CancellationToken)" />
+    Task<PaginatedResponse<TaxUnitType>?> GetTaxUnitsAsync<TaxUnitType>(PaginatedRequestOptions ReqOptions, CancellationToken token = default) where TaxUnitType : TaxUnit;
+
+    /// <inheritdoc cref="GetTaxUnitsAsync(RequestOptions,CancellationToken)" />
+    Task<PaginatedResponse<TaxUnit>?> GetTaxUnitsAsync(PaginatedRequestOptions ReqOptions, CancellationToken token = default);
 
     #endregion
 
@@ -222,6 +244,17 @@ public interface ITallyService
     Task<List<CostCentre>?> GetCostCentersAsync(RequestOptions? ReqOptions = null, CancellationToken token = default);
 
 
+    /// <inheritdoc cref="GetTaxUnitsAsync(RequestOptions,CancellationToken)" />
+    Task<List<TaxUnitType>?> GetTaxUnitsAsync<TaxUnitType>(RequestOptions? ReqOptions = null, CancellationToken token = default) where TaxUnitType : TaxUnit;
+    /// <summary>
+    /// Gets all CostCentres
+    /// </summary>
+    /// <param name="ReqOptions">options to configure this request</param>
+    /// <param name="token"></param>
+    /// <returns></returns>
+    Task<List<TaxUnit>?> GetTaxUnitsAsync(RequestOptions? ReqOptions = null, CancellationToken token = default);
+
+
     #endregion
 
     #region Post-Methods
@@ -234,6 +267,8 @@ public interface ITallyService
 
     Task<TallyResult> PostCostCategoryAsync<CostCategoryType>(CostCategoryType costCategory, PostRequestOptions? postRequestOptions = null, CancellationToken token = default) where CostCategoryType : CostCategory;
     Task<TallyResult> PostCostCenterAsync<CostCentreType>(CostCentreType costCenter, PostRequestOptions? postRequestOptions = null, CancellationToken token = default) where CostCentreType : CostCentre;
+    Task<TallyResult> PostTaxUnitAsync<TaxUnitType>(TaxUnitType costCenter, PostRequestOptions? postRequestOptions = null, CancellationToken token = default) where TaxUnitType : TaxUnit;
+
     #endregion
 
     #endregion
@@ -242,16 +277,30 @@ public interface ITallyService
 
     #region Get - Methods 
     Task<UnitType> GetUnitAsync<UnitType>(string LookupValue, MasterRequestOptions? unitOptions = null, CancellationToken token = default) where UnitType : Unit;
+    Task<Unit> GetUnitAsync(string LookupValue, MasterRequestOptions? unitOptions = null, CancellationToken token = default);
     Task<GodownType> GetGodownAsync<GodownType>(string LookupValue, MasterRequestOptions? godownOptions = null, CancellationToken token = default) where GodownType : Godown;
+    Task<Godown> GetGodownAsync(string LookupValue, MasterRequestOptions? godownOptions = null, CancellationToken token = default);
     Task<StockCategoryType> GetStockCategoryAsync<StockCategoryType>(string LookupValue, MasterRequestOptions? stockCategoryOptions = null, CancellationToken token = default) where StockCategoryType : StockCategory;
+    Task<StockCategory> GetStockCategoryAsync(string LookupValue, MasterRequestOptions? stockCategoryOptions = null, CancellationToken token = default);
     Task<StockGroupType> GetStockGroupAsync<StockGroupType>(string LookupValue, MasterRequestOptions? stockGroupOptions = null, CancellationToken token = default) where StockGroupType : StockGroup;
+    Task<StockGroup> GetStockGroupAsync(string LookupValue, MasterRequestOptions? stockGroupOptions = null, CancellationToken token = default);
     Task<StckItmType> GetStockItemAsync<StckItmType>(string LookupValue, MasterRequestOptions? stockItemOptions = null, CancellationToken token = default) where StckItmType : StockItem;
+    Task<StockItem> GetStockItemAsync(string LookupValue, MasterRequestOptions? stockItemOptions = null, CancellationToken token = default);
 
     #region Bulk GetPaginated - Methods 
     Task<PaginatedResponse<UnitType>?> GetUnitsAsync<UnitType>(PaginatedRequestOptions ReqOptions, CancellationToken token = default) where UnitType : Unit;
     Task<PaginatedResponse<Unit>?> GetUnitsAsync(PaginatedRequestOptions ReqOptions, CancellationToken token = default);
+    Task<PaginatedResponse<GodownType>?> GetGodownsAsync<GodownType>(PaginatedRequestOptions ReqOptions, CancellationToken token = default) where GodownType : Godown;
+    Task<PaginatedResponse<Godown>?> GetGodownsAsync(PaginatedRequestOptions ReqOptions, CancellationToken token = default);
+    Task<PaginatedResponse<StockCategoryType>?> GetStockCategoriesAsync<StockCategoryType>(PaginatedRequestOptions ReqOptions, CancellationToken token = default) where StockCategoryType : StockCategory;
+    Task<PaginatedResponse<StockCategory>?> GetStockCategoriesAsync(PaginatedRequestOptions ReqOptions, CancellationToken token = default);
+    Task<PaginatedResponse<StockGroupType>?> GetStockGroupsAsync<StockGroupType>(PaginatedRequestOptions ReqOptions, CancellationToken token = default) where StockGroupType : StockGroup;
+    Task<PaginatedResponse<StockGroup>?> GetStockGroupsAsync(PaginatedRequestOptions ReqOptions, CancellationToken token = default);
+    Task<PaginatedResponse<StckItmType>?> GetStockItemsAsync<StckItmType>(PaginatedRequestOptions ReqOptions, CancellationToken token = default) where StckItmType : StockItem;
+    Task<PaginatedResponse<StockItem>?> GetStockItemsAsync(PaginatedRequestOptions ReqOptions, CancellationToken token = default);
 
     #endregion
+
     #region Bulk Get - Methods 
     /// <summary>
     /// Get All Units
@@ -262,6 +311,18 @@ public interface ITallyService
     Task<List<UnitType>?> GetUnitsAsync<UnitType>(RequestOptions? ReqOptions = null, CancellationToken token = default) where UnitType : Unit;
 
     Task<List<Unit>?> GetUnitsAsync(RequestOptions? ReqOptions = null, CancellationToken token = default);
+    Task<List<GodownType>?> GetGodownsAsync<GodownType>(RequestOptions? ReqOptions = null, CancellationToken token = default) where GodownType : Godown;
+
+    Task<List<Godown>?> GetGodownsAsync(RequestOptions? ReqOptions = null, CancellationToken token = default);
+    Task<List<StockCategoryType>?> GetStockCategoriesAsync<StockCategoryType>(RequestOptions? ReqOptions = null, CancellationToken token = default) where StockCategoryType : StockCategory;
+
+    Task<List<StockCategory>?> GetStockCategoriesAsync(RequestOptions? ReqOptions = null, CancellationToken token = default);
+    Task<List<StockGroupType>?> GetStockGroupsAsync<StockGroupType>(RequestOptions? ReqOptions = null, CancellationToken token = default) where StockGroupType : StockGroup;
+
+    Task<List<StockGroup>?> GetStockGroupsAsync(RequestOptions? ReqOptions = null, CancellationToken token = default);
+    Task<List<StckItmType>?> GetStockItemsAsync<StckItmType>(RequestOptions? ReqOptions = null, CancellationToken token = default) where StckItmType : StockItem;
+
+    Task<List<StockItem>?> GetStockItemsAsync(RequestOptions? ReqOptions = null, CancellationToken token = default);
 
     #endregion
 
@@ -285,11 +346,23 @@ public interface ITallyService
 
     #region Get - Methods 
     Task<AttendanceTypType> GetAttendanceTypeAsync<AttendanceTypType>(string LookupValue, MasterRequestOptions? attendanceTypeOptions = null, CancellationToken token = default) where AttendanceTypType : AttendanceType;
+    Task<AttendanceType> GetAttendanceTypeAsync(string LookupValue, MasterRequestOptions? attendanceTypeOptions = null, CancellationToken token = default);
     Task<EmployeeGroupType> GetEmployeeGroupAsync<EmployeeGroupType>(string LookupValue, MasterRequestOptions? employeeGroupOptions = null, CancellationToken token = default) where EmployeeGroupType : EmployeeGroup;
 
     Task<EmployeeType> GetEmployeeAsync<EmployeeType>(string LookupValue, MasterRequestOptions? employeeOptions = null, CancellationToken token = default) where EmployeeType : Employee;
     #endregion
 
+    #region Bulk Get - Methods 
+    Task<List<AtndTypeType>?> GetAttendanceTypesAsync<AtndTypeType>(RequestOptions? ReqOptions = null, CancellationToken token = default) where AtndTypeType : AttendanceType;
+    Task<List<AttendanceType>?> GetAttendanceTypesAsync(RequestOptions? ReqOptions = null, CancellationToken token = default);
+
+    #endregion
+
+    #region Bulk GetPaginated - Methods 
+    Task<PaginatedResponse<AtndTypeType>?> GetAttendanceTypesAsync<AtndTypeType>(PaginatedRequestOptions? options, CancellationToken token = default) where AtndTypeType : AttendanceType;
+    Task<PaginatedResponse<AttendanceType>?> GetAttendanceTypesAsync(PaginatedRequestOptions? options, CancellationToken token = default);
+
+    #endregion
     #region Post - Methods 
     Task<TallyResult> PostAttendanceTypeAsync<AttendanceTypType>(AttendanceTypType attendanceType, PostRequestOptions? postRequestOptions = null, CancellationToken token = default) where AttendanceTypType : AttendanceType;
 
@@ -305,6 +378,7 @@ public interface ITallyService
 
     #region Get - Methods 
     Task<Vchtype> GetVoucherAsync<Vchtype>(string lookupValue, VoucherRequestOptions? voucherRequestOptions = null, CancellationToken token = default) where Vchtype : Voucher;
+    Task<Voucher> GetVoucherAsync(string lookupValue, VoucherRequestOptions? voucherRequestOptions = null, CancellationToken token = default);
 
     #endregion
 
@@ -331,6 +405,7 @@ public interface ITallyService
     Task<List<ObjType>> GetAllObjectsAsync<ObjType>(RequestOptions? objectOptions = null, IProgress<ReportProgressHelper>? progress = null, CancellationToken token = default) where ObjType : TallyBaseObject;
 
     Task<ReturnType?> GetTDLReportAsync<ReportType, ReturnType>(DateFilterRequestOptions? requestOptions = null, string? requestType = null, CancellationToken token = default);
+    Task<ReturnType?> GetTDLReportAsync<ReturnType>(DateFilterRequestOptions? requestOptions = null, CancellationToken token = default) where ReturnType : TallyBaseObject;
 
     Task<TallyResult> PostObjectToTallyAsync<ObjType>(ObjType Object, PostRequestOptions? postRequestOptions = null, string? requestType = null, CancellationToken token = default) where ObjType : TallyXmlJson, ITallyObject;
 

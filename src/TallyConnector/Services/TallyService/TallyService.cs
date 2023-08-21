@@ -26,6 +26,7 @@ namespace TallyConnector.Services;
 [GenerateHelperMethods<AttendanceType>(TypeName = "AtndType")]
 [GenerateHelperMethods<EmployeeGroup>()]
 [GenerateHelperMethods<Employee>()]
+[GenerateHelperMethods<TaxUnit>()]
 public partial class TallyService : ITallyService
 {
     private readonly HttpClient _httpClient;

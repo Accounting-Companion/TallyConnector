@@ -493,6 +493,11 @@ public class VoucherLedger : BaseVoucherLedger
     public VoucherLedger()
     {
     }
+    [XmlElement(ElementName = "ADDLALLOCTYPE")]
+    public AdAllocType AdAllocType { get; set; }
+
+    [XmlElement(ElementName = "ISPARTYLEDGER")]
+    public TallyYesNo IsPartyLedger { get; set; }
 
     [XmlElement(ElementName = "SWIFTCODE")]
     public string? SWIFTCode { get; set; }

@@ -70,6 +70,15 @@ public class BaseGroup : BasicTallyObject, IAliasTallyObject
     [TDLXMLSet(Set = "$GUID:Group:$Parent")]
     public string? ParentId { get; set; }
 
+
+    [XmlElement(ElementName = "_PRIMARYGROUP")]
+    [Column(TypeName = $"nvarchar({Constants.MaxNameLength})")]
+    public string? PrimaryGroup { get; set; }
+
+    [XmlElement(ElementName = "_GRANDPARENT")]
+    [Column(TypeName = $"nvarchar({Constants.MaxNameLength})")]
+    public string? GrandParent { get; set; }
+
     [JsonIgnore]
     [XmlElement(ElementName = "LANGUAGENAME.LIST")]
     [TDLCollection(CollectionName = "LanguageName")]

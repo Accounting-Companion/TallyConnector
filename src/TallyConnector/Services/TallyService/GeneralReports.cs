@@ -47,7 +47,7 @@ public partial class TallyService
         const string reportName = "TC_AutoColumnStats";
         RequestEnvelope requestEnvelope = new(HType.Data, reportName, sv);
         TDLMessage tDLMessage = requestEnvelope.Body.Desc.TDL.TDLMessage;
-        string periodicity = GetPeriodicty(requestOptions);
+        string periodicity = GetPeriodictyString(requestOptions);
         Report report = new(reportName)
         {
             Repeat = new() { " SVFromDate, SVToDate" },
@@ -116,7 +116,7 @@ public partial class TallyService
         else throw new Exception(tallyResult.Response);
     }
 
-    private static string GetPeriodicty(AutoColumnReportPeriodRequestOprions? requestOptions)
+    private static string GetPeriodictyString(AutoColumnReportPeriodRequestOprions? requestOptions)
     {
         return requestOptions?.Periodicity switch
         {
@@ -131,7 +131,7 @@ public partial class TallyService
             _ => throw new NotImplementedException()
         };
     }
-
+    /// <inheritdoc/>
     public async Task<List<CompanyType>?> GetCompaniesAsync<CompanyType>(CancellationToken token = default) where CompanyType : BaseCompany
     {
         return await GetAllObjectsAsync<CompanyType>(new()
@@ -144,6 +144,7 @@ public partial class TallyService
             Filters = new() { new("SimpleCompany", "", false) }
         }, token: token);
     }
+    /// <inheritdoc/>
     public async Task<List<Company>?> GetCompaniesAsync(CancellationToken token = default)
     {
         return await GetCompaniesAsync<Company>(token);
@@ -194,11 +195,11 @@ public partial class TallyService
         }
     }
 
-    private static DateTime GetToDate(DateTime now)
+    public static DateTime GetToDate(DateTime now)
     {
         return new DateTime(now.Month > 3 ? now.Year + 1 : now.Year, 3, 31);
     }
-    private static DateTime GetToDate()
+    public static DateTime GetToDate()
     {
         return GetToDate(DateTime.Now);
     }

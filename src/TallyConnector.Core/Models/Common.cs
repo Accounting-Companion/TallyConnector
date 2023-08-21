@@ -90,14 +90,20 @@ public enum GSTTaxType
     None = 0,
     [XmlEnum(Name = "Central Tax")]
     CentralTax = 1,
+    [XmlEnum(Name = "CGST")]
+    CGST = 1,
     [XmlEnum(Name = "Cess")]
     Cess = 2,
     [XmlEnum(Name = "Integrated Tax")]
     IntegratedTax = 3,
+    [XmlEnum(Name = "IGST")]
+    IGST = 3,
     [XmlEnum(Name = "UT Tax")]
     UTTax = 4,
     [XmlEnum(Name = "State Tax")]
     StateTax = 5,
+    [XmlEnum(Name = "SGST/UTGST")]
+    SGST = 5,
 }
 public enum ExciseNatureOfPurchase
 {
