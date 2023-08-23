@@ -323,7 +323,7 @@ public partial class TallyService : ITallyService
             obj.RemoveNullChilds();
             if (obj is IAliasTallyObject AliasObj)
             {
-                AliasObj.Alias = AliasObj.LanguageNameList != null && AliasObj.LanguageNameList.Count > 1 ? AliasObj.LanguageNameList?.First()?.LanguageAlias : string.Empty;
+                AliasObj.Alias = AliasObj.LanguageNameList != null && AliasObj.LanguageNameList.Count >= 1 ? AliasObj.LanguageNameList?.First()?.LanguageAlias : string.Empty;
             }
 
         });

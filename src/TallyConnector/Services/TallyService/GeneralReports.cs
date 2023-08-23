@@ -164,18 +164,22 @@ public partial class TallyService
         {
             Report = new() { new(reportName) },
             Form = new() { new(reportName) },
-            Part = new() { new() { Name = reportName, Lines = new() { reportName } } },
+            Part = new() { new(reportName, "TC_CompanyCollection") },
             Line = new() { new(reportName, fields: new() { "TC_MastersLastId", "TC_VouchersLastId" }) },
             Field = new()
             {
-                new("TC_MastersLastId", "MastersLastId", "if $$IsEmptyCollection:TC_MastersCollection THEN 0 else $$CollectionField:$ALTERID:last:TC_MastersCollection"),
-                new("TC_VouchersLastId", "VouchersLastId", "if $$IsEmptyCollection:TC_VouchersCollection THEN 0 else $$CollectionField:$ALTERID:last:TC_VouchersCollection")
+                new("TC_MastersLastId", "MastersLastId", "if $$IsEmpty:$ALTMSTID THEN 0 else $ALTMSTID"),
+                new("TC_VouchersLastId", "VouchersLastId", "if $$IsEmpty:$ALTVCHID THEN 0 else $ALTVCHID")
             },
             Collection = new()
             {
-                new(colName:"TC_MastersCollection",colType:"Masters",nativeFields:new(){"ALTERID"}){Sort=new(){"@@Default: -$Alterid" } },
-                new(colName:"TC_VouchersCollection",colType:"Vouchers",nativeFields:new(){"ALTERID"}){Sort=new(){"@@Default: -$Alterid" } }
+                new(colName:"TC_CompanyCollection",colType:"Company",nativeFields:new(){"ALTMSTID,ALTVCHID"}){Filters=new(){ "TC_CurCompFilter" } },
+            },
+            System = new()
+            {
+                new("TC_CurCompFilter","$Name=##SVCURRENTCOMPANY"),
             }
+
         };
         tdlMessage.Part![0].SetAttributes();
 
