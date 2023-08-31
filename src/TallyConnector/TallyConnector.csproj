@@ -25,7 +25,7 @@
 
 		<RepositoryType>git</RepositoryType>
 
-		<VersionPrefix>2.0.12</VersionPrefix>
+		<VersionPrefix>2.0.13</VersionPrefix>
 		<!--<VersionSuffix>rc</VersionSuffix>-->
 		<Nullable>enable</Nullable>
 
@@ -39,7 +39,7 @@
 	</PropertyGroup>
 
 
-	<ItemGroup >
+	<ItemGroup  Condition="'$(TargetFramework)' != 'net6.0'">
 		<PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="7.0.1" />
 	</ItemGroup>
 	

@@ -25,7 +25,7 @@ public class TallyYesNo : IXmlSerializable
 
     public void ReadXml(XmlReader reader)
     {
-
+        Value = false;
         bool isEmptyElement = reader.IsEmptyElement;
         if (!isEmptyElement)
         {
@@ -36,6 +36,7 @@ public class TallyYesNo : IXmlSerializable
             }
 
         }
+
     }
 
     public void WriteXml(XmlWriter writer)
