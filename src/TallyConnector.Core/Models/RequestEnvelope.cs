@@ -621,10 +621,10 @@ public class Collection : DCollection
     public List<string>? ComputeVar { get; set; }
 
     [XmlElement(ElementName = "WALK")]
-    public string? WALK { get; set; }
+    public string? Walk { get; set; }
 
     [XmlElement(ElementName = "BY")]
-    public List<string>? BY { get; set; }
+    public List<string>? By { get; set; }
 
     [XmlElement(ElementName = "AGGRCOMPUTE")]
     public List<string>? AggrCompute { get; set; }  

@@ -1,8 +1,8 @@
 # Tally Connector  [![NuGet Version](https://img.shields.io/nuget/v/TallyConnector.svg?style=flat)](https://www.nuget.org/packages/TallyConnector/)
 
-![forthebadge](https://forthebadge.com/images/badges/built-with-love.svg)
-![forthebadge](https://forthebadge.com/images/badges/open-source.svg)
-![forthebadge](https://forthebadge.com/images/badges/made-with-c-sharp.svg)
+![builtwithlove](https://raw.githubusercontent.com/BraveUX/for-the-badge/master/src/images/badges/built-with-love.svg)
+![OpneSource](https://raw.githubusercontent.com/BraveUX/for-the-badge/master/src/images/badges/open-source.svg)
+![c#](https://raw.githubusercontent.com/BraveUX/for-the-badge/master/src/images/badges/made-with-c-sharp.svg)
 
 ## Branch Info
 

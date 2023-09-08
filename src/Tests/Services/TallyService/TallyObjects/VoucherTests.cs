@@ -7,20 +7,18 @@ internal class VoucherTests : BaseTallyServiceTest
     [Test]
     public async Task CheckGetAllVouchers()
     {
-        int count = 0;
-        IProgress<ReportProgressHelper> progress = new Progress<ReportProgressHelper>(c => count += c.ProcessedCount);
-
+        
         var ActngVchrs = new List<Voucher>();
 
         foreach (var mapping in Mappings.VoucherViewTypeMappings)
         {
-            var vchs = await _tallyService.GetAllObjectsAsync<Voucher>(new()
+            var vchs = await _tallyService.GetVouchersAsync<Voucher>(new RequestOptions()
             {
                 FromDate = new(2009, 4, 1),
                 FetchList = mapping.FetchList,
                 Filters = new List<Filter>() { mapping.Filter }
                
-            }, progress);
+            });
             ActngVchrs.AddRange(vchs);
         }
         var value = ActngVchrs.GroupBy(c => c.VchType).ToDictionary(c => c.Key, c => c.ToList());
