@@ -136,6 +136,9 @@ public class CompanyOnDisk : TallyXmlJson
     [XmlElement(ElementName = "COMPANYNUMBER")]
     public string? CompNum { get; set; }
 
+    [XmlElement(ElementName = "ISAGGREGATE")]
+    public TallyYesNo IsGroup { get; set; }
+
     public override string ToString()
     {
         return $"Company - {Name}";

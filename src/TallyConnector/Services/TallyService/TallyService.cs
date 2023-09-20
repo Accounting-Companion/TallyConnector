@@ -188,7 +188,10 @@ public partial class TallyService : ITallyService
         }
         else
         {
-            filterformulae = $"${requestOptions.LookupField} = \"{lookupValue.Replace("\"", "\" + $$StrByCharCode:34 + \"")}\"";
+            lookupValue = lookupValue.Replace("\"", "\" + $$StrByCharCode:34 + \"");
+            lookupValue = lookupValue.Replace("\r", "\" + $$StrByCharCode:13 + \"");
+            lookupValue = lookupValue.Replace("\n", "\" + $$StrByCharCode:10 + \"");
+            filterformulae = $"${requestOptions.LookupField} = \"{lookupValue}\"";
         }
         List<Filter> filters = new() { new Filter() { FilterName = "Objfilter", FilterFormulae = filterformulae } };
 

@@ -58,7 +58,7 @@ internal class LedgerTests : BaseTallyServiceTest
     public async Task CheckGetLedgerwithSpecialSymbols()
     {
         //var result = await _tallyService.PostLedgerAsync(new Ledger("Test & Ledger \".Sd\"fg", "Sundry Debtors"));
-        var result = await _tallyService.GetLedgerAsync("Test & Ledger \".Sd\"fg");
+        var result = await _tallyService.GetLedgerAsync("Test & Ledgegr\r\n");
 
         //var name = result.Alias;
         //Assert.That(result, Is.Not.Null);
