@@ -32,7 +32,7 @@ internal class GroupTests : BaseTallyServiceTest
             pagination.NextPage();
         }
         Assert.That(Groups, Is.Not.Null);
-        Assert.That(Groups, Has.Count.EqualTo(62));
+        Assert.That(Groups, Has.Count.EqualTo(TotalCount));
     }
 
     [Test]

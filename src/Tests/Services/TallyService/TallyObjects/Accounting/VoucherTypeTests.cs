@@ -12,5 +12,6 @@ public class VoucherTypeTests : BaseTallyServiceTest
     public async Task GetAllVoucherTypes()
     {
         var k = await _tallyService.GetVoucherTypesAsync();
+        var v = await _tallyService.GetVoucherStatisticsAsync(new TCM.DateFilterRequestOptions());
     }
 }

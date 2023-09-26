@@ -7,7 +7,7 @@ internal class LedgerTests : BaseTallyServiceTest
     public async Task CheckGetAllLedgers()
     {
         var objects = await _tallyService.GetLedgersAsync();
-        //string v = objects.ToJson(new());
+        //string specialChar = objects.ToJson(new());
         //string tv = JsonSerializer.Serialize(objects);
         Assert.That(objects, Is.Not.Null);
         Assert.That(objects, Has.Count.EqualTo(745));
@@ -46,7 +46,7 @@ internal class LedgerTests : BaseTallyServiceTest
     [Test]
     public async Task CheckLedger_Create_Read_Delete()
     {
-        var createresult = await _tallyService.PostLedgerAsync(new Ledger() { Name = "Test WrongData ", Group = "Duties & Taxes",TaxType=TallyConnector.Core.Models.TaxType.GST });
+        var createresult = await _tallyService.PostLedgerAsync(new Ledger() { Name = "Test WrongData ", Group = "Duties & Taxes", TaxType = TallyConnector.Core.Models.TaxType.GST });
         //var createresult2 = await _tallyService.PostLedgerAsync(new Ledger() { Name = "Test \"name\" in Quotes", Group = "Sundry Debtors" });
         var result = await _tallyService.GetObjectAsync<TCMA.Ledger>("Test From Server");
 
@@ -58,8 +58,30 @@ internal class LedgerTests : BaseTallyServiceTest
     public async Task CheckGetLedgerwithSpecialSymbols()
     {
         //var result = await _tallyService.PostLedgerAsync(new Ledger("Test & Ledger \".Sd\"fg", "Sundry Debtors"));
-        var result = await _tallyService.GetLedgerAsync("Test & Ledgegr\r\n");
+        // var result = await _tallyService.GetLedgerAsync("TES-101 Supplier\n");
+        List<string> names = new List<string>();
+        List<string> Asciinames = new List<string>();
+        for (int i = 1; i < 128; i++)
+        {
+            char specialChar = Convert.ToChar(i);
 
+            string name = $"{i}_Test {specialChar} Ledger {specialChar}  with Ascii Char";
+            names.Add(name);
+            //TCM.TallyResult tallyResult = await _tallyService.PostLedgerAsync(new Ledger(name, "TestAsciiChars") { OldName = name});
+            //Assert.That(tallyResult.Status, Is.EqualTo(TCM.RespStatus.Failure));
+        }
+        var ledger = await _tallyService.GetLedgerAsync($"{9}_Test  Ledger   with Ascii Char", new() { LookupField = TCM.MasterLookupField.Name });
+
+        List<Ledger> ledgers = await _tallyService.GetLedgersAsync(new TCM.RequestOptions()
+        {
+            Filters = new() { new("GrpFilter", "$PARENT='TestAsciiChars'") }
+        });
+        IEnumerable<int> SrcNumbers = Enumerable.Range(1, 127);
+        ledgers = ledgers.OrderBy(l => l.MasterId).ToList();
+        var TNames = ledgers.Select(l => l.Name);
+        var numbers = ledgers.ToList().Select(c => int.Parse(c.Name.Split('_').First()));
+        IEnumerable<int> NumbersMissing = SrcNumbers.Except(numbers);
+        IEnumerable<string> NamesMissing = names.Except(TNames);
         //var name = result.Alias;
         //Assert.That(result, Is.Not.Null);
         //Assert.That(result.Name, Is.EqualTo("Test From Server"));

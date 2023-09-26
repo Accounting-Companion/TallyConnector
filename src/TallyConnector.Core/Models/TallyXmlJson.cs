@@ -48,7 +48,7 @@ public class TallyXmlJson : TallyBaseObject
         {
             OmitXmlDeclaration = true,
             //NewLineChars = "&#13;&#10;", //If /r/n in Xml replace
-            //NewLineHandling = NewLineHandling.Entitize,
+            NewLineHandling = NewLineHandling.Entitize,
             Encoding = Encoding.Unicode,
             CheckCharacters = false,
             Indent = indent,

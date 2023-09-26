@@ -39,6 +39,11 @@ public partial class TallyService : ITallyService
     protected BaseCompany? Company { get; set; }
 
     private string FullURL => _baseURL + ":" + _port;
+
+    private static System.Text.RegularExpressions.Regex XmlTextRegex = new(@"(?<=>)(?!<)((.|\n)*?)(?=<\/[^>]+>|<[^>]+>)");
+    private static System.Text.RegularExpressions.Regex XmlAttributeRegex = new(@"(?<=="")([^""]*)(?="")");
+    private static System.Text.RegularExpressions.Regex XmlTextAsciiRegex = new(@"[\x00-\x1F]");
+    private static System.Text.RegularExpressions.Regex XmlTextHexRegex = new(@"(?<=&#x)(.*?)(?=;)");
     /// <summary>
     /// Intiate Tally Service with Default Parameters
     /// </summary>
@@ -189,8 +194,6 @@ public partial class TallyService : ITallyService
         else
         {
             lookupValue = lookupValue.Replace("\"", "\" + $$StrByCharCode:34 + \"");
-            lookupValue = lookupValue.Replace("\r", "\" + $$StrByCharCode:13 + \"");
-            lookupValue = lookupValue.Replace("\n", "\" + $$StrByCharCode:10 + \"");
             filterformulae = $"${requestOptions.LookupField} = \"{lookupValue}\"";
         }
         List<Filter> filters = new() { new Filter() { FilterName = "Objfilter", FilterFormulae = filterformulae } };
@@ -603,7 +606,6 @@ public partial class TallyService : ITallyService
 #else
             var resXml = ReplaceXMLText(await tallyResponse.Content.ReadAsStringAsync(token));
 #endif
-
             // If Status code is 200 
             if (tallyResponse.StatusCode == HttpStatusCode.OK)
             {
@@ -649,17 +651,72 @@ public partial class TallyService : ITallyService
     /// <inheritdoc/>
     public static string ReplaceXMLText(string Xml)
     {
+        Xml = XmlTextRegex.Replace(Xml, CleanXml);
+        Xml = XmlAttributeRegex.Replace(Xml, CleanXml);
         Xml = Xml.Replace("&#4; ", "");
-        Xml = Xml.Replace("0x20B9", "");
         return Xml;
     }
     /// <inheritdoc/>
     public static string ReplaceText(string Xml)
     {
-        Xml = Xml.Replace("&#x4;", "");
+        Xml = XmlTextRegex.Replace(Xml, CleanValue);
+        Xml = XmlAttributeRegex.Replace(Xml, CleanValue);
+        Xml = Xml.Replace("&#x", "&#");
         return Xml;
     }
 
+    private static string CleanValue(System.Text.RegularExpressions.Match c)
+    {
+        string value = c.Value;
+        if (string.IsNullOrWhiteSpace(c.Value))
+        {
+            return value;
+        }
+        value = value.Replace("\n", "&#10;");
+        value = value.Replace("\r", "&#13;");
+        if (XmlTextHexRegex.IsMatch(value))
+        {
+            string v = XmlTextHexRegex.Replace(value, innerValue =>
+                        {
+                            var innerText = innerValue.Value;
+                            if (string.IsNullOrEmpty(innerText))
+                            {
+                                return innerText;
+                            }
+                            var AsciiCode = System.Convert.ToUInt32(innerText, 16);
+                            return AsciiCode.ToString();
+                        });
+            return v;
+        }
+        return value;
+
+    }
+    private static string CleanXml(System.Text.RegularExpressions.Match c)
+    {
+        string value = c.Value;
+        if (string.IsNullOrWhiteSpace(c.Value))
+        {
+            return value;
+        }
+        value = value.Replace("\n", "&#10;");
+        value = value.Replace("\r", "&#13;");
+        if (XmlTextAsciiRegex.IsMatch(value))
+        {
+            string v = XmlTextAsciiRegex.Replace(value, innerValue =>
+            {
+                var innerText = innerValue.Value;
+                if (string.IsNullOrEmpty(innerText))
+                {
+                    return innerText;
+                }
+                var AsciiCode = ((int)innerText[0]);
+                return $"&#{AsciiCode};";
+            });
+            return v;
+        }
+        return value;
+
+    }
     /// <inheritdoc/>
     public TallyResult ParseResponse(TallyResult tallyResult)
     {

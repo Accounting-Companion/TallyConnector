@@ -10,9 +10,6 @@ public static class XMLToObject
     public static Dictionary<string, XmlSerializer> _cache = new();
     public static T GetObjfromXml<T>(string Xml, XmlAttributeOverrides? attrOverrides = null, ILogger? Logger = null)
     {
-        string re = @"(?!₹)[^\x09\x0A\x0D\x20-\xD7FF\xE000-\xFFFD\x10000-x10FFFF]";
-        //string re = @"[^\x0\]";
-        Xml = System.Text.RegularExpressions.Regex.Replace(Xml, re, "");
         XmlSerializer XMLSer = attrOverrides == null ? new(typeof(T)) : GetSerializer(typeof(T), attrOverrides);
 
         NameTable nt = new();
