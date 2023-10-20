@@ -64,6 +64,10 @@ public class TallyYesNo : IXmlSerializable
 
     public static implicit operator bool(TallyYesNo tallyYesNo)
     {
+        if (tallyYesNo == null)
+        {
+            return false;
+        }
         return tallyYesNo.Value;
     }
     public static implicit operator bool?(TallyYesNo? tallyYesNo)

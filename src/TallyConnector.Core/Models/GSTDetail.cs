@@ -23,6 +23,8 @@ public class GSTDetail : TallyBaseObject, ICheckNull
 
     [XmlElement(ElementName = "TAXABILITY")]
     public GSTTaxabilityType Taxability { get; set; }
+    [XmlElement(ElementName = "SRCOFGSTDETAILS")]
+    public string SourceOfGSTDetails { get; set; }
 
     [XmlElement(ElementName = "ISREVERSECHARGEAPPLICABLE")]
     public TallyYesNo? IsReverseChargeApplicable { get; set; }

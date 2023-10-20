@@ -35,5 +35,5 @@ internal class Main : BaseTallyServiceTest
         //Assert.That(voucherstat, Has.Count.EqualTo(vouchertypecount));
     }
 
-
+    
 }

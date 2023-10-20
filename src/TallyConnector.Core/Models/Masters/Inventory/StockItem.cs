@@ -141,6 +141,9 @@ public class StockItem : BasicTallyObject, IAliasTallyObject
     [XmlElement(ElementName = "GSTDETAILS.LIST")]
     public List<GSTDetail>? GSTDetails { get; set; }
 
+    [XmlElement(ElementName = "HSNDETAILS.LIST")]
+    public List<HSNDetail>? HSNDetails { get; set; }
+
     public void CreateNamesList()
     {
         if (LanguageNameList.Count == 0)
@@ -172,5 +175,24 @@ public class StockItem : BasicTallyObject, IAliasTallyObject
     public override string ToString()
     {
         return $"StockItem - {Name}";
+    }
+}
+[XmlRoot(ElementName = "HSNDETAILS.LIST")]
+public class HSNDetail : TallyBaseObject, ICheckNull
+{
+    [XmlElement(ElementName = "APPLICABLEFROM")]
+    public TallyDate? ApplicableFrom { get; set; }
+
+    [XmlElement(ElementName = "HSNCODE")]
+    public string? HSNCode { get; set; }
+
+    [XmlElement(ElementName = "HSN")]
+    public string? HSNDescription { get; set; }
+
+    [XmlElement(ElementName = "SRCOFHSNDETAILS")]
+    public string SourceOfHSNDetails { get; set; }
+    public bool IsNull()
+    {
+        return false;
     }
 }
