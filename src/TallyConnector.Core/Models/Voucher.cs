@@ -646,6 +646,8 @@ public class InventoryAllocations : TallyBaseObject
 [XmlRoot(ElementName = "BATCHALLOCATIONS.LIST")]
 public class BatchAllocations : TallyBaseObject//Godown Allocations
 {
+    [XmlElement(ElementName = "MFDON")]
+    public TallyDate? ManufacturedOn { get; set; }
 
     [XmlElement(ElementName = "TRACKINGNUMBER")]
     public string? TrackingNo { get; set; }
@@ -667,6 +669,9 @@ public class BatchAllocations : TallyBaseObject//Godown Allocations
 
     [XmlElement(ElementName = "ORDERDUEDATE")]
     public TallyDueDate? OrderDueDate { get; set; }
+
+    [XmlElement(ElementName = "EXPIRYPERIOD")]
+    public TallyDueDate? ExpiryPeriod { get; set; }
 
     [XmlElement(ElementName = "AMOUNT")]
     public TallyAmount? Amount { get; set; }
