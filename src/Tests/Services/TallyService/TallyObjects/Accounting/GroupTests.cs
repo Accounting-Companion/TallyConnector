@@ -27,11 +27,12 @@ internal class GroupTests : BaseTallyServiceTest
         TCM.Pagination.Pagination pagination = new(50, 100);
         for (int i = 0; i < pagination.TotalPages; i++)
         {
-            var TGroups = await _tallyService.GetGroupsAsync(new() { PageNum = 1 });
+            var TGroups = await _tallyService.GetGroupsAsync(new() { PageNum = i + 1 });
             Groups.AddRange(TGroups.Data);
             pagination.NextPage();
         }
         Assert.That(Groups, Is.Not.Null);
+        string v = JsonSerializer.Serialize(Groups.Select(c => new { name = c.Name, parent = c.Parent,PrimaryGroup=c.PrimaryGroup }));
         Assert.That(Groups, Has.Count.EqualTo(TotalCount));
     }
 
@@ -40,11 +41,11 @@ internal class GroupTests : BaseTallyServiceTest
     {
         TCMA.Group group = new("Test NA")
         {
-            
+
             AddlAllocType = TCM.AdAllocType.AppropriateByQty,
-            OldName= "Test NA",
+            OldName = "Test NA",
         };
-        
+
         //XmlDocument xmlDocument = new();
         //XmlElement xmlElement = xmlDocument.CreateElement("Test");
         //xmlElement.Value = "sdfg";

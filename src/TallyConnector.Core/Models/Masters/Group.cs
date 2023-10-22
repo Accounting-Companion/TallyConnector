@@ -71,13 +71,9 @@ public class BaseGroup : BasicTallyObject, IAliasTallyObject
     public string? ParentId { get; set; }
 
 
-    [XmlElement(ElementName = "_PRIMARYGROUP")]
+    [XmlElement(ElementName = "PRIMARYGROUP")]
     [Column(TypeName = $"nvarchar({Constants.MaxNameLength})")]
     public string? PrimaryGroup { get; set; }
-
-    [XmlElement(ElementName = "_GRANDPARENT")]
-    [Column(TypeName = $"nvarchar({Constants.MaxNameLength})")]
-    public string? GrandParent { get; set; }
 
     [JsonIgnore]
     [XmlElement(ElementName = "LANGUAGENAME.LIST")]

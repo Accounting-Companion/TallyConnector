@@ -65,7 +65,7 @@ public class Mappings
                                tallyMasterType: "Group",
                                defaultPaginateCount: 1000,
                                filters: null,
-                               computeFields: new(){ "NAME:$NAME","PARENTID:$GUID:Group:$Parent" }),
+                               computeFields: new(){ "NAME:$NAME","PARENTID:$GUID:Group:$Parent","PrimaryGroup:$_PrimaryGroup" }),
 
         new TallyObjectMapping(TallyObjectType.Ledgers,
                                tallyMasterType: "Ledger",
