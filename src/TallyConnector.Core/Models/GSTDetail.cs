@@ -87,5 +87,7 @@ public enum GSTTaxabilityType
     NilRated = 3,
     [XmlEnum(Name = "Unknown")]
     Unknown = 4,
+    [XmlEnum(Name = "Non-GST")]
+    NONGST = 5,
 
 }

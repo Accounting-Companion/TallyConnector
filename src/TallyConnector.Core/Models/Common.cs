@@ -122,12 +122,42 @@ public enum GSTRegistrationType
     Unknown = 1,
     [XmlEnum(Name = "Composition")]
     Composition = 2,
+    /// <summary>
+    /// Consumer for tally version below 3.0
+    /// </summary>
     [XmlEnum(Name = "Consumer")]
     Consumer = 3,
+    /// <summary>
+    /// Added In Prime 3.0, used for Consumer
+    /// </summary>
+    [XmlEnum(Name = "Unregistered/Consumer")]
+    UnregisteredConsumer = 3,
     [XmlEnum(Name = "Regular")]
     Regular = 4,
     [XmlEnum(Name = "Unregistered")]
     Unregistered = 5,
+
+    // Below are added in Prime 3.0
+
+    [XmlEnum(Name = "Government entity / TDS")]
+    GovtOrTDS = 6,
+    [XmlEnum(Name = "Regular - SEZ")]
+    RegularSEZ = 7,
+    [XmlEnum(Name = "Regular-Deemed Exporter")]
+    RegularDeemedExporter = 8,
+    [XmlEnum(Name = "Regular-Exports (EOU)")]
+    RegularEXports_EOU = 9,
+    [XmlEnum(Name = "e-Commerce Operator")]
+    ECommerceOperator = 10,
+    [XmlEnum(Name = "Input Service Distributor")]
+    InputServiceDistributor = 78,
+    [XmlEnum(Name = "Embassy/UN Body")]
+    Embassy_UNBody = 89,
+    [XmlEnum(Name = "Non-Resident Taxpayer")]
+    NonResidentTaxpayer = 100,
+
+    [XmlEnum(Name = "OIDAR")]
+    OIDAR = 101,
 
 }
 
