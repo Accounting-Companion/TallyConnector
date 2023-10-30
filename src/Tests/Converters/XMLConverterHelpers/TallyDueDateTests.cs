@@ -75,7 +75,8 @@ public class TallyDueDateTests
         var writer = XmlWriter.Create(textWriter, settings);
         xmlSerializer.Serialize(writer, TallyDueDate);
         string xml = textWriter.ToString();
-        Assert.That(xml, Is.EqualTo("<BILLCREDITPERIOD TYPE=\"Due Date\">01-Jan-2022</BILLCREDITPERIOD>"));
+        var JD = (Math.Abs(((new DateTime(1900, 1, 1) - DateTime.Now).Days)) + 1);
+        Assert.That(xml, Is.EqualTo($"<BILLCREDITPERIOD TYPE=\"Due Date\" JD=\"{JD}\">01-Jan-2022</BILLCREDITPERIOD>"));
     }
     [Test]
     [TestCase(1, DueDateFormat.Day)]
@@ -93,7 +94,25 @@ public class TallyDueDateTests
         var writer = XmlWriter.Create(textWriter, settings);
         xmlSerializer.Serialize(writer, TallyDueDate);
         string xml = textWriter.ToString();
-        Assert.That(xml, Is.EqualTo($"<BILLCREDITPERIOD TYPE=\"Due Date\">{value} {dueDateFormat}s</BILLCREDITPERIOD>"));
+        var JD = (Math.Abs(((new DateTime(1900, 1, 1) - DateTime.Now).Days)) + 1);
+        Assert.That(xml, Is.EqualTo($"<BILLCREDITPERIOD TYPE=\"Due Date\" JD=\"{JD}\">{value} {dueDateFormat}s</BILLCREDITPERIOD>"));
+    }
+    [Test]
+    [TestCase( 2023,10,1)]
+    [TestCase( 2023,10,31)]
+    [TestCase( 2023,11,1)]
+    public void CheckTallyDueDateSerializeOnlyDate( int year, int month, int day)
+    {
+        DateTime billDate = new DateTime(year, month, day);
+        TallyDueDate TallyDueDate = new(DateTime.Now, billDate);
+        TextWriter textWriter = new StringWriter();
+        var writer = XmlWriter.Create(textWriter, settings);
+        xmlSerializer.Serialize(writer, TallyDueDate);
+        string xml = textWriter.ToString();
+        using TextReader reader = new StringReader(xml);
+        var dueDate = (TallyDueDate)xmlSerializer.Deserialize(reader);
+        Assert.That(dueDate.BillDate, Is.EqualTo(billDate));
+        
     }
 
 }

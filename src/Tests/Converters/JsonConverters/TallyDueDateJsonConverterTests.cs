@@ -29,7 +29,7 @@ public class TallyDueDateJsonConverterTests
     {
         TallyDueDate tallyDate = DateTime.Now;
         string json = JsonSerializer.Serialize(tallyDate, jsonSerializerOptions);
-        Assert.That(json, Is.EqualTo($"{{\"DueDate\":\"{DateTime.Now:dd-MM-yyyy}\",\"Suffix\":\"\",\"Value\":0}}"));
+        Assert.That(json, Is.EqualTo($"{{\"BillDate\":\"{DateTime.Now:dd-MM-yyyy}\",\"DueDate\":\"30-10-2023\",\"Suffix\":\"\",\"Value\":0}}"));
     }
     //[Test]
     //[TestCase(5, DueDateFormat.Day, 5)]

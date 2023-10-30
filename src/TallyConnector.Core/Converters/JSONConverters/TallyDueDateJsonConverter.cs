@@ -75,7 +75,7 @@ public class TallyDueDateJsonConverter : JsonConverter<TallyDueDate>
         else
         {
             writer.WriteStartObject();
-            // writer.WriteString(propertyNamingPolicy?.ConvertName(nameof(value.BillDate)) ?? nameof(value.BillDate), value.BillDate.ToString("dd-MM-yyyy"));
+            writer.WriteString(propertyNamingPolicy?.ConvertName(nameof(value.BillDate)) ?? nameof(value.BillDate), value.BillDate.ToString("dd-MM-yyyy"));
             writer.WriteString(propertyNamingPolicy?.ConvertName(nameof(value.DueDate)) ?? nameof(value.DueDate), value.DueDate?.ToString("dd-MM-yyyy"));
             writer.WriteString(propertyNamingPolicy?.ConvertName(nameof(value.Suffix)) ?? nameof(value.Suffix), value.Suffix.ToString());
             writer.WriteNumber(propertyNamingPolicy?.ConvertName(nameof(value.Value)) ?? nameof(value.Value), value.Value);

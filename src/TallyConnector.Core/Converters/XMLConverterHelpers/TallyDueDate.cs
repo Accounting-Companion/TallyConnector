@@ -9,18 +9,20 @@ public class TallyDueDate : IXmlSerializable
     {
     }
 
-    
-    public TallyDueDate(DateTime dueDate)
+
+    public TallyDueDate(DateTime dueDate, DateTime? billDate = null)
     {
         DueDate = dueDate;
+        BillDate = billDate ?? DateTime.Now;
     }
-    public TallyDueDate(int value, DueDateFormat suffix)
+    public TallyDueDate(int value, DueDateFormat suffix, DateTime? billDate = null)
     {
         Value = value;
         Suffix = suffix;
+        BillDate = billDate ?? DateTime.Now;
     }
 
-    private DateTime? _billDate;
+    public DateTime BillDate { get; set; }
     public int Value { get; private set; }
     public DueDateFormat? Suffix { get; private set; }
     public DateTime? DueDate { get; private set; }
@@ -37,6 +39,11 @@ public class TallyDueDate : IXmlSerializable
 
         if (!string.IsNullOrEmpty(tValue))
         {
+            if (JD != null)
+            {
+                BillDate = new DateTime(1900, 1, 1).AddDays(int.Parse(JD) - 1);
+            }
+
             if (tValue.Contains('-'))
             {
                 Suffix = DueDateFormat.Date;
@@ -46,17 +53,14 @@ public class TallyDueDate : IXmlSerializable
                 {
                     DueDate = date;
                 }
-                if (sdate)
+                else if (sdate)
                 {
                     DueDate = ShrtDate;
                 }
             }
             else
             {
-                if (JD != null)
-                {
-                    _billDate = new DateTime(1900, 1, 1).AddDays(int.Parse(JD) - 1);
-                }
+               
                 var splittedvalues = tValue.Split(' ');
                 var suffix = splittedvalues.Last().Trim();
                 Value = int.Parse(splittedvalues.First());
@@ -76,12 +80,11 @@ public class TallyDueDate : IXmlSerializable
                 {
                     Suffix = DueDateFormat.Year;
                 }
-                if (_billDate != null)
-                {
-                    DueDate = Suffix == DueDateFormat.Month ?
-                    _billDate?.AddMonths(Value) : Suffix == DueDateFormat.Year ?
-                    _billDate?.AddYears(Value) : Suffix == DueDateFormat.Week ? _billDate?.AddDays(Value * 7) : _billDate?.AddDays(Value);
-                }
+
+                DueDate = Suffix == DueDateFormat.Month ?
+                    BillDate.AddMonths(Value) : Suffix == DueDateFormat.Year ?
+                    BillDate.AddYears(Value) : Suffix == DueDateFormat.Week ? BillDate.AddDays(Value * 7) : BillDate.AddDays(Value);
+
 
             }
 
@@ -94,7 +97,7 @@ public class TallyDueDate : IXmlSerializable
         if (this != null)
         {
             writer.WriteAttributeString("TYPE", "Due Date");
-            // writer.WriteAttributeString("", "");
+            writer.WriteAttributeString("JD", (Math.Abs(((new DateTime(1900, 1, 1) - BillDate).Days))+1).ToString());
             if (Value != 0 && Suffix != null)
             {
                 writer.WriteString($"{Value} {Suffix}s");
