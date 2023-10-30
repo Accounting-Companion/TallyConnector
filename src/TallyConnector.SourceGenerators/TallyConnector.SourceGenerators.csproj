@@ -8,7 +8,7 @@
 		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
 		<!-- Generates a package at build -->
 		<IncludeBuildOutput>false</IncludeBuildOutput>
-		<VersionPrefix>2.0.17</VersionPrefix>
+		<VersionPrefix>2.0.18</VersionPrefix>
 		<IncludeBuildOutput>false</IncludeBuildOutput>
 		<Nullable>enable</Nullable>
 	</PropertyGroup>
