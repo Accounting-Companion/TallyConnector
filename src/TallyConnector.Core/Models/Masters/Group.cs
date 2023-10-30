@@ -75,6 +75,11 @@ public class BaseGroup : BasicTallyObject, IAliasTallyObject
     [Column(TypeName = $"nvarchar({Constants.MaxNameLength})")]
     public string? PrimaryGroup { get; set; }
 
+
+    [XmlElement(ElementName = "RESERVEDNAME")]
+    [Column(TypeName = $"nvarchar({Constants.MaxNameLength})")]
+    public string? ReservedName { get; set; }
+
     [JsonIgnore]
     [XmlElement(ElementName = "LANGUAGENAME.LIST")]
     [TDLCollection(CollectionName = "LanguageName")]
