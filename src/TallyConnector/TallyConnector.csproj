@@ -25,7 +25,6 @@
 
 		<RepositoryType>git</RepositoryType>
 
-		<VersionPrefix>2.0.18</VersionPrefix>
 		<!--<VersionSuffix>rc</VersionSuffix>-->
 		<Nullable>enable</Nullable>
 
