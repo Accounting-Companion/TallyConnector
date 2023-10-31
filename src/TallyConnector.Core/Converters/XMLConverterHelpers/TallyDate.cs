@@ -83,7 +83,7 @@ public class TallyDate : IXmlSerializable
 
     public override string? ToString()
     {
-        return Date.ToString("dd-MM-yyyy");
+        return Date.ToString("dd-MM-yyyy", CultureInfo.InvariantCulture);
     }
     
 }

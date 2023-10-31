@@ -104,7 +104,7 @@ public class TallyDueDate : IXmlSerializable
             }
             else if (DueDate != null)
             {
-                writer.WriteString(DueDate?.ToString("dd-MMM-yyyy"));
+                writer.WriteString(DueDate?.ToString("dd-MMM-yyyy",CultureInfo.InvariantCulture));
             }
 
         }
