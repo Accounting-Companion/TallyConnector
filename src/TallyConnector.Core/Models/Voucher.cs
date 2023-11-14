@@ -34,6 +34,14 @@ public class Voucher : BasicTallyObject, ITallyObject
     [Column(TypeName = $"nvarchar(30)")]
     public VoucherViewType View { get; set; }
 
+    [XmlElement(ElementName = "VCHGSTCLASS")]
+    [Column(TypeName = $"nvarchar({Constants.MaxNameLength})")]
+    public string VoucherGSTClass { get; set; }
+
+    [XmlElement(ElementName = "COSTCENTRENAME")]
+    [Column(TypeName = $"nvarchar({Constants.MaxNameLength})")]
+    public string CostCentreName { get; set; }
+
     [XmlElement(ElementName = "VCHENTRYMODE")]
     [Column(TypeName = $"nvarchar(30)")]
     public string? VoucherEntryMode { get; set; }
@@ -206,6 +214,12 @@ public class Voucher : BasicTallyObject, ITallyObject
     [Column(TypeName = $"nvarchar({Constants.GUIDLength})")]
     public string? PartyLedgerId { get; set; }
 
+    [XmlElement(ElementName = "GSTREGISTRATION")]
+    public GSTRegistration? GSTRegistration { get; set; }
+
+    [XmlElement(ElementName = "VOUCHERNUMBERSERIES")]
+    public string? VoucherNumberSeries { get; set; }
+
     [TallyCategory("PartyDetails")]
     [XmlElement(ElementName = "PARTYMAILINGNAME")]
     public string? PartyMailingName { get; set; }
@@ -259,6 +273,14 @@ public class Voucher : BasicTallyObject, ITallyObject
     [XmlElement(ElementName = "CONSIGNEEPINCODE")]
     public string? ConsigneePinCode { get; set; }
 
+    [XmlArray(ElementName = "ADDRESS.LIST")]
+    [XmlArrayItem(ElementName = "ADDRESS")]
+    public List<string>? Address { get; set; }
+
+    [XmlArray(ElementName = "BASICBUYERADDRESS.LIST")]
+    [XmlArrayItem(ElementName = "BASICBUYERADDRESS")]
+
+    public List<string>? BuyerAddress { get; set; }
 
     [XmlElement(ElementName = "ISCANCELLED")]
     public TallyYesNo? IsCancelled { get; set; }
@@ -420,6 +442,8 @@ public class Voucher : BasicTallyObject, ITallyObject
         return $"{VoucherType} - {VoucherNumber}";
     }
 }
+
+
 
 [XmlRoot(ElementName = "LEDGERENTRIES.LIST")]
 public class EVoucherLedger : VoucherLedger
@@ -1001,6 +1025,17 @@ public class BankAllocation
         }
         return false;
     }
+}
+public class GSTRegistration
+{
+    [XmlAttribute(AttributeName = "TAXTYPE")]
+    public string TaxType { get; set; } = "GST";
+
+    [XmlAttribute(AttributeName = "TAXREGISTRATION")]
+    public string TaxRegistration { get; set; }
+
+    [XmlText]
+    public string RegistrationName { get; set; }
 }
 public enum VoucherLookupField
 {
