@@ -269,7 +269,7 @@ public class VoucherClassLedger
 
     [XmlElement(ElementName = "CLASSRATE")]
     [Column(TypeName = "decimal(10,4)")]
-    public decimal ClassRate { get; set; }
+    public string? ClassRate { get; set; }
 
     /// <summary>
     /// Override using Item Default
