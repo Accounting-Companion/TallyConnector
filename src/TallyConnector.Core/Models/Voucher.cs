@@ -38,6 +38,10 @@ public class Voucher : BasicTallyObject, ITallyObject
     [Column(TypeName = $"nvarchar({Constants.MaxNameLength})")]
     public string VoucherGSTClass { get; set; }
 
+    [XmlElement(ElementName = "ISCOSTCENTRE")]
+    [Column(TypeName = $"nvarchar({Constants.MaxNameLength})")]
+    public TallyYesNo? IsCostCentre { get; set; }
+
     [XmlElement(ElementName = "COSTCENTRENAME")]
     [Column(TypeName = $"nvarchar({Constants.MaxNameLength})")]
     public string CostCentreName { get; set; }
