@@ -9,4 +9,5 @@ global using TallyConnector.Core.Converters.XMLConverterHelpers;
 global using TallyConnector.Core.Exceptions;
 global using TallyConnector.Core.Models;
 global using TallyConnector.Core.Models.Pagination;
+global using System.Net.Http;
 
