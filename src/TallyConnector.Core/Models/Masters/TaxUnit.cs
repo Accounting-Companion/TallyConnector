@@ -32,6 +32,9 @@ public class TaxUnit : BasicTallyObject, IAliasTallyObject
     [XmlElement(ElementName = "LANGUAGENAME.LIST")]
     [TDLCollection(CollectionName = "LanguageName")]
     public List<LanguageNameList> LanguageNameList { get; set; }
+
+    [XmlElement(ElementName = "GSTREGNUMBER")]
+    public string? GSTIN { get; set; }
     public void CreateNamesList()
     {
         if (LanguageNameList.Count == 0)
