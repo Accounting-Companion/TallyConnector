@@ -135,6 +135,13 @@ public class StockItem : BasicTallyObject, IAliasTallyObject
     [TDLCollection(CollectionName = "LanguageName")]
     public List<LanguageNameList> LanguageNameList { get; set; }
 
+    /// <summary>
+    ///  in Tally UI - Part No and Part No alias
+    /// </summary>
+    [XmlArray(ElementName = "MAILINGNAME.LIST")]
+    [XmlArrayItem(ElementName = "MAILINGNAME")]
+    public List<string> MailingNames { get; set; }
+
     [XmlElement(ElementName = "MULTICOMPONENTLIST.LIST")]
     public List<ComponentsList>? BOMList { get; set; }
 
