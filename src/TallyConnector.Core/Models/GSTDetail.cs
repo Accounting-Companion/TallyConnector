@@ -1,5 +1,8 @@
 ﻿namespace TallyConnector.Core.Models;
 
+/// <summary>
+/// Contains GST Details of StockItem , Ledgers ..etc.,
+/// </summary>
 [XmlRoot(ElementName = "GSTDETAILS.LIST")]
 public class GSTDetail : TallyBaseObject, ICheckNull
 {
@@ -33,7 +36,7 @@ public class GSTDetail : TallyBaseObject, ICheckNull
     public TallyYesNo? IsInEligibleforITC { get; set; }
 
     [XmlElement(ElementName = "INCLUDEEXPFORSLABCALC")]
-    public TallyYesNo? IcludeExpForSlabCalc { get; set; }
+    public TallyYesNo? IncludeExpForSlabCalc { get; set; }
 
     [XmlElement(ElementName = "STATEWISEDETAILS.LIST")]
     public List<StateWiseDetail>? StateWiseDetails { get; set; }
@@ -90,4 +93,34 @@ public enum GSTTaxabilityType
     [XmlEnum(Name = "Non-GST")]
     NONGST = 5,
 
+}
+/// <summary>
+/// GST Registration details of party ledgers 
+/// Added from Prime3
+/// </summary>
+[XmlRoot(ElementName = "LEDGSTREGDETAILS.LIST")]
+public class LedgerGSTRegistrationDetails
+{
+    [XmlElement("APPLICABLEFROM")]
+    public TallyDate? ApplicableFrom { get; set; }
+    [XmlElement("GSTREGISTRATIONTYPE")]
+    public string? GSTRegistrationType { get; set; }
+    [XmlElement("STATE")]
+    public string? State { get; set; }
+    [XmlElement("PLACEOFSUPPLY")]
+    public string? PlaceOfSupply { get; set; }
+
+    [XmlElement("ISOTHTERRITORYASSESSEE")]
+    public TallyYesNo? IsOtherTerritoryAssesse { get; set; }
+
+    [XmlElement("CONSIDERPURCHASEFOREXPORT")]
+    public TallyYesNo? ConsiderPurchaseForExport { get; set; }
+
+    [XmlElement("ISTRANSPORTER")]
+    public TallyYesNo? IsTransporter { get; set; }
+    [XmlElement("ISCOMMONPARTY")]
+    public TallyYesNo? IsCommonParty { get; set; }
+
+    [XmlElement("GSTIN")]
+    public string? GSTIN { get; set; }
 }

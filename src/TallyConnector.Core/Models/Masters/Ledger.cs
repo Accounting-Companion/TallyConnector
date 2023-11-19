@@ -311,6 +311,10 @@ public partial class Ledger : BasicTallyObject, IAliasTallyObject
     [XmlElement(ElementName = "GSTDETAILS.LIST")]
     public List<GSTDetail>? GSTDetails { get; set; }
 
+
+    [XmlElement(ElementName = "LEDGSTREGDETAILS.LIST")]
+    public List<LedgerGSTRegistrationDetails>? LedgerGSTRegistrationDetails { get; set; }
+
     [XmlElement(ElementName = "CANDELETE")]
     [Column(TypeName = "nvarchar(3)")]
     public TallyYesNo? CanDelete { get; set; }
