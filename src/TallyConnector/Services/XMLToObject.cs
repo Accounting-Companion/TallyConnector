@@ -68,6 +68,7 @@ public static class XMLToObject
                     IEnumerable<string> values;
                     if (!string.IsNullOrEmpty(RootElement))
                     {
+                        RootElement = $"<{RootElement} ";
                         var beforeLines = Splittedstrings.Take(StartIndex).Reverse();
                         int linenum = StartIndex;
                         foreach (string line in beforeLines)
