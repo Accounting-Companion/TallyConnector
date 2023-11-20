@@ -49,6 +49,8 @@ public enum AdAllocType
     AppropriateByQty = 2,
     [XmlEnum(Name = "Appropriate by Value")]
     AppropriateByValue = 3,
+    [XmlEnum(Name = "Appropriate by condition")]
+    AppropriateByCondition = 4,
 }
 
 public enum TaxType
