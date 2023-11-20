@@ -268,7 +268,6 @@ public class VoucherClassLedger
     public CalculationMethod? MethodType { get; set; }
 
     [XmlElement(ElementName = "CLASSRATE")]
-    [Column(TypeName = "decimal(10,4)")]
     public string? ClassRate { get; set; }
 
     /// <summary>

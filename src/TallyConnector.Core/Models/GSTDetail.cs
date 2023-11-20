@@ -104,7 +104,7 @@ public class LedgerGSTRegistrationDetails
     [XmlElement("APPLICABLEFROM")]
     public TallyDate? ApplicableFrom { get; set; }
     [XmlElement("GSTREGISTRATIONTYPE")]
-    public string? GSTRegistrationType { get; set; }
+    public GSTRegistrationType? GSTRegistrationType { get; set; }
     [XmlElement("STATE")]
     public string? State { get; set; }
     [XmlElement("PLACEOFSUPPLY")]

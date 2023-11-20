@@ -36,7 +36,7 @@ public class Voucher : BasicTallyObject, ITallyObject
 
     [XmlElement(ElementName = "VCHGSTCLASS")]
     [Column(TypeName = $"nvarchar({Constants.MaxNameLength})")]
-    public string VoucherGSTClass { get; set; }
+    public string? VoucherGSTClass { get; set; }
 
     [XmlElement(ElementName = "ISCOSTCENTRE")]
     [Column(TypeName = $"nvarchar({Constants.MaxNameLength})")]
@@ -44,7 +44,7 @@ public class Voucher : BasicTallyObject, ITallyObject
 
     [XmlElement(ElementName = "COSTCENTRENAME")]
     [Column(TypeName = $"nvarchar({Constants.MaxNameLength})")]
-    public string CostCentreName { get; set; }
+    public string? CostCentreName { get; set; }
 
     [XmlElement(ElementName = "VCHENTRYMODE")]
     [Column(TypeName = $"nvarchar(30)")]
