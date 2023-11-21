@@ -218,4 +218,37 @@ public static class Constants
         Voucher.ViewType.MfgJournalVoucherView, Voucher.ViewType.InventoryVoucherView,
         Voucher.ViewType.PayrollVoucherView
     };
+
+    public static class Groups
+    {
+        public const string Stock = "GroupStock";
+        public const string CurrentLiab = "GroupCurrentLiab";
+        public const string CurrentAssets = "GroupCurrentAssets";
+        public const string FixedAssets = "GroupFixedAssets";
+        public const string Capital = "GroupCapital";
+        public const string Branches = "GroupBranches";
+        public const string DirectExpenses = "GroupDirectExpenses";
+        public const string DirectIncomes = "GroupDirectIncomes";
+        public const string IndirectExpenses = "GroupIndirectExpenses";
+        public const string IndirectIncomes = "GroupIndirectIncomes";
+        public const string Investments = "GroupInvestments";
+        public const string LoansLiab = "GroupLoansLiab";
+        public const string MiscExp = "GroupMiscExp";
+        public const string Purchase = "GroupPurchase";
+        public const string Sales = "GroupSales";
+        public const string Suspense = "GroupSuspense";
+        public const string Duties = "GroupDuties";
+        public const string SundryDebtors = "GroupSundryDebtors";
+        public const string SundryCreditors = "GroupSundryCreditors";
+        public const string Bank = "GroupBank";
+        public const string BankOD = "GroupBankOD";
+        public const string Cash = "GroupCash";
+        public const string Deposits = "GroupDeposits";
+        public const string Provisions = "GroupProvisions";
+        public const string Reserves = "GroupReserves";
+        public const string SecuredLoans = "GroupSecuredLoans";
+        public const string UnsecuredLoans = "GroupUnsecuredLoans";
+        public const string Advances = "GroupAdvances";
+
+    }
 }
