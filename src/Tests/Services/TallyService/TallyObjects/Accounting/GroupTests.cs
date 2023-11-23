@@ -32,7 +32,7 @@ internal class GroupTests : BaseTallyServiceTest
             pagination.NextPage();
         }
         Assert.That(Groups, Is.Not.Null);
-        string v = JsonSerializer.Serialize(Groups.Select(c => new { name = c.Name, parent = c.Parent,PrimaryGroup=c.PrimaryGroup }));
+        string v = JsonSerializer.Serialize(Groups.Select(c =>  c.ReserveName ).Distinct());
         Assert.That(Groups, Has.Count.EqualTo(TotalCount));
     }
 

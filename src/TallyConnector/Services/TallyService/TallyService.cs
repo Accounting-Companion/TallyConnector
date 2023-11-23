@@ -198,7 +198,7 @@ public partial class TallyService : ITallyService
         }
         List<Filter> filters = new() { new Filter() { FilterName = "Objfilter", FilterFormulae = filterformulae } };
 
-        PaginatedRequestOptions collectionRequestOptions = new() { FetchList = requestOptions.FetchList, Filters = filters, XMLAttributeOverrides = requestOptions.XMLAttributeOverrides };
+        PaginatedRequestOptions collectionRequestOptions = new() { FetchList = requestOptions.FetchList, Filters = filters, XMLAttributeOverrides = requestOptions.XMLAttributeOverrides, DisableCountRequest = true };
 
         List<ObjType>? objects = (await GetObjectsAsync<ObjType>(collectionRequestOptions, token))?.Data;
         if (objects != null && objects.Count > 0)
@@ -241,6 +241,7 @@ public partial class TallyService : ITallyService
             Company = requestOptions.Company,
             Compute = requestOptions.Compute,
             ComputeVar = requestOptions.ComputeVar,
+            DisableCountRequest = true,
         };
 
         List<ObjType>? objects = (await GetObjectsAsync<ObjType>(paginatedRequestOptions, token))?.Data;
@@ -281,6 +282,7 @@ public partial class TallyService : ITallyService
             RecordsPerPage = objectOptions?.RecordsPerPage,
             XMLAttributeOverrides = objectOptions?.XMLAttributeOverrides,
             IsInitialize = objectOptions?.IsInitialize ?? YesNo.No,
+            DisableCountRequest = objectOptions?.DisableCountRequest ?? false
         };
         TallyObjectType? tallyObjType = AttributeHelper.GetTallyObjectTypeAttribute(objType);
         var mapping = Mappings.TallyObjectMappings
@@ -396,6 +398,7 @@ public partial class TallyService : ITallyService
                 RecordsPerPage = mapping?.DefaultPaginateCount,
                 XMLAttributeOverrides = objectOptions?.XMLAttributeOverrides,
                 IsInitialize = objectOptions?.IsInitialize ?? YesNo.No,
+                DisableCountRequest = CurrentPage != 1,
             };
             var paginatedResp = await GetObjectsAsync<ObjType>(options, token);
             if (mapping != null)
@@ -407,8 +410,10 @@ public partial class TallyService : ITallyService
                                     CurrentPage,
                                     paginatedResp?.TotalPages);
             }
-
-            TotalPages = paginatedResp?.TotalPages ?? TotalPages;
+            if (CurrentPage ==1)
+            {
+                TotalPages = paginatedResp?.TotalPages ?? TotalPages;
+            }
             CurrentPage++;
             paginatedResp?.Data?.AsParallel().ForAll(t => objects.Add(t));
             progress?.Report(new(paginatedResp!.TotalCount, options.RecordsPerPage ?? 0, objects.Count));
@@ -468,16 +473,25 @@ public partial class TallyService : ITallyService
                 Envelope<ObjType>? Envelope = XMLToObject.GetObjfromXml<Envelope<ObjType>>(Response.Response,
                                                                                            collectionOptions.XMLAttributeOverrides, _logger);
                 // return Envelope?.Body.Data.Collection?.Objects;
-                int? v = await GetObjectCountAync(new CountRequestOptions()
-                {
-                    CollectionType = collectionOptions.CollectionType,
-                    Filters = collectionOptions.Filters,
-                    FromDate = collectionOptions.FromDate,
-                    ToDate = collectionOptions.ToDate,
-                    Company = collectionOptions.Company,
 
-                }, token: token);
-                return new PaginatedResponse<ObjType>(v ?? 0,
+                int v;
+                if (collectionOptions.DisableCountRequest)
+                {
+                    v = Envelope?.Body.Data.Collection?.Objects?.Count ?? 0;
+                }
+                else
+                {
+                    v = await GetObjectCountAync(new CountRequestOptions()
+                    {
+                        CollectionType = collectionOptions.CollectionType,
+                        Filters = collectionOptions.Filters,
+                        FromDate = collectionOptions.FromDate,
+                        ToDate = collectionOptions.ToDate,
+                        Company = collectionOptions.Company,
+
+                    }, token: token) ?? 0;
+                }
+                return new PaginatedResponse<ObjType>(v,
                                                       collectionOptions.RecordsPerPage ?? 1000,
                                                       Envelope?.Body.Data.Collection?.Objects,
                                                       collectionOptions.PageNum);

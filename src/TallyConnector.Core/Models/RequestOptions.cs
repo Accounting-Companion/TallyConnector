@@ -43,6 +43,10 @@ public class PaginatedRequestOptions : RequestOptions
 {
     public int PageNum { get; set; } = 1;
     public int? RecordsPerPage { get; set; }
+    /// <summary>
+    /// If set to true, Count request is not send  receiving data from tally
+    /// </summary>
+    public bool DisableCountRequest { get; set; }
 }
 public class MasterRequestOptions : RequestOptions
 {

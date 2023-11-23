@@ -69,7 +69,7 @@ public class Mappings
 
         new TallyObjectMapping(TallyObjectType.Ledgers,
                                tallyMasterType: "Ledger",
-                               defaultPaginateCount : 500,
+                               defaultPaginateCount : 1000,
                                filters: null,
                                computeFields: new()
                                {
@@ -137,7 +137,7 @@ public class Mappings
                                }),
         new TallyObjectMapping(masterType : TallyObjectType.StockItems,
                                tallyMasterType : "StockItem",
-                               defaultPaginateCount : 500,
+                               defaultPaginateCount : 1000,
                                filters : null,
                                computeFields : new()
                                {
@@ -173,7 +173,7 @@ public class Mappings
                                }),
         new TallyObjectMapping(masterType : TallyObjectType.Employees,
                                tallyMasterType : "CostCentre",
-                               defaultPaginateCount : 500,
+                               defaultPaginateCount : 1000,
                                filters : new List < Filter >()
                                {
                                    new Filter("IsEmployeeGroup", "Not $ISEMPLOYEEGROUP"),

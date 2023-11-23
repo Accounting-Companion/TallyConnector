@@ -227,7 +227,8 @@ public partial class TallyService
             FetchList = new() { "NAME", "GUID", "BOOKSFROM", "STARTINGFROM", "COMPANYNUMBER", "ENDINGAT" },
             Filters = new() { new("ActiveCompFilt", "$Name = ##SVCURRENTCOMPANY") },
             IsInitialize = YesNo.Yes,
-            XMLAttributeOverrides = xmlAttributeOverrides
+            XMLAttributeOverrides = xmlAttributeOverrides,
+            DisableCountRequest = true,
         };
         var PaginatedResp = await GetObjectsAsync<BaseCompany>(paginatedRequestOptions, token);
         if (PaginatedResp != null && PaginatedResp.Data?.Count > 0)
