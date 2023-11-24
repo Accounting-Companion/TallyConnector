@@ -23,7 +23,7 @@ internal class GroupTests : BaseTallyServiceTest
     {
         List<TCMA.Group> Groups = new();
         var Stat = await _tallyService.GetMasterStatisticsAsync();
-        var TotalCount = Stat.FirstOrDefault(c => c.Name == TCM.TallyObjectType.Groups.ToString()).Count;
+        var TotalCount = Stat.FirstOrDefault(c => c.Name == TCM.TallyObjectType.Groups).Count;
         TCM.Pagination.Pagination pagination = new(50, 100);
         for (int i = 0; i < pagination.TotalPages; i++)
         {

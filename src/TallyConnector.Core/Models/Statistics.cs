@@ -3,8 +3,10 @@
 
 [XmlRoot(ElementName = "VOUCHERTYPE")]
 [TDLCollection(CollectionName = "STATVchType", Include = false)]
-public class VoucherTypeStat : BaseStatistics, IReportInterfaceGenerator<MasterTypeStat>
+public class VoucherTypeStat : BaseStatistics, IReportInterfaceGenerator<VoucherTypeStat>
 {
+    [XmlElement(ElementName = "NAME")]
+    public string Name { get; set; }
     [XmlElement(ElementName = "CANCELLEDCOUNT")]
     [TDLXMLSet(Set = "if $$ISEMPTY:$CancVal then 0 else $CancVal")]
     public int CancelledCount { get; set; }
@@ -33,6 +35,8 @@ public class VoucherTypeStat : BaseStatistics, IReportInterfaceGenerator<MasterT
 [TDLCollection(CollectionName = "STATObjects")]
 public class MasterTypeStat : BaseStatistics, IReportInterfaceGenerator
 {
+    [XmlElement(ElementName = "NAME")]
+    public TallyObjectType Name { get; set; }
     public IEnumerable<string> GetFields()
     {
         throw new NotImplementedException();
@@ -52,8 +56,7 @@ public class MasterTypeStat : BaseStatistics, IReportInterfaceGenerator
 
 public class BaseStatistics
 {
-    [XmlElement(ElementName = "NAME")]
-    public string Name { get; set; }
+    
 
     [XmlElement(ElementName = "COUNT")]
     [TDLXMLSet(Set = "if $$ISEMPTY:$StatVal then 0 else $StatVal")]

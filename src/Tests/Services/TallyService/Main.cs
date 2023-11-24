@@ -21,6 +21,7 @@ internal class Main : BaseTallyServiceTest
     [Test]
     public async Task TestGetMasterStatistics()
     {
+        _tallyService.Setup("localhost", 900);
         var masterstat = await _tallyService.GetMasterStatisticsAsync();
         Assert.That(masterstat, Has.Count.EqualTo(16));
     }
@@ -28,10 +29,10 @@ internal class Main : BaseTallyServiceTest
     [Test]
     public async Task TestGetVoucherStatistics()
     {
-        //var masterstats = await _tallyService.GetMasterStatisticsAsync();
+        List<VoucherTypeStat>? vchtats = await _tallyService.GetVoucherStatisticsAsync(new DateFilterRequestOptions());
         //Get Vouchertype count from Master Statistics
         //var vouchertypecount = masterstats.FirstOrDefault(C => C.Name.Replace(" ", "") == TCM.TallyObjectType.VoucherTypes.ToString()).Count;
-         await _tallyService.GetVoucherStatisticsAsync(new TallyConnector.Core.Models.AutoColumnReportPeriodRequestOprions() { FromDate = new DateTime(2009, 04, 01),ToDate= new DateTime(2023, 03, 31),Periodicity= PeriodicityType.Year });
+        AutoVoucherStatisticsEnvelope autoVoucherStatisticsEnvelope = await _tallyService.GetVoucherStatisticsAsync(new TallyConnector.Core.Models.AutoColumnReportPeriodRequestOprions() { FromDate = new DateTime(2009, 04, 01),ToDate= new DateTime(2023, 03, 31),Periodicity= PeriodicityType.Year });
         //Assert.That(voucherstat, Has.Count.EqualTo(vouchertypecount));
     }
 
