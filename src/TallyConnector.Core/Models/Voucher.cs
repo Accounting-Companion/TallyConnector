@@ -1021,6 +1021,16 @@ public class BankAllocation
     [XmlElement(ElementName = "AMOUNT")]
     public TallyAmount? Amount { get; set; }
 
+    [XmlElement(ElementName = "PAYMENTFAVOURING")]
+    public string? PaymentFavouring { get; set; }
+
+    [XmlElement(ElementName = "UNIQUEREFERENCENUMBER")]
+    public string? UniqueReferenceNumber { get; set; }
+
+    [XmlElement(ElementName = "BANKPARTYNAME")]
+    public string? BankPartyName { get; set; }
+
+
     internal bool IsNull()
     {
         if (Date == null && BankersDate == null && InstrumentDate == null)

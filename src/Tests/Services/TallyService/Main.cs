@@ -1,4 +1,5 @@
-﻿using TallyConnector.Core.Models;
+﻿using System.Net.NetworkInformation;
+using TallyConnector.Core.Models;
 
 namespace Tests.Services.TallyService;
 internal class Main : BaseTallyServiceTest
@@ -7,7 +8,10 @@ internal class Main : BaseTallyServiceTest
     [Test]
     public async Task TestTallyCheck()
     {
-        var isRunning = await _tallyService.CheckAsync();
+        _tallyService.Setup("localhost", 9001);
+        CancellationTokenSource cancellationTokenSource = new();
+        cancellationTokenSource.CancelAfter(5);
+        var isRunning = await _tallyService.CheckAsync(cancellationTokenSource.Token);
         Assert.That(isRunning, Is.EqualTo(true));
     }
 
