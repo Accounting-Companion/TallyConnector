@@ -7,7 +7,7 @@ internal class VoucherTests : BaseTallyServiceTest
     [Test]
     public async Task CheckGetAllVouchers()
     {
-        
+
         var ActngVchrs = new List<Voucher>();
 
         foreach (var mapping in Mappings.VoucherViewTypeMappings)
@@ -17,7 +17,7 @@ internal class VoucherTests : BaseTallyServiceTest
                 FromDate = new(2009, 4, 1),
                 FetchList = mapping.FetchList,
                 Filters = new List<Filter>() { mapping.Filter }
-               
+
             });
             ActngVchrs.AddRange(vchs);
         }
@@ -146,6 +146,22 @@ internal class VoucherTests : BaseTallyServiceTest
 
         vch.OtherAttributes = new XmlAttribute[] { TagNameAttribute, TagValueAttribute };
         TallyResult tallyResult = await _tallyService.PostVoucherAsync(vch);
+
+    }
+    [Test]
+    public async Task CheckDeleteVouchers()
+    {
+
+        var vchr = new Voucher() { MasterId = 616,VoucherType ="Receipt",VoucherNumber="30", Action = TallyConnector.Core.Models.Action.Delete };
+        XmlDocument doc = new XmlDocument();
+        XmlAttribute TagNameAttribute = doc.CreateAttribute("TAGNAME");
+        TagNameAttribute.Value = "MasterId";
+        XmlAttribute TagValueAttribute = doc.CreateAttribute("TAGVALUE");
+        TagValueAttribute.Value = vchr.MasterId.ToString();
+
+        vchr.OtherAttributes = new XmlAttribute[] { TagNameAttribute, TagValueAttribute };
+
+        TallyResult tallyResult = await _tallyService.PostObjectToTallyAsync(vchr);
 
     }
 }

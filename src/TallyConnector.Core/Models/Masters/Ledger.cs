@@ -172,7 +172,7 @@ public partial class Ledger : BasicTallyObject, IAliasTallyObject
     public string? PinCode { get; set; }
 
     [XmlElement(ElementName = "LEDGERCONTACT")]
-    [Column(TypeName = $"nvarchar({Constants.MaxAmountLength})")]
+    [Column(TypeName = $"nvarchar({Constants.MaxNameLength})")]
     public string? ContactPerson { get; set; }
 
     [XmlElement(ElementName = "LEDGERPHONE")]

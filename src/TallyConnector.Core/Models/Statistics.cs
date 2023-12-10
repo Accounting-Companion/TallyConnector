@@ -11,6 +11,14 @@ public class VoucherTypeStat : BaseStatistics, IReportInterfaceGenerator<Voucher
     [TDLXMLSet(Set = "if $$ISEMPTY:$CancVal then 0 else $CancVal")]
     public int CancelledCount { get; set; }
 
+    [XmlElement(ElementName = "TOTALCOUNT")]
+    [TDLXMLSet(Set = "if $$ISEMPTY:$MigVal then 0 else $MigVal")]
+    public int TotalCount { get; set; }
+
+    [XmlElement(ElementName = "OPTIONALCOUNT")]
+    [TDLXMLSet(Set = "if $$ISEMPTY:$$DirectOptionalVch:$Name then 0 else $$DirectOptionalVch:$Name")]
+    public int OptionalCount { get; set; }
+
     public int NetCount => Count - CancelledCount;
 
     public IEnumerable<string> GetFields()
@@ -26,7 +34,7 @@ public class VoucherTypeStat : BaseStatistics, IReportInterfaceGenerator<Voucher
     public override string ToString()
     {
 
-        return $"{Name} - {NetCount}(C-{CancelledCount}) ";
+        return $"{Name} - {TotalCount}(C-{CancelledCount})(O-{OptionalCount}) ";
     }
 
 }

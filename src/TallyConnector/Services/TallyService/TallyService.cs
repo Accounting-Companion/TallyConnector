@@ -177,7 +177,8 @@ public partial class TallyService : ITallyService
             return ParseResponse(tallyResult);
         }
         return tallyResult;
-    }
+    }  
+    
     /// <inheritdoc/>
     public async Task<ObjType> GetObjectAsync<ObjType>(string lookupValue,
                                                        MasterRequestOptions? requestOptions = null,
@@ -410,7 +411,7 @@ public partial class TallyService : ITallyService
                                     CurrentPage,
                                     paginatedResp?.TotalPages);
             }
-            if (CurrentPage ==1)
+            if (CurrentPage == 1)
             {
                 TotalPages = paginatedResp?.TotalPages ?? TotalPages;
             }

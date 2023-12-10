@@ -15,6 +15,7 @@ internal class GeneralReports : BaseTallyServiceTest
     [Test]
     public async Task TestGetCompaniesinPath()
     {
+       //await _tallyService.GetLicenseInfoAsync();
         var Companies = await _tallyService.GetCompaniesinDefaultPathAsync();
         Assert.That(Companies, Is.Not.Null);
     }
