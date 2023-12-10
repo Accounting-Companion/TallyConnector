@@ -137,6 +137,7 @@ public partial class TallyService
         return await GetAllObjectsAsync<CompanyType>(new()
         {
             IsInitialize = YesNo.Yes,
+            Compute = new() { "CLEANEDCOMPANYNUMBER : $$StringFindandReplace:($$StringFindandReplace:@@SetCmpNumStr:\"(\":\"\"):\")\":\"\"" },
             FetchList = new()
             {
                 "Name", "StartingFrom", "GUID", "MobileNo, RemoteFullListName", "*"
@@ -212,12 +213,14 @@ public partial class TallyService
         return await GetAllObjectsAsync<CompanyOnDisk>(new()
         {
             IsInitialize = YesNo.Yes,
+            Compute = new() { "CLEANEDCOMPANYNUMBER : $$StringFindandReplace:($$StringFindandReplace:@@SetCmpNumStr:\"(\":\"\"):\")\":\"\"" },
             FetchList = new()
             {
                 "NAME", "STARTINGFROM", "ENDINGAT","COMPANYNUMBER"
             }
         }, token: token);
     }
+
     public async Task<BaseCompany?> GetActiveCompanyAsync(CancellationToken token = default)
     {
         XmlAttributeOverrides xmlAttributeOverrides = new();

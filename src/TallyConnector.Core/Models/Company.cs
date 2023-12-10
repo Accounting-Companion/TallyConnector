@@ -26,7 +26,7 @@ public class BaseCompany : TallyXmlJson
     [XmlElement(ElementName = "ENDINGAT")]
     public TallyDate? EndDate { get; set; }
 
-    [XmlElement(ElementName = "COMPANYNUMBER")]
+    [XmlElement(ElementName = "CLEANEDCOMPANYNUMBER")]
     public string? CompNum { get; set; }
 
 
@@ -133,7 +133,7 @@ public class CompanyOnDisk : TallyXmlJson
     [XmlElement(ElementName = "ENDINGAT")]
     public TallyDate? EndDate { get; set; }
 
-    [XmlElement(ElementName = "COMPANYNUMBER")]
+    [XmlElement(ElementName = "CLEANEDCOMPANYNUMBER")]
     public string? CompNum { get; set; }
 
     [XmlElement(ElementName = "ISAGGREGATE")]
