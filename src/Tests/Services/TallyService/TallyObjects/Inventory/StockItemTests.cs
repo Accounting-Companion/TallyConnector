@@ -17,5 +17,12 @@ public class StockItemTests :  BaseTallyServiceTest
         Assert.That(tallyResult, Is.Not.Null);
         Assert.That(tallyResult.Status, Is.EqualTo(RespStatus.Sucess));
     }
+    [Test]
+    public async Task TestGetAllStockItems()
+    {
+
+        var stockItems = await _tallyService.GetStockItemsAsync();
+        Assert.That(stockItems, Is.Not.Null);
+    }
 
 }

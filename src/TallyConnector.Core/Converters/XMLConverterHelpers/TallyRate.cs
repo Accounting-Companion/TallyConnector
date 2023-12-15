@@ -58,15 +58,15 @@ public class TallyRate : IXmlSerializable
                 var matches = Regex.Matches(content, @"\b[0-9.]+\b");
                 if (matches.Count == 2)
                 {
-                    ForexAmount = decimal.Parse(matches[0].Value);
-                    RatePerUnit = decimal.Parse(matches[1].Value);
+                    ForexAmount = decimal.Parse(matches[0].Value, CultureInfo.InvariantCulture);
+                    RatePerUnit = decimal.Parse(matches[1].Value, CultureInfo.InvariantCulture);
                     ForeignCurrency = content[0].ToString();
                     Unit = content.Split('/').Last();
                 }
                 else
                 {
                     var splittedtext = content.Split('/');
-                    RatePerUnit = decimal.Parse(matches[0].Value);
+                    RatePerUnit = decimal.Parse(matches[0].Value, CultureInfo.InvariantCulture);
                     Unit = splittedtext.Last().Trim();
                 }
 

@@ -74,19 +74,19 @@ public class TallyQuantity : IXmlSerializable
                 var matches = Regex.Matches(content, @"\b[0-9.]+\b");
                 if (matches.Count == 2)
                 {
-                    Number = decimal.Parse(matches[0].Value);
+                    Number = decimal.Parse(matches[0].Value, CultureInfo.InvariantCulture);
                     var splittedtext = content.Split('=');
                     if (!content.Contains('='))
                     {
                         splittedtext = new string[] { content.Substring(0, content.Length / 2), content.Substring(content.Length / 2) };
                     }
                     PrimaryUnits = new(Number, splittedtext.First().Trim().Split(' ').Last().Trim());
-                    SecondaryUnits = new(decimal.Parse(matches[1].Value), splittedtext.Last().Trim().Split(' ').Last().Trim());
+                    SecondaryUnits = new(decimal.Parse(matches[1].Value, CultureInfo.InvariantCulture), splittedtext.Last().Trim().Split(' ').Last().Trim());
                 }
                 else
                 {
                     var splittedtext = content.Split(' ');
-                    Number = decimal.Parse(matches[0].Value);
+                    Number = decimal.Parse(matches[0].Value, CultureInfo.InvariantCulture);
                     PrimaryUnits = new(Number, splittedtext.Last().Trim());
                 }
             }

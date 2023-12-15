@@ -93,21 +93,21 @@ public class TallyAmount : IXmlSerializable
                 var matches = Regex.Matches(content, @"[0-9.]+");
                 if (matches.Count == 3)
                 {
-                    ForexAmount = decimal.Parse(matches[0].Value);
-                    RateOfExchange = decimal.Parse(matches[1].Value);
-                    Amount = decimal.Parse(matches[2].Value);
+                    ForexAmount = decimal.Parse(matches[0].Value, CultureInfo.InvariantCulture);
+                    RateOfExchange = decimal.Parse(matches[1].Value, CultureInfo.InvariantCulture);
+                    Amount = decimal.Parse(matches[2].Value, CultureInfo.InvariantCulture);
                     Currency = IsDebit ? content[1].ToString() : content[0].ToString();
                 }
                 else if (matches.Count == 1)
                 {
-                    Amount = decimal.Parse(matches[0].Value);
+                    Amount = decimal.Parse(matches[0].Value, CultureInfo.InvariantCulture);
                 }
                 else
                 {
-                    if (content.Contains("=") && matches.Count == 2)
+                    if (content.Contains('=') && matches.Count == 2)
 
                     {
-                        Amount = decimal.Parse(matches[1].Value);
+                        Amount = decimal.Parse(matches[1].Value, CultureInfo.InvariantCulture);
                         Currency = IsDebit ? content[1].ToString() : content[0].ToString();
                     }
                 }

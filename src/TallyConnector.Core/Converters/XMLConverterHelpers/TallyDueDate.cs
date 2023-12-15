@@ -41,7 +41,7 @@ public class TallyDueDate : IXmlSerializable
         {
             if (JD != null)
             {
-                BillDate = new DateTime(1900, 1, 1).AddDays(int.Parse(JD) - 1);
+                BillDate = new DateTime(1900, 1, 1).AddDays(int.Parse(JD,CultureInfo.InvariantCulture) - 1);
             }
 
             if (tValue.Contains('-'))
@@ -63,7 +63,7 @@ public class TallyDueDate : IXmlSerializable
                
                 var splittedvalues = tValue.Split(' ');
                 var suffix = splittedvalues.Last().Trim();
-                Value = int.Parse(splittedvalues.First());
+                Value = int.Parse(splittedvalues.First(),CultureInfo.InvariantCulture);
                 if (suffix.Contains("Days"))
                 {
                     Suffix = DueDateFormat.Day;

@@ -1,4 +1,6 @@
-﻿namespace Tests.Converters.XMLConverterHelpers;
+﻿using System.Globalization;
+
+namespace Tests.Converters.XMLConverterHelpers;
 public class TallyDueDateTests
 {
     XmlAttributeOverrides xmlAttributeOverrides = new();
@@ -55,7 +57,7 @@ public class TallyDueDateTests
     public void CheckTallyDueDatewithDateDeSerialize(int year, int month, int day, string format)
     {
         var dt = new DateTime(year, month, day);
-        string TallyDueDateXml = $"<BILLCREDITPERIOD JD=\"44651\" P=\"{dt.ToString(format)}\">{dt.ToString(format)}</BILLCREDITPERIOD>";
+        string TallyDueDateXml = $"<BILLCREDITPERIOD JD=\"44651\" P=\"{dt.ToString(format,CultureInfo.InvariantCulture)}\">{dt.ToString(format, CultureInfo.InvariantCulture)}</BILLCREDITPERIOD>";
 
         using TextReader reader = new StringReader(TallyDueDateXml);
         var dueDate = (TallyDueDate)xmlSerializer.Deserialize(reader);
