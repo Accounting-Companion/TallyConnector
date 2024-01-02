@@ -1,6 +1,6 @@
 ﻿namespace TallyConnector.Core.Models;
 
-public class TallyBaseObject
+public class TallyBaseObject : ITallyBaseObject
 {
     [NotMapped]
     [JsonIgnore]
