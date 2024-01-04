@@ -2,5 +2,5 @@
 
 public interface ITallyBaseObject
 {
-    void RemoveNullChilds();
+    //void RemoveNullChilds();
 }

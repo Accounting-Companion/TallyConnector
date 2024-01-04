@@ -1,11 +1,20 @@
 ﻿
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 using System.Collections.Immutable;
+using System.Data.Common;
+using System.Linq;
+using System.Reflection;
+using System.Reflection.Metadata;
 using System.Runtime.CompilerServices;
-
+using TC.TDLReportSourceGenerator.Execute;
+using static TC.TDLReportSourceGenerator.Constants;
 namespace TC.TDLReportSourceGenerator;
+
 [Generator(LanguageNames.CSharp)]
 public class TDLReportSourceGenerator : IIncrementalGenerator
 {
+    private IEqualityComparer<INamedTypeSymbol> c;
+
     public void Initialize(IncrementalGeneratorInitializationContext context)
     {
         IncrementalValueProvider<ImmutableArray<INamedTypeSymbol>> syntaxProvider = context.SyntaxProvider
@@ -34,11 +43,28 @@ public class TDLReportSourceGenerator : IIncrementalGenerator
         }
         var classDeclaration = Unsafe.As<ClassDeclarationSyntax>(context.Node);
         INamedTypeSymbol? symbol = context.SemanticModel.GetDeclaredSymbol(classDeclaration, token);
-        return symbol;
+        if (symbol == null)
+        {
+            return null;
+        }
+        const string Name = BaseInterfaceName;
+        if (symbol.HasInterfaceWithFullyQualifiedMetadataName(Name) || symbol.HasOrInheritsFromFullyQualifiedMetadataName(Name))
+        {
+            return symbol;
+        };
+        return null;
     }
 
-    private void Execute(SourceProductionContext context, ImmutableArray<INamedTypeSymbol> array)
+    private void Execute(SourceProductionContext context, ImmutableArray<INamedTypeSymbol> symbols)
     {
-        throw new NotImplementedException();
+        var generateTDLReportsCommand = new GenerateTDLReportsCommand(symbols);
+        generateTDLReportsCommand.Execute(context);
+        
     }
+
+}
+public class UniqueSymbol(string Name, INamedTypeSymbol Symbol)
+{
+    public string Name { get; } = Name;
+    public INamedTypeSymbol Symbol { get; } = Symbol;
 }

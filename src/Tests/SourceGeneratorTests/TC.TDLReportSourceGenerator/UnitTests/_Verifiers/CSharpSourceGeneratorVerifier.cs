@@ -45,13 +45,13 @@ internal static partial class CSharpSourceGeneratorVerifier<TSourceGenerator>
                 Sources = { source },
             },
             ReferenceAssemblies = new ReferenceAssemblies(
-                        "net7.0",
+                        "net8.0",
                         new PackageIdentity(
                             "Microsoft.NETCore.App.Ref",
-                            "7.0.0"),
-                        Path.Combine("ref", "net7.0")),
+                            "8.0.0"),
+                        Path.Combine("ref", "net8.0")),
         };
-        //test.TestState.AdditionalReferences.Add(typeof(IXmlSerializable).Assembly);
+        test.TestState.AdditionalReferences.Add(typeof(TallyConnector.Core.Models.BasicTallyObject).Assembly);
         foreach ((string filename, string content) in generatedSources)
         {
             test.TestState.GeneratedSources.Add((typeof(TSourceGenerator), filename, SourceText.From(content, Encoding.UTF8)));

@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>net8.0</TargetFramework>
@@ -7,7 +7,17 @@
 
     <IsPackable>false</IsPackable>
     <IsTestProject>true</IsTestProject>
+	  <EmitCompilerGeneratedFiles>true</EmitCompilerGeneratedFiles>
+	  <CompilerGeneratedFilesOutputPath>Generated</CompilerGeneratedFilesOutputPath>
   </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="Generated\TC.TDLReportSourceGenerator\TC.TDLReportSourceGenerator.TDLReportSourceGenerator\IntegrationTests.Group.TDLReport.g.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+	  <Compile  Remove="Generated\**\*" />
+  </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.6.0" />

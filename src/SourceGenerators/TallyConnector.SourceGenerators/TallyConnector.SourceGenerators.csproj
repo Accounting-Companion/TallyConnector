@@ -8,7 +8,6 @@
 		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
 		<!-- Generates a package at build -->
 		<IncludeBuildOutput>false</IncludeBuildOutput>
-		<IncludeBuildOutput>false</IncludeBuildOutput>
 		<Nullable>enable</Nullable>
 	</PropertyGroup>
 

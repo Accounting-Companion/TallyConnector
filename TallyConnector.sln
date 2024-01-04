@@ -35,7 +35,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "TC.TDLReportSourceGenerator
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "UnitTests", "src\Tests\SourceGeneratorTests\TC.TDLReportSourceGenerator\UnitTests\UnitTests.csproj", "{852867F4-1D6D-4121-A2D7-469C0C4BE48A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SourceGeneratorExtensions", "..\..\OpenSource\SourceGeneratorExtensions\SourceGeneratorExtensions.csproj", "{C12ED9F5-A7CB-40CF-A7E5-0E6C63C1E064}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SourceGeneratorExtensions", "..\..\OpenSource\SourceGeneratorExtensions\SourceGeneratorExtensions.csproj", "{C12ED9F5-A7CB-40CF-A7E5-0E6C63C1E064}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TC.Core.Tests", "src\Tests\TC.Core.Tests\TC.Core.Tests.csproj", "{F70A1B56-ED0B-414C-8980-53D081CB4B90}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -133,6 +135,14 @@ Global
 		{C12ED9F5-A7CB-40CF-A7E5-0E6C63C1E064}.Release|Any CPU.Build.0 = Release|Any CPU
 		{C12ED9F5-A7CB-40CF-A7E5-0E6C63C1E064}.Release|x64.ActiveCfg = Release|Any CPU
 		{C12ED9F5-A7CB-40CF-A7E5-0E6C63C1E064}.Release|x64.Build.0 = Release|Any CPU
+		{F70A1B56-ED0B-414C-8980-53D081CB4B90}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F70A1B56-ED0B-414C-8980-53D081CB4B90}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F70A1B56-ED0B-414C-8980-53D081CB4B90}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{F70A1B56-ED0B-414C-8980-53D081CB4B90}.Debug|x64.Build.0 = Debug|Any CPU
+		{F70A1B56-ED0B-414C-8980-53D081CB4B90}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F70A1B56-ED0B-414C-8980-53D081CB4B90}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F70A1B56-ED0B-414C-8980-53D081CB4B90}.Release|x64.ActiveCfg = Release|Any CPU
+		{F70A1B56-ED0B-414C-8980-53D081CB4B90}.Release|x64.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -151,6 +161,7 @@ Global
 		{31B73BA3-48F9-4EDA-8C99-15CC77DE73E9} = {2DECC8E3-EF9A-4695-B304-134601F847E7}
 		{852867F4-1D6D-4121-A2D7-469C0C4BE48A} = {31B73BA3-48F9-4EDA-8C99-15CC77DE73E9}
 		{C12ED9F5-A7CB-40CF-A7E5-0E6C63C1E064} = {D1517754-F474-4D01-B5A5-560D79FA9819}
+		{F70A1B56-ED0B-414C-8980-53D081CB4B90} = {67D1D28B-FF22-44C5-8DA8-7ED316213B40}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {6D79E273-8DE3-4E5A-AF56-E082111F7BD0}

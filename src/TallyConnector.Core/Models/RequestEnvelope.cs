@@ -514,13 +514,13 @@ public class Field : DCollection
     }
 
     [XmlElement(ElementName = "SET")]
-    public string? Set { get; set; } //TallyFields Like $Name
+    public string Set { get; set; } //TallyFields Like $Name
 
     [XmlElement(ElementName = "XMLTAG")]
-    public string? XMLTag { get; set; }  //Desired XML Tag
+    public string XMLTag { get; set; }  //Desired XML Tag
 
     [XmlAttribute(AttributeName = "NAME")]
-    public string? Name { get; set; }
+    public string Name { get; set; }
 
     [XmlElement(ElementName = "FIELDS")]
     public List<string>? Fields { get; set; }
@@ -539,10 +539,13 @@ public class Field : DCollection
     public List<string>? Option { get; set; }
 
     [XmlElement(ElementName = "TYPE")]
-    public string Type { get; set; }
+    public string? Type { get; set; }
 
     [XmlElement(ElementName = "USE")]
-    public string Use { get; set; }
+    public string? Use { get; set; }
+
+    [XmlElement(ElementName = "FORMAT")]
+    public string? Format { get; set; }
 }
 
 
