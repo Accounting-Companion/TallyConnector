@@ -12,7 +12,7 @@ public class TDLCollectionAttribute : Attribute
     }
     public TDLCollectionAttribute() { }
 
-    public TDLCollectionAttribute(string? collectionName, string? type)
+    public TDLCollectionAttribute(string? collectionName, string? type = null)
     {
         _collectionName = collectionName;
         _type = type;

@@ -5,7 +5,7 @@ public static class Constants
     /// TDL Report is Generated for every object that inherits this Interface
     /// </summary>
     public const string BaseInterfaceName = "TallyConnector.Core.Models.ITallyBaseObject";
-    public const string XMLElementAttributeName = "System.Xml.Serialization.XmlElement";
+    public const string XMLElementAttributeName = "System.Xml.Serialization.XmlElementAttribute";
     public const string IEnumerableInterfaceName = "System.Collections.IEnumerable";
 
     public const string FieldFullTypeName = "TallyConnector.Core.Models.Field";
@@ -19,6 +19,7 @@ public static class Constants
     public const string FormFullTypeName = "TallyConnector.Core.Models.Form";
     public const string ExtensionsNameSpace = "TallyConnector.Core.Extensions";
     public const string TDLXMLSetAttributeName = "TallyConnector.Core.Attributes.TDLXMLSetAttribute";
+    public const string TDLCollectionAttributeName = "TallyConnector.Core.Attributes.TDLCollectionAttribute";
 
 
 

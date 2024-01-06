@@ -1,4 +1,6 @@
-﻿namespace TallyConnector.Core.Models;
+﻿using System.Collections;
+
+namespace TallyConnector.Core.Models;
 
 [XmlRoot(ElementName = "ENVELOPE")]
 public class RequestEnvelope : TallyXmlJson
@@ -383,12 +385,14 @@ public class Form : DCollection
 [XmlRoot(ElementName = "PART")]
 public class Part : DCollection
 {
-    private string? _Repeat;
-    public Part(string topPartName, string colName, string lineName)
+    public Part(string topPartName, string? colName, string lineName)
     {
         Name = topPartName;
         Lines = new() { lineName };
-        _Repeat = $"{lineName} : {colName}";
+        if (colName != null)
+        {
+            Repeat = $"{lineName} : {colName}";
+        }
         SetAttributes();
 
     }
@@ -402,7 +406,7 @@ public class Part : DCollection
         Lines = new() { rootTag };
         if (collectionName != null)
         {
-            _Repeat = $"{rootTag} : {collectionName}";
+            Repeat = $"{rootTag} : {collectionName}";
         }
         SetAttributes();
     }
@@ -411,7 +415,7 @@ public class Part : DCollection
     public List<string>? Lines { get; set; } //MustMatch with LineName
 
     [XmlElement(ElementName = "REPEAT")]
-    public string? Repeat { get { return _Repeat; } set { } }
+    public string? Repeat { get; set; }
 
     [XmlElement(ElementName = "SCROLLED")]
     public string? Scrolled { get; set; } = "Vertical";

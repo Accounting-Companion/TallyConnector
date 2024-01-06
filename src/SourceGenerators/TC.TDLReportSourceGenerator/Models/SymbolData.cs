@@ -1,6 +1,7 @@
 ﻿
 using Microsoft.CodeAnalysis;
 using System.Collections.Immutable;
+using TC.TDLReportSourceGenerator.Execute;
 
 namespace TC.TDLReportSourceGenerator.Models;
 
@@ -23,10 +24,11 @@ internal class SymbolData
     public bool IsChild { get; private set; }
     public List<ChildSymbolData> Children { get; } = [];
     public int SimpleFieldsCount { get; set; } = 0;
-    public int ComplexFieldsCount { get; set; } = 0;
+    public int ComplexFieldsIncludedCount { get; set; } = 0;
 
     public ImmutableArray<AttributeData> Attributes { get; }
     public string RootXmlTag { get;  set; }
+    public int ComplexFieldsCount { get; internal set; }
 }
 
 internal class ChildSymbolData
@@ -69,4 +71,5 @@ internal class ChildSymbolData
     public SymbolData? SymbolData { get; set; }
     public TDLFieldData? TDLFieldDetails { get;  set; }
     public string XmlTag { get;  set; }
+    public TDLCollectionData? TDLCollectionDetails { get; internal set; }
 }
