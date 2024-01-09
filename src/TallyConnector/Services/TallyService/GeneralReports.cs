@@ -1,6 +1,8 @@
-﻿namespace TallyConnector.Services;
+﻿
+namespace TallyConnector.Services;
 public partial class TallyService
 {
+
     public async Task<List<MasterTypeStat>?> GetMasterStatisticsAsync(BaseRequestOptions? requestOptions = null, CancellationToken token = default)
     {
         string requestType = "Master Statistics";

@@ -1,38 +1,50 @@
-﻿using System.Collections.Immutable;
+﻿using Microsoft.CodeAnalysis;
+using System.Collections.Immutable;
 using TC.TDLReportSourceGenerator.Models;
 
 namespace TC.TDLReportSourceGenerator.Execute;
 internal class GenerateTDLReportsCommand
 {
     private readonly ImmutableArray<INamedTypeSymbol> _symbols;
-    private readonly Dictionary<string, SymbolData> _data = [];
+    private readonly List<Dictionary<string, SymbolData>> _dataList = [];
+    private readonly List<Dictionary<string, GenerateSymbolsArgs>> _symbolArgs;
 
-    public GenerateTDLReportsCommand(ImmutableArray<INamedTypeSymbol> symbols)
+
+    public GenerateTDLReportsCommand(List<Dictionary<string, GenerateSymbolsArgs>> symbolArgs)
     {
-        _symbols = symbols;
+        _symbolArgs = symbolArgs;
     }
 
     public void Execute(SourceProductionContext context)
     {
-        foreach (var symbol in _symbols)
+        foreach (var args in _symbolArgs)
         {
-            var symbolData = new SymbolData(symbol);
-            if (!_data.ContainsKey(symbolData.FullName))
+            Dictionary<string, SymbolData> _data = [];
+            _dataList.Add(_data);
+            foreach (var item in args)
             {
-                _data.Add(symbolData.FullName, symbolData);
-                ProcessSymbol(symbolData);
-
+                var value = item.Value;
+                INamedTypeSymbol symbol = value.GetSymbol;
+                var symbolData = new SymbolData(value.ParentSymbol, symbol, item.Key);
+                if (!_data.ContainsKey(symbolData.FullName))
+                {
+                    _data.Add(symbolData.FullName, symbolData);
+                    ProcessSymbol(symbolData, _data);
+                }
             }
         }
-        foreach (var Symbol in _data)
+        foreach (var data in _dataList)
         {
-            var compilationUnitSyntax = new GenerateTDLReport(Symbol.Value).GetCompilationUnit();
-            var source = compilationUnitSyntax.ToFullString();
-            context.AddSource($"{Symbol.Key}.TDLReport.g.cs", source);
+            foreach (var symbol in data)
+            {
+                var compilationUnitSyntax = new GenerateTDLReport(symbol.Value).GetCompilationUnit();
+                var source = compilationUnitSyntax.ToFullString();
+                context.AddSource($"{symbol.Key}.{symbol.Value.ParentSymbol.Name}.TDLReport.g.cs", source);
+            }
         }
 
     }
-    void ProcessSymbol(SymbolData symbolData, HashSet<string>? complexChildNames = null)
+    void ProcessSymbol(SymbolData symbolData, Dictionary<string, SymbolData> _data, HashSet<string>? complexChildNames = null)
     {
         ParseAttributes(symbolData);
         IEnumerable<ISymbol> childSymbols = symbolData.Symbol.GetMembers();
@@ -40,6 +52,10 @@ internal class GenerateTDLReportsCommand
         var ComplexChildNames = complexChildNames ?? [];
         foreach (var childSymbol in childSymbols)
         {
+            if (childSymbol.Name == "OtherAttributes" || childSymbol.Name == "OtherFields")
+            {
+                continue;
+            }
             if (childSymbol.DeclaredAccessibility is Accessibility.Public && childSymbol is IPropertySymbol propertySymbol)
             {
                 ChildSymbolData childData = new(propertySymbol, symbolData);
@@ -54,17 +70,30 @@ internal class GenerateTDLReportsCommand
                         ComplexChildNames.Add(childData.ChildTypeFullName);
                         if (!_data.ContainsKey(childData.ChildTypeFullName))
                         {
-                            SymbolData value = new(childData.ChildType, true);
+                            SymbolData value = new(symbolData.ParentSymbol, childData.ChildType, childData.ChildType.Name, true);
                             _data.Add(childData.ChildTypeFullName, value);
-                            ProcessSymbol(value, ComplexChildNames);
+                            ProcessSymbol(value, _data, ComplexChildNames);
                             symbolData.SimpleFieldsCount += value.SimpleFieldsCount;
                             symbolData.ComplexFieldsIncludedCount += value.ComplexFieldsIncludedCount;
                             symbolData.ComplexFieldsCount += value.ComplexFieldsCount;
                             childData.SymbolData = value;
                         }
+                        else
+                        {
+                            var value = _data[childData.ChildTypeFullName];
+                            childData.SymbolData = value;
+                            //symbolData.SimpleFieldsCount += value.SimpleFieldsCount;
+                            symbolData.ComplexFieldsIncludedCount += value.ComplexFieldsIncludedCount;
+                            symbolData.ComplexFieldsCount += value.ComplexFieldsCount;
+                        }
                     }
                     else
                     {
+                        var value = _data[childData.ChildTypeFullName];
+                        childData.SymbolData = value;
+                        //symbolData.SimpleFieldsCount += value.SimpleFieldsCount;
+                        symbolData.ComplexFieldsIncludedCount += value.ComplexFieldsIncludedCount;
+                        symbolData.ComplexFieldsCount += value.ComplexFieldsCount;
                         childData.Exclude = true;
                     }
                 }
@@ -84,14 +113,26 @@ internal class GenerateTDLReportsCommand
         }
         if (baseType != null && baseType.SpecialType != SpecialType.System_Object)
         {
-            SymbolData baseSymbolData = new(baseType, true);
-            if (!ComplexChildNames.Contains(baseType.ChildTypeFullName))
+            BaseSymbolData value = new(symbolData.ParentSymbol, baseType, baseType.Name, true);
+            symbolData.BaseSymbolData = value;
+            if (!ComplexChildNames.Contains(value.FullName))
             {
-                
+                //symbolData.ComplexFieldsCount++;
+                if (!_data.ContainsKey(value.FullName))
+                {
+                    symbolData.ComplexFieldsIncludedCount++;
+                    _data.Add(value.FullName, value);
+                    ProcessSymbol(value, _data, ComplexChildNames);
+
+                    symbolData.SimpleFieldsCount += value.SimpleFieldsCount;
+                    symbolData.ComplexFieldsIncludedCount += value.ComplexFieldsIncludedCount;
+                    symbolData.ComplexFieldsCount += value.ComplexFieldsCount;
+                    symbolData.BaseSymbolData = value;
+                }
             }
             else
             {
-                childData.Exclude = true;
+                value.Exclude = true;
             }
         }
     }
@@ -109,6 +150,22 @@ internal class GenerateTDLReportsCommand
             if (attributeName == XMLElementAttributeName)
             {
                 xMLData ??= ParseXMLData(attributeDataAttribute);
+            }
+            if (childData.IsList)
+            {
+                if (attributeName == XMLArrayAttributeName)
+                {
+                    var listxMLData = ParseXMLData(attributeDataAttribute);
+                    childData.ListXmlTag = listxMLData?.XmlTag;
+                }
+                if (attributeName == XMLArrayItemAttributeName)
+                {
+                    var listItemXmlTag = ParseXMLData(attributeDataAttribute);
+                    if (listItemXmlTag !=null)
+                    {
+                        xMLData = listItemXmlTag;
+                    }
+                }
             }
             if (attributeName == TDLCollectionAttributeName)
             {
@@ -135,8 +192,6 @@ internal class GenerateTDLReportsCommand
         };
         childData.XmlTag = xMLData?.XmlTag ?? upperName;
     }
-
-
 
     private void ParseAttributes(SymbolData symbolData)
     {

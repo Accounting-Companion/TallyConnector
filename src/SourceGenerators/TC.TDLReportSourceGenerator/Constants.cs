@@ -5,7 +5,11 @@ public static class Constants
     /// TDL Report is Generated for every object that inherits this Interface
     /// </summary>
     public const string BaseInterfaceName = "TallyConnector.Core.Models.ITallyBaseObject";
+    public const string BaseClassName = "TallyConnector.Services.BaseTallyService";
+    public const string GenerateHelperMethodAttrName = "TallyConnector.Core.Attributes.GenerateHelperMethodAttribute";
     public const string XMLElementAttributeName = "System.Xml.Serialization.XmlElementAttribute";
+    public const string XMLArrayItemAttributeName = "System.Xml.Serialization.XmlArrayItemAttribute";
+    public const string XMLArrayAttributeName = "System.Xml.Serialization.XmlArrayAttribute";
     public const string IEnumerableInterfaceName = "System.Collections.IEnumerable";
 
     public const string FieldFullTypeName = "TallyConnector.Core.Models.Field";
@@ -24,13 +28,11 @@ public static class Constants
 
 
 
-    public const string GetRequestEnvelopeMethodName = "GetRequestEnevelope";
-    public const string GetTDLReportsMethodName = "GetTDLReports";
-    public const string GetTDLFormsMethodName = "GetTDLForms";
-    public const string GetTDLPartsMethodName = "GetTDLParts";
-    public const string GetTDLLinesMethodName = "GetTDLLines";
-    public const string GetTDLCollectionsMethodName = "GetTDLCollections";
-    public const string GetTDLFieldsMethodName = "GetTDLFields";
+    public const string GetRequestEnvelopeMethodName = "Get{0}RequestEnevelope";
+    public const string GetTDLPartsMethodName = "Get{0}TDLParts";
+    public const string GetTDLLinesMethodName = "Get{0}TDLLines";
+    public const string GetTDLCollectionsMethodName = "Get{0}TDLCollections";
+    public const string GetTDLFieldsMethodName = "Get{0}TDLFields";
 
     public const string AddToArrayExtensionMethodName = "AddToArray";
 }

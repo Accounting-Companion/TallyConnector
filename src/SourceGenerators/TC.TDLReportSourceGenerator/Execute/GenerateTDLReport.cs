@@ -7,8 +7,8 @@ internal class GenerateTDLReport
 {
 
     private readonly SymbolData _symbol;
-    const string _reportVariableName = nameof(ReportName);
-    const string _collectionVariableName = nameof(_collectionName);
+    readonly string _reportVariableName;
+    readonly string _collectionVariableName;
     readonly string ReportName;
     readonly string _collectionName;
     private readonly List<ChildSymbolData> _complexChildren;
@@ -18,6 +18,8 @@ internal class GenerateTDLReport
     {
         _symbol = symbol;
         ReportName = $"TC_{_symbol.Name}List";
+        _reportVariableName = $"{_symbol.TypeName}{nameof(ReportName)}";
+        _collectionVariableName = $"{_symbol.TypeName}{nameof(_collectionName)}";
         _collectionName = _symbol.IsChild ? _symbol.Name : $"TC_{_symbol.Name}Collection";
         _complexChildren = symbol.Children.Where(c => c.IsComplex || c.IsList).ToList();
         _simpleChildren = symbol.Children.Where(c => !c.IsComplex).ToList();
@@ -29,14 +31,14 @@ internal class GenerateTDLReport
             .WithUsings(List([UsingDirective(IdentifierName(ExtensionsNameSpace))]))
             .WithMembers(List(new MemberDeclarationSyntax[]
             {
-                FileScopedNamespaceDeclaration(IdentifierName(_symbol.NameSpace))
+                FileScopedNamespaceDeclaration(IdentifierName(_symbol.ParentNameSpace))
                 .WithNamespaceKeyword(Token(TriviaList(Trivia(NullableDirectiveTrivia(Token(SyntaxKind.EnableKeyword),
                                                                                       true))),
                                             SyntaxKind.NamespaceKeyword,
                                             TriviaList()))
                 .WithMembers(List(new MemberDeclarationSyntax[]
                 {
-                    ClassDeclaration(_symbol.Name)
+                    ClassDeclaration(_symbol.ParentSymbol.Name)
                     .WithModifiers(TokenList([Token(SyntaxKind.PublicKeyword),Token(SyntaxKind.PartialKeyword)]))
                     .WithMembers(List(GetClassMembers()))
                 }))
@@ -49,20 +51,16 @@ internal class GenerateTDLReport
     {
         List<MemberDeclarationSyntax> members = [];
         // creates const variables for field names
-        foreach (var child in _symbol.Children)
+        foreach (var child in _simpleChildren)
         {
-            if (child.IsComplex)
+            members.Add(CreateConstStringVar(GetFieldName(child), $"TC_{child.Parent.Name}_{child.Name}", true));
+        }
+        foreach (var child in _complexChildren)
+        {
+            if (child.TDLCollectionDetails != null)
             {
-                if (child.TDLCollectionDetails != null)
-                {
-                    members.Add(CreateConstStringVar($"{child.ChildType.Name}CollectionName", child.TDLCollectionDetails.CollectionName));
-                }
+                members.Add(CreateConstStringVar(GetCollectionName(child), child.TDLCollectionDetails.CollectionName));
             }
-            else
-            {
-                members.Add(CreateConstStringVar($"{child.Name}TDLFieldName", $"TC_{child.Parent.Name}_{child.Name}"));
-            }
-
         }
         members.AddRange(
             [
@@ -85,6 +83,9 @@ internal class GenerateTDLReport
         }
         return members;
     }
+
+
+
     private MemberDeclarationSyntax GenerateGetRequestEnvolopeMethodSyntax()
     {
         const string envelopeVariableName = "reqEnvelope";
@@ -108,20 +109,20 @@ internal class GenerateTDLReport
         statements.Add(CreateReportAndFormAsssignStatement(tdlMsgVariableName, "Form"));
 
 
-        statements.Add(CreateAssignFromMethodStatement(tdlMsgVariableName, "Part", GetTDLPartsMethodName));
-        statements.Add(CreateAssignFromMethodStatement(tdlMsgVariableName, "Line", GetTDLLinesMethodName));
-        statements.Add(CreateAssignFromMethodStatement(tdlMsgVariableName, "Field", GetTDLFieldsMethodName));
-        statements.Add(CreateAssignFromMethodStatement(tdlMsgVariableName, "Collection", GetTDLCollectionsMethodName));
+        statements.Add(CreateAssignFromMethodStatement(tdlMsgVariableName, "Part", string.Format(GetTDLPartsMethodName, _symbol.TypeName)));
+        statements.Add(CreateAssignFromMethodStatement(tdlMsgVariableName, "Line", string.Format(GetTDLLinesMethodName, _symbol.TypeName)));
+        statements.Add(CreateAssignFromMethodStatement(tdlMsgVariableName, "Field", string.Format(GetTDLFieldsMethodName, _symbol.TypeName)));
+        statements.Add(CreateAssignFromMethodStatement(tdlMsgVariableName, "Collection", string.Format(GetTDLCollectionsMethodName, _symbol.TypeName)));
         // Return Statement
         statements.Add(ReturnStatement(IdentifierName(envelopeVariableName)));
         var methodDeclarationSyntax = MethodDeclaration(GetGlobalNameforType(RequestEnvelopeFullTypeName),
-                                                        Identifier(GetRequestEnvelopeMethodName))
-            .WithModifiers(TokenList([Token(SyntaxKind.PublicKeyword), Token(SyntaxKind.StaticKeyword)]))
+                                                        Identifier(string.Format(GetRequestEnvelopeMethodName, _symbol.TypeName)))
+            .WithModifiers(TokenList([Token(SyntaxKind.InternalKeyword), Token(SyntaxKind.StaticKeyword)]))
             .WithBody(Block(statements));
         return methodDeclarationSyntax;
     }
 
-    private static ExpressionStatementSyntax CreateReportAndFormAsssignStatement(string tdlMsgVariableName, string name)
+    private ExpressionStatementSyntax CreateReportAndFormAsssignStatement(string tdlMsgVariableName, string name)
     {
         return ExpressionStatement(AssignmentExpression(SyntaxKind.SimpleAssignmentExpression,
                                                         MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression,
@@ -141,6 +142,7 @@ internal class GenerateTDLReport
     {
         const string CollectionNameArgName = "collectionName";
         const string partNameArgName = "partName";
+        const string XmlTagArgName = "xmlTag";
         const string PartsVariableName = "parts";
         List<StatementSyntax> statements = [];
         statements.Add(CreateVarArrayWithCount(PartFullTypeName, PartsVariableName, _symbol.ComplexFieldsCount + 1));
@@ -149,13 +151,18 @@ internal class GenerateTDLReport
             Token(SyntaxKind.CommaToken),
             Argument(IdentifierName(_symbol.IsChild ? CollectionNameArgName : _collectionVariableName)),
         ];
+        List<SyntaxNodeOrToken>? firstPartIntializerArgs = null;
         if (_symbol.IsChild)
         {
             constructorArgs.AddRange([Token(SyntaxKind.CommaToken), Argument(IdentifierName(_reportVariableName))]);
+            firstPartIntializerArgs = [AssignmentExpression(SyntaxKind.SimpleAssignmentExpression,
+                                         IdentifierName("XMLTag"),
+                                         IdentifierName(XmlTagArgName))];
         }
         statements.Add(GetArrayAssignmentExppression(PartsVariableName,
                                                      0,
-                                                     constructorArgs));
+                                                     constructorArgs,
+                                                     firstPartIntializerArgs));
 
 
         int counter = 1;
@@ -165,12 +172,12 @@ internal class GenerateTDLReport
             {
                 var name = $"TC_{_symbol.Name}{child.Name}List";
                 List<SyntaxNodeOrToken>? intializerArgs = null;
-                List<SyntaxNodeOrToken> lineConstructorArgs = [
-                                        Argument(LiteralExpression(SyntaxKind.StringLiteralExpression, Literal(name))),
-                    Token(SyntaxKind.CommaToken),
-                   
-                                    ];
-                if (child.TDLCollectionDetails ==null)
+                List<SyntaxNodeOrToken> lineConstructorArgs =
+                    [
+                        Argument(LiteralExpression(SyntaxKind.StringLiteralExpression, Literal(name))),
+                        Token(SyntaxKind.CommaToken),
+                    ];
+                if (child.TDLCollectionDetails == null)
                 {
                     intializerArgs
                     =
@@ -183,12 +190,20 @@ internal class GenerateTDLReport
                 }
                 else
                 {
-                    
-                    lineConstructorArgs.Add(Argument(LiteralExpression(SyntaxKind.StringLiteralExpression,
-                                                                       Literal(child.TDLCollectionDetails.CollectionName))));
+                    if (child.ListXmlTag != null)
+                    {
+                        intializerArgs
+                            =
+                            [
+                                AssignmentExpression(SyntaxKind.SimpleAssignmentExpression,
+                                         IdentifierName("XMLTag"),
+                                         LiteralExpression(SyntaxKind.StringLiteralExpression, Literal(child.ListXmlTag))),
+                            ];
+                    }
+                    lineConstructorArgs.Add(Argument(IdentifierName(GetCollectionName(child))));
                 }
 
-                
+
                 statements.Add(GetArrayAssignmentExppression(PartsVariableName, counter,
                     lineConstructorArgs, intializerArgs));
                 counter += 1;
@@ -196,16 +211,21 @@ internal class GenerateTDLReport
             else
             {
                 string ComplexFieldsVariableName = $"{child.Name.Substring(0, 1).ToLower()}{child.Name.Substring(1)}{PartsVariableName.Substring(0, 1).ToUpper()}{PartsVariableName.Substring(1)}";
-                statements.Add(CreateVarInsideMethodWithExpression(ComplexFieldsVariableName,
-                                                       InvocationExpression(MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression,
-                                                                                                   GetGlobalNameforType(child.ChildTypeFullName),
-                                                                                                   IdentifierName(GetTDLPartsMethodName)))
-                                                       .WithArgumentList(ArgumentList(SeparatedList<ArgumentSyntax>(new SyntaxNodeOrToken[]
-                    {
+                List<SyntaxNodeOrToken> methodArgs =
+                [
                     Argument(LiteralExpression(SyntaxKind.StringLiteralExpression, Literal($"TC_{_symbol.Name}{child.Name}List"))),
                     Token(SyntaxKind.CommaToken),
-                    Argument(child.TDLCollectionDetails !=null ? IdentifierName($"{child.ChildType.Name}CollectionName"):LiteralExpression(SyntaxKind.NullLiteralExpression)),
-                    })))));
+                    Argument(child.TDLCollectionDetails !=null ? IdentifierName(GetCollectionName(child)):LiteralExpression(SyntaxKind.NullLiteralExpression)),
+                ];
+                if (child.ListXmlTag != null)
+                {
+                    methodArgs.AddRange([Token(SyntaxKind.CommaToken), Argument(LiteralExpression(SyntaxKind.StringLiteralExpression,Literal(child.ListXmlTag)))]);
+                }
+                statements.Add(CreateVarInsideMethodWithExpression(ComplexFieldsVariableName,
+                                                       InvocationExpression(MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression,
+                                                                                                   GetGlobalNameforType(_symbol.ParentFullName),
+                                                                                                   IdentifierName(string.Format(GetTDLPartsMethodName, child.SymbolData?.TypeName ?? child.Name))))
+                                                       .WithArgumentList(ArgumentList(SeparatedList<ArgumentSyntax>(methodArgs)))));
 
                 statements.Add(ExpressionStatement(InvocationExpression(MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression,
                                                                                                IdentifierName(PartsVariableName),
@@ -218,14 +238,14 @@ internal class GenerateTDLReport
                             Argument(LiteralExpression(SyntaxKind.NumericLiteralExpression, Literal(counter))),
                          })))
                     ));
-                counter += child.SymbolData?.SimpleFieldsCount ?? 0;
+                counter += (child.SymbolData?.ComplexFieldsIncludedCount ?? 0) + 1;
             }
-            
+
         }
         statements.Add(ReturnStatement(IdentifierName(PartsVariableName)));
         var methodDeclarationSyntax = MethodDeclaration(CreateEmptyArrayType(PartFullTypeName),
-                                                        Identifier(GetTDLPartsMethodName))
-            .WithModifiers(TokenList([Token(SyntaxKind.PublicKeyword), Token(SyntaxKind.StaticKeyword)]))
+                                                        Identifier(string.Format(GetTDLPartsMethodName, _symbol.TypeName)))
+            .WithModifiers(TokenList([Token(SyntaxKind.InternalKeyword), Token(SyntaxKind.StaticKeyword)]))
             .WithBody(
             Block(statements));
         if (_symbol.IsChild)
@@ -238,8 +258,13 @@ internal class GenerateTDLReport
                     .WithDefault(EqualsValueClause(IdentifierName(_reportVariableName))),
                     Token(SyntaxKind.CommaToken),
                     Parameter(Identifier(CollectionNameArgName))
-                    .WithType(NullableType( PredefinedType(Token(SyntaxKind.StringKeyword))))
-                    .WithDefault(EqualsValueClause(IdentifierName(_collectionVariableName)))
+                        .WithType(NullableType( PredefinedType(Token(SyntaxKind.StringKeyword))))
+                        .WithDefault(EqualsValueClause(IdentifierName(_collectionVariableName))),
+                    Token(SyntaxKind.CommaToken),
+                     Parameter(Identifier(XmlTagArgName))
+                        .WithType(NullableType( PredefinedType(Token(SyntaxKind.StringKeyword))))
+                        .WithDefault(EqualsValueClause(LiteralExpression(
+                                        SyntaxKind.NullLiteralExpression))),
                 })));
         }
         return methodDeclarationSyntax;
@@ -252,11 +277,11 @@ internal class GenerateTDLReport
         statements.Add(CreateVarArrayWithCount(LineFullTypeName, LinesVariableName, _symbol.ComplexFieldsIncludedCount + 1));
         List<SyntaxNodeOrToken> args = [];
 
-        var childSymbolDatas = _simpleChildren.Where(c => !c.IsList).Select(c => $"{c.Name}TDLFieldName").ToList();
+        var childSymbolDatas = _simpleChildren.Where(c => !c.IsList).Select(c => GetFieldName(c)).ToList();
         const int count = 5;
         if (childSymbolDatas.Count == 0)
         {
-            args.Add(ExpressionElement(LiteralExpression(SyntaxKind.StringLiteralExpression,Literal("SimpleField"))));
+            args.Add(ExpressionElement(LiteralExpression(SyntaxKind.StringLiteralExpression, Literal("SimpleField"))));
         }
         else
         {
@@ -286,7 +311,7 @@ internal class GenerateTDLReport
                 explodes.Add(ExpressionElement(InterpolatedStringExpression(Token(SyntaxKind.InterpolatedStringStartToken))
                     .WithContents(List<InterpolatedStringContentSyntax>(
                         [
-                            //Interpolation(MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression, IdentifierName(child.ChildTypeFullName), IdentifierName(_reportVariableName))),
+                            //Interpolation(MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression, IdentifierName(baseSymbol.ChildTypeFullName), IdentifierName(_reportVariableName))),
                             InterpolatedStringText().WithTextToken(Token(TriviaList(),
                                                                          SyntaxKind.InterpolatedStringTextToken,
                                                                          $"TC_{_symbol.Name}{child.Name}List:Yes",
@@ -301,46 +326,42 @@ internal class GenerateTDLReport
                                          CollectionExpression(SeparatedList<CollectionElementSyntax>(explodes)))
                 ];
         }
-        statements.Add(GetArrayAssignmentExppression(LinesVariableName,
-                                                     0,
-                                                     [
-                                                         Argument(IdentifierName(_reportVariableName)),
-                                                         Token(SyntaxKind.CommaToken),
-                                                         Argument(CollectionExpression(
-                                                             SeparatedList<CollectionElementSyntax>(
-                                                                 args))),
-                                                         Token(SyntaxKind.CommaToken),
-                                                         Argument(_symbol.IsChild ? IdentifierName(xmlTagArgName) : LiteralExpression(SyntaxKind.StringLiteralExpression, Literal(_symbol.RootXmlTag)))
-                                                     ],
-                                                     intializerArgs));
-        int counter = 1;
-        foreach (var child in _complexChildren)
+        if (_symbol.BaseSymbolData != null)
         {
-            if (child.Exclude)
+            if (intializerArgs == null)
             {
-                continue;
+                intializerArgs = [];
             }
-            if (child.IsList && !child.IsComplex)
+            else
             {
-                statements.Add(GetArrayAssignmentExppression(LinesVariableName, counter, 
-                    [
-                       Argument(LiteralExpression(SyntaxKind.StringLiteralExpression, Literal($"TC_{_symbol.Name}{child.Name}List"))),
-                        Token(SyntaxKind.CommaToken),
-                        Argument(CollectionExpression(SeparatedList<CollectionElementSyntax>(
-                                                                 new SyntaxNodeOrToken[] 
-                                                                 {
-                                                                     ExpressionElement(IdentifierName($"{child.Name}TDLFieldName"))
-                                                                 })))
-
-                    ]));
-                counter += 1;
-                continue;
+                intializerArgs.Add(Token(SyntaxKind.CommaToken));
             }
-            string ComplexFieldsVariableName = $"{child.Name.Substring(0, 1).ToLower()}{child.Name.Substring(1)}{LinesVariableName.Substring(0, 1).ToUpper()}{LinesVariableName.Substring(1)}";
+            intializerArgs.AddRange(
+                [
+                    AssignmentExpression(SyntaxKind.SimpleAssignmentExpression,
+                                         IdentifierName("Use"), IdentifierName($"{_symbol.BaseSymbolData.Name}{nameof(ReportName)}"))
+                ]);
+        }
+        statements.Add(GetArrayAssignmentExppression(LinesVariableName,
+                                                 0,
+                                                 [
+                                                     Argument(IdentifierName(_reportVariableName)),
+                                                     Token(SyntaxKind.CommaToken),
+                                                     Argument(CollectionExpression(
+                                                         SeparatedList<CollectionElementSyntax>(
+                                                             args))),
+                                                     Token(SyntaxKind.CommaToken),
+                                                     Argument(_symbol.IsChild ? IdentifierName(xmlTagArgName) : LiteralExpression(SyntaxKind.StringLiteralExpression, Literal(_symbol.RootXmlTag)))
+                                                 ],
+                                                 intializerArgs));
+        int counter = 1;
+        if (_symbol.BaseSymbolData != null)
+        {
+            string ComplexFieldsVariableName = $"{_symbol.BaseSymbolData.Name.Substring(0, 1).ToLower()}{_symbol.BaseSymbolData.Name.Substring(1)}{LinesVariableName.Substring(0, 1).ToUpper()}{LinesVariableName.Substring(1)}";
             statements.Add(CreateVarInsideMethodWithExpression(ComplexFieldsVariableName,
                                                    InvocationExpression(MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression,
-                                                                                               GetGlobalNameforType(child.ChildTypeFullName),
-                                                                                               IdentifierName(GetTDLLinesMethodName)))));
+                                                                                               GetGlobalNameforType(_symbol.ParentFullName),
+                                                                                               IdentifierName(string.Format(GetTDLLinesMethodName, _symbol.BaseSymbolData.Name))))));
 
             statements.Add(ExpressionStatement(InvocationExpression(MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression,
                                                                                            IdentifierName(LinesVariableName),
@@ -352,12 +373,57 @@ internal class GenerateTDLReport
                             Argument(LiteralExpression(SyntaxKind.NumericLiteralExpression, Literal(counter))),
                      })))
                 ));
-            counter += child.SymbolData?.SimpleFieldsCount ?? 0;
+            counter += (_symbol.BaseSymbolData?.ComplexFieldsIncludedCount ?? 0) + 1;
+
+        }
+        foreach (var child in _complexChildren)
+        {
+            if (child.Exclude)
+            {
+                continue;
+            }
+            if (child.IsList && !child.IsComplex)
+            {
+                statements.Add(GetArrayAssignmentExppression(LinesVariableName, counter,
+                    [
+                       Argument(LiteralExpression(SyntaxKind.StringLiteralExpression, Literal($"TC_{_symbol.Name}{child.Name}List"))),
+                        Token(SyntaxKind.CommaToken),
+                        Argument(CollectionExpression(SeparatedList<CollectionElementSyntax>(
+                                                                 new SyntaxNodeOrToken[]
+                                                                 {
+                                                                     ExpressionElement(IdentifierName(GetFieldName(child)))
+                                                                 })))
+
+                    ]));
+                counter += 1;
+                continue;
+            }
+            string ComplexFieldsVariableName = $"{child.Name.Substring(0, 1).ToLower()}{child.Name.Substring(1)}{LinesVariableName.Substring(0, 1).ToUpper()}{LinesVariableName.Substring(1)}";
+            statements.Add(CreateVarInsideMethodWithExpression(ComplexFieldsVariableName,
+                                                   InvocationExpression(MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression,
+                                                                                               GetGlobalNameforType(_symbol.ParentFullName),
+                                                                                               IdentifierName(string.Format(GetTDLLinesMethodName, child.SymbolData?.TypeName ?? child.Name))))
+                                                   .WithArgumentList(ArgumentList(SeparatedList<ArgumentSyntax>(
+                     new SyntaxNodeOrToken[]{
+                            Argument(LiteralExpression(SyntaxKind.StringLiteralExpression, Literal(child.XmlTag))),
+                     })))));
+
+            statements.Add(ExpressionStatement(InvocationExpression(MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression,
+                                                                                           IdentifierName(LinesVariableName),
+                                                                                           IdentifierName(AddToArrayExtensionMethodName)))
+                .WithArgumentList(ArgumentList(SeparatedList<ArgumentSyntax>(
+                     new SyntaxNodeOrToken[]{
+                            Argument(IdentifierName(ComplexFieldsVariableName)),
+                            Token(SyntaxKind.CommaToken),
+                            Argument(LiteralExpression(SyntaxKind.NumericLiteralExpression, Literal(counter))),
+                     })))
+                ));
+            counter += (child.SymbolData?.ComplexFieldsIncludedCount ?? 0) + 1;
         }
         statements.Add(ReturnStatement(IdentifierName(LinesVariableName)));
         var methodDeclarationSyntax = MethodDeclaration(CreateEmptyArrayType(LineFullTypeName),
-                                                        Identifier(GetTDLLinesMethodName))
-            .WithModifiers(TokenList([Token(SyntaxKind.PublicKeyword), Token(SyntaxKind.StaticKeyword)]))
+                                                        Identifier(string.Format(GetTDLLinesMethodName, _symbol.TypeName)))
+            .WithModifiers(TokenList([Token(SyntaxKind.InternalKeyword), Token(SyntaxKind.StaticKeyword)]))
             .WithBody(
             Block(statements));
         if (_symbol.IsChild)
@@ -380,6 +446,27 @@ internal class GenerateTDLReport
         List<StatementSyntax> statements = [];
         statements.Add(CreateVarArrayWithCount(FieldFullTypeName, FieldsVariableName, _symbol.SimpleFieldsCount));
         var counter = 0;
+        if (_symbol.BaseSymbolData != null)
+        {
+            var child = _symbol.BaseSymbolData;
+            string ComplexFieldsVariableName = $"{child.Name.Substring(0, 1).ToLower()}{child.Name.Substring(1)}{FieldsVariableName.Substring(0, 1).ToUpper()}{FieldsVariableName.Substring(1)}";
+            statements.Add(CreateVarInsideMethodWithExpression(ComplexFieldsVariableName,
+                                                   InvocationExpression(MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression,
+                                                                                               GetGlobalNameforType(_symbol.ParentFullName),
+                                                                                               IdentifierName(string.Format(GetTDLFieldsMethodName, child.Name))))));
+
+            statements.Add(ExpressionStatement(InvocationExpression(MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression,
+                                                                                           IdentifierName(FieldsVariableName),
+                                                                                           IdentifierName(AddToArrayExtensionMethodName)))
+                .WithArgumentList(ArgumentList(SeparatedList<ArgumentSyntax>(
+                     new SyntaxNodeOrToken[]{
+                            Argument(IdentifierName(ComplexFieldsVariableName)),
+                            Token(SyntaxKind.CommaToken),
+                            Argument(LiteralExpression(SyntaxKind.NumericLiteralExpression, Literal(counter))),
+                     })))
+                ));
+            counter += child.SimpleFieldsCount;
+        }
         foreach (var child in _symbol.Children)
         {
             if (child.Exclude)
@@ -388,7 +475,7 @@ internal class GenerateTDLReport
             }
             if (!child.IsComplex)
             {
-                string name = $"{child.Name}TDLFieldName";
+                string name = GetFieldName(child);
                 List<SyntaxNodeOrToken> args = [Argument(IdentifierName(name)),
                     Token(SyntaxKind.CommaToken),
                     Argument(CreateStringLiteral(child.XmlTag)),
@@ -404,8 +491,8 @@ internal class GenerateTDLReport
                 string ComplexFieldsVariableName = $"{child.Name.Substring(0, 1).ToLower()}{child.Name.Substring(1)}{FieldsVariableName.Substring(0, 1).ToUpper()}{FieldsVariableName.Substring(1)}";
                 statements.Add(CreateVarInsideMethodWithExpression(ComplexFieldsVariableName,
                                                        InvocationExpression(MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression,
-                                                                                                   GetGlobalNameforType(child.ChildTypeFullName),
-                                                                                                   IdentifierName(GetTDLFieldsMethodName)))));
+                                                                                                   GetGlobalNameforType(_symbol.ParentFullName),
+                                                                                                   IdentifierName(string.Format(GetTDLFieldsMethodName, child.SymbolData?.TypeName ?? child.Name))))));
 
                 statements.Add(ExpressionStatement(InvocationExpression(MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression,
                                                                                                IdentifierName(FieldsVariableName),
@@ -422,8 +509,8 @@ internal class GenerateTDLReport
         }
         statements.Add(ReturnStatement(IdentifierName(FieldsVariableName)));
         var methodDeclarationSyntax = MethodDeclaration(CreateEmptyArrayType(FieldFullTypeName),
-                                                        Identifier(GetTDLFieldsMethodName))
-            .WithModifiers(TokenList([Token(SyntaxKind.PublicKeyword), Token(SyntaxKind.StaticKeyword)]))
+                                                        Identifier(string.Format(GetTDLFieldsMethodName, _symbol.TypeName)))
+            .WithModifiers(TokenList([Token(SyntaxKind.InternalKeyword), Token(SyntaxKind.StaticKeyword)]))
             .WithBody(
             Block(statements));
         return methodDeclarationSyntax;
@@ -440,8 +527,12 @@ internal class GenerateTDLReport
             ];
         foreach (var child in _complexChildren)
         {
+            if (child.TDLCollectionDetails == null)
+            {
+                continue;
+            }
             nodesAndTokens.Add(Token(SyntaxKind.CommaToken));
-            nodesAndTokens.Add(ExpressionElement(IdentifierName($"{child.ChildType.Name}CollectionName")));
+            nodesAndTokens.Add(ExpressionElement(IdentifierName(GetCollectionName(child))));
         }
         statements.Add(GetArrayAssignmentExppression(CollectionsVariableName, 0,
             [
@@ -454,14 +545,31 @@ internal class GenerateTDLReport
             ]));
         statements.Add(ReturnStatement(IdentifierName(CollectionsVariableName)));
         var methodDeclarationSyntax = MethodDeclaration(CreateEmptyArrayType(CollectionFullTypeName),
-                                                        Identifier(GetTDLCollectionsMethodName))
-            .WithModifiers(TokenList([Token(SyntaxKind.PublicKeyword), Token(SyntaxKind.StaticKeyword)]))
+                                                        Identifier(string.Format(GetTDLCollectionsMethodName, _symbol.TypeName)))
+            .WithModifiers(TokenList([Token(SyntaxKind.InternalKeyword), Token(SyntaxKind.StaticKeyword)]))
             .WithBody(
             Block(statements));
         return methodDeclarationSyntax;
     }
 
+    private string GetFieldName(ChildSymbolData child)
+    {
+        return $"{_symbol.TypeName}{child.Name}TDLFieldName";
+    }
+    private string GetFieldName(BaseSymbolData baseSymbol)
+    {
+        return $"{_symbol.TypeName}{baseSymbol.Name}TDLFieldName";
+    }
 
+
+    private string GetCollectionName(ChildSymbolData child)
+    {
+        if (child.IsList && !child.IsComplex)
+        {
+            return $"{_symbol.TypeName}{child.Name}CollectionName";
+        }
+        return $"{_symbol.TypeName}{child.ChildType.Name}CollectionName";
+    }
     private StatementSyntax CreateAssignFromMethodStatement(string varName,
                                                             string propName,
                                                             string methodName)
@@ -472,7 +580,7 @@ internal class GenerateTDLReport
                                     IdentifierName(propName)),
                                     CollectionExpression(SingletonSeparatedList<CollectionElementSyntax>(SpreadElement
                                     (InvocationExpression(MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression,
-                                     GetGlobalNameforType(_symbol.FullName), IdentifierName(methodName)))
+                                     GetGlobalNameforType(_symbol.ParentFullName), IdentifierName(methodName)))
                                         )))));
     }
 

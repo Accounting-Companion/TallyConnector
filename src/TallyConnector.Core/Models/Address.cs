@@ -8,6 +8,7 @@ public class HAddress
 
 
     [XmlElement(ElementName = "ADDRESS")]
+    [TDLCollection(CollectionName ="Address")]
     public List<string> Address
     {
         get { return _Address; }

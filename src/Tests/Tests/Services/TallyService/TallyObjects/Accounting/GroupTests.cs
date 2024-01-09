@@ -1,4 +1,6 @@
-﻿namespace Tests.Services.TallyService.TallyObjects.Accounting;
+﻿using System.Xml.Serialization;
+
+namespace Tests.Services.TallyService.TallyObjects.Accounting;
 internal class GroupTests : BaseTallyServiceTest
 {
 
@@ -14,7 +16,7 @@ internal class GroupTests : BaseTallyServiceTest
     public async Task CheckGetAllGroups2()
     {
 
-        var Groups = await _tallyService.GetAllObjectsAsync<TCMA.BaseGroup>(new() { FetchList = new() { "Parent,MasterId" } });
+        var Groups = await _tallyService.GetAllObjectsAsync<TCMA.BaseGroup>(new() { FetchList = new() { "Parent,MasterId" },XMLAttributeOverrides= xmlAttributeOverrides });
         Assert.That(Groups, Is.Not.Null);
         Assert.That(Groups, Has.Count.EqualTo(62));
     }

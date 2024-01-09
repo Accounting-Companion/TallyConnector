@@ -1,5 +1,7 @@
 ﻿
 
+using UnitTests.Models;
+
 namespace TC.TDLReportSourceGenerator.Tests.Verifiers;
 internal static partial class CSharpSourceGeneratorVerifier<TSourceGenerator>
     where TSourceGenerator : IIncrementalGenerator, new()
@@ -51,7 +53,9 @@ internal static partial class CSharpSourceGeneratorVerifier<TSourceGenerator>
                             "8.0.0"),
                         Path.Combine("ref", "net8.0")),
         };
-        test.TestState.AdditionalReferences.Add(typeof(TallyConnector.Core.Models.BasicTallyObject).Assembly);
+        test.TestState.AdditionalReferences.Add(typeof(Ledger).Assembly);
+        test.TestState.AdditionalReferences.Add(typeof(TallyConnector.Services.BaseTallyService).Assembly);
+        test.TestState.AdditionalReferences.Add(typeof(TallyConnector.Core.Models.BaseCompany).Assembly);
         foreach ((string filename, string content) in generatedSources)
         {
             test.TestState.GeneratedSources.Add((typeof(TSourceGenerator), filename, SourceText.From(content, Encoding.UTF8)));

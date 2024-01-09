@@ -4,11 +4,10 @@ using TallyConnector.Core.Models.Masters.Inventory;
 using TallyConnector.Core.Models.Masters.Payroll;
 
 namespace TallyConnector.Services;
-
 /// <summary>
-/// contains API to interact with Tally
+/// Interface for BaseTallyService
 /// </summary>
-public interface ITallyService
+public interface IBaseTallyService
 {
     /// <summary>
     /// Coonfigure Tally Url and port
@@ -22,6 +21,49 @@ public interface ITallyService
     /// </summary>
     /// <returns>true or false</returns>
     Task<bool> CheckAsync(CancellationToken token = default);
+
+    /// <summary>
+    /// All future requests will be send to company mentioned here
+    /// irrespective of active company in Tally <br/>
+    /// you can overide company by mentioning in request options in Request
+    /// </summary>
+    /// <param name="company">instance of company</param>
+    void SetCompany(Company company);
+
+
+    /// <summary>
+    /// A helper function to send request to Tally
+    /// </summary>
+    /// <param name="xml">xml that is required to send to Tally</param>
+    /// <param name="requestType">xml that is required to send to Tally</param>
+    /// <param name="token"></param>
+    /// <returns></returns>
+    /// <exception cref="TallyConnectivityException"></exception>
+    Task<TallyResult> SendRequestAsync(string? xml = null, string? requestType = null, CancellationToken token = default);
+
+    /// <summary>
+    /// Checks whether xml as linerror and returns error
+    /// if noerror return null
+    /// </summary>
+    /// <param name="ResXml"></param>
+    /// <returns></returns>
+    string? CheckTallyError(string ResXml);
+
+    /// <summary>
+    /// Parse response in XML and return TallyResult
+    /// </summary>
+    /// <param name="tallyResult"></param>
+    /// <returns></returns>
+    TallyResult ParseResponse(TallyResult tallyResult);
+
+
+}
+/// <summary>
+/// contains API to interact with Tally
+/// </summary>
+public interface ITallyService
+{
+
 
     /// <summary>
     /// Get License Information and Other Basic Info from Tally
@@ -61,13 +103,7 @@ public interface ITallyService
     /// <returns></returns>
     Task<List<CompanyOnDisk>?> GetCompaniesinDefaultPathAsync(CancellationToken token = default);
 
-    /// <summary>
-    /// Set company , all future requests will be send to company mentioned here
-    /// irrespective of active company in Tally
-    /// you can overide company by mentioning in request options
-    /// </summary>
-    /// <param name="company"></param>
-    void SetCompany(Company company);
+    
 
     /// <summary>
     /// Get Statistics of Masters form Tally
@@ -422,28 +458,4 @@ public interface ITallyService
     Task<int?> GetObjectCountAync(CountRequestOptions options, string? requestType = null, CancellationToken token = default);
 
 
-    /// <summary>
-    /// A helper function to send request to Tally
-    /// </summary>
-    /// <param name="xml">xml that is required to send to Tally</param>
-    /// <param name="requestType">xml that is required to send to Tally</param>
-    /// <param name="token"></param>
-    /// <returns></returns>
-    /// <exception cref="TallyConnectivityException"></exception>
-    Task<TallyResult> SendRequestAsync(string? xml = null, string? requestType = null, CancellationToken token = default);
-
-    /// <summary>
-    /// Checks whether xml as linerror and returns error
-    /// if noerror return null
-    /// </summary>
-    /// <param name="ResXml"></param>
-    /// <returns></returns>
-    string? CheckTallyError(string ResXml);
-
-    /// <summary>
-    /// Parse response in XML and return TallyResult
-    /// </summary>
-    /// <param name="tallyResult"></param>
-    /// <returns></returns>
-    TallyResult ParseResponse(TallyResult tallyResult);
-}
+    }

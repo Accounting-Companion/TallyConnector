@@ -104,4 +104,3 @@ public class Currency : BasicTallyObject, INamedTallyObject
 //public class DailyBuyingRate : DailystdRate
 //{
 //}
-

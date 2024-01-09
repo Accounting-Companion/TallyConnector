@@ -123,7 +123,7 @@ public class TDLMessage
         filters?.ForEach(filter => System.Add(new(name: filter.FilterName!,
                                                  text: filter.FilterFormulae!)));
 
-        
+
     }
 
 
@@ -423,6 +423,9 @@ public class Part : DCollection
     [XmlAttribute(AttributeName = "NAME")]
     public string? Name { get; set; }
 
+    [XmlElement(ElementName = "XMLTAG")]
+    public string? XMLTag { get; set; }
+
 }
 
 
@@ -449,6 +452,9 @@ public class Line : DCollection
     public Line()
     {
     }
+
+    [XmlElement(ElementName = "USE")]
+    public string? Use { get; set; }
 
     [XmlElement(ElementName = "FIELDS")]
     public List<string>? Fields { get; set; }
@@ -498,7 +504,7 @@ public class Field : DCollection
 
     public Field(List<string> fields, Dictionary<string, string> repeatFields, string fieldName, string xmlTag)
     {
-        Fields =  fields;
+        Fields = fields;
         Name = fieldName;
         Option = repeatFields.Select(kv => $"{kv.Value} : {kv.Key}").ToList();
 
@@ -634,7 +640,7 @@ public class Collection : DCollection
     public List<string>? By { get; set; }
 
     [XmlElement(ElementName = "AGGRCOMPUTE")]
-    public List<string>? AggrCompute { get; set; }  
+    public List<string>? AggrCompute { get; set; }
 
     [XmlElement(ElementName = "SORT")]
     public List<string>? Sort { get; set; }
