@@ -310,9 +310,43 @@ public class TDLMessage
     [XmlElement(ElementName = "COLLECTION")]
     public List<Collection> Collection { get; set; } = new();
 
+    [XmlElement(ElementName = "FUNCTION")]
+    public List<TDLFunction> Functions { get; set; } = [];
+
     [XmlElement(ElementName = "SYSTEM")]
     public List<System>? System { get; set; } = new();
 
+}
+
+public class TDLFunction : DCollection
+{
+    public TDLFunction()
+    {
+        SetAttributes();
+    }
+
+    public TDLFunction(string name)
+    {
+        Name = name;
+        SetAttributes();
+    }
+
+    [XmlAttribute(AttributeName = "NAME")]
+    public string Name { get; set; }
+    [XmlElement(ElementName = "Parameter")]
+    public List<string> Parameters { get; set; } = [];
+
+    [XmlElement(ElementName = "VARIABLES")]
+    public List<string> Variables { get; set; } = [];
+
+    [XmlElement(ElementName = "LocalFormula")]
+    public List<string> LocalFormulas { get; set; } = [];
+
+    [XmlElement(ElementName = "Returns")]
+    public string? Returns { get; set; }
+
+    [XmlElement(ElementName = "Action")]
+    public List<string> Actions { get; set; } = [];
 }
 
 [XmlRoot(ElementName = "REPORT")]

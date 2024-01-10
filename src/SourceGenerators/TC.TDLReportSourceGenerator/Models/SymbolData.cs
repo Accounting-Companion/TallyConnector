@@ -21,6 +21,8 @@ internal class SymbolData
         ParentNameSpace = parentSymbol.ContainingNamespace.ToString();
         ParentFullName = parentSymbol.OriginalDefinition.ToString();
         IsChild = isChild;
+        IsEnum = Symbol.TypeKind is TypeKind.Enum;
+        IsTallyComplexObject = Symbol.HasInterfaceWithFullyQualifiedMetadataName(TallyComplexObjectInterfaceName);
     }
 
     public INamedTypeSymbol ParentSymbol { get; }
@@ -31,6 +33,8 @@ internal class SymbolData
     public string ParentNameSpace { get; set; }
     public string ParentFullName { get; private set; }
     public bool IsChild { get; private set; }
+    public bool IsEnum { get; private set; }
+    public bool IsTallyComplexObject { get; private set; }
     public List<ChildSymbolData> Children { get; } = [];
     public int SimpleFieldsCount { get; set; } = 0;
     public int ComplexFieldsIncludedCount { get; set; } = 0;
@@ -52,7 +56,7 @@ internal class BaseSymbolData : SymbolData
 }
 internal class ChildSymbolData
 {
-    public ChildSymbolData(IPropertySymbol childSymbol, SymbolData parent)
+    public ChildSymbolData(ISymbol childSymbol, SymbolData parent)
     {
         Parent = parent;
         ChildSymbol = childSymbol;
@@ -63,9 +67,25 @@ internal class ChildSymbolData
         Attributes = childSymbol.GetAttributes();
     }
 
+
     private INamedTypeSymbol GetChildType()
     {
-        INamedTypeSymbol type = (INamedTypeSymbol)ChildSymbol.Type;
+        INamedTypeSymbol? type = null;
+        switch (ChildSymbol)
+        {
+            case IPropertySymbol propertySymbol:
+                type = (INamedTypeSymbol)propertySymbol.Type;
+                break;
+            case IFieldSymbol fieldSymbol:
+                type = (INamedTypeSymbol)fieldSymbol.Type;
+                break;
+            default:
+                break;
+        }
+        if (type == null)
+        {
+            throw new Exception($"{nameof(type)} cannot be null in {nameof(GetChildType)} method");
+        }
         if (type.IsGenericType && type.HasInterfaceWithFullyQualifiedMetadataName(IEnumerableInterfaceName))
         {
             IsList = true;
@@ -89,7 +109,7 @@ internal class ChildSymbolData
     public bool IsEnum { get; private set; }
 
     public string Name { get; }
-    public IPropertySymbol ChildSymbol { get; }
+    public ISymbol ChildSymbol { get; }
 
     public ImmutableArray<AttributeData> Attributes { get; }
     public INamedTypeSymbol ChildType { get; private set; }

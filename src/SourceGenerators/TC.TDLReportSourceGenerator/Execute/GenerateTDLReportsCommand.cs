@@ -1,4 +1,5 @@
 ﻿using Microsoft.CodeAnalysis;
+using System.Collections.Generic;
 using System.Collections.Immutable;
 using TC.TDLReportSourceGenerator.Models;
 
@@ -56,13 +57,29 @@ internal class GenerateTDLReportsCommand
             {
                 continue;
             }
-            if (childSymbol.DeclaredAccessibility is Accessibility.Public && childSymbol is IPropertySymbol propertySymbol)
+            if (childSymbol.DeclaredAccessibility is Accessibility.Public && childSymbol.Kind is SymbolKind.Property || symbolData.Symbol.TypeKind is TypeKind.Enum && childSymbol.Kind is SymbolKind.Field)
             {
+                var propertySymbol = childSymbol;
                 ChildSymbolData childData = new(propertySymbol, symbolData);
 
                 symbolData.Children.Add(childData);
-                if (childData.IsComplex)
+                if (childData.IsComplex || childData.IsEnum)
                 {
+                    if (childData.IsEnum)
+                    {
+                        if (!ComplexChildNames.Contains(childData.ChildTypeFullName))
+                        {
+                            ComplexChildNames.Add(childData.ChildTypeFullName);
+                            if (!_data.ContainsKey(childData.ChildTypeFullName))
+                            {
+                                SymbolData value = new(symbolData.ParentSymbol, childData.ChildType, childData.ChildType.Name, true);
+                                _data.Add(childData.ChildTypeFullName, value);
+                                ProcessSymbol(value, _data, ComplexChildNames);
+                                ParseAttributes(childData);
+                            }
+                        }
+                        continue;
+                    }
                     symbolData.ComplexFieldsCount++;
                     if (!ComplexChildNames.Contains(childData.ChildTypeFullName))
                     {
@@ -105,13 +122,12 @@ internal class GenerateTDLReportsCommand
                         symbolData.ComplexFieldsIncludedCount++;
                     }
                     symbolData.SimpleFieldsCount++;
-
                 }
                 ParseAttributes(childData);
             }
 
         }
-        if (baseType != null && baseType.SpecialType != SpecialType.System_Object)
+        if (baseType != null && baseType.SpecialType == SpecialType.None)
         {
             BaseSymbolData value = new(symbolData.ParentSymbol, baseType, baseType.Name, true);
             symbolData.BaseSymbolData = value;
@@ -142,7 +158,7 @@ internal class GenerateTDLReportsCommand
         foreach (AttributeData attributeDataAttribute in childData.Attributes)
         {
             string attributeName = attributeDataAttribute.GetAttrubuteMetaName();
-            if (attributeName == TDLXMLSetAttributeName)
+            if (attributeName == TDLFieldAttributeName)
             {
                 childData.TDLFieldDetails = ParseTDLFieldDetails(attributeDataAttribute);
 
@@ -161,7 +177,7 @@ internal class GenerateTDLReportsCommand
                 if (attributeName == XMLArrayItemAttributeName)
                 {
                     var listItemXmlTag = ParseXMLData(attributeDataAttribute);
-                    if (listItemXmlTag !=null)
+                    if (listItemXmlTag != null)
                     {
                         xMLData = listItemXmlTag;
                     }
@@ -171,6 +187,7 @@ internal class GenerateTDLReportsCommand
             {
                 childData.TDLCollectionDetails = ParseTDLCollectionDataFromProperty(attributeDataAttribute);
             }
+
         }
 
         if (childData.IsComplex && childData.SymbolData != null)
@@ -190,7 +207,32 @@ internal class GenerateTDLReportsCommand
             Set = $"${xMLData?.XmlTag ?? upperName}",
             IncludeInFetch = false
         };
+        if (childData.TDLFieldDetails.Set == null)
+        {
+            if (childData.Parent.IsTallyComplexObject)
+            {
+                childData.TDLFieldDetails.Set = "{0}";
+
+            }
+            else
+            {
+                childData.TDLFieldDetails.Set = $"${xMLData?.XmlTag ?? upperName}";
+            }
+        }
+
         childData.XmlTag = xMLData?.XmlTag ?? upperName;
+        if (!childData.IsComplex)
+        {
+            switch (childData.ChildType.SpecialType)
+            {
+                case SpecialType.System_Boolean:
+                    childData.TDLFieldDetails.Set = $"$${GetBooleanFromLogicFieldFunctionName}:{childData.TDLFieldDetails.Set}";
+                    break;
+                case SpecialType.System_Enum:
+                    childData.TDLFieldDetails.Set = $"{childData.TDLFieldDetails.Set}";
+                    break;
+            }
+        }
     }
 
     private void ParseAttributes(SymbolData symbolData)
@@ -198,7 +240,7 @@ internal class GenerateTDLReportsCommand
         XMLData? xmlData = null;
         foreach (AttributeData attributeDataAttribute in symbolData.Attributes)
         {
-            if (attributeDataAttribute.GetAttrubuteMetaName() == TDLXMLSetAttributeName)
+            if (attributeDataAttribute.GetAttrubuteMetaName() == XMLElementAttributeName)
             {
                 xmlData = ParseRootXMLData(attributeDataAttribute);
 
@@ -315,9 +357,22 @@ internal class GenerateTDLReportsCommand
                     case "Set":
                         fieldData.Set = (string)namedArgument.Value.Value!;
                         break;
+                    case "IncludeInFetch":
+                        fieldData.IncludeInFetch = (bool?)namedArgument.Value.Value ?? false;
+                        break;
+                    case "Use":
+                        fieldData.Use = (string?)namedArgument.Value.Value;
+                        break;
+                    case "TallyType":
+                        fieldData.TallyType = (string?)namedArgument.Value.Value;
+                        break;
+                    case "Format":
+                        fieldData.Format = (string?)namedArgument.Value.Value;
+                        break;
                 }
             }
         }
+
         return fieldData;
     }
 }

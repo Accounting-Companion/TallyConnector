@@ -3,7 +3,7 @@ public static class Constants
 {
     // Source - "DEFTDL:src\..\..\tdl.core\src\..\..\tdl.template\src\formula\formula.tdl"
     // Search with Const Name 
-
+    
     public const string Prefix = "TC_";
     public const string MaxNumberLength = "31";
     public const string MaxAmountLength = "26";
@@ -26,6 +26,9 @@ public static class Constants
                                             ":($$String:@@MinorReleaseFormula):\"0\":@@CapBuildNumberFormula";
 
     public const string License = "if @@CapProductDetails contains \"Tally.ERP 9\" then " + TallyERP9License + " else " + TallyPrimeLicense;
+
+
+    public const string GetBooleanFromLogicFieldFunctionName = "TC_GetBooleanFromLogicField";
 
     public static class Periodicty
     {

@@ -8,15 +8,15 @@ public class VoucherTypeStat : BaseStatistics, IReportInterfaceGenerator<Voucher
     [XmlElement(ElementName = "NAME")]
     public string Name { get; set; }
     [XmlElement(ElementName = "CANCELLEDCOUNT")]
-    [TDLXMLSet(Set = "if $$ISEMPTY:$CancVal then 0 else $CancVal")]
+    [TDLField(Set = "if $$ISEMPTY:$CancVal then 0 else $CancVal")]
     public int CancelledCount { get; set; }
 
     [XmlElement(ElementName = "TOTALCOUNT")]
-    [TDLXMLSet(Set = "if $$ISEMPTY:$MigVal then 0 else $MigVal")]
+    [TDLField(Set = "if $$ISEMPTY:$MigVal then 0 else $MigVal")]
     public int TotalCount { get; set; }
 
     [XmlElement(ElementName = "OPTIONALCOUNT")]
-    [TDLXMLSet(Set = "if $$ISEMPTY:$$DirectOptionalVch:$Name then 0 else $$DirectOptionalVch:$Name")]
+    [TDLField(Set = "if $$ISEMPTY:$$DirectOptionalVch:$Name then 0 else $$DirectOptionalVch:$Name")]
     public int OptionalCount { get; set; }
 
     public int NetCount => Count - CancelledCount;
@@ -67,7 +67,7 @@ public class BaseStatistics
     
 
     [XmlElement(ElementName = "COUNT")]
-    [TDLXMLSet(Set = "if $$ISEMPTY:$StatVal then 0 else $StatVal")]
+    [TDLField(Set = "if $$ISEMPTY:$StatVal then 0 else $StatVal")]
     public int Count { get; set; }
 }
 public class AutoColVoucherTypeStat

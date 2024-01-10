@@ -306,6 +306,31 @@ public partial class BaseTallyService : IBaseTallyService
         }
         return null;
     }
+    /// <summary>
+    /// Default functions used in Request Envelope XML
+    /// </summary>
+    /// <returns></returns>
+    public static List<TDLFunction> GetDefaultTDLFunctions()
+    {
+        List<TDLFunction> functions = [];
+        functions.Add(new TDLFunction(Constants.GetBooleanFromLogicFieldFunctionName)
+        {
+            Parameters = ["val : Logical : None"],
+            Returns = "String",
+            Actions = [
+                "000 :   If  : $$ISEmpty:##val", 
+                    "001 :Return : ##val", 
+                "002 : Else    :", 
+                        "003 : If  :  ##val ", 
+                            "004 :Return :\"true\"",
+                        "005 : Else    :",
+                            "006 :Return : \"false\"",
+                        "007 : End If",
+                "008 : End If",
+            ]
+        });
+        return functions;
+    }
 
 #if NET7_0_OR_GREATER
     [System.Text.RegularExpressions.GeneratedRegex(@"(?<=>)(?!<)((.|\n)*?)(?=<\/[^>]+>|<[^>]+>)")]

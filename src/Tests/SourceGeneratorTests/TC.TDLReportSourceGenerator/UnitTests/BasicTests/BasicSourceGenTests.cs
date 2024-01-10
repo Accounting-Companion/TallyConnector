@@ -42,6 +42,7 @@ public partial class TallyService
         tdlMsg.Line = [..global::TestNameSpace.TallyService.GetGroupTDLLines()];
         tdlMsg.Field = [..global::TestNameSpace.TallyService.GetGroupTDLFields()];
         tdlMsg.Collection = [..global::TestNameSpace.TallyService.GetGroupTDLCollections()];
+        tdlMsg.Functions = [..global::TestNameSpace.TallyService.GetDefaultTDLFunctions()];
         return reqEnvelope;
     }
 
@@ -129,6 +130,7 @@ public partial class TallyService
         tdlMsg.Line = [..global::TestNameSpace.TallyService.GetVoucherTDLLines()];
         tdlMsg.Field = [..global::TestNameSpace.TallyService.GetVoucherTDLFields()];
         tdlMsg.Collection = [..global::TestNameSpace.TallyService.GetVoucherTDLCollections()];
+        tdlMsg.Functions = [..global::TestNameSpace.TallyService.GetDefaultTDLFunctions()];
         return reqEnvelope;
     }
 
@@ -275,6 +277,7 @@ public partial class TallyService
         tdlMsg.Line = [..global::TestNameSpace.TallyService.GetVoucherTDLLines()];
         tdlMsg.Field = [..global::TestNameSpace.TallyService.GetVoucherTDLFields()];
         tdlMsg.Collection = [..global::TestNameSpace.TallyService.GetVoucherTDLCollections()];
+        tdlMsg.Functions = [..global::TestNameSpace.TallyService.GetDefaultTDLFunctions()];
         return reqEnvelope;
     }
 
@@ -448,6 +451,7 @@ public partial class TallyService
         tdlMsg.Line = [..global::TestNameSpace.TallyService.GetGroupTDLLines()];
         tdlMsg.Field = [..global::TestNameSpace.TallyService.GetGroupTDLFields()];
         tdlMsg.Collection = [..global::TestNameSpace.TallyService.GetGroupTDLCollections()];
+        tdlMsg.Functions = [..global::TestNameSpace.TallyService.GetDefaultTDLFunctions()];
         return reqEnvelope;
     }
 
@@ -618,6 +622,7 @@ public partial class TallyService
         tdlMsg.Line = [..global::TestNameSpace.TallyService.GetGroupTDLLines()];
         tdlMsg.Field = [..global::TestNameSpace.TallyService.GetGroupTDLFields()];
         tdlMsg.Collection = [..global::TestNameSpace.TallyService.GetGroupTDLCollections()];
+        tdlMsg.Functions = [..global::TestNameSpace.TallyService.GetDefaultTDLFunctions()];
         return reqEnvelope;
     }
 
@@ -670,7 +675,7 @@ public partial class Group : TallyConnector.Core.Models.ITallyBaseObject
     public string? Parent { get; set; }
 
     [XmlElement(ElementName = ""NAME"")]
-    public TallyConnector.Core.Models.AdAllocType? OpeningBal { get; set; }
+    public TallyConnector.Core.Models.AdAllocType? AdAllocType { get; set; }
 
 }";
         var resp1 = @"using TallyConnector.Core.Extensions;
@@ -693,6 +698,7 @@ public partial class TallyService
         tdlMsg.Line = [..global::TestNameSpace.TallyService.GetGroupTDLLines()];
         tdlMsg.Field = [..global::TestNameSpace.TallyService.GetGroupTDLFields()];
         tdlMsg.Collection = [..global::TestNameSpace.TallyService.GetGroupTDLCollections()];
+        tdlMsg.Functions = [..global::TestNameSpace.TallyService.GetDefaultTDLFunctions()];
         return reqEnvelope;
     }
 
@@ -777,6 +783,7 @@ public partial class TallyService
         tdlMsg.Line = [..global::TestNameSpace.TallyService.GetGroupTDLLines()];
         tdlMsg.Field = [..global::TestNameSpace.TallyService.GetGroupTDLFields()];
         tdlMsg.Collection = [..global::TestNameSpace.TallyService.GetGroupTDLCollections()];
+        tdlMsg.Functions = [..global::TestNameSpace.TallyService.GetDefaultTDLFunctions()];
         return reqEnvelope;
     }
 

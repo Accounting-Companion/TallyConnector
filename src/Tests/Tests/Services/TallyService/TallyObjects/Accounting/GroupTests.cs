@@ -16,7 +16,7 @@ internal class GroupTests : BaseTallyServiceTest
     public async Task CheckGetAllGroups2()
     {
 
-        var Groups = await _tallyService.GetAllObjectsAsync<TCMA.BaseGroup>(new() { FetchList = new() { "Parent,MasterId" },XMLAttributeOverrides= xmlAttributeOverrides });
+        var Groups = await _tallyService.GetAllObjectsAsync<TCMA.BaseGroup>(new() { FetchList = new() { "Parent,MasterId" } });
         Assert.That(Groups, Is.Not.Null);
         Assert.That(Groups, Has.Count.EqualTo(62));
     }
