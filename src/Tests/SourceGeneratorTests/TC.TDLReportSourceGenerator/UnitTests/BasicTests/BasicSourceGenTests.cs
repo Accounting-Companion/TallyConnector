@@ -13,6 +13,7 @@ namespace TestNameSpace;
 public partial class TallyService : TallyConnector.Services.BaseTallyService
 {
 }
+[XmlRoot(ElementName = ""VOUCHER"")]
 public partial class Group : TallyConnector.Core.Models.ITallyBaseObject
 {
     [XmlElement(ElementName = ""PARENT"")]

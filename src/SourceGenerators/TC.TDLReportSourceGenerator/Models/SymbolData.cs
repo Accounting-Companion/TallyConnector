@@ -116,6 +116,7 @@ internal class ChildSymbolData
         MainParent = Parent.ParentSymbol;
         IsComplex = ChildType.SpecialType is SpecialType.None && ChildType.TypeKind is not TypeKind.Enum;
         Attributes = childSymbol.GetAttributes();
+        ReportVarName = $"{parent.Name}{Name}ReportName";
     }
 
 
@@ -174,4 +175,6 @@ internal class ChildSymbolData
     public string XmlTag { get; set; }
     public TDLCollectionData? TDLCollectionDetails { get; internal set; }
     public string? ListXmlTag { get; internal set; }
+
+    public string ReportVarName { get; set; }
 }

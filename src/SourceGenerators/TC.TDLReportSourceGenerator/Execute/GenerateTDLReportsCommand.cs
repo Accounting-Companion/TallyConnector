@@ -103,7 +103,7 @@ internal class GenerateTDLReportsCommand
                             _data.Add(childData.ChildTypeFullName, value);
                             ProcessSymbol(value, _data, ComplexChildNames);
                             symbolData.SimpleFieldsCount += value.SimpleFieldsCount;
-                            symbolData.ComplexFieldsIncludedCount += value.ComplexFieldsIncludedCount;
+                            symbolData.ComplexFieldsIncludedCount += value.ComplexFieldsIncludedCount + 1;
                             symbolData.ComplexFieldsCount += value.ComplexFieldsCount;
                             childData.SymbolData = value;
                         }
@@ -112,8 +112,8 @@ internal class GenerateTDLReportsCommand
                             var value = _data[childData.ChildTypeFullName];
                             childData.SymbolData = value;
                             //symbolData.SimpleFieldsCount += value.SimpleFieldsCount;
-                            symbolData.ComplexFieldsIncludedCount += value.ComplexFieldsIncludedCount;
-                            symbolData.ComplexFieldsCount += value.ComplexFieldsCount;
+                            symbolData.ComplexFieldsIncludedCount += value.ComplexFieldsIncludedCount + 1;
+                            symbolData.ComplexFieldsCount += 1;
                         }
                     }
                     else
@@ -121,8 +121,8 @@ internal class GenerateTDLReportsCommand
                         var value = _data[childData.ChildTypeFullName];
                         childData.SymbolData = value;
                         //symbolData.SimpleFieldsCount += value.SimpleFieldsCount;
-                        symbolData.ComplexFieldsIncludedCount += value.ComplexFieldsIncludedCount;
-                        symbolData.ComplexFieldsCount += value.ComplexFieldsCount;
+                        symbolData.ComplexFieldsIncludedCount += value.ComplexFieldsIncludedCount + 1;
+                        //symbolData.ComplexFieldsCount += 1;
                         childData.Exclude = true;
                     }
                 }
@@ -265,13 +265,13 @@ internal class GenerateTDLReportsCommand
         foreach (AttributeData attributeDataAttribute in symbolData.Attributes)
         {
             string attrName = attributeDataAttribute.GetAttrubuteMetaName();
-            if (attrName == XMLElementAttributeName)
+            if (attrName == XmlRootAttributeName)
             {
                 xmlData = ParseRootXMLData(attributeDataAttribute);
             }
             if (attrName == TDLCollectionAttributeName)
             {
-                symbolData.TDLCollectionDetails =  ParseTDLCollectionData(attributeDataAttribute);
+                symbolData.TDLCollectionDetails = ParseTDLCollectionData(attributeDataAttribute);
             }
             if (attrName == TDLFunctionsMethodNameAttributeName)
             {
@@ -458,6 +458,7 @@ internal class GenerateTDLReportsCommand
                 switch (i)
                 {
                     case 0:
+
                     default:
                         break;
                 }
@@ -466,6 +467,17 @@ internal class GenerateTDLReportsCommand
         if (attributeDataAttribute.NamedArguments != null && attributeDataAttribute.NamedArguments.Length > 0)
         {
             var namedArguments = attributeDataAttribute.NamedArguments;
+            xMLData ??= new();
+            foreach (var namedArgument in namedArguments)
+            {
+                switch (namedArgument.Key)
+                {
+                    case "ElementName":
+                        xMLData.XmlTag = (string)namedArgument.Value.Value!;
+                        break;
+                }
+            }
+
         }
         return xMLData;
     }

@@ -1,7 +1,7 @@
 ﻿using static TallyConnector.Core.Models.Constants;
 namespace TallyConnector.Core.Models.TallyComplexObjects;
 [TDLFunctionsMethodName(FunctionName = nameof(GetTDLFunctions))]
-[TDLCollection(ExplodeCondition = "NOT $$IsEmpty:$ClosingBalance")]
+[TDLCollection(ExplodeCondition = "NOT $$IsEmpty:{0}")]
 public class Amount : ITallyComplexObject, ITallyBaseObject
 {
     public Amount()

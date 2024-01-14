@@ -18,6 +18,7 @@ public static class Constants
     public const string ListClassName = "List";
 
     public const string IEnumerableInterfaceName = "System.Collections.IEnumerable";
+    public const string XmlRootAttributeName = "System.Xml.Serialization.XmlRootAttribute";
     public const string XMLElementAttributeName = "System.Xml.Serialization.XmlElementAttribute";
     public const string XMLEnumAttributeName = "System.Xml.Serialization.XmlEnumAttribute";
     public const string XMLArrayItemAttributeName = "System.Xml.Serialization.XmlArrayItemAttribute";
@@ -54,6 +55,7 @@ public static class Constants
     public const string GetObjectsMethodName = "Get{0}s";
     public const string GetRequestEnvelopeMethodName = "Get{0}RequestEnevelope";
     public const string GetTDLPartsMethodName = "Get{0}TDLParts";
+    public const string GetMainTDLPartMethodName = "Get{0}MainTDLPart";
     public const string GetTDLLinesMethodName = "Get{0}TDLLines";
     public const string GetTDLCollectionsMethodName = "Get{0}TDLCollections";
     public const string GetTDLFunctionsMethodName = "Get{0}TDLFunctions";

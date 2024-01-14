@@ -60,7 +60,7 @@ partial class TallyService
         var lines = new global::TallyConnector.Core.Models.Line[2];
         lines[0] = new(LedgerReportName, [LedgerNameTDLFieldName], ""LEDGER"")
         {
-            Explode = [$""TC_LedgerClosingBalanceList:NOT $$IsEmpty:$ClosingBalance""]
+            Explode = [$""TC_LedgerClosingBalanceList:NOT $IsEmpty:$ClosingBalance""]
         };
         var closingBalanceLines = global::TestNameSpace.TallyService.GetAmountTDLLines(""ClosingBalance"");
         lines.AddToArray(closingBalanceLines, 1);
@@ -117,14 +117,14 @@ partial class TallyService
     internal static global::TallyConnector.Core.Models.Field[] GetAmountTDLFields(string setValue)
     {
         var fields = new global::TallyConnector.Core.Models.Field[5];
-        fields[0] = new(AmountBaseAmountTDLFieldName, ""BASEAMOUNT"", string.Format(""$$BaseValue:{0}"", setValue))
+        fields[0] = new(AmountBaseAmountTDLFieldName, ""BASEAMOUNT"", string.Format(""$BaseValue:{0}"", setValue))
         {
             Type = ""Amount : Base""
         };
-        fields[1] = new(AmountForexAmountTDLFieldName, ""FOREXAMOUNT"", string.Format(""$$ForexValue:{0}"", setValue))
+        fields[1] = new(AmountForexAmountTDLFieldName, ""FOREXAMOUNT"", string.Format(""$ForexValue:{0}"", setValue))
         {
             Type = ""Amount : Forex"",
-            Invisible = ""$$Value=#TC_Amount_BaseAmount""
+            Invisible = ""$Value=#TC_Amount_BaseAmount""
         };
         fields[2] = new(AmountForexSymbolTDLFieldName, ""FOREXSYMBOL"", string.Format(""{0}"", setValue))
         {
@@ -132,12 +132,12 @@ partial class TallyService
             Format = ""Forex,Currency"",
             Invisible = ""#TC_Amount_ForexAmount=#TC_Amount_BaseAmount""
         };
-        fields[3] = new(AmountExchangeRateTDLFieldName, ""EXCHANGERATE"", string.Format(""$$RatexValue:{0}"", setValue))
+        fields[3] = new(AmountExchangeRateTDLFieldName, ""EXCHANGERATE"", string.Format(""$RatexValue:{0}"", setValue))
         {
             Type = ""Number"",
-            Invisible = ""$$Value=1""
+            Invisible = ""$Value=1""
         };
-        fields[4] = new(AmountIsDebitTDLFieldName, ""ISDEBIT"", string.Format(""$$TC_GetBooleanFromLogicField:$$IsDebit:{0}"", setValue));
+        fields[4] = new(AmountIsDebitTDLFieldName, ""ISDEBIT"", string.Format(""$TC_GetBooleanFromLogicField:$IsDebit:{0}"", setValue));
         return fields;
     }
 }";
