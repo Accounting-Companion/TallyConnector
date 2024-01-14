@@ -61,7 +61,7 @@ public interface IBaseTallyService
 /// <summary>
 /// contains API to interact with Tally
 /// </summary>
-public interface ITallyService
+public interface ITallyService:IBaseTallyService
 {
 
 

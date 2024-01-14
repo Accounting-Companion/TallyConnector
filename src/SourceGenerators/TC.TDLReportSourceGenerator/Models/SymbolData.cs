@@ -1,38 +1,43 @@
 ﻿
 using Microsoft.CodeAnalysis;
+using System.Collections;
 using System.Collections.Immutable;
+using System.Xml.Serialization;
 using TC.TDLReportSourceGenerator.Execute;
 
 namespace TC.TDLReportSourceGenerator.Models;
 
 internal class SymbolData
 {
-    public SymbolData(INamedTypeSymbol parentSymbol,
+    public SymbolData(INamedTypeSymbol mainSymbol,
                       INamedTypeSymbol symbol,
                       string methodName,
-                      bool isChild = false)
+                      bool isChild = false,
+                      SymbolData? parentSymbol = null)
     {
-        ParentSymbol = parentSymbol;
+        MainSymbol = mainSymbol;
         Symbol = symbol;
         TypeName = methodName;
         Name = symbol.Name;
         Attributes = Symbol.GetAttributes();
         FullName = symbol.OriginalDefinition.ToString();
-        ParentNameSpace = parentSymbol.ContainingNamespace.ToString();
-        ParentFullName = parentSymbol.OriginalDefinition.ToString();
+        MainNameSpace = mainSymbol.ContainingNamespace.ToString();
+        MainFullName = mainSymbol.OriginalDefinition.ToString();
         IsChild = isChild;
+        ParentSymbol = parentSymbol;
         IsEnum = Symbol.TypeKind is TypeKind.Enum;
         IsTallyComplexObject = Symbol.HasInterfaceWithFullyQualifiedMetadataName(TallyComplexObjectInterfaceName);
     }
 
-    public INamedTypeSymbol ParentSymbol { get; }
+    public INamedTypeSymbol MainSymbol { get; }
     public INamedTypeSymbol Symbol { get; }
     public string TypeName { get; }
     public string Name { get; }
     public string FullName { get; }
-    public string ParentNameSpace { get; set; }
-    public string ParentFullName { get; private set; }
+    public string MainNameSpace { get; set; }
+    public string MainFullName { get; private set; }
     public bool IsChild { get; private set; }
+    public SymbolData? ParentSymbol { get; private set; }
     public bool IsEnum { get; private set; }
     public bool IsTallyComplexObject { get; private set; }
     public List<ChildSymbolData> Children { get; } = [];
@@ -43,6 +48,51 @@ internal class SymbolData
     public string RootXmlTag { get; set; }
     public int ComplexFieldsCount { get; internal set; }
     public BaseSymbolData? BaseSymbolData { get; internal set; }
+
+    public FunctionDetails TDLFunctionMethods { get; set; } = [];
+    public FunctionDetails TDLNameSetMethods { get; set; } = [];
+    public TDLCollectionData? TDLCollectionDetails { get; internal set; }
+}
+
+
+internal class FunctionDetails : IEnumerable<KeyValuePair<string, FunctionDetail>>
+{
+    public Dictionary<string, FunctionDetail> _functiondetails = [];
+    public void Add(IMethodSymbol methodSymbol, SymbolData symbolData)
+    {
+        var detaill = new FunctionDetail(methodSymbol, symbolData);
+        if (!_functiondetails.ContainsKey(detaill.FullName))
+        {
+            _functiondetails.Add(detaill.FullName, detaill);
+            Count++;
+        }
+    }
+    public int Count { get; internal set; }
+
+    public IEnumerator<KeyValuePair<string, FunctionDetail>> GetEnumerator()
+    {
+        return _functiondetails.GetEnumerator();
+    }
+
+    IEnumerator IEnumerable.GetEnumerator()
+    {
+        return this.GetEnumerator();
+    }
+}
+internal class FunctionDetail
+{
+    public FunctionDetail(IMethodSymbol symbol, SymbolData symbolData)
+    {
+        Symbol = symbol;
+        SymbolData = symbolData;
+        FunctionName = symbol.Name;
+        FullName = symbol.OriginalDefinition.ToString();
+    }
+
+    public string FunctionName { get; set; }
+    public string FullName { get; set; }
+    public IMethodSymbol Symbol { get; set; }
+    public SymbolData SymbolData { get; }
 }
 internal class BaseSymbolData : SymbolData
 {
@@ -63,6 +113,7 @@ internal class ChildSymbolData
         ChildType = GetChildType();
         ChildTypeFullName = ChildType.OriginalDefinition.ToString();
         Name = childSymbol.Name;
+        MainParent = Parent.ParentSymbol;
         IsComplex = ChildType.SpecialType is SpecialType.None && ChildType.TypeKind is not TypeKind.Enum;
         Attributes = childSymbol.GetAttributes();
     }
@@ -118,6 +169,7 @@ internal class ChildSymbolData
 
     public SymbolData Parent { get; }
     public SymbolData? SymbolData { get; set; }
+    public SymbolData? MainParent { get; private set; }
     public TDLFieldData? TDLFieldDetails { get; set; }
     public string XmlTag { get; set; }
     public TDLCollectionData? TDLCollectionDetails { get; internal set; }

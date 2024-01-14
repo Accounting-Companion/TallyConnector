@@ -10,4 +10,5 @@ public class TDLFieldData
     public string? Use { get; internal set; }
     public string? TallyType { get; internal set; }
     public string? Format { get; internal set; }
+    public string? Invisible { get; internal set; }
 }

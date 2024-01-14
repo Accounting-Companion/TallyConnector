@@ -1,4 +1,5 @@
 ﻿using System.Collections;
+using System.Xml.Linq;
 
 namespace TallyConnector.Core.Models;
 
@@ -310,6 +311,9 @@ public class TDLMessage
     [XmlElement(ElementName = "COLLECTION")]
     public List<Collection> Collection { get; set; } = new();
 
+    [XmlElement(ElementName = "NAMESET")]
+    public List<NameSet> NameSet { get; set; } = [];
+
     [XmlElement(ElementName = "FUNCTION")]
     public List<TDLFunction> Functions { get; set; } = [];
 
@@ -317,7 +321,23 @@ public class TDLMessage
     public List<System>? System { get; set; } = new();
 
 }
+public class NameSet : DCollection
+{
+    public NameSet()
+    {
+        SetAttributes();
+    }
+    public NameSet(string name)
+    {
+        Name = name;
+        SetAttributes();
+    }
+    [XmlAttribute(AttributeName = "NAME")]
+    public string Name { get; set; }
 
+    [XmlElement(ElementName = "LIST")]
+    public List<string> List { get; set; }
+}
 public class TDLFunction : DCollection
 {
     public TDLFunction()
@@ -590,6 +610,9 @@ public class Field : DCollection
 
     [XmlElement(ElementName = "FORMAT")]
     public string? Format { get; set; }
+
+    [XmlElement(ElementName = "INVISIBLE")]
+    public string? Invisible { get; set; }
 }
 
 

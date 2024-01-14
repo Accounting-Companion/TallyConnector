@@ -1,7 +1,11 @@
 ﻿namespace TallyConnector.Core.Attributes;
-[AttributeUsage(AttributeTargets.Class | AttributeTargets.Property, AllowMultiple = false,Inherited =true)]
+[AttributeUsage(AttributeTargets.Class | AttributeTargets.Property, AllowMultiple = false, Inherited = true)]
 public class BaseMethodNameAttribute : Attribute
 {
+    public BaseMethodNameAttribute()
+    {
+    }
+
     public BaseMethodNameAttribute(string functionName)
     {
         FunctionName = functionName;
@@ -13,6 +17,10 @@ public class BaseMethodNameAttribute : Attribute
 
 public class TDLFunctionsMethodNameAttribute : BaseMethodNameAttribute
 {
+    public TDLFunctionsMethodNameAttribute()
+    {
+    }
+
     public TDLFunctionsMethodNameAttribute(string functionName) : base(functionName)
     {
     }
@@ -21,19 +29,41 @@ public class TDLFunctionsMethodNameAttribute : BaseMethodNameAttribute
 
 public class TDLCollectionsMethodNameAttribute : BaseMethodNameAttribute
 {
+    public TDLCollectionsMethodNameAttribute()
+    {
+    }
+
     public TDLCollectionsMethodNameAttribute(string functionName) : base(functionName)
     {
     }
 }
 public class TDLFiltersMethodNameAttribute : BaseMethodNameAttribute
 {
+    public TDLFiltersMethodNameAttribute()
+    {
+    }
+
     public TDLFiltersMethodNameAttribute(string functionName) : base(functionName)
     {
     }
 }
 public class TDLComputeMethodNameAttribute : BaseMethodNameAttribute
 {
+    public TDLComputeMethodNameAttribute()
+    {
+    }
+
     public TDLComputeMethodNameAttribute(string functionName) : base(functionName)
+    {
+    }
+}
+public class TDLNamesetMethodNameAttribute : BaseMethodNameAttribute
+{
+    public TDLNamesetMethodNameAttribute()
+    {
+    }
+
+    public TDLNamesetMethodNameAttribute(string functionName) : base(functionName)
     {
     }
 }

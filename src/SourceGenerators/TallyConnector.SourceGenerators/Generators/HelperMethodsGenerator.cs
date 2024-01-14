@@ -113,8 +113,8 @@ public static class HelperMethodsGenerator
                                               TokenList(
                                                 XmlTextNewLine(
                                                   TriviaList(),
-                                                  Environment.NewLine,
-                                                  Environment.NewLine,
+                                                  "\r\n",
+                                                   "\r\n",
                                                   TriviaList())))
                                         })))),
                                 SyntaxKind.PublicKeyword,
@@ -257,8 +257,8 @@ public static class HelperMethodsGenerator
                                               TokenList(
                                                 XmlTextNewLine(
                                                   TriviaList(),
-                                                  Environment.NewLine,
-                                                  Environment.NewLine,
+                                                  "\r\n",
+                                                  "\r\n",
                                                   TriviaList())))
                                         })))),
                                 SyntaxKind.PublicKeyword,
@@ -400,8 +400,8 @@ public static class HelperMethodsGenerator
                                               TokenList(
                                                 XmlTextNewLine(
                                                   TriviaList(),
-                                                  Environment.NewLine,
-                                                  Environment.NewLine,
+                                                   "\r\n",
+                                                   "\r\n",
                                                   TriviaList())))
                                         })))),
                                 SyntaxKind.PublicKeyword,
@@ -544,8 +544,8 @@ public static class HelperMethodsGenerator
                                               TokenList(
                                                 XmlTextNewLine(
                                                   TriviaList(),
-                                                  Environment.NewLine,
-                                                  Environment.NewLine,
+                                                  "\r\n",
+                                                  "\r\n",
                                                   TriviaList())))
                                         })))),
                                 SyntaxKind.PublicKeyword,
@@ -678,8 +678,8 @@ public static class HelperMethodsGenerator
                                                                     TokenList(
                                                                         XmlTextNewLine(
                                                                             TriviaList(),
-                                                                            Environment.NewLine,
-                                                                            Environment.NewLine,
+                                                                            "\r\n",
+                                                                            "\r\n",
                                                                             TriviaList())))})))),
                                             SyntaxKind.PublicKeyword,
                                             TriviaList()),
@@ -809,8 +809,8 @@ public static class HelperMethodsGenerator
                                                                     TokenList(
                                                                         XmlTextNewLine(
                                                                             TriviaList(),
-                                                                            Environment.NewLine,
-                                                                            Environment.NewLine,
+                                                                            "\r\n",
+                                                                            "\r\n",
                                                                             TriviaList())))})))),
                                             SyntaxKind.PublicKeyword,
                                             TriviaList()),
@@ -940,8 +940,8 @@ public static class HelperMethodsGenerator
                                                                     TokenList(
                                                                         XmlTextNewLine(
                                                                             TriviaList(),
-                                                                            Environment.NewLine,
-                                                                            Environment.NewLine,
+                                                                            "\r\n",
+                                                                            "\r\n",
                                                                             TriviaList())))})))),
                                             SyntaxKind.PublicKeyword,
                                             TriviaList()),

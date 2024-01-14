@@ -29,6 +29,7 @@ public static class Constants
 
 
     public const string GetBooleanFromLogicFieldFunctionName = "TC_GetBooleanFromLogicField";
+    public const string TransformDateFunctionName = "TC_TransformDateToXSD";
 
     public static class Periodicty
     {

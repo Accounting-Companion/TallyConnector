@@ -21,12 +21,14 @@ public partial class Group : TallyConnector.Core.Models.ITallyBaseObject
     [XmlElement(ElementName = ""NAME"")]
     public string? Name { get; set; }
 
+    //[XmlElement(ElementName = ""BOOKSFROM"")]
+    //public DateOnly BooksFrom { get; set; }
 }";
         var resp1 = @"using TallyConnector.Core.Extensions;
 
 #nullable enable
 namespace TestNameSpace;
-public partial class TallyService
+partial class TallyService
 {
     internal const string GroupParentTDLFieldName = ""TC_Group_Parent"";
     internal const string GroupNameTDLFieldName = ""TC_Group_Name"";
@@ -113,7 +115,7 @@ public partial class LedgerEntry
 
 #nullable enable
 namespace TestNameSpace;
-public partial class TallyService
+partial class TallyService
 {
     internal const string VoucherParentTDLFieldName = ""TC_Voucher_Parent"";
     internal const string VoucherNameTDLFieldName = ""TC_Voucher_Name"";
@@ -176,7 +178,7 @@ public partial class TallyService
 
 #nullable enable
 namespace TestNameSpace;
-public partial class TallyService
+partial class TallyService
 {
     internal const string LedgerEntryNameTDLFieldName = ""TC_LedgerEntry_Name"";
     internal const string LedgerEntryReportName = ""TC_LedgerEntryList"";
@@ -259,7 +261,7 @@ public partial class InventoryEntry
 
 #nullable enable
 namespace TestNameSpace;
-public partial class TallyService
+partial class TallyService
 {
     internal const string VoucherParentTDLFieldName = ""TC_Voucher_Parent"";
     internal const string VoucherNameTDLFieldName = ""TC_Voucher_Name"";
@@ -329,7 +331,7 @@ public partial class TallyService
 
 #nullable enable
 namespace TestNameSpace;
-public partial class TallyService
+partial class TallyService
 {
     internal const string LedgerEntryNameTDLFieldName = ""TC_LedgerEntry_Name"";
     internal const string LedgerEntryReportName = ""TC_LedgerEntryList"";
@@ -362,7 +364,7 @@ public partial class TallyService
 
 #nullable enable
 namespace TestNameSpace;
-public partial class TallyService
+partial class TallyService
 {
     internal const string InventoryEntryNameTDLFieldName = ""TC_InventoryEntry_Name"";
     const string InventoryEntryLedgerEntryCollectionName = ""AccountingAllocations"";
@@ -434,7 +436,7 @@ public partial class Group : TallyConnector.Core.Models.ITallyBaseObject
 
 #nullable enable
 namespace TestNameSpace;
-public partial class TallyService
+partial class TallyService
 {
     internal const string GroupParentTDLFieldName = ""TC_Group_Parent"";
     internal const string GroupNameTDLFieldName = ""TC_Group_Name"";
@@ -497,7 +499,7 @@ public partial class TallyService
 
 #nullable enable
 namespace TestNameSpace;
-public partial class TallyService
+partial class TallyService
 {
     internal const string LanguageNameListLanguageAliasTDLFieldName = ""TC_LanguageNameList_LanguageAlias"";
     internal const string LanguageNameListReportName = ""TC_LanguageNameListList"";
@@ -539,7 +541,7 @@ public partial class TallyService
 
 #nullable enable
 namespace TestNameSpace;
-public partial class TallyService
+partial class TallyService
 {
     internal const string NamesNAMESTDLFieldName = ""TC_Names_NAMES"";
     const string NamesNAMESCollectionName = ""Name"";
@@ -606,7 +608,7 @@ public partial class Group : TallyConnector.Core.Models.ITallyBaseObject
 
 #nullable enable
 namespace TestNameSpace;
-public partial class TallyService
+partial class TallyService
 {
     internal const string GroupParentTDLFieldName = ""TC_Group_Parent"";
     internal const string GroupOpeningBalTDLFieldName = ""TC_Group_OpeningBal"";
@@ -655,6 +657,7 @@ public partial class TallyService
         return collections;
     }
 }";
+        
         await VerifyTDLReportSG.VerifyGeneratorAsync(src, ("TestNameSpace.Group.TallyService.TDLReport.g.cs", resp1));
     }
 
@@ -665,10 +668,13 @@ public partial class TallyService
 #nullable enable
 using System.Xml.Serialization;
 namespace TestNameSpace;
+
 [TallyConnector.Core.Attributes.GenerateHelperMethod<Group>]
 public partial class TallyService : TallyConnector.Services.BaseTallyService
 {
 }
+
+
 public partial class Group : TallyConnector.Core.Models.ITallyBaseObject
 {
     [XmlElement(ElementName = ""PARENT"")]
@@ -682,7 +688,7 @@ public partial class Group : TallyConnector.Core.Models.ITallyBaseObject
 
 #nullable enable
 namespace TestNameSpace;
-public partial class TallyService
+partial class TallyService
 {
     internal const string GroupParentTDLFieldName = ""TC_Group_Parent"";
     internal const string GroupOpeningBalTDLFieldName = ""TC_Group_OpeningBal"";
@@ -731,7 +737,35 @@ public partial class TallyService
         return collections;
     }
 }";
-        await VerifyTDLReportSG.VerifyGeneratorAsync(src, ("TestNameSpace.Group.TallyService.TDLReport.g.cs", resp1));
+        var resp2 = @"using TallyConnector.Core.Extensions;
+
+#nullable enable
+namespace TestNameSpace;
+partial class TallyService
+{
+    internal static global::TallyConnector.Core.Models.NameSet[] GetAdAllocTypeTDLNameSets()
+    {
+        var nameSets = new global::TallyConnector.Core.Models.NameSet[1];
+        nameSets[0] = new(""TC_AdAllocTypeEnum"")
+        {
+            List = [""Not Applicable:\""NotApplicable\"""", ""Appropriate by Qty:\""AppropriateByQty\"""", ""Appropriate by Value:\""AppropriateByValue\"""", ""Appropriate by condition:\""AppropriateByCondition\""""]
+        };
+        return nameSets;
+    }
+
+    internal static global::TallyConnector.Core.Models.TDLFunction[] GetAdAllocTypeTDLFunctions()
+    {
+        var functions = new global::TallyConnector.Core.Models.TDLFunction[1];
+        functions[0] = new(""TC_GetAdAllocType"")
+        {
+            Parameters = [""val : String : \""\""""],
+            Actions = [""001 :Return : NameGetValue:##Val:TC_AdAllocTypeEnum""]
+        };
+        return functions;
+    }
+}";
+        await VerifyTDLReportSG.VerifyGeneratorAsync(src, [("TestNameSpace.Group.TallyService.TDLReport.g.cs", resp1),
+            ("TallyConnector.Core.Models.AdAllocType.TallyService.TDLReport.g.cs", resp2)]);
     }
 
     [TestMethod]
@@ -765,7 +799,7 @@ public partial class Group : TallyConnector.Core.Models.ITallyBaseObject
 
 #nullable enable
 namespace TestNameSpace;
-public partial class TallyService
+partial class TallyService
 {
     internal const string GroupParentTDLFieldName = ""TC_Group_Parent"";
     internal const string GroupNameTDLFieldName = ""TC_Group_Name"";
@@ -828,4 +862,6 @@ public partial class TallyService
         await VerifyTDLReportSG.VerifyGeneratorAsync(src, ("TestNameSpace.Group.TallyService.TDLReport.g.cs", resp1));
 
     }
+
+
 }

@@ -8,6 +8,7 @@
 		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
 		<!-- Generates a package at build -->
 		<IncludeBuildOutput>false</IncludeBuildOutput>
+		<EnforceExtendedAnalyzerRules>true</EnforceExtendedAnalyzerRules>
 		<Nullable>enable</Nullable>
 	</PropertyGroup>
 

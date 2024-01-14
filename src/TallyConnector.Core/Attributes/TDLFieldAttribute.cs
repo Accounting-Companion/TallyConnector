@@ -10,6 +10,7 @@ public class TDLFieldAttribute : Attribute
     public string? Use { get; set; }
     public string? TallyType { get; set; }
     public string? Format { get; set; }
+    public string? Invisible { get; set; }
     public TDLFieldAttribute(string set)
     {
         Set = set;

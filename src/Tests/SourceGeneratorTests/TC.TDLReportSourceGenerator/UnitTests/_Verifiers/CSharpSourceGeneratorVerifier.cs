@@ -52,6 +52,7 @@ internal static partial class CSharpSourceGeneratorVerifier<TSourceGenerator>
                             "Microsoft.NETCore.App.Ref",
                             "8.0.0"),
                         Path.Combine("ref", "net8.0")),
+            
         };
         test.TestState.AdditionalReferences.Add(typeof(Ledger).Assembly);
         test.TestState.AdditionalReferences.Add(typeof(TallyConnector.Services.BaseTallyService).Assembly);

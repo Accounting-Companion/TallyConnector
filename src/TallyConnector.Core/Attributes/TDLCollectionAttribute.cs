@@ -43,4 +43,6 @@ public class TDLCollectionAttribute : Attribute
         set { _include = value; }
     }
 
+    public string? ExplodeCondition { get; set; }
+
 }

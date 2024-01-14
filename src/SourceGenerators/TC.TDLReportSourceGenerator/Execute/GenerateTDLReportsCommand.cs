@@ -1,6 +1,4 @@
-﻿using Microsoft.CodeAnalysis;
-using System.Collections.Generic;
-using System.Collections.Immutable;
+﻿using System.Collections.Immutable;
 using TC.TDLReportSourceGenerator.Models;
 
 namespace TC.TDLReportSourceGenerator.Execute;
@@ -40,14 +38,14 @@ internal class GenerateTDLReportsCommand
             {
                 var compilationUnitSyntax = new GenerateTDLReport(symbol.Value).GetCompilationUnit();
                 var source = compilationUnitSyntax.ToFullString();
-                context.AddSource($"{symbol.Key}.{symbol.Value.ParentSymbol.Name}.TDLReport.g.cs", source);
+                context.AddSource($"{symbol.Key}.{symbol.Value.MainSymbol.Name}.TDLReport.g.cs", source);
             }
         }
 
     }
     void ProcessSymbol(SymbolData symbolData, Dictionary<string, SymbolData> _data, HashSet<string>? complexChildNames = null)
     {
-        ParseAttributes(symbolData);
+        ParseClassAttributes(symbolData);
         IEnumerable<ISymbol> childSymbols = symbolData.Symbol.GetMembers();
         INamedTypeSymbol? baseType = symbolData.Symbol.BaseType;
         var ComplexChildNames = complexChildNames ?? [];
@@ -67,16 +65,30 @@ internal class GenerateTDLReportsCommand
                 {
                     if (childData.IsEnum)
                     {
+                        symbolData.SimpleFieldsCount++;
                         if (!ComplexChildNames.Contains(childData.ChildTypeFullName))
                         {
                             ComplexChildNames.Add(childData.ChildTypeFullName);
                             if (!_data.ContainsKey(childData.ChildTypeFullName))
                             {
-                                SymbolData value = new(symbolData.ParentSymbol, childData.ChildType, childData.ChildType.Name, true);
+                                SymbolData value = new(symbolData.MainSymbol, childData.ChildType, childData.ChildType.Name, true);
                                 _data.Add(childData.ChildTypeFullName, value);
                                 ProcessSymbol(value, _data, ComplexChildNames);
+                                childData.SymbolData = value;
                                 ParseAttributes(childData);
                             }
+                            else
+                            {
+                                var value = _data[childData.ChildTypeFullName];
+                                childData.SymbolData = value;
+                                childData.Exclude = true;
+                            }
+                        }
+                        else
+                        {
+                            var value = _data[childData.ChildTypeFullName];
+                            childData.SymbolData = value;
+                            childData.Exclude = true;
                         }
                         continue;
                     }
@@ -87,7 +99,7 @@ internal class GenerateTDLReportsCommand
                         ComplexChildNames.Add(childData.ChildTypeFullName);
                         if (!_data.ContainsKey(childData.ChildTypeFullName))
                         {
-                            SymbolData value = new(symbolData.ParentSymbol, childData.ChildType, childData.ChildType.Name, true);
+                            SymbolData value = new(symbolData.MainSymbol, childData.ChildType, childData.ChildType.Name, true, symbolData);
                             _data.Add(childData.ChildTypeFullName, value);
                             ProcessSymbol(value, _data, ComplexChildNames);
                             symbolData.SimpleFieldsCount += value.SimpleFieldsCount;
@@ -129,7 +141,7 @@ internal class GenerateTDLReportsCommand
         }
         if (baseType != null && baseType.SpecialType == SpecialType.None)
         {
-            BaseSymbolData value = new(symbolData.ParentSymbol, baseType, baseType.Name, true);
+            BaseSymbolData value = new(symbolData.MainSymbol, baseType, baseType.Name, true);
             symbolData.BaseSymbolData = value;
             if (!ComplexChildNames.Contains(value.FullName))
             {
@@ -161,11 +173,14 @@ internal class GenerateTDLReportsCommand
             if (attributeName == TDLFieldAttributeName)
             {
                 childData.TDLFieldDetails = ParseTDLFieldDetails(attributeDataAttribute);
-
             }
-            if (attributeName == XMLElementAttributeName)
+            if (attributeName == XMLElementAttributeName && !childData.Parent.IsEnum)
             {
                 xMLData ??= ParseXMLData(attributeDataAttribute);
+            }
+            if (attributeName == XMLEnumAttributeName && childData.Parent.IsEnum)
+            {
+                xMLData ??= ParseEnumXMLData(attributeDataAttribute);
             }
             if (childData.IsList)
             {
@@ -185,7 +200,7 @@ internal class GenerateTDLReportsCommand
             }
             if (attributeName == TDLCollectionAttributeName)
             {
-                childData.TDLCollectionDetails = ParseTDLCollectionDataFromProperty(attributeDataAttribute);
+                childData.TDLCollectionDetails = ParseTDLCollectionData(attributeDataAttribute);
             }
 
         }
@@ -196,7 +211,7 @@ internal class GenerateTDLReportsCommand
             {
                 //if (attributeDataAttribute.GetAttrubuteMetaName() == TDLCollectionAttributeName)
                 //{
-                //    childData.TDLCollectionDetails ??= ParseTDLCollectionDataFromProperty(attributeDataAttribute);
+                //    childData.TDLCollectionDetails ??= ParseTDLCollectionData(attributeDataAttribute);
                 //}
             }
         }
@@ -228,27 +243,113 @@ internal class GenerateTDLReportsCommand
                 case SpecialType.System_Boolean:
                     childData.TDLFieldDetails.Set = $"$${GetBooleanFromLogicFieldFunctionName}:{childData.TDLFieldDetails.Set}";
                     break;
+                case SpecialType.System_DateTime:
+                    childData.TDLFieldDetails.Set = $"$${GetTransformDateToXSDFunctionName}:{childData.TDLFieldDetails.Set}";
+                    break;
                 case SpecialType.System_Enum:
-                    childData.TDLFieldDetails.Set = $"{childData.TDLFieldDetails.Set}";
+                    childData.TDLFieldDetails.Set = $"{string.Format(GetTDLFunctionsMethodName, childData.SymbolData!.Name)}:{childData.TDLFieldDetails.Set}";
                     break;
             }
+            if (childData.IsEnum)
+            {
+                childData.TDLFieldDetails.Set = $"$${string.Format(GetEnumFunctionName, childData.SymbolData!.Name)}:{childData.TDLFieldDetails.Set}";
+            }
         }
+        childData.TDLCollectionDetails ??= childData.SymbolData?.TDLCollectionDetails;
+
     }
 
-    private void ParseAttributes(SymbolData symbolData)
+    private void ParseClassAttributes(SymbolData symbolData)
     {
         XMLData? xmlData = null;
         foreach (AttributeData attributeDataAttribute in symbolData.Attributes)
         {
-            if (attributeDataAttribute.GetAttrubuteMetaName() == XMLElementAttributeName)
+            string attrName = attributeDataAttribute.GetAttrubuteMetaName();
+            if (attrName == XMLElementAttributeName)
             {
                 xmlData = ParseRootXMLData(attributeDataAttribute);
+            }
+            if (attrName == TDLCollectionAttributeName)
+            {
+                symbolData.TDLCollectionDetails =  ParseTDLCollectionData(attributeDataAttribute);
+            }
+            if (attrName == TDLFunctionsMethodNameAttributeName)
+            {
+                addFunction(symbolData,
+                            attributeDataAttribute,
+                            symbolData.TDLFunctionMethods,
+                            symbolData.ParentSymbol!.TDLFunctionMethods);
 
             }
-
+            if (attrName == TDLNamesetMethodNameAttributeName)
+            {
+                addFunction(symbolData,
+                            attributeDataAttribute,
+                            symbolData.TDLNameSetMethods,
+                            symbolData.ParentSymbol!.TDLNameSetMethods);
+            }
         }
         symbolData.RootXmlTag = xmlData?.XmlTag ?? symbolData.Name.ToUpper();
+
+        void addFunction(SymbolData symbolData,
+                         AttributeData attributeDataAttribute,
+                         FunctionDetails tDLFunctionMethods,
+                         FunctionDetails? parentTDLFunctionMethods = null)
+        {
+            string? funcName = ParseTDLFunctionName(attributeDataAttribute);
+            if (funcName != null)
+            {
+                ImmutableArray<ISymbol> symbols = symbolData.Symbol.GetMembers(funcName);
+                IMethodSymbol? symbol = symbols.OfType<IMethodSymbol>().Where(c => CheckReturnType(c.ReturnType)).FirstOrDefault();
+                if (symbol != null)
+                {
+                    tDLFunctionMethods.Add(symbol, symbolData);
+                    parentTDLFunctionMethods?.Add(symbol, symbolData);
+                }
+
+            }
+        }
     }
+
+    private bool CheckReturnType(ITypeSymbol returnType)
+    {
+        return true;
+    }
+
+    private string? ParseTDLFunctionName(AttributeData attributeDataAttribute)
+    {
+        if (attributeDataAttribute.ConstructorArguments != null && attributeDataAttribute.ConstructorArguments.Length > 0)
+        {
+            var constructorArguments = attributeDataAttribute.ConstructorArguments;
+            for (int i = 0; i < constructorArguments.Length; i++)
+            {
+                switch (i)
+                {
+                    case 0:
+                        string? value = (string?)constructorArguments.First().Value;
+                        return value;
+
+                    default:
+                        break;
+                }
+            }
+        }
+        if (attributeDataAttribute.NamedArguments != null && attributeDataAttribute.NamedArguments.Length > 0)
+        {
+            var namedArguments = attributeDataAttribute.NamedArguments;
+
+            foreach (var namedArgument in namedArguments)
+            {
+                switch (namedArgument.Key)
+                {
+                    case "FunctionName":
+                        return (string?)namedArgument.Value.Value;
+                }
+            }
+        }
+        return null;
+    }
+
     private XMLData? ParseXMLData(AttributeData attributeDataAttribute)
     {
         XMLData? xMLData = null;
@@ -283,7 +384,41 @@ internal class GenerateTDLReportsCommand
         }
         return xMLData;
     }
-    private TDLCollectionData? ParseTDLCollectionDataFromProperty(AttributeData attributeDataAttribute)
+    private XMLData? ParseEnumXMLData(AttributeData attributeDataAttribute)
+    {
+        XMLData? xMLData = null;
+        if (attributeDataAttribute.ConstructorArguments != null && attributeDataAttribute.ConstructorArguments.Length > 0)
+        {
+            var constructorArguments = attributeDataAttribute.ConstructorArguments;
+            for (int i = 0; i < constructorArguments.Length; i++)
+            {
+                switch (i)
+                {
+                    case 0:
+
+                    default:
+                        break;
+                }
+            }
+        }
+        if (attributeDataAttribute.NamedArguments != null && attributeDataAttribute.NamedArguments.Length > 0)
+        {
+            var namedArguments = attributeDataAttribute.NamedArguments;
+            xMLData ??= new();
+            foreach (var namedArgument in namedArguments)
+            {
+                switch (namedArgument.Key)
+                {
+                    case "Name":
+                        xMLData.XmlTag = (string)namedArgument.Value.Value!;
+                        break;
+                }
+            }
+
+        }
+        return xMLData;
+    }
+    private TDLCollectionData? ParseTDLCollectionData(AttributeData attributeDataAttribute)
     {
         TDLCollectionData? tdlCollectionData = null;
         if (attributeDataAttribute.ConstructorArguments != null && attributeDataAttribute.ConstructorArguments.Length > 0)
@@ -303,6 +438,9 @@ internal class GenerateTDLReportsCommand
                 {
                     case "CollectionName":
                         tdlCollectionData.CollectionName = (string)namedArgument.Value.Value!;
+                        break;
+                    case "ExplodeCondition":
+                        tdlCollectionData.ExplodeCondition = (string)namedArgument.Value.Value!;
                         break;
                 }
             }
@@ -369,6 +507,9 @@ internal class GenerateTDLReportsCommand
                     case "Format":
                         fieldData.Format = (string?)namedArgument.Value.Value;
                         break;
+                    case "Invisible":
+                        fieldData.Invisible = (string?)namedArgument.Value.Value;
+                        break;
                 }
             }
         }
@@ -384,4 +525,5 @@ public class XMLData
 public class TDLCollectionData
 {
     public string CollectionName { get; internal set; }
+    public string? ExplodeCondition { get; internal set; }
 }

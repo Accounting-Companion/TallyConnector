@@ -318,16 +318,37 @@ public partial class BaseTallyService : IBaseTallyService
             Parameters = ["val : Logical : None"],
             Returns = "String",
             Actions = [
-                "000 :   If  : $$ISEmpty:##val", 
-                    "001 :Return : ##val", 
-                "002 : Else    :", 
-                        "003 : If  :  ##val ", 
-                            "004 :Return :\"true\"",
-                        "005 : Else    :",
-                            "006 :Return : \"false\"",
-                        "007 : End If",
+                "000 :   If  : $$ISEmpty:##val",
+                "001 :Return : ##val",
+                "002 : Else    :",
+                "003 : If  :  ##val ",
+                "004 :Return :\"true\"",
+                "005 : Else    :",
+                "006 :Return : \"false\"",
+                "007 : End If",
                 "008 : End If",
             ]
+        });
+        functions.Add(new TDLFunction(Constants.TransformDateFunctionName)
+        {
+            Parameters = ["ParamInputDate   : Date"],
+            Variables = [
+                "ParamSeparator        : String : \"-\"",
+                "TempVarYear           : String",
+                "TempVarMonth          : String",
+                "TempVarDate           : String",
+            ],
+            Returns = "String",
+            Actions = [
+                "01  : If        : NOT $$IsEmpty:##ParamInputDate",
+                "02  :   Set     : TempVarYear       : $$Zerofill:($$YearofDate:##ParamInputDate):4",
+                "03  :   Set     : TempVarMonth      : $$Zerofill:($$MonthofDate:##ParamInputDate):2",
+                "04  :   Set     : TempVarDate       : $$Zerofill:($$DayofDate:##ParamInputDate):2",
+                "05  :   Return  : $$String:##TempVarYear + $$String:##ParamSeparator + $$String:##TempVarMonth + $$String:##ParamSeparator + $$String:##TempVarDate",
+                "06  : End If",
+                "07  : Return    : \"\""
+            ],
+
         });
         return functions;
     }
