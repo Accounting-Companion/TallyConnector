@@ -78,6 +78,15 @@ public partial class CInventoryEntry
     [XmlElement(ElementName = "AMOUNT")]
     public Amount Amount { get; set; }
 
+    [XmlElement(ElementName = "RATE")]
+    public Rate Rate { get; set; }
+
+    [XmlElement(ElementName = "ACTUALQTY")]
+    public Quantity? ActualQuantity { get; set; }
+
+    [XmlElement(ElementName = "BILLEDQTY")]
+    public Quantity BilledQuantity { get; set; }
+
     [TDLCollection(CollectionName = "ACCOUNTINGALLOCATIONS")]
     [XmlArrayItem(ElementName = "ACCOUNTINGALLOCATIONS.LIST")]
     public List<CLedgerEntry> LedgerEntries { get; set; }
