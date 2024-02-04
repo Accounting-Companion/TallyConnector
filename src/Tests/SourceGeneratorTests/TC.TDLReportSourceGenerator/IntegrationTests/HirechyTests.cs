@@ -1,10 +1,4 @@
-﻿using IntegrationTests.Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Xml.Serialization;
+﻿using System.Xml.Serialization;
 
 namespace IntegrationTests;
 [TestClass]
@@ -21,11 +15,11 @@ public partial class HirechyTests
     [TestMethod]
     public void TestGroupClass()
     {
-       var v = TallyServiceHierarchy.GetLedgerRequestEnevelope().GetXML();
+        //var v = TallyServiceHierarchy.GetOLedgerRequestEnevelope().GetXML();
     }
 }
 [TallyConnector.Core.Attributes.GenerateHelperMethod<GroupH>]
-[TallyConnector.Core.Attributes.GenerateHelperMethod<Ledger>]
+//[TallyConnector.Core.Attributes.GenerateHelperMethod<OLedger>]
 public partial class TallyServiceHierarchy : TallyServiceGroup
 {
 }

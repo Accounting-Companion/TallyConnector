@@ -525,6 +525,9 @@ public class Line : DCollection
     [XmlElement(ElementName = "EXPLODE")]
     public List<string> Explode { get; set; } = new();
 
+    [XmlElement(ElementName = "LOCAL")]
+    public List<string> Local { get; set; } = [];
+
 
     [XmlElement(ElementName = "REPEAT")]
     public List<string>? Repeat { get; set; }

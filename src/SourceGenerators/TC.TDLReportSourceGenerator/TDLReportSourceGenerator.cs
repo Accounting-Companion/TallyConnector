@@ -75,19 +75,13 @@ public class TDLReportSourceGenerator : IIncrementalGenerator
                     {
                         case 1:
                             getTypeSymbol = (INamedTypeSymbol)typeargs[0];
-                            generateSymbolsArgs.Add(getTypeSymbol.Name, new(symbol, getTypeSymbol) );
+                            generateSymbolsArgs.Add(getTypeSymbol.Name, new(symbol, getTypeSymbol));
                             break;
-                        case 2:
+                        case 3:
                             getTypeSymbol = (INamedTypeSymbol)typeargs[0];
-                            generateSymbolsArgs.Add(getTypeSymbol.Name, new(symbol,getTypeSymbol,
-                                                        (INamedTypeSymbol)typeargs[1]));
-                            break;
-                        case 4:
-                            getTypeSymbol = (INamedTypeSymbol)typeargs[0];
-                            generateSymbolsArgs.Add(getTypeSymbol.Name, new(symbol,getTypeSymbol,
+                            generateSymbolsArgs.Add(getTypeSymbol.Name, new(symbol, getTypeSymbol,
                                                         (INamedTypeSymbol)typeargs[1],
-                                                         (INamedTypeSymbol)typeargs[2],
-                                                          (INamedTypeSymbol)typeargs[3]));
+                                                          (INamedTypeSymbol)typeargs[2]));
                             break;
                         default:
                             break;
@@ -109,25 +103,22 @@ public class UniqueSymbol(string Name, INamedTypeSymbol Symbol)
 }
 public class GenerateSymbolsArgs
 {
-    public GenerateSymbolsArgs(INamedTypeSymbol parentSymbol, INamedTypeSymbol getSymbol) : this(parentSymbol, getSymbol, getSymbol) { }
+    public GenerateSymbolsArgs(INamedTypeSymbol parentSymbol, INamedTypeSymbol getSymbol) : this(parentSymbol, getSymbol, null, null) { }
 
 
     public GenerateSymbolsArgs(INamedTypeSymbol parentSymbol,
                                INamedTypeSymbol getSymbol,
-                               INamedTypeSymbol postSymbol,
                                INamedTypeSymbol? requestEnvelope = null,
                                INamedTypeSymbol? postEnvelope = null)
     {
         ParentSymbol = parentSymbol;
         GetSymbol = getSymbol;
         MethodName = getSymbol.Name;
-        PostSymbol = postSymbol;
         RequestEnvelope = requestEnvelope;
         PostEnvelope = postEnvelope;
     }
     public INamedTypeSymbol ParentSymbol { get; }
     public INamedTypeSymbol GetSymbol { get; }
-    public INamedTypeSymbol PostSymbol { get; }
     public string Name { get; }
     public string NameSpace { get; }
     public INamedTypeSymbol? RequestEnvelope { get; }

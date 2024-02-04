@@ -372,14 +372,14 @@ public class Voucher : BasicTallyObject, ITallyObject
         //if (VchType != "Contra" && VchType != "Purchase" && VchType != "Receipt" && VchType != "Credit Note")
         //{
         //    Ledgers?.Sort((x, y) => y.LedgerName!.CompareTo(x.LedgerName));//First Sort Ledger list Using Ledger Names
-        //    Ledgers?.Sort((x, y) => y.Amount!.Amount!.CompareTo(x.Amount!.Amount)); //Next sort Ledger List Using Ledger Amounts
-        //    Ledgers?.Sort((x, y) => y.Amount!.IsDebit.CompareTo(x.Amount!.IsDebit));
+        //    Ledgers?.Sort((x, y) => y.TallyAmountField!.TallyAmountField!.CompareTo(x.TallyAmountField!.TallyAmountField)); //Next sort Ledger List Using Ledger Amounts
+        //    Ledgers?.Sort((x, y) => y.TallyAmountField!.IsDebit.CompareTo(x.TallyAmountField!.IsDebit));
         //}
         //else
         //{
         //    Ledgers?.Sort((x, y) => x.LedgerName!.CompareTo(y.LedgerName));//First Sort Ledger list Using Ledger Names
-        //    Ledgers?.Sort((x, y) => x.Amount!.Amount.CompareTo(y.Amount!.Amount)); //Next sort Ledger List Using Ledger Amounts
-        //    Ledgers?.Sort((x, y) => x.Amount!.IsDebit.CompareTo(y.Amount!.IsDebit));
+        //    Ledgers?.Sort((x, y) => x.TallyAmountField!.TallyAmountField.CompareTo(y.TallyAmountField!.TallyAmountField)); //Next sort Ledger List Using Ledger Amounts
+        //    Ledgers?.Sort((x, y) => x.TallyAmountField!.IsDebit.CompareTo(y.TallyAmountField!.IsDebit));
         //}
 
     }

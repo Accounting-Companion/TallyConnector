@@ -11,22 +11,15 @@ public class GenerateHelperMethodsAttribute<T> : Attribute where T : Models.Basi
 }
 
 [AttributeUsage(AttributeTargets.Class, AllowMultiple = true)]
-public class GenerateHelperMethodAttribute<GetObjectType> : GenerateHelperMethodAttribute<GetObjectType, GetObjectType, RequestEnvelope,ResponseEnvelope>
+public class GenerateHelperMethodAttribute<GetObjectType> : GenerateHelperMethodAttribute<GetObjectType, RequestEnvelope,ResponseEnvelope>
     where GetObjectType : ITallyBaseObject
 {
     
 }
+
 [AttributeUsage(AttributeTargets.Class, AllowMultiple = true)]
-public class GenerateHelperMethodAttribute<GetObjectType, PostObjectType> : GenerateHelperMethodAttribute<GetObjectType, PostObjectType,RequestEnvelope,ResponseEnvelope>
+public class GenerateHelperMethodAttribute<GetObjectType, RequestEnvelopeType, ResponseEnvelopeType> : Attribute
     where GetObjectType : ITallyBaseObject
-    where PostObjectType : ITallyBaseObject
-{
-    
-}
-[AttributeUsage(AttributeTargets.Class, AllowMultiple = true)]
-public class GenerateHelperMethodAttribute<GetObjectType, PostObjectType, RequestEnvelopeType, ResponseEnvelopeType> : Attribute
-    where GetObjectType : ITallyBaseObject
-    where PostObjectType : ITallyBaseObject
     where RequestEnvelopeType : RequestEnvelope
     where ResponseEnvelopeType : ResponseEnvelope
 {

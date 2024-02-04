@@ -164,5 +164,17 @@ internal class VoucherTests : BaseTallyServiceTest
         TallyResult tallyResult = await _tallyService.PostObjectToTallyAsync(vchr);
 
     }
+    [Test]
+    public async Task CreateInvoiceVoucer()
+    {
+        var vchr = new Voucher() { VoucherType = "Sales",Date = new DateTime(2023,01,01),View=VoucherViewType.AccountingVoucherView};
+        vchr.Ledgers = 
+            [
+                new("ABC India Pvt. Ltd.", -5000) { BillAllocations = [new BillAllocations() {Name="sdf", BillCreditPeriod= new DateTime(2023, 01, 01), BillType = BillRefType.NewRef,Amount=-5000}] },
+                new("Sales", 5000),
+            ];
+        vchr.PartyName = "ABC India Pvt. Ltd.";
+        TallyResult tallyResult = await _tallyService.PostObjectToTallyAsync(vchr);
+    }
 }
 

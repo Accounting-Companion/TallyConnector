@@ -1,5 +1,6 @@
 ﻿using System.Collections.Concurrent;
 using System.Data;
+using System.Runtime.InteropServices;
 using TallyConnector.Core.Models.Masters;
 using TallyConnector.Core.Models.Masters.CostCenter;
 using TallyConnector.Core.Models.Masters.Inventory;

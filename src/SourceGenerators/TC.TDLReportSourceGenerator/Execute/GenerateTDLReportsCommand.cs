@@ -28,7 +28,7 @@ internal class GenerateTDLReportsCommand
                 if (!_data.ContainsKey(symbolData.FullName))
                 {
                     _data.Add(symbolData.FullName, symbolData);
-                    ProcessSymbol(symbolData, _data);
+                    ProcessGetSymbol(symbolData, _data);
                 }
             }
         }
@@ -36,14 +36,24 @@ internal class GenerateTDLReportsCommand
         {
             foreach (var symbol in data)
             {
-                var compilationUnitSyntax = new GenerateTDLReport(symbol.Value).GetCompilationUnit();
-                var source = compilationUnitSyntax.ToFullString();
-                context.AddSource($"{symbol.Key}.{symbol.Value.MainSymbol.Name}.TDLReport.g.cs", source);
+                var helper = new Helper(symbol.Value);
+                context.AddSource($"{symbol.Key}.{symbol.Value.MainSymbol.Name}.TDLReport.g.cs", helper.GetTDLReportCompilationUnit());
+                if (!symbol.Value.IsEnum)
+                {
+                    context.AddSource($"{symbol.Key}.{symbol.Value.MainSymbol.Name}.CreateDTO.g.cs", helper.GetCreateDTOCompilationUnitString());
+                }
+
             }
         }
 
     }
-    void ProcessSymbol(SymbolData symbolData, Dictionary<string, SymbolData> _data, HashSet<string>? complexChildNames = null)
+
+    private object ObjtoPost(SymbolData source)
+    {
+        return new { source.Name };
+    }
+
+    void ProcessGetSymbol(SymbolData symbolData, Dictionary<string, SymbolData> _data, HashSet<string>? complexChildNames = null)
     {
         ParseClassAttributes(symbolData);
         IEnumerable<ISymbol> childSymbols = symbolData.Symbol.GetMembers();
@@ -73,7 +83,7 @@ internal class GenerateTDLReportsCommand
                             {
                                 SymbolData value = new(symbolData.MainSymbol, childData.ChildType, childData.ChildType.Name, true);
                                 _data.Add(childData.ChildTypeFullName, value);
-                                ProcessSymbol(value, _data, ComplexChildNames);
+                                ProcessGetSymbol(value, _data, ComplexChildNames);
                                 childData.SymbolData = value;
                                 ParseAttributes(childData);
                             }
@@ -101,7 +111,7 @@ internal class GenerateTDLReportsCommand
                         {
                             SymbolData value = new(symbolData.MainSymbol, childData.ChildType, childData.ChildType.Name, true, symbolData);
                             _data.Add(childData.ChildTypeFullName, value);
-                            ProcessSymbol(value, _data, ComplexChildNames);
+                            ProcessGetSymbol(value, _data, ComplexChildNames);
                             symbolData.SimpleFieldsCount += value.SimpleFieldsCount;
                             symbolData.ComplexFieldsIncludedCount += value.ComplexFieldsIncludedCount + 1;
                             symbolData.ComplexFieldsCount += value.ComplexFieldsCount;
@@ -111,7 +121,7 @@ internal class GenerateTDLReportsCommand
                         {
                             var value = _data[childData.ChildTypeFullName];
                             childData.SymbolData = value;
-                            //symbolData.SimpleFieldsCount += value.SimpleFieldsCount;
+                            //symbolData.SimpleFieldsCount += Basevalue.SimpleFieldsCount;
                             symbolData.ComplexFieldsIncludedCount += value.ComplexFieldsIncludedCount + 1;
                             symbolData.ComplexFieldsCount += 1;
                         }
@@ -120,7 +130,7 @@ internal class GenerateTDLReportsCommand
                     {
                         var value = _data[childData.ChildTypeFullName];
                         childData.SymbolData = value;
-                        //symbolData.SimpleFieldsCount += value.SimpleFieldsCount;
+                        //symbolData.SimpleFieldsCount += Basevalue.SimpleFieldsCount;
                         symbolData.ComplexFieldsIncludedCount += value.ComplexFieldsIncludedCount + 1;
                         //symbolData.ComplexFieldsCount += 1;
                         childData.Exclude = true;
@@ -141,26 +151,41 @@ internal class GenerateTDLReportsCommand
         }
         if (baseType != null && baseType.SpecialType == SpecialType.None)
         {
-            BaseSymbolData value = new(symbolData.MainSymbol, baseType, baseType.Name, true);
-            symbolData.BaseSymbolData = value;
-            if (!ComplexChildNames.Contains(value.FullName))
+            BaseSymbolData Basevalue = new(symbolData.MainSymbol, baseType, baseType.Name, true);
+            symbolData.BaseSymbolData = Basevalue;
+            if (!ComplexChildNames.Contains(Basevalue.FullName))
             {
-                //symbolData.ComplexFieldsCount++;
-                if (!_data.ContainsKey(value.FullName))
+                ComplexChildNames.Add(Basevalue.FullName);
+                if (!_data.ContainsKey(Basevalue.FullName))
                 {
-                    symbolData.ComplexFieldsIncludedCount++;
+                    SymbolData value = new(symbolData.MainSymbol, baseType, baseType.Name, true);
+                    value.IsBaseSymbol = true;
                     _data.Add(value.FullName, value);
-                    ProcessSymbol(value, _data, ComplexChildNames);
-
+                    ProcessGetSymbol(value, _data, ComplexChildNames);
+                    Basevalue.SymbolData = value;
                     symbolData.SimpleFieldsCount += value.SimpleFieldsCount;
-                    symbolData.ComplexFieldsIncludedCount += value.ComplexFieldsIncludedCount;
+                    symbolData.ComplexFieldsIncludedCount += value.ComplexFieldsIncludedCount + 1;
                     symbolData.ComplexFieldsCount += value.ComplexFieldsCount;
-                    symbolData.BaseSymbolData = value;
+
+                }
+                else
+                {
+                    var value = _data[Basevalue.FullName];
+                    Basevalue.SymbolData = value;
+                    symbolData.ComplexFieldsIncludedCount += value.ComplexFieldsIncludedCount + 1;
+                    symbolData.BaseSymbolData = Basevalue;
+                    symbolData.ComplexFieldsCount += value.ComplexFieldsCount;
+                    //symbolData.ComplexFieldsCount += 1;
                 }
             }
             else
             {
-                value.Exclude = true;
+                var value = _data[Basevalue.FullName];
+                Basevalue.SymbolData = value;
+                symbolData.BaseSymbolData = Basevalue;
+                //symbolData.ComplexFieldsIncludedCount += Basevalue.ComplexFieldsIncludedCount + 1;
+                symbolData.BaseSymbolData.Exclude = true;
+                //symbolData.ComplexFieldsCount += Basevalue.ComplexFieldsCount;
             }
         }
     }
@@ -269,6 +294,10 @@ internal class GenerateTDLReportsCommand
             {
                 xmlData = ParseRootXMLData(attributeDataAttribute);
             }
+            if (attrName == MaptoDTOAttributeName)
+            {
+                symbolData.MapToData = ParseMapToData(attributeDataAttribute);
+            }
             if (attrName == TDLCollectionAttributeName)
             {
                 symbolData.TDLCollectionDetails = ParseTDLCollectionData(attributeDataAttribute);
@@ -309,6 +338,15 @@ internal class GenerateTDLReportsCommand
 
             }
         }
+    }
+
+    private MapToData? ParseMapToData(AttributeData attributeDataAttribute)
+    {
+        if (attributeDataAttribute.AttributeClass!.TypeArguments.Length == 1)
+        {
+            return new MapToData() { TypeSymbol = (INamedTypeSymbol)attributeDataAttribute.AttributeClass.TypeArguments.First() };
+        }
+        return null;
     }
 
     private bool CheckReturnType(ITypeSymbol returnType)
@@ -534,8 +572,14 @@ public class XMLData
 {
     public string? XmlTag { get; set; }
 }
+internal class MapToData
+{
+    public INamedTypeSymbol TypeSymbol { get; set; }
+}
 public class TDLCollectionData
 {
     public string CollectionName { get; internal set; }
     public string? ExplodeCondition { get; internal set; }
 }
+
+

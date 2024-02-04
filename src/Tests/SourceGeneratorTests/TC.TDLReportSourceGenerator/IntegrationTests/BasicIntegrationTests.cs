@@ -58,7 +58,7 @@ public class BasicIntegrationTests
     [TestMethod]
     public void TestComplexList()
     {
-        var requestEnvelope = TallyService.GetLedgerRequestEnevelope();
+        var requestEnvelope = TallyService.GetRLedgerRequestEnevelope();
         var xml = requestEnvelope.GetXML();
         string expected = "<ENVELOPE Action=\"\"><HEADER><VERSION>1</VERSION><TALLYREQUEST>EXPORT</TALLYREQUEST><TYPE>DATA</TYPE><ID>TC_LedgerList</ID></HEADER><BODY><DESC><STATICVARIABLES><SVEXPORTFORMAT>$$SysName:XML</SVEXPORTFORMAT></STATICVARIABLES><TDL><TDLMESSAGE><REPORT ISMODIFY=\"No\" ISFIXED=\"No\" ISINITIALIZE=\"No\" ISOPTION=\"No\" ISINTERNAL=\"No\" NAME=\"TC_LedgerList\"><FORMS>TC_LedgerList</FORMS></REPORT><FORM ISMODIFY=\"No\" ISFIXED=\"No\" ISINITIALIZE=\"No\" ISOPTION=\"No\" ISINTERNAL=\"No\" NAME=\"TC_LedgerList\"><TOPPARTS>TC_LedgerList</TOPPARTS></FORM><PART ISMODIFY=\"No\" ISFIXED=\"No\" ISINITIALIZE=\"No\" ISOPTION=\"No\" ISINTERNAL=\"No\" NAME=\"TC_LedgerList\"><TOPLINES>TC_LedgerList</TOPLINES><REPEAT>TC_LedgerList : TC_LedgerCollection</REPEAT><SCROLLED>Vertical</SCROLLED></PART><PART ISMODIFY=\"No\" ISFIXED=\"No\" ISINITIALIZE=\"No\" ISOPTION=\"No\" ISINTERNAL=\"No\" NAME=\"TC_LedgerClosingBalancesList\"><TOPLINES>TC_ClosingBalancesList</TOPLINES><REPEAT>TC_ClosingBalancesList : LEDGERCLOSINGVALUES</REPEAT><SCROLLED>Vertical</SCROLLED></PART><LINE ISMODIFY=\"No\" ISFIXED=\"No\" ISINITIALIZE=\"No\" ISOPTION=\"No\" ISINTERNAL=\"No\" NAME=\"TC_LedgerList\"><FIELDS>TC_Ledger_Parent</FIELDS><FIELDS>TC_Ledger_Name</FIELDS><XMLTAG>LEDGER</XMLTAG><EXPLODE>TC_LedgerClosingBalancesList:Yes</EXPLODE></LINE><LINE ISMODIFY=\"No\" ISFIXED=\"No\" ISINITIALIZE=\"No\" ISOPTION=\"No\" ISINTERNAL=\"No\" NAME=\"TC_ClosingBalancesList\"><FIELDS>TC_ClosingBalances_Date</FIELDS><FIELDS>TC_ClosingBalances_Amount</FIELDS><XMLTAG>LEDGERCLOSINGVALUES.LIST</XMLTAG></LINE><FIELD ISMODIFY=\"No\" ISFIXED=\"No\" ISINITIALIZE=\"No\" ISOPTION=\"No\" ISINTERNAL=\"No\" NAME=\"TC_Ledger_Parent\"><SET>$PARENT</SET><XMLTAG>PARENT</XMLTAG></FIELD><FIELD ISMODIFY=\"No\" ISFIXED=\"No\" ISINITIALIZE=\"No\" ISOPTION=\"No\" ISINTERNAL=\"No\" NAME=\"TC_Ledger_Name\"><SET>$NAME</SET><XMLTAG>NAME</XMLTAG></FIELD><FIELD ISMODIFY=\"No\" ISFIXED=\"No\" ISINITIALIZE=\"No\" ISOPTION=\"No\" ISINTERNAL=\"No\" NAME=\"TC_ClosingBalances_Date\"><SET>$DATE</SET><XMLTAG>DATE</XMLTAG></FIELD><FIELD ISMODIFY=\"No\" ISFIXED=\"No\" ISINITIALIZE=\"No\" ISOPTION=\"No\" ISINTERNAL=\"No\" NAME=\"TC_ClosingBalances_Amount\"><SET>$AMOUNT</SET><XMLTAG>AMOUNT</XMLTAG></FIELD><COLLECTION ISMODIFY=\"No\" ISFIXED=\"No\" ISINITIALIZE=\"No\" ISOPTION=\"No\" ISINTERNAL=\"No\" NAME=\"TC_LedgerCollection\"><TYPE>LEDGER</TYPE><NATIVEMETHOD>*</NATIVEMETHOD><NATIVEMETHOD>LEDGERCLOSINGVALUES</NATIVEMETHOD></COLLECTION></TDLMESSAGE></TDL></DESC></BODY></ENVELOPE>";
         Assert.AreEqual(expected, xml);
@@ -86,11 +86,11 @@ public partial class GroupEnum : TallyConnector.Core.Models.ITallyBaseObject
 
 }
 [GenerateHelperMethod<LGroup>]
-[GenerateHelperMethod<Ledger>]
+[GenerateHelperMethod<RLedger>]
 public partial class TallyService : TallyConnector.Services.BaseTallyService
 {
 }
-public class Ledger : TallyConnector.Core.Models.ITallyBaseObject
+public class RLedger : TallyConnector.Core.Models.ITallyBaseObject
 {
     [XmlElement(ElementName = "PARENT")]
     public string? Parent { get; set; }
@@ -100,9 +100,9 @@ public class Ledger : TallyConnector.Core.Models.ITallyBaseObject
 
     //[XmlElement(ElementName = "LEDGERCLOSINGVALUES.LIST")]
     //[XmlArray(ElementName = "LEDGERCLOSINGVALUES.LIST")]
-    [XmlArrayItem(ElementName = "LEDGERCLOSINGVALUES.LIST")]
-    [TDLCollection(CollectionName = "LEDGERCLOSINGVALUES")]
-    public List<IntegrationTests.Models.ClosingBalances>? ClosingBalances { get; set; }
+    //[XmlArrayItem(ElementName = "LEDGERCLOSINGVALUES.LIST")]
+    //[TDLCollection(CollectionName = "LEDGERCLOSINGVALUES")]
+    //public List<IntegrationTests.Models.ClosingBalances>? ClosingBalances { get; set; }
 }
 public class LGroup : TallyConnector.Core.Models.ITallyBaseObject
 {
@@ -117,7 +117,7 @@ public class LGroup : TallyConnector.Core.Models.ITallyBaseObject
     [TDLCollection(CollectionName = "Address")]
     public List<string>? Addreses { get; set; }
 }
-[GenerateHelperMethod<Group, Group>]
+[GenerateHelperMethod<Group>]
 [GenerateHelperMethod<Company>]
 public partial class TallyServiceGroup : TallyConnector.Services.BaseTallyService
 {

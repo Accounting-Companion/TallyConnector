@@ -59,7 +59,7 @@ public class TallyAmount : IXmlSerializable
     [Column(TypeName = "decimal(20,6)")]
     public decimal Amount { get; private set; }
 
-    // public float? BaseAmount { get; set; }
+    // public float? Amount { get; set; }
     [Column(TypeName = "decimal(20,6)")]
     public decimal? ForexAmount { get; private set; }
 

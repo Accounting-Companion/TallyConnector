@@ -19,7 +19,7 @@ public partial class Ledger : BasicTallyObject, IAliasTallyObject
     }
 
     /// <summary>
-    /// Create Ledger under Specified Group
+    /// Create OLedger under Specified Group
     /// </summary>
     /// <param name="name"></param>
     /// <param name="group"></param>
@@ -36,7 +36,7 @@ public partial class Ledger : BasicTallyObject, IAliasTallyObject
     [Column(TypeName = $"nvarchar({Constants.MaxNameLength})")]
     public string? OldName { get; set; }
     /// <summary>
-    /// Name of Ledger
+    /// Name of OLedger
     /// </summary>
     [XmlElement(ElementName = "NAME")]
     [Required]

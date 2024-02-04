@@ -37,6 +37,7 @@ internal class SymbolData
     public string MainNameSpace { get; set; }
     public string MainFullName { get; private set; }
     public bool IsChild { get; private set; }
+    public bool IsBaseSymbol { get;  set; }
     public SymbolData? ParentSymbol { get; private set; }
     public bool IsEnum { get; private set; }
     public bool IsTallyComplexObject { get; private set; }
@@ -52,6 +53,8 @@ internal class SymbolData
     public FunctionDetails TDLFunctionMethods { get; set; } = [];
     public FunctionDetails TDLNameSetMethods { get; set; } = [];
     public TDLCollectionData? TDLCollectionDetails { get; internal set; }
+    public MapToData? MapToData { get; internal set; }
+
 }
 
 
@@ -103,6 +106,8 @@ internal class BaseSymbolData : SymbolData
     {
     }
     public bool Exclude { get; set; }
+
+    public SymbolData SymbolData { get; set; }
 }
 internal class ChildSymbolData
 {
@@ -117,6 +122,7 @@ internal class ChildSymbolData
         IsComplex = ChildType.SpecialType is SpecialType.None && ChildType.TypeKind is not TypeKind.Enum;
         Attributes = childSymbol.GetAttributes();
         ReportVarName = $"{parent.Name}{Name}ReportName";
+        
     }
 
 
@@ -143,7 +149,8 @@ internal class ChildSymbolData
             IsList = true;
             return (INamedTypeSymbol)type.TypeArguments[0];
         }
-        if (type.IsValueType && type.NullableAnnotation == NullableAnnotation.Annotated)
+        IsNullable = type.NullableAnnotation == NullableAnnotation.Annotated;
+        if (type.IsValueType && IsNullable)
         {
             INamedTypeSymbol typeSymbol = (INamedTypeSymbol)type.TypeArguments[0];
             if (typeSymbol.TypeKind == TypeKind.Enum)
@@ -177,4 +184,5 @@ internal class ChildSymbolData
     public string? ListXmlTag { get; internal set; }
 
     public string ReportVarName { get; set; }
+    public bool IsNullable { get; private set; }
 }

@@ -1,4 +1,5 @@
-﻿using System.Net.NetworkInformation;
+﻿using System.Data;
+using System.Net.NetworkInformation;
 using TallyConnector.Core.Models;
 
 namespace Tests.Services.TallyService;
@@ -36,9 +37,39 @@ internal class Main : BaseTallyServiceTest
         List<VoucherTypeStat>? vchtats = await _tallyService.GetVoucherStatisticsAsync(new DateFilterRequestOptions());
         //Get Vouchertype count from Master Statistics
         //var vouchertypecount = masterstats.FirstOrDefault(C => C.Name.Replace(" ", "") == TCM.TallyObjectType.VoucherTypes.ToString()).Count;
-        AutoVoucherStatisticsEnvelope autoVoucherStatisticsEnvelope = await _tallyService.GetVoucherStatisticsAsync(new TallyConnector.Core.Models.AutoColumnReportPeriodRequestOprions() { FromDate = new DateTime(2009, 04, 01),ToDate= new DateTime(2023, 03, 31),Periodicity= PeriodicityType.Year });
+        AutoVoucherStatisticsEnvelope autoVoucherStatisticsEnvelope = await _tallyService.GetVoucherStatisticsAsync(new TallyConnector.Core.Models.AutoColumnReportPeriodRequestOprions() { FromDate = new DateTime(2009, 04, 01), ToDate = new DateTime(2023, 03, 31), Periodicity = PeriodicityType.Year });
         //Assert.That(voucherstat, Has.Count.EqualTo(vouchertypecount));
     }
 
-    
+    [Test]
+
+    public async Task TestGetBills()
+    {
+        CollectionRequestOptions collectionOptions = new CollectionRequestOptions()
+        {
+            CollectionType = "Bills",
+            FetchList = ["BILLID,"]
+
+        };
+        collectionOptions.XMLAttributeOverrides ??= new();
+        XmlAttributes attrs = new();
+        attrs.XmlElements.Add(new("BILL"));
+        collectionOptions.XMLAttributeOverrides.Add(typeof(Colllection<Bill>), "Objects", attrs);
+        var billsData = await _tallyService.GetCustomCollectionAsync<Bill>(collectionOptions);
+        var bills = billsData.Data;
+    }
+
+
+}
+[XmlRoot(ElementName = "BILL")]
+public class Bill : TallyBaseObject
+{
+    [XmlElement(ElementName = "BILLID")]
+    public int BillId { get; set; }
+
+    [XmlElement(ElementName = "OPENINGBALANCE")]
+    public TallyAmount OpeningBal { get; set; }
+
+    [XmlElement(ElementName = "CLOSINGBALANCE")]
+    public TallyAmount ClosingBal { get; set; }
 }

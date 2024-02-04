@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.Logging;
+using System.Globalization;
 
 namespace TallyConnector.Services;
 /// <summary>
@@ -351,6 +352,17 @@ public partial class BaseTallyService : IBaseTallyService
 
         });
         return functions;
+    }
+
+    public static string? GetTallyString<T>(T src)
+    {
+        return src switch
+        {
+            bool b => b ? "Yes" : "No",
+            DateTime date => date.ToString("dd-MM-yyyy", CultureInfo.InvariantCulture),
+
+            _ => src?.ToString(),
+        };
     }
 
 #if NET7_0_OR_GREATER

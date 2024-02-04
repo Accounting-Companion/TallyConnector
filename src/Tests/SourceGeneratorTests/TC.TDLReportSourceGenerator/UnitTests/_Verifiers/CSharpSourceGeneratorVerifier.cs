@@ -1,5 +1,6 @@
 ﻿
 
+using Microsoft.Extensions.Logging;
 using UnitTests.Models;
 
 namespace TC.TDLReportSourceGenerator.Tests.Verifiers;
@@ -54,6 +55,7 @@ internal static partial class CSharpSourceGeneratorVerifier<TSourceGenerator>
                         Path.Combine("ref", "net8.0")),
             
         };
+        test.TestState.AdditionalReferences.Add(typeof(ILogger).Assembly);
         test.TestState.AdditionalReferences.Add(typeof(Ledger).Assembly);
         test.TestState.AdditionalReferences.Add(typeof(TallyConnector.Services.BaseTallyService).Assembly);
         test.TestState.AdditionalReferences.Add(typeof(TallyConnector.Core.Models.BaseCompany).Assembly);

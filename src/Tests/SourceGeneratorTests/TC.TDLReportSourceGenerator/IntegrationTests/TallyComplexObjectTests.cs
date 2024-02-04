@@ -13,18 +13,18 @@ public class TallyComplexObjectTests
         Assert.AreEqual(expected, xml);
     }
 }
-[TallyConnector.Core.Attributes.GenerateHelperMethod<Ledger>]
+[TallyConnector.Core.Attributes.GenerateHelperMethod<IntegrationTests.Models.Ledger>]
 public partial class ComplexObjectTallyService : TallyConnector.Services.BaseTallyService
 {
 }
-file class Ledger : TallyConnector.Core.Models.ITallyBaseObject
-{
+//public class Ledger : TallyConnector.Core.Models.ITallyBaseObject
+//{
 
-    [XmlElement(ElementName = "NAME")]
-    public string? Name { get; set; }
+//    [XmlElement(ElementName = "NAME")]
+//    public string? Name { get; set; }
 
-    [XmlElement(ElementName = "ClosingBalance")]
+//    [XmlElement(ElementName = "ClosingBalance")]
    
-    public TallyConnector.Core.Models.TallyComplexObjects.Amount? ClosingBalance { get; set; }
+//    public TallyConnector.Core.Models.TallyComplexObjects.TallyAmountField? ClosingBalance { get; set; }
 
-}
+//}

@@ -1,11 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Xml.Serialization;
+﻿using System.Xml.Serialization;
 using TallyConnector.Core.Attributes;
 using TallyConnector.Core.Models;
+using TallyConnector.Core.Models.Interfaces;
 using TallyConnector.Core.Models.TallyComplexObjects;
 using TallyConnector.Services;
 
@@ -17,16 +13,18 @@ public class VoucherIntegrationTests
     public async Task TestVoucher()
     {
         TallyServiceCVoucher tallyServiceCVoucher = new();
-        var vchs = await tallyServiceCVoucher.GetCVouchers();
+        var vchs = await tallyServiceCVoucher.GetRVouchers();
+        var list = vchs
+            .Select<RVoucher, RVoucherDTO>(c => c)
+            .ToList();
     }
 }
-[GenerateHelperMethod<CVoucher>]
+[GenerateHelperMethod<RVoucher>]
 public partial class TallyServiceCVoucher : BaseTallyService
 {
-
 }
 [XmlRoot(ElementName = "VOUCHER")]
-public class CVoucher : ITallyBaseObject
+public class RVoucher : ITallyBaseObject
 {
     [XmlElement(ElementName = "VOUCHERNUMBER")]
     public string? VoucherNumber { get; set; }
@@ -36,50 +34,62 @@ public class CVoucher : ITallyBaseObject
     [XmlElement(ElementName = "PERSISTEDVIEW")]
     public string? PersistedView { get; set; }
 
-    [TDLCollection(CollectionName = "LedgerEntries")]
-    [XmlElement(ElementName = "LEDGERENTRIES.LIST")]
-    public List<CLedgerEntry> LedgerEntries { get; set; }
+
+    [XmlElement(ElementName = "ALLLEDGERENTRIES.LIST", Type = typeof(RAcLedgerEntry))]
+    [XmlElement(ElementName = "LEDGERENTRIES.LIST", Type = typeof(RLedgerEntry))]
+    public List<RLedgerEntry> LedgerEntries { get; set; }
 
     [TDLCollection(CollectionName = "ALLINVENTORYENTRIES")]
     [XmlElement(ElementName = "ALLINVENTORYENTRIES.LIST")]
-    public List<CInventoryEntry> InventoryEntries { get; set; }
+    public List<RInventoryEntry> InventoryEntries { get; set; }
 }
-public class CLedgerEntry
+
+[TDLCollection(CollectionName = "LedgerEntries")]
+public class RLedgerEntry : RBaseLedgerEntry
 {
-    [XmlElement(ElementName = "LEDGERNAME")]
-    public string? LedgerName { get; set; }
-
-    [XmlElement(ElementName = "AMOUNT")]
-    public Amount Amount { get; set; }
-
     [XmlElement(ElementName = "BILLALLOCATIONS.LIST")]
     [TDLCollection(CollectionName = "BILLALLOCATIONS")]
-    public List<BillAllocation>? BillAllocations { get; set; }
+    public List<RBillAllocation>? BillAllocations { get; set; }
 }
-public class BillAllocation
+public class RAcLedgerEntry : RLedgerEntry
+{
+}
+
+public class RBaseLedgerEntry : IBaseLedgerEntry
+{
+    [XmlElement(ElementName = "LEDGERNAME")]
+    public string LedgerName { get; set; } = null!;
+
+
+    [XmlElement(ElementName = "AMOUNT")]
+    public TallyAmountField Amount { get; set; } = null!;
+}
+
+public class RBillAllocation
 {
     [XmlElement(ElementName = "NAME")]
-    public string? NAME { get; set; }
+    public string? Name { get; set; }
 
     [XmlElement(ElementName = "BILLTYPE")]
     public string? BillType { get; set; }
+    [TDLField(Invisible = "$$Value=''")]
     [XmlElement(ElementName = "BILLDATE")]
-    public string? BillDate { get; set; }
+    public DateTime? BillDate { get; set; }
 
     [XmlElement(ElementName = "BILLCREDITPERIOD")]
     public TallyConnector.Core.Models.TallyComplexObjects.DueDate? BillCreditPeriod { get; set; }
 }
 
-public partial class CInventoryEntry
+public partial class RInventoryEntry
 {
     [XmlElement(ElementName = "STOCKITEMNAME")]
     public string? StockItemName { get; set; }
 
     [XmlElement(ElementName = "AMOUNT")]
-    public Amount Amount { get; set; }
+    public TallyAmountField Amount { get; set; }
 
     [XmlElement(ElementName = "RATE")]
-    public Rate Rate { get; set; }
+    public TallyRateField Rate { get; set; }
 
     [XmlElement(ElementName = "ACTUALQTY")]
     public Quantity? ActualQuantity { get; set; }
@@ -88,6 +98,11 @@ public partial class CInventoryEntry
     public Quantity BilledQuantity { get; set; }
 
     [TDLCollection(CollectionName = "ACCOUNTINGALLOCATIONS")]
-    [XmlArrayItem(ElementName = "ACCOUNTINGALLOCATIONS.LIST")]
-    public List<CLedgerEntry> LedgerEntries { get; set; }
+    [XmlElement(ElementName = "ACCOUNTINGALLOCATIONS.LIST")]
+    public List<RAccountingLedgerEntry> LedgerEntries { get; set; }
+}
+
+public class RAccountingLedgerEntry : RBaseLedgerEntry
+{
+
 }

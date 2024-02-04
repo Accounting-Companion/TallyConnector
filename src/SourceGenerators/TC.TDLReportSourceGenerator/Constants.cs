@@ -6,6 +6,8 @@ public static class Constants
     /// </summary>
     public const string BaseInterfaceName = "TallyConnector.Core.Models.ITallyBaseObject";
     public const string TallyComplexObjectInterfaceName = "TallyConnector.Core.Models.TallyComplexObjects.ITallyComplexObject";
+    public const string TallyRateClassName = "TallyConnector.Core.Models.TallyComplexObjects.TallyRateField";
+    public const string TallyAmountClassName = "TallyConnector.Core.Models.TallyComplexObjects.TallyAmountField";
     public const string BaseClassName = "TallyConnector.Services.BaseTallyService";
     public const string XMLToObjectClassName = "TallyConnector.Services.XMLToObject";
     public const string GetObjfromXmlMethodName = "GetObjfromXml";
@@ -16,6 +18,7 @@ public static class Constants
     public const string XmlAttributesClassName = "System.Xml.Serialization.XmlAttributes";
     public const string CollectionsNameSpace = "System.Collections.Generic";
     public const string ListClassName = "List";
+    public const string IEnumerableClassName = "IEnumerable";
 
     public const string IEnumerableInterfaceName = "System.Collections.IEnumerable";
     public const string XmlRootAttributeName = "System.Xml.Serialization.XmlRootAttribute";
@@ -35,6 +38,11 @@ public static class Constants
     public const string TDLFunctionFullTypeName = "TallyConnector.Core.Models.TDLFunction";
     public const string TDLNameSetFullTypeName = "TallyConnector.Core.Models.NameSet";
 
+
+    public const string BaseLedgerEntryInterfaceName = "TallyConnector.Core.Models.Interfaces.IBaseLedgerEntry";
+    
+
+
     public const string HeaderTypeEnumName = "TallyConnector.Core.Models.HType";
     public const string RequestEnvelopeFullTypeName = "TallyConnector.Core.Models.RequestEnvelope";
     public const string ReportFullTypeName = "TallyConnector.Core.Models.Report";
@@ -42,6 +50,7 @@ public static class Constants
     public const string ExtensionsNameSpace = "TallyConnector.Core.Extensions";
     public const string TDLCollectionAttributeName = "TallyConnector.Core.Attributes.TDLCollectionAttribute";
     public const string TDLFieldAttributeName = "TallyConnector.Core.Attributes.TDLFieldAttribute";
+    public const string MaptoDTOAttributeName = "TallyConnector.Core.Attributes.MaptoDTOAttribute";
 
     public const string TDLFunctionsMethodNameAttributeName = "TallyConnector.Core.Attributes.TDLFunctionsMethodNameAttribute";
     public const string TDLCollectionsMethodNameAttributeName = "TallyConnector.Core.Attributes.TDLCollectionsMethodNameAttribute";
@@ -67,6 +76,7 @@ public static class Constants
     public const string setValueParamName = "setValue";
 
     public const string AddToArrayExtensionMethodName = "AddToArray";
+    public const string GetTallyStringMethodName = "GetTallyString";
 
     public const string GetBooleanFromLogicFieldFunctionName = "TC_GetBooleanFromLogicField";
     public const string GetTransformDateToXSDFunctionName = "TC_TransformDateToXSD";

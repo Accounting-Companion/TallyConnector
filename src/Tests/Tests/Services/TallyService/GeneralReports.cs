@@ -42,3 +42,9 @@ internal class GeneralReports : BaseTallyServiceTest
         Assert.That(taxUnits, Is.Not.Null);
     }
 }
+public class CustomRequestEnevelope : RequestEnvelope
+{
+    public CustomRequestEnevelope(HType Type, string iD) : base(Type, iD)
+    {
+    }
+}
