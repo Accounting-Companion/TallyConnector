@@ -70,22 +70,19 @@ public class TDLReportSourceGenerator : IIncrementalGenerator
                 {
                     INamedTypeSymbol? attributeClass = attributeData.AttributeClass;
                     var typeargs = attributeClass!.TypeArguments;
-                    INamedTypeSymbol getTypeSymbol;
                     switch (typeargs.Length)
                     {
                         case 1:
-                            getTypeSymbol = (INamedTypeSymbol)typeargs[0];
-                            generateSymbolsArgs.Add(getTypeSymbol.Name, new(symbol, getTypeSymbol));
-                            break;
-                        case 3:
-                            getTypeSymbol = (INamedTypeSymbol)typeargs[0];
-                            generateSymbolsArgs.Add(getTypeSymbol.Name, new(symbol, getTypeSymbol,
-                                                        (INamedTypeSymbol)typeargs[1],
-                                                          (INamedTypeSymbol)typeargs[2]));
+                            typeargs = attributeClass.BaseType!.TypeArguments;
                             break;
                         default:
                             break;
+                            
                     }
+                    var getTypeSymbol = (INamedTypeSymbol)typeargs[0];
+                    generateSymbolsArgs.Add(getTypeSymbol.Name, new(symbol, getTypeSymbol,
+                                                        (INamedTypeSymbol)typeargs[1],
+                                                          (INamedTypeSymbol)typeargs[2]));
                 }
             }
             args.Add(generateSymbolsArgs);
@@ -121,7 +118,7 @@ public class GenerateSymbolsArgs
     public INamedTypeSymbol GetSymbol { get; }
     public string Name { get; }
     public string NameSpace { get; }
-    public INamedTypeSymbol? RequestEnvelope { get; }
+    public INamedTypeSymbol RequestEnvelope { get; }
     public INamedTypeSymbol? PostEnvelope { get; }
     public string MethodName { get; internal set; }
 }

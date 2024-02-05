@@ -12,12 +12,14 @@ internal class SymbolData
     public SymbolData(INamedTypeSymbol mainSymbol,
                       INamedTypeSymbol symbol,
                       string methodName,
+                      INamedTypeSymbol reqEnvelope,
                       bool isChild = false,
                       SymbolData? parentSymbol = null)
     {
         MainSymbol = mainSymbol;
         Symbol = symbol;
         TypeName = methodName;
+        ReqEnvelopeSymbol = reqEnvelope;
         Name = symbol.Name;
         Attributes = Symbol.GetAttributes();
         FullName = symbol.OriginalDefinition.ToString();
@@ -32,6 +34,7 @@ internal class SymbolData
     public INamedTypeSymbol MainSymbol { get; }
     public INamedTypeSymbol Symbol { get; }
     public string TypeName { get; }
+    public INamedTypeSymbol ReqEnvelopeSymbol { get; }
     public string Name { get; }
     public string FullName { get; }
     public string MainNameSpace { get; set; }
@@ -52,6 +55,8 @@ internal class SymbolData
 
     public FunctionDetails TDLFunctionMethods { get; set; } = [];
     public FunctionDetails TDLNameSetMethods { get; set; } = [];
+    public FunctionDetails TDLCollectionMethods { get; set; } = [];
+    public FunctionDetails TDLGetFilterMethods { get; set; } = [];
     public TDLCollectionData? TDLCollectionDetails { get; internal set; }
     public MapToData? MapToData { get; internal set; }
 
@@ -101,8 +106,9 @@ internal class BaseSymbolData : SymbolData
 {
     public BaseSymbolData(INamedTypeSymbol parentSymbol,
                           INamedTypeSymbol symbol,
+                          INamedTypeSymbol reqEnvelope,
                           string methodName,
-                          bool isChild = false) : base(parentSymbol, symbol, methodName, isChild)
+                          bool isChild = false) : base(parentSymbol, symbol, methodName, reqEnvelope, isChild)
     {
     }
     public bool Exclude { get; set; }

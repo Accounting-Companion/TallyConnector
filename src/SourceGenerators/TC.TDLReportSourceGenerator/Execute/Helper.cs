@@ -27,6 +27,34 @@ internal class Helper
         _simpleChildren = symbol.Children.Where(c => !c.IsComplex).ToList();
     }
 
+    public string GetPostRequestEnvelopeCompilationUnit()
+    {
+        var unit = CompilationUnit()
+            .WithUsings(List([UsingDirective(IdentifierName(ExtensionsNameSpace))]))
+            .WithMembers(List(new MemberDeclarationSyntax[]
+            {
+                FileScopedNamespaceDeclaration(IdentifierName($"{_symbol.MainNameSpace}.Models"))
+                .WithNamespaceKeyword(Token(TriviaList(Trivia(NullableDirectiveTrivia(Token(SyntaxKind.EnableKeyword),
+                                                                                      true))),
+                                            SyntaxKind.NamespaceKeyword,
+                                            TriviaList()))
+                .WithMembers(List(new MemberDeclarationSyntax[]
+                {
+                    ClassDeclaration("PostRequestEnvelope")
+                    .WithModifiers(TokenList([Token(SyntaxKind.PartialKeyword)]))
+                    .WithBaseList(BaseList(SingletonSeparatedList<BaseTypeSyntax>(
+                    SimpleBaseType(
+                        IdentifierName(_symbol.ReqEnvelopeSymbol.OriginalDefinition.ToString())))))
+                    .WithMembers(List(new MemberDeclarationSyntax[]
+                    {
+                        GetPropertyMemberSyntax(IdentifierName("Body"),"Body"),
+                    }))
+                }))
+            })).NormalizeWhitespace().ToFullString();
+
+        return unit;
+    }
+
     public string GetTDLReportCompilationUnit()
     {
         var unit = CompilationUnit()
@@ -90,7 +118,10 @@ internal class Helper
 
         if (!_symbol.IsChild)
         {
-            members.Add(GenerateGetCollectionsMethodSyntax());
+            if (_symbol.TDLCollectionMethods.Count == 0)
+            {
+                members.Add(GenerateGetCollectionsMethodSyntax());
+            }
         }
         if (_symbol.IsEnum)
         {
@@ -895,11 +926,12 @@ internal class Helper
             nodesAndTokens.Add(Token(SyntaxKind.CommaToken));
             nodesAndTokens.Add(ExpressionElement(IdentifierName(GetCollectionName(child))));
         }
+
         statements.Add(GetArrayAssignmentExppressionImplicit(CollectionsVariableName, 0,
             [
                 Argument(IdentifierName(_collectionVariableName)),
                 Token(SyntaxKind.CommaToken),
-                Argument(LiteralExpression(SyntaxKind.StringLiteralExpression, Literal(_symbol.RootXmlTag))),
+                Argument(LiteralExpression(SyntaxKind.StringLiteralExpression, Literal(_symbol.TDLCollectionDetails?.Type ?? _symbol.RootXmlTag))),
                 Token(SyntaxKind.CommaToken),
                 Argument(CollectionExpression(SeparatedList<CollectionElementSyntax>(nodesAndTokens)))
                 .WithNameColon(NameColon(IdentifierName("nativeFields")))
@@ -1053,7 +1085,7 @@ internal class Helper
             .WithUsings(List([UsingDirective(IdentifierName(ExtensionsNameSpace)), UsingDirective(IdentifierName("System.Linq"))]))
             .WithMembers(List(new MemberDeclarationSyntax[]
             {
-                FileScopedNamespaceDeclaration(IdentifierName(_symbol.MainNameSpace))
+                FileScopedNamespaceDeclaration(IdentifierName($"{_symbol.MainNameSpace}.Models"))
                 .WithNamespaceKeyword(Token(TriviaList(Trivia(NullableDirectiveTrivia(Token(SyntaxKind.EnableKeyword),
                                                                                       true))),
                                             SyntaxKind.NamespaceKeyword,
@@ -1061,6 +1093,20 @@ internal class Helper
                 .WithMembers(List(new MemberDeclarationSyntax[]
                 {
                     ClassDeclaration(GetClassName())
+                    .WithAttributeLists(List<AttributeListSyntax>(new AttributeListSyntax[]{
+                        AttributeList(SeparatedList<AttributeSyntax>(new SyntaxNodeOrToken[]
+                        {
+                             Attribute(GetGlobalNameforType(XmlRootAttributeName))
+                             .WithArgumentList( AttributeArgumentList(SingletonSeparatedList<AttributeArgumentSyntax>(
+                                                    AttributeArgument(
+                                                        LiteralExpression(
+                                                            SyntaxKind.StringLiteralExpression,
+                                                            Literal(_symbol.RootXmlTag)))
+                                                    .WithNameEquals(
+                                                        NameEquals(
+                                                            IdentifierName("ElementName"))))))
+                        }))
+                    }))
                     .WithModifiers(TokenList([Token(SyntaxKind.PublicKeyword),Token(SyntaxKind.PartialKeyword)]))
                     .WithMembers(List(GetCreateDTOClassMembers()))
                 }))
@@ -1077,12 +1123,13 @@ internal class Helper
     private IEnumerable<MemberDeclarationSyntax> GetCreateDTOClassMembers()
     {
         List<MemberDeclarationSyntax> members = [];
-        CreateProperties(_symbol);
         //If Implements BaseLedgerEntryInterface then add extra property to DTO
         if (_symbol.Symbol.HasInterfaceWithFullyQualifiedMetadataName(BaseLedgerEntryInterfaceName))
         {
-            AddPropertyMember(PredefinedType(Token(SyntaxKind.StringKeyword)), "IsDeemedPositive");
+            members.Add(GetPropertyMemberSyntax(PredefinedType(Token(SyntaxKind.StringKeyword)), "IsDeemedPositive"));
         }
+        CreateProperties(_symbol);
+
         members.Add(CreateImplicitConverterSyntax());
 
         return members;
@@ -1092,6 +1139,39 @@ internal class Helper
             foreach (var child in symbol.Children)
             {
                 TypeSyntax typeSyntax;
+                List<SyntaxNodeOrToken> attributes = [];
+                foreach (var attribute in child.Attributes)
+                {
+                    if (!attribute.AttributeClass!.ContainingNamespace.OriginalDefinition.ToString().Contains("CompilerServices"))
+                    {
+                        AttributeSyntax item = Attribute(GetGlobalNameforType(attribute.AttributeClass.OriginalDefinition.ToString()));
+
+                        if (attribute.NamedArguments.Length != 0)
+                        {
+                            List<SyntaxNodeOrToken> attributeArgs = [];
+
+                            foreach (var namedArg in attribute.NamedArguments)
+                            {
+                                if (attributeArgs.Count != 0)
+                                {
+                                    attributeArgs.Add(Token(SyntaxKind.CommaToken));
+                                }
+                                attributeArgs.Add(AttributeArgument(
+                                                            LiteralExpression(
+                                                                SyntaxKind.StringLiteralExpression,
+                                                                Literal(namedArg.Value.Value.ToString())))
+                                    .WithNameEquals(NameEquals(IdentifierName(namedArg.Key))));
+                            }
+                            item = item.WithArgumentList(AttributeArgumentList(SeparatedList<AttributeArgumentSyntax>(attributeArgs)));
+                        }
+
+                        if (attributes.Count != 0)
+                        {
+                            attributes.Add(Token(SyntaxKind.CommaToken));
+                        }
+                        attributes.Add(item);
+                    }
+                }
                 if (child.IsComplex)
                 {
                     if (child.SymbolData!.MapToData == null)
@@ -1117,14 +1197,24 @@ internal class Helper
                 }
                 if (child.IsList)
                 {
-                    typeSyntax = QualifiedName(GetGlobalNameforType(CollectionsNameSpace), GenericName(IEnumerableClassName)
+                    typeSyntax = QualifiedName(GetGlobalNameforType(CollectionsNameSpace), GenericName(ListClassName)
                         .WithTypeArgumentList(TypeArgumentList(SingletonSeparatedList<TypeSyntax>(typeSyntax))));
                 }
                 if (child.IsNullable)
                 {
                     typeSyntax = NullableType(typeSyntax);
                 }
-                AddPropertyMember(typeSyntax, child.Name);
+
+                PropertyDeclarationSyntax propertyDeclarationSyntax = GetPropertyMemberSyntax(typeSyntax, child.Name);
+                if (attributes.Count > 0)
+                {
+                    propertyDeclarationSyntax = propertyDeclarationSyntax.WithAttributeLists(
+                    List(
+                        new AttributeListSyntax[]{
+                            AttributeList(
+                                SeparatedList<AttributeSyntax>(attributes)) }));
+                };
+                members.Add(propertyDeclarationSyntax);
             }
 
             if (symbol.BaseSymbolData != null)
@@ -1134,14 +1224,20 @@ internal class Helper
 
 
         }
-        void AddPropertyMember(TypeSyntax typeSyntax, string Name)
+    }
+
+    private static PropertyDeclarationSyntax GetPropertyMemberSyntax(TypeSyntax typeSyntax, string Name, bool isOverriden = false)
+    {
+        List<SyntaxToken> tokens = [Token(SyntaxKind.PublicKeyword)];
+        if (isOverriden)
         {
-            members.Add(PropertyDeclaration( typeSyntax, Identifier(Name))
-                                .WithModifiers(TokenList(
-                                                Token(SyntaxKind.PublicKeyword)))
-                                .WithAccessorList(AccessorList(
-                                                List(
-                                                    new AccessorDeclarationSyntax[]{
+            tokens.Add(Token(SyntaxKind.NewKeyword));
+        }
+        PropertyDeclarationSyntax item = PropertyDeclaration(typeSyntax, Identifier(Name))
+                                    .WithModifiers(TokenList(tokens))
+                                    .WithAccessorList(AccessorList(
+                                                    List(
+                                                        new AccessorDeclarationSyntax[]{
                                         AccessorDeclaration(
                                             SyntaxKind.GetAccessorDeclaration)
                                         .WithSemicolonToken(
@@ -1149,8 +1245,9 @@ internal class Helper
                                         AccessorDeclaration(
                                             SyntaxKind.SetAccessorDeclaration)
                                         .WithSemicolonToken(
-                                            Token(SyntaxKind.SemicolonToken))}))));
-        }
+                                            Token(SyntaxKind.SemicolonToken))})));
+
+        return item;
     }
 
     private MemberDeclarationSyntax CreateImplicitConverterSyntax()
@@ -1204,7 +1301,8 @@ internal class Helper
                     ExpressionSyntax right;
                     if (child.IsList)
                     {
-                        right = InvocationExpression(MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression, MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression, IdentifierName(srcArgName), IdentifierName(child.Name)), GenericName("Select")
+                        right = ConditionalAccessExpression(MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression, IdentifierName(srcArgName), IdentifierName(child.Name)),
+                            InvocationExpression(MemberBindingExpression(GenericName("Select")
                            .WithTypeArgumentList(TypeArgumentList(SeparatedList<TypeSyntax>(new SyntaxNodeOrToken[]
                            {
                         GetGlobalNameforType(child.ChildType.OriginalDefinition.ToString()),
@@ -1216,10 +1314,11 @@ internal class Helper
                                                                            Parameter(
                                                                                Identifier("c")))
                                                                        .WithExpressionBody(
-                                                                           IdentifierName("c"))))));
+                                                                           IdentifierName("c")))))));
+
                         statements.Add(ExpressionStatement(AssignmentExpression(SyntaxKind.SimpleAssignmentExpression,
                                                             MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression, IdentifierName(dtoArgName), IdentifierName(child.Name)),
-                                                            right)));
+                                                            InvocationExpression(MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression, right, IdentifierName("ToList"))).WithArgumentList(ArgumentList()))));
 
                     }
                     if (child.SymbolData?.IsTallyComplexObject ?? false)
@@ -1231,7 +1330,7 @@ internal class Helper
                             if (child.SymbolData!.FullName == TallyRateClassName)
                             {
                                 ChildSymbolData? childSymbolData = symbol.Children.Where(c => c.SymbolData?.FullName == TallyAmountClassName).FirstOrDefault();
-                                if (childSymbolData !=null)
+                                if (childSymbolData != null)
                                 {
                                     toStringArgs.Add(Argument(MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression, IdentifierName(srcArgName), IdentifierName(childSymbolData.Name))));
                                 }
