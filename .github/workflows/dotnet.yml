@@ -5,9 +5,7 @@ on:
     tags:
       - "V*"
 env:
-  PROJECT1_PATH: "src/TallyConnector.Core/TallyConnector.Core.csproj"
-  PROJECT2_PATH: "src/TallyConnector/TallyConnector.csproj"
-  PROJECT3_PATH: "src/TallyConnector.SourceGenerators/TallyConnector.SourceGenerators.csproj"
+  SOLUTION_PATH: "TallyConnectorr_Nugget.sln"
   PACKAGE_OUTPUT_DIRECTORY: ${{ github.workspace }}\output
   NUGET_SOURCE_URL: "https://api.nuget.org/v3/index.json"
 jobs:
@@ -28,15 +26,9 @@ jobs:
         run: echo "NUGGET_VERSION=$("${{github.ref_name}}".replace('V',''))" >> $env:GITHUB_ENV
       # - name: TEST Tag
       #   run: echo $env:NUGGET_VERSION
-      - name: Restore dependencies
-        run: dotnet restore ${{ env.PROJECT1_PATH }} && dotnet restore ${{ env.PROJECT2_PATH }} && dotnet restore ${{ env.PROJECT3_PATH }}
-      - name: "Build projects"
-        run: dotnet build ${{ env.PROJECT1_PATH }} --configuration Release /p:VersionPrefix=$env:NUGGET_VERSION && dotnet build ${{ env.PROJECT2_PATH }} --configuration Release /p:VersionPrefix=$env:NUGGET_VERSION && dotnet build ${{ env.PROJECT3_PATH }} --configuration Release /p:VersionPrefix=$env:NUGGET_VERSION
-      - name: "Pack project1"
-        run: dotnet pack ${{ env.PROJECT1_PATH }} --no-restore --no-build --configuration Release --output ${{ env.PACKAGE_OUTPUT_DIRECTORY }} /p:VersionPrefix=$env:NUGGET_VERSION
-      - name: "Pack project2"
-        run: dotnet pack ${{ env.PROJECT2_PATH }} --no-restore --no-build --configuration Release --output ${{ env.PACKAGE_OUTPUT_DIRECTORY }} /p:VersionPrefix=$env:NUGGET_VERSION
-      - name: "Pack project3"
-        run: dotnet pack ${{ env.PROJECT3_PATH }} --no-restore --no-build --configuration Release --output ${{ env.PACKAGE_OUTPUT_DIRECTORY }} /p:VersionPrefix=$env:NUGGET_VERSION
+      - name: "Build Solution"
+        run: dotnet build ${{ env.SOLUTION_PATH }} --configuration Release /p:VersionPrefix=$env:NUGGET_VERSION
+      - name: "Pack All Projects in Solution"
+        run: dotnet pack ${{ env.SOLUTION_PATH }} --no-restore --no-build --configuration Release --output ${{ env.PACKAGE_OUTPUT_DIRECTORY }} /p:VersionPrefix=$env:NUGGET_VERSION
       - name: "Push package"
         run: dotnet nuget push ${{ env.PACKAGE_OUTPUT_DIRECTORY }}\*.nupkg -k ${{ secrets.NUGGET_KEY }} -s ${{ env.NUGET_SOURCE_URL }}

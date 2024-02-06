@@ -11,9 +11,6 @@ internal class Program
     {
         Console.WriteLine("Hello, World!");
         await Test();
-
-
-
     }
     public static async Task Test()
     {

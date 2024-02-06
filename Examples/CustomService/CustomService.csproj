@@ -9,8 +9,6 @@
   </PropertyGroup>
 
   <ItemGroup>
- 
-    <ProjectReference Include="..\..\src\SourceGenerators\TC.TDLReportSourceGenerator\TC.TDLReportSourceGenerator.csproj" OutputItemType="Analyzer" />
     <ProjectReference Include="..\..\src\TallyConnector\TallyConnector.csproj" />
   </ItemGroup>
 
