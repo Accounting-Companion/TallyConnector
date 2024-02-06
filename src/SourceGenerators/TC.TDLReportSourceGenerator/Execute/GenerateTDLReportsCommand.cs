@@ -1,4 +1,5 @@
 ﻿using System.Collections.Immutable;
+using TC.TDLReportSourceGenerator.Extensions.Symbols;
 using TC.TDLReportSourceGenerator.Models;
 
 namespace TC.TDLReportSourceGenerator.Execute;

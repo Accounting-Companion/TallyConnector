@@ -4,6 +4,7 @@ using System.Collections;
 using System.Collections.Immutable;
 using System.Xml.Serialization;
 using TC.TDLReportSourceGenerator.Execute;
+using TC.TDLReportSourceGenerator.Extensions.Symbols;
 
 namespace TC.TDLReportSourceGenerator.Models;
 

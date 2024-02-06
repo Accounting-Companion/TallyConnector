@@ -1,6 +1,7 @@
 ﻿using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using System;
+using TC.TDLReportSourceGenerator.Extensions.Symbols;
 using TC.TDLReportSourceGenerator.Models;
 using static System.Net.Mime.MediaTypeNames;
 
@@ -153,6 +154,8 @@ internal class Helper
             .WithArgumentList(ArgumentList(SeparatedList<ArgumentSyntax>(
             new SyntaxNodeOrToken[]{
                 Argument(IdentifierName(xmlVarName)),
+                Token(SyntaxKind.CommaToken),
+                 Argument(CreateStringLiteral(string.Format(GetObjectsMethodName, _symbol.TypeName))),
             }))))));
         statements.Add(CreateVarInsideMethodWithExpression(xmlAttributeOverridesVarName, ObjectCreationExpression(GetGlobalNameforType(XmlAttributeOverridesClassName)).WithArgumentList(ArgumentList())));
         statements.Add(CreateVarInsideMethodWithExpression(xmlAttributesVarName, ObjectCreationExpression(GetGlobalNameforType(XmlAttributesClassName)).WithArgumentList(ArgumentList())));

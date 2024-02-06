@@ -7,6 +7,8 @@ using System.Reflection;
 using System.Reflection.Metadata;
 using System.Runtime.CompilerServices;
 using TC.TDLReportSourceGenerator.Execute;
+using TC.TDLReportSourceGenerator.Extensions;
+using TC.TDLReportSourceGenerator.Extensions.Symbols;
 using static TC.TDLReportSourceGenerator.Constants;
 namespace TC.TDLReportSourceGenerator;
 
