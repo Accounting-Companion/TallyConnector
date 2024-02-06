@@ -1,4 +1,4 @@
-﻿namespace UnitTests.Verifiers;
+﻿namespace UnitTests._Verifiers;
 internal static class CSharpVerifierHelper
 {
     internal static ImmutableDictionary<string, ReportDiagnostic> NullableWarnings { get; } = GetNullableWarningsFromCompiler();

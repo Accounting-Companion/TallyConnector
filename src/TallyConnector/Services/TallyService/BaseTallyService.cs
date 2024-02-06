@@ -5,7 +5,7 @@ namespace TallyConnector.Services;
 /// <summary>
 /// Base Tally Service
 /// </summary>
-public partial class BaseTallyService : IBaseTallyService
+public partial class BaseTallyService : Services.IBaseTallyService
 {
     private readonly HttpClient _httpClient;
     private int _port;
@@ -13,7 +13,7 @@ public partial class BaseTallyService : IBaseTallyService
     private string _baseURL;
     private string FullURL => _baseURL + ":" + _port;
 
-    protected readonly ILogger? _logger;
+    protected readonly ILogger _logger;
 
     protected BaseCompany? Company { get; set; }
 
@@ -43,6 +43,7 @@ public partial class BaseTallyService : IBaseTallyService
         _baseURL = "http://localhost";
         _port = 9000;
         _httpClient.Timeout = TimeSpan.FromMinutes(3);
+        _logger = NullLogger.Instance;
     }
 
     /// <summary>
@@ -64,6 +65,7 @@ public partial class BaseTallyService : IBaseTallyService
         _httpClient.Timeout = TimeSpan.FromMinutes(timeoutMinutes);
         _baseURL = baseURL;
         _port = port;
+        _logger = NullLogger.Instance;
     }
 
     /// <summary>
@@ -73,14 +75,14 @@ public partial class BaseTallyService : IBaseTallyService
     /// <param name="logger">logger</param>
     /// <param name="timeoutMinutes">Request timeout in Minutes</param>
     public BaseTallyService(HttpClient httpClient,
-                        ILogger<TallyService>? logger = null,
+                        ILogger? logger = null,
                         double timeoutMinutes = 3)
     {
         _httpClient = httpClient;
         _httpClient.Timeout = TimeSpan.FromMinutes(timeoutMinutes);
         _baseURL = "http://localhost";
         _port = 9000;
-        _logger = logger;
+        _logger = logger ?? NullLogger.Instance;
     }
     /// <inheritdoc/>
     public async Task<bool> CheckAsync(CancellationToken token = default)
@@ -118,7 +120,10 @@ public partial class BaseTallyService : IBaseTallyService
         TallyResult result = new();
         HttpRequestMessage requestMessage = new(HttpMethod.Post, FullURL);
         //Check whether xml is null or empty
-        //Logger?.LogTallyRequest(xml, requestType);
+        if (xml != null && requestType != null)
+        {
+            LogRequestXML(xml, requestType);
+        }
         if (xml != null && xml != string.Empty)
         {
             //Tally requires UTF-16/Unicode encoding

@@ -62,7 +62,7 @@ public interface IBaseTallyService
 /// <summary>
 /// contains API to interact with Tally
 /// </summary>
-public interface ITallyService:IBaseTallyService
+public interface ITallyService : IBaseTallyService
 {
 
 
@@ -104,7 +104,7 @@ public interface ITallyService:IBaseTallyService
     /// <returns></returns>
     Task<List<CompanyOnDisk>?> GetCompaniesinDefaultPathAsync(CancellationToken token = default);
 
-    
+
 
     /// <summary>
     /// Get Statistics of Masters form Tally
@@ -459,4 +459,4 @@ public interface ITallyService:IBaseTallyService
     Task<int?> GetObjectCountAync(CountRequestOptions options, string? requestType = null, CancellationToken token = default);
 
 
-    }
+}
