@@ -19,9 +19,7 @@
     <WarningLevel>9999</WarningLevel>
   </PropertyGroup>
 
-  <ItemGroup>
-    <Compile Remove="Generated\TC.TDLReportSourceGenerator\TC.TDLReportSourceGenerator.TDLReportSourceGenerator\IntegrationTests.Group.TDLReport.g.cs" />
-  </ItemGroup>
+
 
   <ItemGroup>
 	  <Compile Remove="Generated\**\*" />
@@ -35,6 +33,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\..\..\SourceGenerators\TallyConnector.TDLReportSourceGenerator\TallyConnector.TDLReportSourceGenerator.csproj"  OutputItemType="Analyzer" />
     <ProjectReference Include="..\..\..\..\TallyConnector.Core\TallyConnector.Core.csproj" />
     <ProjectReference Include="..\..\..\..\TallyConnector\TallyConnector.csproj" />
   </ItemGroup>

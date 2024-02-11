@@ -19,7 +19,6 @@ internal class Program
 
             TallyService tallyService = new();
             var bills = (await tallyService.GetBills()).Where(c=>!c.Balance.IsDebit);
-
             foreach (var bill in bills)
             {
                 Voucher voucher = new()

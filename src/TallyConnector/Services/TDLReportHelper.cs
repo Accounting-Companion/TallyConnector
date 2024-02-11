@@ -13,7 +13,7 @@ public static class TDLReportHelper
             rootReport.CollectionName = tDLCollectionAttribute.CollectionName;
             rootReport.CollectionType = tDLCollectionAttribute.Type ?? tDLCollectionAttribute.CollectionName;
 
-            rootReport.CreateCollectionTag = tDLCollectionAttribute.Include;
+            rootReport.CreateCollectionTag = tDLCollectionAttribute.Exclude;
         }
         GenerateSubFields(type, rootReport);
         return rootReport;

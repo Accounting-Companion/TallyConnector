@@ -1,16 +1,22 @@
-﻿namespace TC.TDLReportSourceGenerator;
+﻿namespace TallyConnector.TDLReportSourceGenerator;
 public static class Constants
 {
     /// <summary>
     /// TDL Report is Generated for every object that inherits this Interface
     /// </summary>
     public const string BaseInterfaceName = "TallyConnector.Core.Models.ITallyBaseObject";
+    public const string MasterObjectInterfaceName = "TallyConnector.Core.Models.Interfaces.Masters.IBaseMasterObject";
+    public const string VoucherObjectInterfaceName = "TallyConnector.Core.Models.Interfaces.Voucher.IBaseVoucherObject";
     public const string TallyComplexObjectInterfaceName = "TallyConnector.Core.Models.TallyComplexObjects.ITallyComplexObject";
     public const string TallyRateClassName = "TallyConnector.Core.Models.TallyComplexObjects.TallyRateField";
     public const string TallyAmountClassName = "TallyConnector.Core.Models.TallyComplexObjects.TallyAmountField";
     public const string BaseClassName = "TallyConnector.Services.BaseTallyService";
     public const string XMLToObjectClassName = "TallyConnector.Services.XMLToObject";
+    public const string RequestOptionsClassName = "TallyConnector.Core.Models.PaginatedRequestOptions";
+    public const string PaginatedRequestOptionsClassName = "TallyConnector.Core.Models.RequestOptions";
     public const string GetObjfromXmlMethodName = "GetObjfromXml";
+    public const string PopulateOptionsExtensionMethodName = "PopulateOptions";
+    public const string PopulateDefaultOptionsMethodName = "PopulateDefaultOptions";
 
     public const string SendRequestMethodName = "SendRequestAsync";
 
@@ -26,6 +32,9 @@ public static class Constants
     public const string XMLEnumAttributeName = "System.Xml.Serialization.XmlEnumAttribute";
     public const string XMLArrayItemAttributeName = "System.Xml.Serialization.XmlArrayItemAttribute";
     public const string XMLArrayAttributeName = "System.Xml.Serialization.XmlArrayAttribute";
+
+
+    public const string CancellationTokenStructName = "System.Threading.CancellationToken";
     public const string GenerateHelperMethodAttrName = "TallyConnector.Core.Attributes.GenerateHelperMethodAttribute";
 
     public const string TallyConnectorModelsNameSpace = "TallyConnector.Core.Models";
@@ -40,7 +49,7 @@ public static class Constants
 
 
     public const string BaseLedgerEntryInterfaceName = "TallyConnector.Core.Models.Interfaces.IBaseLedgerEntry";
-    
+
 
 
     public const string HeaderTypeEnumName = "TallyConnector.Core.Models.HType";
@@ -49,6 +58,7 @@ public static class Constants
     public const string FormFullTypeName = "TallyConnector.Core.Models.Form";
     public const string ExtensionsNameSpace = "TallyConnector.Core.Extensions";
     public const string TDLCollectionAttributeName = "TallyConnector.Core.Attributes.TDLCollectionAttribute";
+    public const string IgnoreForCreateDTOAttributeName = "TallyConnector.Core.Attributes.IgnoreForCreateDTOAttribute";
     public const string TDLFieldAttributeName = "TallyConnector.Core.Attributes.TDLFieldAttribute";
     public const string MaptoDTOAttributeName = "TallyConnector.Core.Attributes.MaptoDTOAttribute";
 
@@ -61,7 +71,7 @@ public static class Constants
 
 
 
-    public const string GetObjectsMethodName = "Get{0}s";
+    public const string GetObjectsMethodName = "Get{0}Async";
     public const string GetRequestEnvelopeMethodName = "Get{0}RequestEnevelope";
     public const string GetTDLPartsMethodName = "Get{0}TDLParts";
     public const string GetMainTDLPartMethodName = "Get{0}MainTDLPart";
@@ -74,6 +84,7 @@ public static class Constants
     public const string GetEnumNameSetName = "TC_{0}Enum";
     public const string GetDefaultTDLFunctionsMethodName = "GetDefaultTDLFunctions";
     public const string setValueParamName = "setValue";
+    public const string ParseReportMethodName = "ParseReportFromXML";
 
     public const string AddToArrayExtensionMethodName = "AddToArray";
     public const string GetTallyStringMethodName = "GetTallyString";

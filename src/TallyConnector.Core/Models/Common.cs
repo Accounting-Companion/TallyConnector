@@ -1,5 +1,10 @@
 ﻿namespace TallyConnector.Core.Models;
-
+public enum GenerationMode
+{
+    Get,
+    GetMultiple,
+    Post,
+}
 public enum MasterLookupField
 {
     MasterId = 1,

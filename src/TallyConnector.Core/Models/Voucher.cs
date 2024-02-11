@@ -59,7 +59,7 @@ public class Voucher : BasicTallyObject, ITallyObject
 
     [XmlElement(ElementName = "ISOPTIONAL")]
     [Column(TypeName = "nvarchar(3)")]
-    public TallyYesNo? IsOptional { get; set; }
+    public bool IsOptional { get; set; }
 
     [XmlElement(ElementName = "EFFECTIVEDATE")]
     public TallyDate? EffectiveDate { get; set; }

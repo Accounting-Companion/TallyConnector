@@ -3,10 +3,10 @@ using Microsoft.CodeAnalysis;
 using System.Collections;
 using System.Collections.Immutable;
 using System.Xml.Serialization;
-using TC.TDLReportSourceGenerator.Execute;
-using TC.TDLReportSourceGenerator.Extensions.Symbols;
+using TallyConnector.TDLReportSourceGenerator.Execute;
+using TallyConnector.TDLReportSourceGenerator.Extensions.Symbols;
 
-namespace TC.TDLReportSourceGenerator.Models;
+namespace TallyConnector.TDLReportSourceGenerator.Models;
 
 internal class SymbolData
 {
@@ -41,7 +41,7 @@ internal class SymbolData
     public string MainNameSpace { get; set; }
     public string MainFullName { get; private set; }
     public bool IsChild { get; private set; }
-    public bool IsBaseSymbol { get;  set; }
+    public bool IsBaseSymbol { get; set; }
     public SymbolData? ParentSymbol { get; private set; }
     public bool IsEnum { get; private set; }
     public bool IsTallyComplexObject { get; private set; }
@@ -60,7 +60,9 @@ internal class SymbolData
     public FunctionDetails TDLGetFilterMethods { get; set; } = [];
     public TDLCollectionData? TDLCollectionDetails { get; internal set; }
     public MapToData? MapToData { get; internal set; }
-
+    public string MethodNameSuffixPlural { get; internal set; }
+    public GenerationMode GenerationMode { get; internal set; }
+    public List<INamedTypeSymbol> Args { get; internal set; }
 }
 
 
@@ -85,7 +87,7 @@ internal class FunctionDetails : IEnumerable<KeyValuePair<string, FunctionDetail
 
     IEnumerator IEnumerable.GetEnumerator()
     {
-        return this.GetEnumerator();
+        return GetEnumerator();
     }
 }
 internal class FunctionDetail
@@ -129,7 +131,7 @@ internal class ChildSymbolData
         IsComplex = ChildType.SpecialType is SpecialType.None && ChildType.TypeKind is not TypeKind.Enum;
         Attributes = childSymbol.GetAttributes();
         ReportVarName = $"{parent.Name}{Name}ReportName";
-        
+
     }
 
 
@@ -192,4 +194,5 @@ internal class ChildSymbolData
 
     public string ReportVarName { get; set; }
     public bool IsNullable { get; private set; }
+    public bool IgnoreForCreateDTO { get; internal set; }
 }

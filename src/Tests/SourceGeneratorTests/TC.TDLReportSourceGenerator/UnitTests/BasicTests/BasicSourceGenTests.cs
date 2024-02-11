@@ -8,12 +8,12 @@ public class BasicSourceGenTests
         var src = @"
 #nullable enable
 using System.Xml.Serialization;
-namespace TestNameSpace;
-[TallyConnector.Core.Attributes.GenerateHelperMethod<Group>]
-public partial class TallyService : TallyConnector.Services.BaseTallyService
+namespace TallyConnector.Services;
+[TallyConnector.Core.Attributes.GenerateHelperMethod<Group>(GenerationMode=TallyConnector.Core.Models.GenerationMode.GetMultiple,MethodNameSuffixPlural=""wsdf"")]
+public partial class BaseTallyService
 {
 }
-[XmlRoot(ElementName = ""VOUCHER"")]
+[XmlRoot(ElementName = ""GROUP"")]
 public partial class Group : TallyConnector.Core.Models.ITallyBaseObject
 {
     [XmlElement(ElementName = ""PARENT"")]
@@ -22,8 +22,102 @@ public partial class Group : TallyConnector.Core.Models.ITallyBaseObject
     [XmlElement(ElementName = ""NAME"")]
     public string? Name { get; set; }
 
-    //[XmlElement(ElementName = ""BOOKSFROM"")]
-    //public DateOnly BooksFrom { get; set; }
+}";
+        string resp1 = @"using TallyConnector.Core.Extensions;
+
+#nullable enable
+namespace TallyConnector.Services;
+partial class BaseTallyService
+{
+    internal const string GroupParentTDLFieldName = ""TC_Group_Parent"";
+    internal const string GroupNameTDLFieldName = ""TC_Group_Name"";
+    internal const string GroupReportName = ""TC_GroupList"";
+    const string Group_collectionName = ""TC_GroupCollection"";
+    public async global::System.Threading.Tasks.Task<global::System.Collections.Generic.List<global::TallyConnector.Services.Group>> GetGroups()
+    {
+        var reqXml = global::TallyConnector.Services.BaseTallyService.GetGroupRequestEnevelope().GetXML();
+        var resp = await SendRequestAsync(reqXml, ""GetGroups"");
+        var XMLAttributeOverrides = new global::System.Xml.Serialization.XmlAttributeOverrides();
+        var XMLAttributes = new global::System.Xml.Serialization.XmlAttributes();
+        XMLAttributes.XmlElements.Add(new(""GROUP""));
+        XMLAttributeOverrides.Add(typeof(global::TallyConnector.Core.Models.Common.Response.ReportResponseEnvelope<global::TallyConnector.Services.Group>), ""Objects"", XMLAttributes);
+        var respEnv = global::TallyConnector.Services.XMLToObject.GetObjfromXml<global::TallyConnector.Core.Models.Common.Response.ReportResponseEnvelope<global::TallyConnector.Services.Group>>(resp.Response, XMLAttributeOverrides, _logger);
+        return respEnv.Objects;
+    }
+
+    internal static global::TallyConnector.Core.Models.RequestEnvelope GetGroupRequestEnevelope()
+    {
+        var reqEnvelope = new global::TallyConnector.Core.Models.RequestEnvelope(global::TallyConnector.Core.Models.HType.Data, GroupReportName);
+        var tdlMsg = reqEnvelope.Body.Desc.TDL.TDLMessage;
+        tdlMsg.Report = [new(GroupReportName)];
+        tdlMsg.Form = [new(GroupReportName)];
+        tdlMsg.Part = [..global::TallyConnector.Services.BaseTallyService.GetGroupTDLParts()];
+        tdlMsg.Line = [..global::TallyConnector.Services.BaseTallyService.GetGroupTDLLines()];
+        tdlMsg.Field = [..global::TallyConnector.Services.BaseTallyService.GetGroupTDLFields()];
+        tdlMsg.Collection = [..global::TallyConnector.Services.BaseTallyService.GetGroupTDLCollections()];
+        tdlMsg.Functions = [..global::TallyConnector.Services.BaseTallyService.GetDefaultTDLFunctions()];
+        return reqEnvelope;
+    }
+
+    internal static global::TallyConnector.Core.Models.Part GetGroupMainTDLPart()
+    {
+        return new(GroupReportName, Group_collectionName);
+    }
+
+    internal static global::TallyConnector.Core.Models.Part[] GetGroupTDLParts()
+    {
+        var parts = new global::TallyConnector.Core.Models.Part[1];
+        parts[0] = global::TallyConnector.Services.BaseTallyService.GetGroupMainTDLPart();
+        return parts;
+    }
+
+    internal static global::TallyConnector.Core.Models.Line[] GetGroupTDLLines()
+    {
+        var lines = new global::TallyConnector.Core.Models.Line[1];
+        lines[0] = new(GroupReportName, [GroupParentTDLFieldName,GroupNameTDLFieldName], ""GROUP"");
+        return lines;
+    }
+
+    internal static global::TallyConnector.Core.Models.Field[] GetGroupTDLFields()
+    {
+        var fields = new global::TallyConnector.Core.Models.Field[2];
+        fields[0] = new(GroupParentTDLFieldName, ""PARENT"", ""$PARENT"");
+        fields[1] = new(GroupNameTDLFieldName, ""NAME"", ""$NAME"");
+        return fields;
+    }
+
+    internal static global::TallyConnector.Core.Models.Collection[] GetGroupTDLCollections()
+    {
+        var collections = new global::TallyConnector.Core.Models.Collection[1];
+        collections[0] = new(Group_collectionName, ""GROUP"", nativeFields: [""*""]);
+        return collections;
+    }
+}";
+        await VerifyTDLReportSG.VerifyGeneratorAsync(src, [
+            ("TallyConnector.Services.Group.BaseTallyService.TDLReport.g.cs", resp1),
+        ]);
+    }
+
+    [TestMethod]
+    public async Task TestBasicModelGet()
+    {
+        var src = @"
+#nullable enable
+using System.Xml.Serialization;
+namespace TestNameSpace;
+[TallyConnector.Core.Attributes.GenerateHelperMethod<Group>(GenerationMode=TallyConnector.Core.Models.GenerationMode.GetMultiple)]
+public partial class TallyService : TallyConnector.Services.BaseTallyService
+{
+}
+[XmlRoot(ElementName = ""GROUP"")]
+public partial class Group : TallyConnector.Core.Models.ITallyBaseObject
+{
+    [XmlElement(ElementName = ""PARENT"")]
+    public string? Parent { get; set; }
+
+    [XmlElement(ElementName = ""NAME"")]
+    public string? Name { get; set; }
+
 }";
         var resp1 = @"using TallyConnector.Core.Extensions;
 
@@ -38,10 +132,10 @@ partial class TallyService
     public async global::System.Threading.Tasks.Task<global::System.Collections.Generic.List<global::TestNameSpace.Group>> GetGroups()
     {
         var reqXml = global::TestNameSpace.TallyService.GetGroupRequestEnevelope().GetXML();
-        var resp = await SendRequestAsync(reqXml);
+        var resp = await SendRequestAsync(reqXml, ""GetGroups"");
         var XMLAttributeOverrides = new global::System.Xml.Serialization.XmlAttributeOverrides();
         var XMLAttributes = new global::System.Xml.Serialization.XmlAttributes();
-        XMLAttributes.XmlElements.Add(new(""VOUCHER""));
+        XMLAttributes.XmlElements.Add(new(""GROUP""));
         XMLAttributeOverrides.Add(typeof(global::TallyConnector.Core.Models.Common.Response.ReportResponseEnvelope<global::TestNameSpace.Group>), ""Objects"", XMLAttributes);
         var respEnv = global::TallyConnector.Services.XMLToObject.GetObjfromXml<global::TallyConnector.Core.Models.Common.Response.ReportResponseEnvelope<global::TestNameSpace.Group>>(resp.Response, XMLAttributeOverrides, _logger);
         return respEnv.Objects;
@@ -76,7 +170,7 @@ partial class TallyService
     internal static global::TallyConnector.Core.Models.Line[] GetGroupTDLLines()
     {
         var lines = new global::TallyConnector.Core.Models.Line[1];
-        lines[0] = new(GroupReportName, [GroupParentTDLFieldName,GroupNameTDLFieldName], ""VOUCHER"");
+        lines[0] = new(GroupReportName, [GroupParentTDLFieldName,GroupNameTDLFieldName], ""GROUP"");
         return lines;
     }
 
@@ -91,31 +185,12 @@ partial class TallyService
     internal static global::TallyConnector.Core.Models.Collection[] GetGroupTDLCollections()
     {
         var collections = new global::TallyConnector.Core.Models.Collection[1];
-        collections[0] = new(Group_collectionName, ""VOUCHER"", nativeFields: [""*""]);
+        collections[0] = new(Group_collectionName, ""GROUP"", nativeFields: [""*""]);
         return collections;
-    }
-}";
-        var resp2 = @"using TallyConnector.Core.Extensions;
-using System.Linq;
-
-#nullable enable
-namespace TestNameSpace;
-public partial class CreateGroupDTOTallyService
-{
-    public string? Parent { get; set; }
-    public string? Name { get; set; }
-
-    public static implicit operator CreateGroupDTOTallyService(global::TestNameSpace.Group src)
-    {
-        var dto = new CreateGroupDTOTallyService();
-        dto.Parent = src.Parent;
-        dto.Name = src.Name;
-        return dto;
     }
 }";
         await VerifyTDLReportSG.VerifyGeneratorAsync(src, [
             ("TestNameSpace.Group.TallyService.TDLReport.g.cs", resp1),
-            ("TestNameSpace.Group.TallyService.CreateDTO.g.cs", resp2)
             ]);
     }
 
@@ -696,7 +771,7 @@ partial class TallyService
         return collections;
     }
 }";
-        
+
         await VerifyTDLReportSG.VerifyGeneratorAsync(src, ("TestNameSpace.Group.TallyService.TDLReport.g.cs", resp1));
     }
 

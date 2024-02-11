@@ -5,23 +5,24 @@ namespace TallyConnector.Core.Attributes;
 public class GenerateHelperMethodsAttribute<T> : Attribute where T : Models.BasicTallyObject
 {
     public string? PluralName { get; set; }
-
     public string? TypeName { get; set; }
     public string? MethodName { get; set; }
 }
 
-[AttributeUsage(AttributeTargets.Class, AllowMultiple = true)]
-public class GenerateHelperMethodAttribute<GetObjectType> : GenerateHelperMethodAttribute<GetObjectType, RequestEnvelope,ResponseEnvelope>
+[AttributeUsage(AttributeTargets.Class, AllowMultiple = true, Inherited = false)]
+public class GenerateHelperMethodAttribute<GetObjectType> : GenerateHelperMethodAttribute<GetObjectType, RequestEnvelope>
     where GetObjectType : ITallyBaseObject
 {
-    
+
 }
 
-[AttributeUsage(AttributeTargets.Class, AllowMultiple = true)]
-public class GenerateHelperMethodAttribute<GetObjectType, RequestEnvelopeType, ResponseEnvelopeType> : Attribute
+[AttributeUsage(AttributeTargets.Class, AllowMultiple = true, Inherited = false)]
+public class GenerateHelperMethodAttribute<GetObjectType, RequestEnvelopeType> : Attribute
     where GetObjectType : ITallyBaseObject
     where RequestEnvelopeType : RequestEnvelope
-    where ResponseEnvelopeType : ResponseEnvelope
 {
-    
+    public GenerationMode GenerationMode { get; set; }
+    public string? MethodNameSuffix { get; set; }
+    public string? MethodNameSuffixPlural { get; set; }
+    public Type[]? Args { get; set; }
 }

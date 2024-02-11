@@ -1,4 +1,4 @@
-﻿namespace TC.TDLReportSourceGenerator.Extensions.Symbols;
+﻿namespace TallyConnector.TDLReportSourceGenerator.Extensions.Symbols;
 /// <summary>
 /// Extension methods for the <see cref="INamedTypeSymbol"/> type.
 /// </summary>

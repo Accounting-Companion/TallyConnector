@@ -1,4 +1,4 @@
-﻿namespace TC.TDLReportSourceGenerator.Extensions;
+﻿namespace TallyConnector.TDLReportSourceGenerator.Extensions;
 /// <summary>
 /// Extension methods for the <see cref="Compilation"/> type.
 /// </summary>

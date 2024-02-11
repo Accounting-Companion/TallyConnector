@@ -21,12 +21,12 @@ public class TDLCollectionAttribute : Attribute
     {
         _collectionName = collectionName;
         _type = type;
-        Include = include;
+        Exclude = include;
     }
     public TDLCollectionAttribute(string? collectionName, bool include)
     {
         _collectionName = collectionName;
-        Include = include;
+        Exclude = include;
     }
 
     public string? Type
@@ -37,7 +37,7 @@ public class TDLCollectionAttribute : Attribute
 
     private bool _include;
 
-    public bool Include
+    public bool Exclude
     {
         get { return _include; }
         set { _include = value; }

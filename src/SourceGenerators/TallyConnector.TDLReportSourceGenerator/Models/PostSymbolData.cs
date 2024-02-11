@@ -1,4 +1,4 @@
-﻿namespace TC.TDLReportSourceGenerator.Models;
+﻿namespace TallyConnector.TDLReportSourceGenerator.Models;
 
 internal class MapSymbolData
 {

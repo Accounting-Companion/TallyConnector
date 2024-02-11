@@ -3,7 +3,7 @@ using TallyConnector.Core.Attributes;
 
 namespace TallyConnector.Reports.Models.Static;
 [XmlRoot(ElementName = "TALLYSTATE")]
-[TDLCollection(CollectionName = "StatesOfAllCountries", Include = true)]
+[TDLCollection(CollectionName = "StatesOfAllCountries", Exclude = true)]
 public class TallyState
 {
     [XmlElement(ElementName = "NAME")]

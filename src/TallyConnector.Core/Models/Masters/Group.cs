@@ -128,6 +128,7 @@ public class BaseGroup : BasicTallyObject, IAliasTallyObject
     }
 
 }
+
 [XmlRoot("GROUP")]
 public partial class Group : BaseGroup
 {
@@ -142,7 +143,6 @@ public partial class Group : BaseGroup
     public Group(string name, string parent) : base(name, parent)
     {
     }
-
     /// <summary>
     /// Tally Field - Used for Calculation
     /// </summary>

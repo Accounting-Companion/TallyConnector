@@ -32,11 +32,9 @@ public class RequestOptions : DateFilterRequestOptions
 {
     public List<Filter>? Filters { get; set; }
     public YesNo IsInitialize { get; set; } = YesNo.No;
-    public List<string>? FetchList { get; set; }
     public List<string>? Compute { get; set; } = new();
     public List<string>? ComputeVar { get; set; } = new();
 
-    public List<TallyCustomObject>? Objects { get; set; }
 }
 
 public class PaginatedRequestOptions : RequestOptions

@@ -1,4 +1,4 @@
-﻿namespace TC.TDLReportSourceGenerator.Extensions.Symbols;
+﻿namespace TallyConnector.TDLReportSourceGenerator.Extensions.Symbols;
 public static class AttributeDataExtensions
 {
     public static bool HasFullyQualifiedMetadataName(this AttributeData attributeData, string metaName)
