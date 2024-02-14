@@ -112,7 +112,7 @@ public partial class BaseTallyService : IBaseTallyService
         }
     }
     /// <inheritdoc/>
-    public async Task<NewLicenseInfo> GetLicenseInfoAsync(CancellationToken token = default)
+    public async Task<LicenseInfo> GetLicenseInfoAsync(CancellationToken token = default)
     {
         const string prefix = "TC_LicenseInfo";
         const string collectionName = $"{prefix}Collection";
@@ -147,8 +147,8 @@ public partial class BaseTallyService : IBaseTallyService
         var XMLAttributeOverrides = new XmlAttributeOverrides();
         var XMLAttributes = new XmlAttributes();
         XMLAttributes.XmlElements.Add(new(objectName.ToUpper()));
-        XMLAttributeOverrides.Add(typeof(Colllection<NewLicenseInfo>), "Objects", XMLAttributes);
-        Envelope<NewLicenseInfo> envelope = XMLToObject.GetObjfromXml<Envelope<NewLicenseInfo>>(respXml.Response ?? throw new Exception("Error While Getting License"), XMLAttributeOverrides);
+        XMLAttributeOverrides.Add(typeof(Colllection<LicenseInfo>), "Objects", XMLAttributes);
+        Envelope<LicenseInfo> envelope = XMLToObject.GetObjfromXml<Envelope<LicenseInfo>>(respXml.Response ?? throw new Exception("Error While Getting License"), XMLAttributeOverrides);
         return envelope.Body.Data.Collection?.Objects?.FirstOrDefault() ?? new();
     }
 

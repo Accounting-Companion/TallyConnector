@@ -1,0 +1,33 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<OutputType>WinExe</OutputType>
+		<TargetFramework>net8.0-windows</TargetFramework>
+		<Nullable>enable</Nullable>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<UseWPF>true</UseWPF>
+		<RootNamespace>DemoDesktopApp</RootNamespace>
+	</PropertyGroup>
+	<ItemGroup>
+		<Analyzer Include="lib\SaiVineeth.WPFHelper.Generator.dll">
+		</Analyzer>
+	</ItemGroup>
+	<ItemGroup>
+	 
+	  <PackageReference Include="CommunityToolkit.Mvvm" Version="8.2.2" />
+	 
+	  <PackageReference Include="MaterialDesignThemes" Version="4.9.0" />
+	  <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="8.0.0" />
+	  <PackageReference Include="Microsoft.Extensions.Hosting" Version="8.0.0" />
+	  <PackageReference Include="Serilog.Extensions.Hosting" Version="8.0.0" />
+	  <PackageReference Include="Serilog.Sinks.File" Version="5.0.0" />
+	</ItemGroup>
+	<ItemGroup>
+	
+	  <ProjectReference Include="..\DemoDesktopApp.Infra\DemoDesktopApp.Infra.csproj" />
+	</ItemGroup>
+	<ItemGroup>
+	  <Folder Include="Views\" />
+	</ItemGroup>
+
+</Project>

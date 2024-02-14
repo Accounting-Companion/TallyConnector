@@ -168,6 +168,10 @@ internal class ChildSymbolData
             }
             return typeSymbol;
         }
+        if (type.TypeKind == TypeKind.Enum)
+        {
+            IsEnum = true;
+        }
         return type;
     }
 
@@ -195,4 +199,5 @@ internal class ChildSymbolData
     public string ReportVarName { get; set; }
     public bool IsNullable { get; private set; }
     public bool IgnoreForCreateDTO { get; internal set; }
+    public List<string>? EnumChoices { get; internal set; }
 }

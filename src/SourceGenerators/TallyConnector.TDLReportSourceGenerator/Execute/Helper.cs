@@ -22,7 +22,7 @@ internal class Helper
     public Helper(SymbolData symbol)
     {
         _symbol = symbol;
-        ReportName = $"TC_{_symbol.Name}List";
+        ReportName = $"TC_{_symbol.TypeName}List";
         _reportVariableName = $"{_symbol.TypeName}{nameof(ReportName)}";
         _collectionVariableName = $"{_symbol.TypeName}{nameof(_collectionName)}";
         _collectionName = _symbol.IsChild ? _symbol.Name : $"TC_{_symbol.Name}Collection";
@@ -299,34 +299,25 @@ internal class Helper
 
         }
 
-        List<ExpressionSyntax> methodNames = [InvocationExpression(MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression,
+        List<ExpressionSyntax> functionMethodNames = [InvocationExpression(MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression,
                                                            GetGlobalNameforType(_symbol.MainFullName), IdentifierName(GetDefaultTDLFunctionsMethodName)))];
-        GetMethodNames(_symbol.TDLFunctionMethods, methodNames);
-        foreach (var child in _simpleChildren)
-        {
-            if (child.IsEnum && child.SymbolData!.TDLFunctionMethods.Count == 0)
-            {
-                methodNames.Add(InvocationExpression(
-                    MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression,
-                                           GetGlobalNameforType(_symbol.MainFullName),
-                                           IdentifierName(string.Format(GetTDLFunctionsMethodName,
-                                                                        child.SymbolData!.Name)))));
-            }
-        }
-        statements.Add(CreateAssignFromMethodStatement(tdlMsgVariableName, "Functions", methodNames));
+        GetMethodNames(_symbol.TDLFunctionMethods, functionMethodNames);
+        //foreach (var child in _simpleChildren)
+        //{
+        //    if (child.IsEnum && child.SymbolData!.TDLFunctionMethods.Count == 0)
+        //    {
+        //        functionMethodNames.Add(InvocationExpression(
+        //            MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression,
+        //                                   GetGlobalNameforType(_symbol.MainFullName),
+        //                                   IdentifierName(string.Format(GetTDLFunctionsMethodName,
+        //                                                                child.SymbolData!.TypeName)))));
+        //    }
+        //}
+        AddFunctions(_symbol, functionMethodNames, GetTDLFunctionsMethodName,c => c.TDLFunctionMethods.Count);
+        statements.Add(CreateAssignFromMethodStatement(tdlMsgVariableName, "Functions", functionMethodNames));
 
         List<ExpressionSyntax> NameSetMethodNames = [];
-        foreach (var child in _simpleChildren)
-        {
-            if (child.IsEnum && child.SymbolData!.TDLNameSetMethods.Count == 0)
-            {
-                NameSetMethodNames.Add(InvocationExpression(
-                    MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression,
-                                           GetGlobalNameforType(_symbol.MainFullName),
-                                           IdentifierName(string.Format(GetTDLNameSetsMethodName,
-                                                                        child.SymbolData!.Name)))));
-            }
-        }
+        AddFunctions(_symbol, NameSetMethodNames, GetTDLNameSetsMethodName,c=>c.TDLNameSetMethods.Count);
         if (_symbol.TDLNameSetMethods.Count > 0 || NameSetMethodNames.Count > 0)
         {
             statements.Add(CreateAssignFromMethodStatement(tdlMsgVariableName, "NameSet", GetMethodNames(_symbol.TDLNameSetMethods, NameSetMethodNames)));
@@ -350,9 +341,29 @@ internal class Helper
                 methodNames.Add(InvocationExpression(MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression,
                                                                             GetGlobalNameforType(value.SymbolData.FullName),
                                                                             IdentifierName(value.FunctionName))));
+
             }
 
             return methodNames;
+        }
+
+        void AddFunctions(SymbolData symbol, List<ExpressionSyntax> methodNames, string methodFormatString,Func<SymbolData,int> action)
+        {
+            foreach (var child in symbol.Children.Where(c => !c.IsComplex))
+            {
+                if (child.IsEnum && action(child.SymbolData!) == 0)
+                {
+                    methodNames.Add(InvocationExpression(
+                        MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression,
+                                               GetGlobalNameforType(symbol.MainFullName),
+                                               IdentifierName(string.Format(methodFormatString,
+                                                                            child.SymbolData!.TypeName)))));
+                }                
+            }
+            if (symbol.BaseSymbolData != null)
+            {
+                AddFunctions(symbol.BaseSymbolData.SymbolData, methodNames, methodFormatString, action);
+            }
         }
     }
 
@@ -415,7 +426,7 @@ internal class Helper
             statements.Add(CreateVarInsideMethodWithExpression(ComplexFieldsVariableName,
                                                    InvocationExpression(MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression,
                                                                                                GetGlobalNameforType(_symbol.MainFullName),
-                                                                                               IdentifierName(string.Format(GetTDLPartsMethodName, _symbol.BaseSymbolData.Name))))));
+                                                                                               IdentifierName(string.Format(GetTDLPartsMethodName, _symbol.BaseSymbolData.SymbolData.TypeName))))));
 
             statements.Add(ExpressionStatement(InvocationExpression(MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression,
                                                                                            IdentifierName(PartsVariableName),
@@ -690,7 +701,7 @@ internal class Helper
             intializerArgs.AddRange(
                 [
                     AssignmentExpression(SyntaxKind.SimpleAssignmentExpression,
-                                         IdentifierName("Use"), IdentifierName($"{_symbol.BaseSymbolData.Name}{nameof(ReportName)}"))
+                                         IdentifierName("Use"), IdentifierName($"{_symbol.BaseSymbolData.SymbolData.TypeName}{nameof(ReportName)}"))
                 ]);
         }
         statements.Add(GetArrayAssignmentExppressionImplicit(LinesVariableName,
@@ -712,7 +723,7 @@ internal class Helper
             statements.Add(CreateVarInsideMethodWithExpression(ComplexFieldsVariableName,
                                                    InvocationExpression(MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression,
                                                                                                GetGlobalNameforType(_symbol.MainFullName),
-                                                                                               IdentifierName(string.Format(GetTDLLinesMethodName, _symbol.BaseSymbolData.Name))))));
+                                                                                               IdentifierName(string.Format(GetTDLLinesMethodName, _symbol.BaseSymbolData.SymbolData.TypeName))))));
 
             statements.Add(ExpressionStatement(InvocationExpression(MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression,
                                                                                            IdentifierName(LinesVariableName),
@@ -757,7 +768,7 @@ internal class Helper
             List<SyntaxNodeOrToken> lineIntializerArgs =
                 [
                     AssignmentExpression(SyntaxKind.SimpleAssignmentExpression,
-                                         IdentifierName("Use"), IdentifierName($"{child.ChildType.Name}{nameof(ReportName)}"))
+                                         IdentifierName("Use"), IdentifierName($"{child.SymbolData!.TypeName}{nameof(ReportName)}"))
                 ];
             if (child.SymbolData?.IsTallyComplexObject ?? false)
             {
@@ -868,7 +879,7 @@ internal class Helper
                 statements.Add(CreateVarInsideMethodWithExpression(ComplexFieldsVariableName,
                                                        InvocationExpression(MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression,
                                                                                                    GetGlobalNameforType(_symbol.MainFullName),
-                                                                                                   IdentifierName(string.Format(GetTDLFieldsMethodName, child.Name))))));
+                                                                                                   IdentifierName(string.Format(GetTDLFieldsMethodName, child.SymbolData.TypeName))))));
 
                 statements.Add(ExpressionStatement(InvocationExpression(MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression,
                                                                                                IdentifierName(FieldsVariableName),
@@ -1076,11 +1087,20 @@ internal class Helper
             {
                 continue;
             }
-            if (nodesAndTokens.Count != 0)
+          
+            if (child.EnumChoices !=null)
             {
-                nodesAndTokens.Add(Token(SyntaxKind.CommaToken));
+                foreach (var item in child.EnumChoices)
+                {
+                    if (nodesAndTokens.Count != 0)
+                    {
+                        nodesAndTokens.Add(Token(SyntaxKind.CommaToken));
+                    }
+                    nodesAndTokens.Add(ExpressionElement(CreateStringLiteral($"{item}:\"{child.Name}\"")));
+                }
             }
-            nodesAndTokens.Add(ExpressionElement(CreateStringLiteral($"{child.XmlTag}:\"{child.Name}\"")));
+            
+            
         }
         intializerArgs.Add(AssignmentExpression(SyntaxKind.SimpleAssignmentExpression,
                                                          IdentifierName("List"),
@@ -1262,7 +1282,7 @@ internal class Helper
                 List<SyntaxNodeOrToken> attributes = [];
                 foreach (var attribute in child.Attributes)
                 {
-                    if (!attribute.AttributeClass!.ContainingNamespace.OriginalDefinition.ToString().Contains("CompilerServices"))
+                    if (attribute.AttributeClass!.ContainingNamespace.OriginalDefinition.ToString().Contains("System.Xml.Serialization"))
                     {
                         AttributeSyntax item = Attribute(GetGlobalNameforType(attribute.AttributeClass.OriginalDefinition.ToString()));
 

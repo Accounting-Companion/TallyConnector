@@ -311,36 +311,6 @@ public partial class Ledger : BasicTallyObject, IAliasTallyObject
     [Column(TypeName = "nvarchar(3)")]
     public bool? CanDelete { get; set; }
 
-
-    public void CreateNamesList()
-    {
-        if (LanguageNameList.Count == 0)
-        {
-            LanguageNameList.Add(new LanguageNameList());
-            LanguageNameList?[0]?.NameList?.NAMES?.Add(Name);
-
-        }
-        if (Alias != null && Alias != string.Empty)
-        {
-            LanguageNameList![0].LanguageAlias = Alias;
-        }
-    }
-
-    public new string GetXML(XmlAttributeOverrides? attrOverrides = null, bool indent = false)
-    {
-        CreateNamesList();
-        return base.GetXML(attrOverrides, indent);
-    }
-
-    public new void PrepareForExport()
-    {
-        if (Group != null && Group.Contains("Primary"))
-        {
-            Group = string.Empty;
-        }
-        CreateNamesList();
-    }
-
     public override string ToString()
     {
         return $"Ledger - {Name}";

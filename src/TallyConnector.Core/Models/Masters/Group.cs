@@ -24,7 +24,7 @@ public class BaseGroup : BasicTallyObject, IAliasTallyObject
     }
 
     /// <summary>
-    /// Creates New Group under mention Parent group
+    /// Creates New Group under mention Group group
     /// </summary>
     /// <param name="name">Name Of the Group</param>
     /// <param name="parent">Name of Base Group</param>
@@ -86,27 +86,7 @@ public class BaseGroup : BasicTallyObject, IAliasTallyObject
     public List<LanguageNameList> LanguageNameList { get; set; }
 
 
-
-    public void CreateNamesList()
-    {
-        if (LanguageNameList.Count == 0)
-        {
-            LanguageNameList.Add(new LanguageNameList());
-            LanguageNameList[0].NameList?.NAMES?.Add(Name);
-
-        }
-        if (Alias != null && Alias != string.Empty)
-        {
-            LanguageNameList[0].LanguageAlias = Alias;
-        }
-    }
-
-    public new string GetXML(XmlAttributeOverrides? attrOverrides = null, bool indent = false)
-    {
-        CreateNamesList();
-        return base.GetXML(attrOverrides, indent);
-    }
-
+    
     public new void PrepareForExport()
     {
         if (Parent != null && Parent.Contains("Primary"))
@@ -117,8 +97,6 @@ public class BaseGroup : BasicTallyObject, IAliasTallyObject
         {
             Name = OldName!;
         }
-        //Creates Names List if Not Exists
-        CreateNamesList();
     }
 
 

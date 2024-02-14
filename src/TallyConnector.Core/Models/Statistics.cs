@@ -1,7 +1,6 @@
 ﻿namespace TallyConnector.Core.Models;
 
-
-public class AutoColVoucherTypeStat
+public class AutoColVoucherTypeStat : ITallyBaseObject
 {
     [XmlElement(ElementName = "NAME")]
     public string Name { get; set; }
@@ -16,10 +15,10 @@ public class AutoColVoucherTypeStat
 public class PeriodStat
 {
     [XmlElement(ElementName = "FROMDATE")]
-    public TallyDMYYYYDate FromDate { get; set; }
+    public DateTime FromDate { get; set; }
 
     [XmlElement(ElementName = "TODATE")]
-    public TallyDMYYYYDate ToDate { get; set; }
+    public DateTime ToDate { get; set; }
 
     [XmlElement(ElementName = "CANCELLEDCOUNT")]
     public int CancelledCount { get; set; }

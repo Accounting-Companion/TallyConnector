@@ -54,33 +54,6 @@ public class StockCategory : BasicTallyObject, IAliasTallyObject
     public List<LanguageNameList> LanguageNameList { get; set; }
 
 
-    public void CreateNamesList()
-    {
-        if (LanguageNameList.Count == 0)
-        {
-            LanguageNameList.Add(new LanguageNameList());
-            LanguageNameList[0].NameList?.NAMES?.Add(Name);
-
-        }
-        if (Alias != null && Alias != string.Empty)
-        {
-            LanguageNameList[0].LanguageAlias = Alias;
-        }
-    }
-    public new string GetXML(XmlAttributeOverrides? attrOverrides = null, bool indent = false)
-    {
-        CreateNamesList();
-        return base.GetXML(attrOverrides, indent);
-    }
-
-    public new void PrepareForExport()
-    {
-        if (Parent != null && Parent.Contains("Primary"))
-        {
-            Parent = null;
-        }
-        CreateNamesList();
-    }
     public override void RemoveNullChilds()
     {
         Name = name!;

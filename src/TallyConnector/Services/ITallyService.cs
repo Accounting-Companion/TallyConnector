@@ -1,5 +1,6 @@
 ﻿using System.Runtime.InteropServices;
 using TallyConnector.Core.Models.Common;
+using TallyConnector.Core.Models.Interfaces.Masters;
 using TallyConnector.Core.Models.Masters;
 using TallyConnector.Core.Models.Masters.CostCenter;
 using TallyConnector.Core.Models.Masters.Inventory;
@@ -62,7 +63,7 @@ public interface IBaseTallyService
     /// Get License Information and Other Basic Info from Tally
     /// </summary>
     /// <returns></returns>
-    Task<NewLicenseInfo> GetLicenseInfoAsync(CancellationToken token = default);
+    Task<LicenseInfo> GetLicenseInfoAsync(CancellationToken token = default);
     Task<string> GetActiveSimpleCompanyNameAsync(CancellationToken token = default);
 
 
@@ -74,7 +75,7 @@ public interface IBaseTallyService
     /// <param name="requestOptions">Request options to configure tally</param>
     /// <param name="token"></param>
     /// <returns></returns>
-    Task<List<MasterStatistics>?> GetMasterStatisticsAsync(BaseRequestOptions? requestOptions = null, CancellationToken token = default);
+    Task<List<MasterStatistics>> GetMasterStatisticsAsync(BaseRequestOptions? requestOptions = null, CancellationToken token = default);
 
     /// <summary>
     /// Get Statistics of Vouchers from Tally
@@ -83,7 +84,7 @@ public interface IBaseTallyService
     /// <param name="requestOptions">Request options to configure tally</param>
     /// <param name="token"></param>
     /// <returns></returns>
-    Task<List<VoucherStatistics>?> GetVoucherStatisticsAsync(DateFilterRequestOptions? requestOptions = null, CancellationToken token = default);
+    Task<List<VoucherStatistics>> GetVoucherStatisticsAsync(DateFilterRequestOptions? requestOptions = null, CancellationToken token = default);
 }
 /// <summary>
 /// contains API to interact with Tally

@@ -18,6 +18,7 @@ public class BaseService
     [Test]
     public async Task TestGetLicenseInfo()
     {
+        var prime3Ledgers = await new Services.TallyPrime.TallyPrime3Service().GetLedgersAsync(new Core.Models.RequestOptions() { Filters = [new("TC_TaxFilter", "$TAXTYPE='GST'")] });
         var v = await _baseTallyService.GetLicenseInfoAsync();
         Assert.That(v, Is.Not.Null);
         Assert.Multiple(() =>
@@ -31,20 +32,20 @@ public class BaseService
     {
         var v = await _baseTallyService.CheckAsync();
         Assert.That(v, Is.True);
-       
+
     }
     [Test]
     public async Task TestMasterStatisticsMethod()
     {
-        var v = await _baseTallyService.GetMasterStatistics();
-        Assert.That(v,Is.Not.Null);
-       
+        var v = await _baseTallyService.GetMasterStatisticsAsync();
+        Assert.That(v, Is.Not.Null);
+
     }
     [Test]
     public async Task TestVoucherStatisticsMethod()
     {
-        var v = await _baseTallyService.GetVoucherStatistics();
+        var v = await _baseTallyService.GetVoucherStatisticsAsync();
         Assert.That(v, Is.Not.Null);
-       
+
     }
 }

@@ -22,7 +22,7 @@
 		<RepositoryType>git</RepositoryType>
 		<!--<VersionSuffix>rc</VersionSuffix>-->
 		<GeneratePackageOnBuild>True</GeneratePackageOnBuild>
-		<GenerateDocumentationFile>True</GenerateDocumentationFile>
+		<!--<GenerateDocumentationFile>True</GenerateDocumentationFile>-->
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net7.0|AnyCPU'">

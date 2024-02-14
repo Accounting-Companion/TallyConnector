@@ -1,26 +1,32 @@
 ﻿using TallyConnector.Core.Models.Interfaces.Masters;
+using TallyConnector.Core.Models.TallyComplexObjects;
 
 namespace TallyConnector.Core.Models.Masters;
 
-
-public class BaseLedger : BaseMasterObject, IBaseLedger
-{
-
-}
-
-
-[Serializable]
 [XmlRoot("LEDGER")]
 [XmlType(AnonymousType = true)]
 [TallyObjectType(TallyObjectType.Ledgers)]
-public partial class Ledger : BasicTallyObject, IAliasTallyObject
+public class BaseLedger : BaseMasterObject, IBaseLedger
 {
-    private string? name;
+
+
+    [XmlElement(ElementName = "PARENT")]
+    [Column(TypeName = $"nvarchar({Constants.MaxNameLength})")]
+    [Required]
+    public string Group { get; set; }
+}
+
+
+[XmlRoot("LEDGER")]
+[XmlType(AnonymousType = true)]
+public partial class Ledger : BaseLedger
+{
+
     public Ledger()
     {
-        LanguageNameList = new();
-        FAddress = new HAddress();
-        Group = string.Empty;
+        //LanguageNameList = [];
+        Addresses = [];
+        OldName = Group = string.Empty;
     }
 
     /// <summary>
@@ -30,84 +36,39 @@ public partial class Ledger : BasicTallyObject, IAliasTallyObject
     /// <param name="group"></param>
     public Ledger(string name, string group)
     {
-        LanguageNameList = new();
-        FAddress = new HAddress();
+        //LanguageNameList = [];
+        Addresses = [];
         Group = group;
-        this.name = name;
     }
 
-    [XmlAttribute(AttributeName = "NAME")]
+    [XmlElement(ElementName = "OLDNAME")]
+    [TDLField(Set = "$Name")]
     [JsonIgnore]
     [Column(TypeName = $"nvarchar({Constants.MaxNameLength})")]
-    public string? OldName { get; set; }
-    /// <summary>
-    /// Name of Ledger
-    /// </summary>
-    [XmlElement(ElementName = "NAME")]
-    [Required]
-    [Column(TypeName = $"nvarchar({Constants.MaxNameLength})")]
-    public string Name
-    {
-        get
-        {
-            name = name == null || name == string.Empty ? OldName : name;
-            return name!;
-        }
-        set => name = value;
-    }
+    public string OldName { get; set; }
 
-    [XmlElement(ElementName = "PARENT")]
-    [Column(TypeName = $"nvarchar({Constants.MaxNameLength})")]
-    [Required]
-    public string Group { get; set; }
 
     [XmlElement(ElementName = "PARENTID")]
+    [TDLField(Set = "$guid:group:$parent")]
     [Column(TypeName = $"nvarchar({Constants.GUIDLength})")]
     public string? GroupId { get; set; }
 
 
     [XmlIgnore]
     [Column(TypeName = $"nvarchar({Constants.MaxNameLength})")]
+    [TDLField(Set = "$_FirstAlias")]
     public string? Alias { get; set; }
 
     [XmlElement(ElementName = "ISDEEMEDPOSITIVE")]
     [Column(TypeName = "nvarchar(3)")]
-    public TallyYesNo? IsDeemedPositive
-    {
-        get
-        {
-            if (OpeningBal != null)
-            {
-                return OpeningBal.IsDebit;
-            }
-            return null;
-
-        }
-        set { }
-    }
+    public bool IsDeemedPositive { get; set; }
 
     [XmlElement(ElementName = "OPENINGBALANCE")]
-    public TallyAmount? OpeningBal { get; set; }
+    public TallyAmountField? OpeningBal { get; set; }
 
-
-    private string? _Currency;
     [XmlElement(ElementName = "CURRENCYNAME")]
     [Column(TypeName = "nvarchar(5)")]
-    public string? Currency
-    {
-        get { return _Currency; }
-        set
-        {
-            if (value == "?")
-            {
-                _Currency = null;
-            }
-            else
-            {
-                _Currency = value;
-            }
-        }
-    }
+    public string? Currency { get; set; }
 
     [XmlElement(ElementName = "CURRENCYID")]
     [Column(TypeName = $"nvarchar({Constants.GUIDLength})")]
@@ -126,7 +87,7 @@ public partial class Ledger : BasicTallyObject, IAliasTallyObject
 
     [XmlElement(ElementName = "ISBILLWISEON")]
     [Column(TypeName = "nvarchar(3)")]
-    public TallyYesNo? IsBillwise { get; set; }
+    public bool? IsBillwise { get; set; }
 
     [XmlElement(ElementName = "BILLCREDITPERIOD")]
     [Column(TypeName = $"nvarchar({Constants.MaxDateLength})")]
@@ -134,7 +95,7 @@ public partial class Ledger : BasicTallyObject, IAliasTallyObject
 
     [XmlElement(ElementName = "ISCREDITDAYSCHKON")]
     [Column(TypeName = "nvarchar(3)")]
-    public TallyYesNo? IsCreditCheck { get; set; }
+    public bool? IsCreditCheck { get; set; }
 
 
     [XmlElement(ElementName = "CREDITLIMIT")]
@@ -146,27 +107,6 @@ public partial class Ledger : BasicTallyObject, IAliasTallyObject
     [Column(TypeName = $"nvarchar({Constants.MaxNameLength})")]
     public string? MailingName { get; set; }
 
-
-    [XmlIgnore]
-    public string? Address
-    {
-        get
-        {
-            return FAddress.FullAddress;
-        }
-
-        set
-        {
-            if (value != "")
-            {
-
-                FAddress.FullAddress = value;
-            }
-
-
-        }
-
-    }
 
     [XmlElement(ElementName = "COUNTRYNAME")]
     [Column(TypeName = $"nvarchar({Constants.MaxNameLength})")]
@@ -218,7 +158,7 @@ public partial class Ledger : BasicTallyObject, IAliasTallyObject
 
     [XmlElement(ElementName = "ISOTHTERRITORYASSESSEE")]
     [Column(TypeName = "nvarchar(3)")]
-    public TallyYesNo? IsOtherTerritoryAssessee { get; set; }
+    public bool? IsOtherTerritoryAssessee { get; set; }
 
     [XmlElement(ElementName = "PARTYGSTIN")]
     [Column(TypeName = "nvarchar(17)")]
@@ -226,11 +166,11 @@ public partial class Ledger : BasicTallyObject, IAliasTallyObject
 
     [XmlElement(ElementName = "ISECOMMOPERATOR")]
     [Column(TypeName = "nvarchar(3)")]
-    public TallyYesNo? IsECommerceOperator { get; set; }
+    public bool? IsECommerceOperator { get; set; }
 
     [XmlElement(ElementName = "CONSIDERPURCHASEFOREXPORT")]
     [Column(TypeName = "nvarchar(3)")]
-    public TallyYesNo? DeemedExport { get; set; }
+    public bool? DeemedExport { get; set; }
 
     [XmlElement(ElementName = "GSTNATUREOFSUPPLY")]
     [Column(TypeName = "nvarchar(20)")]
@@ -238,7 +178,7 @@ public partial class Ledger : BasicTallyObject, IAliasTallyObject
 
     [XmlElement(ElementName = "ISTRANSPORTER")]
     [Column(TypeName = "nvarchar(3)")]
-    public TallyYesNo? IsTransporter { get; set; }
+    public bool? IsTransporter { get; set; }
 
     [XmlElement(ElementName = "TRANSPORTERID")]
     [Column(TypeName = "nvarchar(20)")]
@@ -247,49 +187,49 @@ public partial class Ledger : BasicTallyObject, IAliasTallyObject
 
     [XmlElement(ElementName = "AFFECTSSTOCK")]
     [Column(TypeName = "nvarchar(3)")]
-    public TallyYesNo? AffectStock { get; set; }
+    public bool? AffectStock { get; set; }
 
     [XmlElement(ElementName = "ISCOSTCENTRESON")]
     [Column(TypeName = "nvarchar(3)")]
-    public TallyYesNo? IsCostCenter { get; set; }
+    public bool? IsCostCenter { get; set; }
 
     [XmlElement(ElementName = "ISREVENUE")]
     [Column(TypeName = "nvarchar(3)")]
-    public TallyYesNo? IsRevenue { get; set; }
+    public bool? IsRevenue { get; set; }
 
     [XmlElement(ElementName = "ISINTERESTON")]
     [Column(TypeName = "nvarchar(3)")]
-    public TallyYesNo? IsInterestOn { get; set; }
+    public bool? IsInterestOn { get; set; }
 
     [XmlElement(ElementName = "INTERESTONBILLWISE")]
     [Column(TypeName = "nvarchar(3)")]
-    public TallyYesNo? IsInterestOnBillWise { get; set; }
+    public bool? IsInterestOnBillWise { get; set; }
 
     [XmlElement(ElementName = "OVERRIDEINTEREST")]
     [Column(TypeName = "nvarchar(3)")]
-    public TallyYesNo? OverrideInterest { get; set; }
+    public bool? OverrideInterest { get; set; }
 
     [XmlElement(ElementName = "OVERRIDEADVINTEREST")]
     [Column(TypeName = "nvarchar(3)")]
-    public TallyYesNo? OverrideAdvanceInterest { get; set; }
+    public bool? OverrideAdvanceInterest { get; set; }
 
     [XmlElement(ElementName = "INTERESTINCLDAYOFADDITION")]
     [Column(TypeName = "nvarchar(3)")]
-    public TallyYesNo? InterestIncludeForAmountsAdded { get; set; }
+    public bool? InterestIncludeForAmountsAdded { get; set; }
 
     [XmlElement(ElementName = "INTERESTINCLDAYOFDEDUCTION")]
     [Column(TypeName = "nvarchar(3)")]
-    public TallyYesNo? InterestIncludeForAmountsDeducted { get; set; }
+    public bool? InterestIncludeForAmountsDeducted { get; set; }
 
 
-    [XmlElement(ElementName = "INTERESTCOLLECTION.LIST", IsNullable = true)]
-    [TDLCollection(CollectionName = "Interest Collection")]
-    public List<InterestList>? InterestList { get; set; }
+    //[XmlElement(ElementName = "INTERESTCOLLECTION.LIST", IsNullable = true)]
+    //[TDLCollection(CollectionName = "Interest Collection")]
+    //public List<InterestList>? InterestList { get; set; }
 
 
     [XmlElement(ElementName = "FORPAYROLL")]
     [Column(TypeName = "nvarchar(3)")]
-    public TallyYesNo? ForPayroll { get; set; }
+    public bool? ForPayroll { get; set; }
 
 
     [XmlElement(ElementName = "DESCRIPTION")]
@@ -301,8 +241,11 @@ public partial class Ledger : BasicTallyObject, IAliasTallyObject
     public string? Notes { get; set; }
 
     [JsonIgnore]
-    [XmlElement(ElementName = "ADDRESS.LIST")]
-    public HAddress FAddress { get; set; }
+
+    [XmlArray(ElementName = "ADDRESS.LIST")]
+    [XmlArrayItem(ElementName = "ADDRESS")]
+    [TDLCollection(CollectionName = "Address")]
+    public List<string> Addresses { get; set; }
 
 
     [JsonIgnore]
@@ -310,81 +253,34 @@ public partial class Ledger : BasicTallyObject, IAliasTallyObject
     [TDLCollection(CollectionName = "LanguageName")]
     public List<LanguageNameList> LanguageNameList { get; set; }
 
-    [XmlElement(ElementName = "LEDMULTIADDRESSLIST.LIST")]
-    public List<MultiAddress>? MultipleAddresses { get; set; }
+    ////[XmlElement(ElementName = "LEDMULTIADDRESSLIST.LIST")]
+    ////public List<MultiAddress>? MultipleAddresses { get; set; }
 
 
     [XmlElement(ElementName = "LEDGERCLOSINGVALUES.LIST")]
     public List<ClosingBalances>? ClosingBalances { get; set; }
 
-    [XmlElement(ElementName = "GSTDETAILS.LIST")]
-    public List<GSTDetail>? GSTDetails { get; set; }
+    //[XmlElement(ElementName = "GSTDETAILS.LIST")]
+    //public List<GSTDetail>? GSTDetails { get; set; }
 
 
-    [XmlElement(ElementName = "LEDGSTREGDETAILS.LIST")]
-    public List<LedgerGSTRegistrationDetails>? LedgerGSTRegistrationDetails { get; set; }
+    //[XmlElement(ElementName = "LEDGSTREGDETAILS.LIST")]
+    //public List<LedgerGSTRegistrationDetails>? LedgerGSTRegistrationDetails { get; set; }
 
     [XmlElement(ElementName = "CANDELETE")]
     [Column(TypeName = "nvarchar(3)")]
-    public TallyYesNo? CanDelete { get; set; }
+    public bool? CanDelete { get; set; }
 
 
-    public void CreateNamesList()
-    {
-        if (LanguageNameList.Count == 0)
-        {
-            LanguageNameList.Add(new LanguageNameList());
-            LanguageNameList?[0]?.NameList?.NAMES?.Add(Name);
 
-        }
-        if (Alias != null && Alias != string.Empty)
-        {
-            LanguageNameList![0].LanguageAlias = Alias;
-        }
-    }
 
-    public new string GetXML(XmlAttributeOverrides? attrOverrides = null, bool indent = false)
-    {
-        CreateNamesList();
-        return base.GetXML(attrOverrides, indent);
-    }
 
-    public new void PrepareForExport()
-    {
-        if (Group != null && Group.Contains("Primary"))
-        {
-            Group = string.Empty;
-        }
-        CreateNamesList();
-    }
 
     public override string ToString()
     {
         return $"Ledger - {Name}";
     }
 
-    /// <summary>
-    /// Removes Null Childs that are created during xml deserilisation
-    /// </summary>
-    public override void RemoveNullChilds()
-    {
-        InterestList = InterestList?.Where(IntList => !IntList.IsNull())?.ToList();
-        if (InterestList?.Count == 0)
-        {
-            InterestList = null;
-        }
-        ClosingBalances = ClosingBalances?.Where(ClsBal => !ClsBal.IsNull())?.ToList();
-        if (ClosingBalances?.Count == 0)
-        {
-            ClosingBalances = null;
-        }
-
-        MultipleAddresses = MultipleAddresses?.Where(MulAdress => !MulAdress.IsNull())?.ToList();
-        if (MultipleAddresses?.Count == 0)
-        {
-            MultipleAddresses = null;
-        }
-    }
 }
 
 [XmlRoot(ElementName = "INTERESTCOLLECTION.LIST", IsNullable = true)]
@@ -451,22 +347,13 @@ public class InterestList : ICheckNull
 
 
 [XmlRoot(ElementName = "LEDGERCLOSINGVALUES.LIST")]
-public class ClosingBalances : ICheckNull
+public class ClosingBalances
 {
 
     [XmlElement(ElementName = "DATE")]
-    public TallyDate? Date { get; set; }
+    public DateTime? Date { get; set; }
 
     [XmlElement(ElementName = "AMOUNT")]
-    public TallyAmount? Amount { get; set; }
+    public TallyAmountField? Amount { get; set; }
 
-    public bool IsNull()
-    {
-        if (Date is null
-            && Amount is null || Amount?.Amount == 0)
-        {
-            return true;
-        }
-        return false;
-    }
 }

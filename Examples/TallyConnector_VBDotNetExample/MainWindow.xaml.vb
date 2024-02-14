@@ -8,6 +8,7 @@ Class MainWindow
     End Sub
 
     Private Async Sub Window_Loaded(sender As Object, e As RoutedEventArgs)
+        Dim ledgers = Await _tallyService.GetLedgersAsync()
         Dim masterTypeStats = Await _tallyService.GetMasterStatisticsAsync()
         MstStats.ItemsSource = masterTypeStats
         Dim reqOptions As New TallyConnector.Core.Models.RequestOptions

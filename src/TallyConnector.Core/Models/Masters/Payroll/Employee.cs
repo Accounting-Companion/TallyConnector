@@ -154,11 +154,7 @@ public class Employee : CostCenter.CostCentre
     [XmlElement(ElementName = "PAYMENTDETAILS.LIST")]
     public List<PaymentDetails>? PaymentDetails { get; set; }
 
-    public void CleanForExport()
-    {
-        CreateNamesList();
-    }
-
+    
 
 }
 [XmlRoot(ElementName = "TAXREGIMEDETAILS.LIST")]

@@ -36,13 +36,21 @@ public static class EnveopeExtensions
             sv.SVCompany = requestOptions.Company;
             sv.SVFromDate = requestOptions.FromDate;
             sv.SVToDate = requestOptions.ToDate;
-            Collection? collection = requestEnvelope.Body.Desc.TDL.TDLMessage.Collection.FirstOrDefault();
+            TDLMessage tDLMessage = requestEnvelope.Body.Desc.TDL.TDLMessage;
+            Collection? collection = tDLMessage.Collection.FirstOrDefault();
             if (collection != null)
             {
                 collection.Compute = requestOptions.Compute;
                 collection.ComputeVar = requestOptions.ComputeVar;
                 collection.Filters = requestOptions.Filters?.Select(c => c.FilterName!).ToList();
             }
+            
+            if (requestOptions.Filters != null && requestOptions.Filters.Count > 0)
+            {
+                tDLMessage.System ??= [];
+                tDLMessage.System.AddRange(requestOptions.Filters.Select(c=>new Models.System(c.FilterName!,c.FilterFormulae!)));
+            }
+           
         }
         return requestEnvelope;
     }

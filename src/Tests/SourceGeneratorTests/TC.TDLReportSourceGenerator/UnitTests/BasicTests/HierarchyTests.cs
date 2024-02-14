@@ -34,6 +34,9 @@ public class BaseGroup
 {
     [XmlElement(ElementName = ""PARENT"")]
     public string? Parent { get; set; }
+
+    [XmlElement(ElementName = ""GSTTAXTYPE"")]
+    public TallyConnector.Core.Models.GSTTaxType GSTTaxTypes { get; set; }
 }";
         var resp1 = @"using TallyConnector.Core.Extensions;
 

@@ -8,12 +8,12 @@ using TallyConnector.Core.Models;
 namespace IntegrationTests.Models;
 
 [Serializable]
-public partial class Ledger : BasicTallyObject, IAliasTallyObject
+public partial class Ledger : BasicTallyObject
 {
     private string? name;
     public Ledger()
     {
-        LanguageNameList = new();
+        //LanguageNameList = new();
         FAddress = new HAddress();
         Group = string.Empty;
     }
@@ -25,7 +25,7 @@ public partial class Ledger : BasicTallyObject, IAliasTallyObject
     /// <param name="group"></param>
     public Ledger(string name, string group)
     {
-        LanguageNameList = new();
+        //LanguageNameList = new();
         FAddress = new HAddress();
         Group = group;
         this.name = name;
@@ -288,18 +288,18 @@ public partial class Ledger : BasicTallyObject, IAliasTallyObject
     public HAddress FAddress { get; set; }
 
 
-    [JsonIgnore]
-    [XmlElement(ElementName = "LANGUAGENAME.LIST")]
-    [TDLCollection(CollectionName = "LanguageName")]
-    public List<LanguageNameList> LanguageNameList { get; set; }
+    //[JsonIgnore]
+    //[XmlElement(ElementName = "LANGUAGENAME.LIST")]
+    //[TDLCollection(CollectionName = "LanguageName")]
+    //public List<LanguageNameList> LanguageNameList { get; set; }
 
     //[XmlElement(ElementName = "LEDMULTIADDRESSLIST.LIST")]
     //public List<MultiAddress>? MultipleAddresses { get; set; }
 
 
-    [XmlElement(ElementName = "LEDGERCLOSINGVALUES.LIST")]
-    [TDLCollection(CollectionName = "LedgerClosingValues")]
-    public List<ClosingBalances>? ClosingBalances { get; set; }
+    //[XmlElement(ElementName = "LEDGERCLOSINGVALUES.LIST")]
+    //[TDLCollection(CollectionName = "LedgerClosingValues")]
+    //public List<ClosingBalances>? ClosingBalances { get; set; }
 
     //[XmlElement(ElementName = "GSTDETAILS.LIST")]
     //public List<GSTDetail>? GSTDetails { get; set; }
@@ -313,58 +313,12 @@ public partial class Ledger : BasicTallyObject, IAliasTallyObject
     public bool? CanDelete { get; set; }
 
 
-    public void CreateNamesList()
-    {
-        if (LanguageNameList.Count == 0)
-        {
-            LanguageNameList.Add(new LanguageNameList());
-            LanguageNameList?[0]?.NameList?.NAMES?.Add(Name);
-
-        }
-        if (Alias != null && Alias != string.Empty)
-        {
-            LanguageNameList![0].LanguageAlias = Alias;
-        }
-    }
-
-    public new string GetXML(XmlAttributeOverrides? attrOverrides = null, bool indent = false)
-    {
-        CreateNamesList();
-        return base.GetXML(attrOverrides, indent);
-    }
-
-    public new void PrepareForExport()
-    {
-        if (Group != null && Group.Contains("Primary"))
-        {
-            Group = string.Empty;
-        }
-        CreateNamesList();
-    }
-
     public override string ToString()
     {
         return $"Ledger - {Name}";
     }
 
-    /// <summary>
-    /// Removes Null Childs that are created during xml deserilisation
-    /// </summary>
-    public override void RemoveNullChilds()
-    {
-        InterestList = InterestList?.Where(IntList => !IntList.IsNull())?.ToList();
-        if (InterestList?.Count == 0)
-        {
-            InterestList = null;
-        }
-        ClosingBalances = ClosingBalances?.Where(ClsBal => !ClsBal.IsNull())?.ToList();
-        if (ClosingBalances?.Count == 0)
-        {
-            ClosingBalances = null;
-        }
-
-        
-    }
+   
 }
 
 [XmlRoot(ElementName = "INTERESTCOLLECTION.LIST", IsNullable = true)]

@@ -7,7 +7,10 @@ using TallyConnector.Core.Models.Interfaces.Masters;
 using TallyConnector.Core.Models.Masters;
 
 namespace TallyConnector.Core.Models.TallyPrime3;
-public partial class Prime3Ledger : BaseLedger
+[XmlRoot("LEDGER")]
+[XmlType(AnonymousType = true)]
+[TDLCollection(Type ="Ledger")]
+public partial class Prime3Ledger : Ledger
 {
 
 }

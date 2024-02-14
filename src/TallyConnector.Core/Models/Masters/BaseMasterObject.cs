@@ -10,6 +10,15 @@ namespace TallyConnector.Core.Models.Masters;
 
 public class BaseMasterObject : TallyObject, IBaseMasterObject
 {
-    [XmlElement("NAME")]
+    //[XmlElement("OLDNAME")]
+    //[TDLField(Set = "$NAME", IncludeInFetch = false)]
+    //public string OldName { get; set; }
+
+    /// <summary>
+    /// Name of Ledger
+    /// </summary>
+    [XmlElement(ElementName = "NAME")]
+    [Required]
+    [Column(TypeName = $"nvarchar({Constants.MaxNameLength})")]
     public string Name { get; set; }
 }

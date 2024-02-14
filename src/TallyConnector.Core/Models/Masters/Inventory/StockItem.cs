@@ -151,33 +151,6 @@ public class StockItem : BasicTallyObject, IAliasTallyObject
     [XmlElement(ElementName = "HSNDETAILS.LIST")]
     public List<HSNDetail>? HSNDetails { get; set; }
 
-    public void CreateNamesList()
-    {
-        if (LanguageNameList.Count == 0)
-        {
-            LanguageNameList.Add(new LanguageNameList());
-            LanguageNameList[0].NameList?.NAMES?.Add(Name);
-
-        }
-        if (Alias != null && Alias != string.Empty)
-        {
-            LanguageNameList[0].LanguageAlias = Alias;
-        }
-    }
-    public new string GetXML(XmlAttributeOverrides? attrOverrides = null, bool indent = false)
-    {
-        CreateNamesList();
-        return base.GetXML(attrOverrides, indent);
-    }
-
-    public new void PrepareForExport()
-    {
-        if (StockGroup != null && StockGroup.Contains("Primary"))
-        {
-            StockGroup = null;
-        }
-        CreateNamesList();
-    }
 
     public override string ToString()
     {

@@ -37,6 +37,16 @@ public class TDLCollectionsMethodNameAttribute : BaseMethodNameAttribute
     {
     }
 }
+public class TDLReportsMethodNameAttribute : BaseMethodNameAttribute
+{
+    public TDLReportsMethodNameAttribute()
+    {
+    }
+
+    public TDLReportsMethodNameAttribute(string functionName) : base(functionName)
+    {
+    }
+}
 public class TDLFiltersMethodNameAttribute : BaseMethodNameAttribute
 {
     public TDLFiltersMethodNameAttribute()

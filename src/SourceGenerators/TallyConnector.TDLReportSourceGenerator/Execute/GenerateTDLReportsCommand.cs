@@ -1,4 +1,5 @@
 ﻿using System.Collections.Immutable;
+using System.Xml.Linq;
 using TallyConnector.TDLReportSourceGenerator;
 using TallyConnector.TDLReportSourceGenerator.Extensions.Symbols;
 using TallyConnector.TDLReportSourceGenerator.Models;
@@ -103,7 +104,7 @@ internal class GenerateTDLReportsCommand
                 symbolData.Children.Add(childData);
                 if (childData.IsComplex || childData.IsEnum)
                 {
-                    if (childData.IsEnum)
+                    if (childData.IsEnum && !childData.Parent.IsEnum)
                     {
                         symbolData.SimpleFieldsCount++;
                         if (!ComplexChildNames.Contains(childData.ChildTypeFullName))
@@ -111,7 +112,7 @@ internal class GenerateTDLReportsCommand
                             ComplexChildNames.Add(childData.ChildTypeFullName);
                             if (!_data.ContainsKey(childData.ChildTypeFullName))
                             {
-                                SymbolData value = new(symbolData.MainSymbol, childData.ChildType, childData.ChildType.Name, symbolData.ReqEnvelopeSymbol, true);
+                                SymbolData value = new(symbolData.MainSymbol, childData.ChildType, $"{symbolData.TypeName}Child{childData.ChildType.Name}", symbolData.ReqEnvelopeSymbol, true);
                                 _data.Add(childData.ChildTypeFullName, value);
                                 ProcessGetSymbol(value, _data, ComplexChildNames);
                                 childData.SymbolData = value;
@@ -139,7 +140,8 @@ internal class GenerateTDLReportsCommand
                         ComplexChildNames.Add(childData.ChildTypeFullName);
                         if (!_data.ContainsKey(childData.ChildTypeFullName))
                         {
-                            SymbolData value = new(symbolData.MainSymbol, childData.ChildType, childData.ChildType.Name, symbolData.ReqEnvelopeSymbol, true, symbolData);
+                            SymbolData value = new(symbolData.MainSymbol, childData.ChildType, $"{symbolData.TypeName}Child{childData.ChildType.Name}", symbolData.ReqEnvelopeSymbol, true, symbolData);
+                            value.GenerationMode = symbolData.GenerationMode;
                             _data.Add(childData.ChildTypeFullName, value);
                             ProcessGetSymbol(value, _data, ComplexChildNames);
                             symbolData.SimpleFieldsCount += value.SimpleFieldsCount;
@@ -188,7 +190,8 @@ internal class GenerateTDLReportsCommand
                 ComplexChildNames.Add(Basevalue.FullName);
                 if (!_data.ContainsKey(Basevalue.FullName))
                 {
-                    SymbolData value = new(symbolData.MainSymbol, baseType, baseType.Name, symbolData.ReqEnvelopeSymbol, true);
+                    SymbolData value = new(symbolData.MainSymbol, baseType, $"{symbolData.TypeName}Base{baseType.Name}", symbolData.ReqEnvelopeSymbol, true);
+                    value.GenerationMode = symbolData.GenerationMode;
                     value.IsBaseSymbol = true;
                     _data.Add(value.FullName, value);
                     ProcessGetSymbol(value, _data, ComplexChildNames);
@@ -242,6 +245,15 @@ internal class GenerateTDLReportsCommand
             if (attributeName == XMLEnumAttributeName && childData.Parent.IsEnum)
             {
                 xMLData ??= ParseEnumXMLData(attributeDataAttribute);
+            }
+            if (attributeName == EnumChoiceAttributeName && childData.Parent.IsEnum)
+            {
+                xMLData ??= new();
+                var choice = ParseEnumChoiceXMLData(attributeDataAttribute);
+                if (choice !=null && !string.IsNullOrEmpty(choice))
+                {
+                    xMLData.EnumChoices.Add(choice);
+                }
             }
             if (childData.IsList)
             {
@@ -304,21 +316,57 @@ internal class GenerateTDLReportsCommand
             {
                 case SpecialType.System_Boolean:
                     childData.TDLFieldDetails.Set = $"$${GetBooleanFromLogicFieldFunctionName}:{childData.TDLFieldDetails.Set}";
+                    childData.TDLFieldDetails.Invisible ??= "$$ISEmpty:$$value";
                     break;
                 case SpecialType.System_DateTime:
                     childData.TDLFieldDetails.Set = $"$${GetTransformDateToXSDFunctionName}:{childData.TDLFieldDetails.Set}";
                     break;
                 case SpecialType.System_Enum:
                     childData.TDLFieldDetails.Set = $"{string.Format(GetTDLFunctionsMethodName, childData.SymbolData!.Name)}:{childData.TDLFieldDetails.Set}";
+                    
                     break;
             }
             if (childData.IsEnum)
             {
+                childData.EnumChoices = xMLData?.EnumChoices;
+                childData.TDLFieldDetails.Invisible ??= "$$ISEmpty:$$value";
                 childData.TDLFieldDetails.Set = $"$${string.Format(GetEnumFunctionName, childData.SymbolData!.Name)}:{childData.TDLFieldDetails.Set}";
             }
         }
         childData.TDLCollectionDetails ??= childData.SymbolData?.TDLCollectionDetails;
 
+    }
+
+    private string? ParseEnumChoiceXMLData(AttributeData attributeDataAttribute)
+    {
+        if (attributeDataAttribute.ConstructorArguments != null && attributeDataAttribute.ConstructorArguments.Length > 0)
+        {
+            var constructorArguments = attributeDataAttribute.ConstructorArguments;
+            for (int i = 0; i < constructorArguments.Length; i++)
+            {
+                switch (i)
+                {
+                    case 0:
+                        return constructorArguments.First().Value?.ToString();
+                    default:
+                        break;
+                }
+            }
+        }
+        if (attributeDataAttribute.NamedArguments != null && attributeDataAttribute.NamedArguments.Length > 0)
+        {
+            var namedArguments = attributeDataAttribute.NamedArguments;
+            foreach (var namedArgument in namedArguments)
+            {
+                switch (namedArgument.Key)
+                {
+                    case "Choice":
+                        return(string)namedArgument.Value.Value!;
+                }
+            }
+
+        }
+        return null;
     }
 
     private void ParseClassAttributes(SymbolData symbolData)
@@ -437,7 +485,7 @@ internal class GenerateTDLReportsCommand
                 switch (i)
                 {
                     case 0:
-                        
+
                         xMLData.XmlTag = constructorArguments.First().Value?.ToString();
                         break;
                     default:
@@ -620,6 +668,8 @@ internal class GenerateTDLReportsCommand
 public class XMLData
 {
     public string? XmlTag { get; set; }
+
+    public List<string> EnumChoices { get; set; } = [];
 }
 internal class MapToData
 {

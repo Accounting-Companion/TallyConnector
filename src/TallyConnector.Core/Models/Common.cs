@@ -15,15 +15,15 @@ public enum MasterLookupField
 
 public enum Action
 {
-    [XmlEnum(Name = "")]
+    [EnumXMLChoice(Choice = "")]
     None,
-    [XmlEnum(Name = "Create")]
+
     Create,
-    [XmlEnum(Name = "Alter")]
+
     Alter,
-    [XmlEnum(Name = "Delete")]
+
     Delete,
-    [XmlEnum(Name = "Cancel")]
+
     Cancel,
 }
 
@@ -33,11 +33,11 @@ public enum Action
 public enum YesNo
 {
 
-    [XmlEnum(Name = "")]
+    [EnumXMLChoice(Choice = "")]
     None,
-    [XmlEnum(Name = "Yes")]
+    [EnumXMLChoice(Choice = "Yes")]
     Yes = 1,
-    [XmlEnum(Name = "No")]
+    [EnumXMLChoice(Choice = "No")]
     No = 2,
 }
 
@@ -46,124 +46,122 @@ public enum YesNo
 /// </summary>
 public enum AdAllocType
 {
-    [XmlEnum(Name = "")]
+    [EnumXMLChoice(Choice = "")]
     None = 0,
-    [XmlEnum(Name = "Not Applicable")]
+    [EnumXMLChoice(Choice = "Not Applicable")]
     NotApplicable = 1,
-    [XmlEnum(Name = "Appropriate by Qty")]
+    [EnumXMLChoice(Choice = "Appropriate by Qty")]
     AppropriateByQty = 2,
-    [XmlEnum(Name = "Appropriate by Value")]
+    [EnumXMLChoice(Choice = "Appropriate by Value")]
     AppropriateByValue = 3,
-    [XmlEnum(Name = "Appropriate by condition")]
+    [EnumXMLChoice(Choice = "Appropriate by condition")]
     AppropriateByCondition = 4,
 }
 
 public enum TaxType
 {
-    [XmlEnum(Name = "")]
+    [EnumXMLChoice(Choice = "")]
     None = 0,
-    [XmlEnum(Name = "GST")]
+    [EnumXMLChoice(Choice = "GST")]
     GST = 1,
-    [XmlEnum(Name = "TCS")]
+    [EnumXMLChoice(Choice = "TCS")]
     TCS = 2,
-    [XmlEnum(Name = "TDS")]
+    [EnumXMLChoice(Choice = "TDS")]
     TDS = 3,
-    [XmlEnum(Name = "Excise")]
+    [EnumXMLChoice(Choice = "Excise")]
     Excise = 4,
-    [XmlEnum(Name = "FBT")]
+    [EnumXMLChoice(Choice = "FBT")]
     FBT = 5,
-    [XmlEnum(Name = "Service Tax")]
+    [EnumXMLChoice(Choice = "Service Tax")]
     ServiceTax = 6,
-    [XmlEnum(Name = "VAT")]
+    [EnumXMLChoice(Choice = "VAT")]
     VAT = 7,
-    [XmlEnum(Name = "Default")]
+    [EnumXMLChoice(Choice = "Default")]
     Default = 8,
-    [XmlEnum(Name = "CST")]
+    [EnumXMLChoice(Choice = "CST")]
     CST = 9,
-    [XmlEnum(Name = "CENVAT")]
+    [EnumXMLChoice(Choice = "CENVAT")]
     CENVAT = 10,
-    [XmlEnum(Name = "Krishi Kalyan Cess")]
+    [EnumXMLChoice(Choice = "Krishi Kalyan Cess")]
     KrishiKalyanCess = 11,
-    [XmlEnum(Name = "Swachh Bharat Cess")]
+    [EnumXMLChoice(Choice = "Swachh Bharat Cess")]
     SwachhBharatCess = 12,
 
-    [XmlEnum(Name = "Others")]
+    [EnumXMLChoice(Choice = "Others")]
     Others = 13,
 }
 
+
 public enum GSTTaxType
 {
-    [XmlEnum(Name = "")]
+    [EnumXMLChoice(Choice = "")]
     None = 0,
-    [XmlEnum(Name = "Central Tax")]
-    CentralTax = 1,
-    [XmlEnum(Name = "CGST")]
+    [EnumXMLChoice(Choice = "Central Tax")]
+    [EnumXMLChoice(Choice = "CGST")]
     CGST = 1,
-    [XmlEnum(Name = "Cess")]
+    [EnumXMLChoice(Choice = "Cess")]
     Cess = 2,
-    [XmlEnum(Name = "Integrated Tax")]
-    IntegratedTax = 3,
-    [XmlEnum(Name = "IGST")]
+    [EnumXMLChoice(Choice = "Integrated Tax")]
+    [EnumXMLChoice(Choice = "IGST")]
     IGST = 3,
-    [XmlEnum(Name = "UT Tax")]
+    [EnumXMLChoice(Choice = "UT Tax")]
     UTTax = 4,
-    [XmlEnum(Name = "State Tax")]
-    StateTax = 5,
-    [XmlEnum(Name = "SGST/UTGST")]
+    [EnumXMLChoice(Choice = "State Tax")]
+    [EnumXMLChoice(Choice = "SGST/UTGST")]
     SGST = 5,
 }
 public enum ExciseNatureOfPurchase
 {
-    [XmlEnum(Name = "")]
+    [EnumXMLChoice(Choice = "")]
     None = 0,
-    [XmlEnum(Name = "Any")]
+    [EnumXMLChoice(Choice = "Any")]
     Any = 1,
-    [XmlEnum(Name = "Importer")]
+    [EnumXMLChoice(Choice = "Importer")]
     Importer = 2,
 }
 public enum GSTRegistrationType
 {
-    [XmlEnum(Name = "")]
+    [EnumXMLChoice(Choice = "")]
     None = 0,
-    [XmlEnum(Name = "Unknown")]
+    [EnumXMLChoice(Choice = "Unknown")]
     Unknown = 1,
-    [XmlEnum(Name = "Composition")]
+    [EnumXMLChoice(Choice = "Composition")]
     Composition = 2,
     /// <summary>
     /// Consumer for tally version below 3.0
     /// </summary>
-    [XmlEnum(Name = "Consumer")]
+    [EnumXMLChoice(Choice = "Consumer")]
     Consumer = 3,
     /// <summary>
     /// Added In Prime 3.0, used for Consumer
     /// </summary>
-    [XmlEnum(Name = "Unregistered/Consumer")]
+    [EnumXMLChoice(Choice = "Unregistered/Consumer")]
     UnregisteredConsumer = 3,
-    [XmlEnum(Name = "Regular")]
+    [EnumXMLChoice(Choice = "Regular")]
     Regular = 4,
-    [XmlEnum(Name = "Unregistered")]
+    [EnumXMLChoice(Choice = "Unregistered")]
     Unregistered = 5,
 
     // Below are added in Prime 3.0
 
-    [XmlEnum(Name = "Government entity / TDS")]
+    [EnumXMLChoice(Choice = "Government entity / TDS")]
     GovtOrTDS = 6,
-    [XmlEnum(Name = "Regular - SEZ")]
+    [EnumXMLChoice(Choice = "Regular - SEZ")]
     RegularSEZ = 7,
-    [XmlEnum(Name = "Regular-Deemed Exporter")]
+    [EnumXMLChoice(Choice = "Regular-Deemed Exporter")]
     RegularDeemedExporter = 8,
-    [XmlEnum(Name = "Regular-Exports (EOU)")]
+    [EnumXMLChoice(Choice = "Regular-Exports (EOU)")]
     RegularEXports_EOU = 9,
-    [XmlEnum(Name = "e-Commerce Operator")]
+    [EnumXMLChoice(Choice = "e-Commerce Operator")]
     ECommerceOperator = 10,
-    [XmlEnum(Name = "Input Service Distributor")]
+    [EnumXMLChoice(Choice = "Input Service Distributor")]
     InputServiceDistributor = 78,
-    [XmlEnum(Name = "Embassy/UN Body")]
+    [EnumXMLChoice(Choice = "Embassy/UN Body")]
     Embassy_UNBody = 89,
-    [XmlEnum(Name = "Non-Resident Taxpayer")]
+    [EnumXMLChoice(Choice = "Non-Resident Taxpayer")]
     NonResidentTaxpayer = 100,
 
-    [XmlEnum(Name = "OIDAR")]
+    [EnumXMLChoice(Choice = "OIDAR")]
     OIDAR = 101,
 
 }
@@ -171,99 +169,99 @@ public enum GSTRegistrationType
 public enum GSTPartyType
 {
 
-    [XmlEnum(Name = "")]
+    [EnumXMLChoice(Choice = "")]
     None = 0,
-    [XmlEnum(Name = "Not Applicable")]
+    [EnumXMLChoice(Choice = "Not Applicable")]
     NotApplicable = 1,
-    [XmlEnum(Name = "Deemed Export")]
+    [EnumXMLChoice(Choice = "Deemed Export")]
     DeemedExport = 2,
-    [XmlEnum(Name = "Embassy/UN Body")]
+    [EnumXMLChoice(Choice = "Embassy/UN Body")]
     Embassy_UN_Body = 3,
-    [XmlEnum(Name = "SEZ")]
+    [EnumXMLChoice(Choice = "SEZ")]
     SEZ = 4,
-    [XmlEnum(Name = "No")]
+    [EnumXMLChoice(Choice = "No")]
     No = 5,
 }
 
 public enum InterestStyle
 {
-    [XmlEnum(Name = "")]
+    [EnumXMLChoice(Choice = "")]
     None = 0,
-    [XmlEnum(Name = "30-Day Month")]
+    [EnumXMLChoice(Choice = "30-Day Month")]
     Month_30Day = 1,
-    [XmlEnum(Name = "365-Day Year")]
+    [EnumXMLChoice(Choice = "365-Day Year")]
     Year_365Day = 2,
-    [XmlEnum(Name = "Calendar Month")]
+    [EnumXMLChoice(Choice = "Calendar Month")]
     CalendarMonth = 3,
-    [XmlEnum(Name = "Calendar Year")]
+    [EnumXMLChoice(Choice = "Calendar Year")]
     CalendarYear = 4,
 
 }
 
 public enum InterestBalanceType
 {
-    [XmlEnum(Name = "")]
+    [EnumXMLChoice(Choice = "")]
     None = 0,
-    [XmlEnum(Name = "All Balances")]
+    [EnumXMLChoice(Choice = "All Balances")]
     AllBalances = 1,
-    [XmlEnum(Name = "Credit Balances Only")]
+    [EnumXMLChoice(Choice = "Credit Balances Only")]
     OnCreditBalances = 2,
-    [XmlEnum(Name = "Debit Balances Only")]
+    [EnumXMLChoice(Choice = "Debit Balances Only")]
     OnDebitBalances = 3,
 }
 
 public enum InterestAppliedOn
 {
-    [XmlEnum(Name = "")]
+    [EnumXMLChoice(Choice = "")]
     None = 0,
-    [XmlEnum(Name = "Always")]
+    [EnumXMLChoice(Choice = "Always")]
     Always = 1,
-    [XmlEnum(Name = "Past Due Date")]
+    [EnumXMLChoice(Choice = "Past Due Date")]
     PastDueDate = 2,
 
 }
 public enum InterestFromType
 {
-    [XmlEnum(Name = "")]
+    [EnumXMLChoice(Choice = "")]
     None = 0,
-    [XmlEnum(Name = "From Appl Date")]
+    [EnumXMLChoice(Choice = "From Appl Date")]
     DateOfApplicability = 1,
-    [XmlEnum(Name = "Date specified during entry")]
+    [EnumXMLChoice(Choice = "Date specified during entry")]
     DateSpecifiedDuringEntry = 2,
-    [XmlEnum(Name = "Past Due Date")]
+    [EnumXMLChoice(Choice = "Past Due Date")]
     DueDateOfInvoice = 3,
-    [XmlEnum(Name = "Date specified during entry")]
+    [EnumXMLChoice(Choice = "Date specified during entry")]
     EffectiveDateOfTransaction = 4,
 }
 
 public enum RoundType
 {
-    [XmlEnum(Name = "")]
+    [EnumXMLChoice(Choice = "")]
     None = 0,
-    [XmlEnum(Name = "Not Applicable")]
+    [EnumXMLChoice(Choice = "Not Applicable")]
     NotApplicable = 1,
-    [XmlEnum(Name = "Downward Rounding")]
+    [EnumXMLChoice(Choice = "Downward Rounding")]
     Dowward = 2,
-    [XmlEnum(Name = "Normal Rounding")]
+    [EnumXMLChoice(Choice = "Normal Rounding")]
     Normal = 3,
-    [XmlEnum(Name = "Upward Rounding")]
+    [EnumXMLChoice(Choice = "Upward Rounding")]
     Upward = 4,
 }
 
 public enum PeriodicityType
 {
-    [XmlEnum(Name = Constants.Periodicty.Month)]
+    [EnumXMLChoice(Choice = Constants.Periodicty.Month)]
     Month = 0,
-    [XmlEnum(Name = Constants.Periodicty.Day)]
+    [EnumXMLChoice(Choice = Constants.Periodicty.Day)]
     Day = 1,
-    [XmlEnum(Name = Constants.Periodicty.Week)]
+    [EnumXMLChoice(Choice = Constants.Periodicty.Week)]
     Week = 2,
-    [XmlEnum(Name = Constants.Periodicty.Fortnight)]
+    [EnumXMLChoice(Choice = Constants.Periodicty.Fortnight)]
     Fortnight = 3,
-    [XmlEnum(Name = Constants.Periodicty.ThreeMonth)]
+    [EnumXMLChoice(Choice = Constants.Periodicty.ThreeMonth)]
     ThreeMonth = 4,
-    [XmlEnum(Name = Constants.Periodicty.SixMonth)]
+    [EnumXMLChoice(Choice = Constants.Periodicty.SixMonth)]
     SixMonth = 5,
-    [XmlEnum(Name = Constants.Periodicty.Year)]
+    [EnumXMLChoice(Choice = Constants.Periodicty.Year)]
     Year = 6,
 }
