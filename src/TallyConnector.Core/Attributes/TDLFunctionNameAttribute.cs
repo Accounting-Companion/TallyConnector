@@ -77,3 +77,13 @@ public class TDLNamesetMethodNameAttribute : BaseMethodNameAttribute
     {
     }
 }
+public class TDLObjectsMethodNameAttribute : BaseMethodNameAttribute
+{
+    public TDLObjectsMethodNameAttribute()
+    {
+    }
+
+    public TDLObjectsMethodNameAttribute(string functionName) : base(functionName)
+    {
+    }
+}

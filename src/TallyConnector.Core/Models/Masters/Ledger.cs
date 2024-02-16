@@ -72,6 +72,7 @@ public partial class Ledger : BaseLedger
 
     [XmlElement(ElementName = "CURRENCYID")]
     [Column(TypeName = $"nvarchar({Constants.GUIDLength})")]
+    [TDLField(Set = "$GUID:Currency:$CURRENCYNAME")]
     public string? CurrencyId { get; set; }
 
     [XmlElement(ElementName = "TAXTYPE")]
@@ -244,7 +245,7 @@ public partial class Ledger : BaseLedger
 
     [XmlArray(ElementName = "ADDRESS.LIST")]
     [XmlArrayItem(ElementName = "ADDRESS")]
-    [TDLCollection(CollectionName = "Address")]
+    [TDLCollection(CollectionName = "Address", ExplodeCondition = "$$NumItems:ADDRESS<1")]
     public List<string> Addresses { get; set; }
 
 
@@ -258,6 +259,7 @@ public partial class Ledger : BaseLedger
 
 
     [XmlElement(ElementName = "LEDGERCLOSINGVALUES.LIST")]
+    [TDLCollection(CollectionName = "LEDGERCLOSINGVALUES", ExplodeCondition = "$$NUMITEMS:LEDGERCLOSINGVALUES > 0")]
     public List<ClosingBalances>? ClosingBalances { get; set; }
 
     //[XmlElement(ElementName = "GSTDETAILS.LIST")]

@@ -17,6 +17,11 @@ public class MasterStatistics : BaseStatistics
 {
     [XmlElement(ElementName = "NAME")]
     public TallyObjectType Name { get; set; }
+
+    public override string ToString()
+    {
+        return $"{Name} - {Count}";
+    }
 }
 
 [TDLCollection(CollectionName = "STATVchType", Exclude = true)]
@@ -38,4 +43,9 @@ public class VoucherStatistics : BaseStatistics
     public int OptionalCount { get; set; }
 
     public int NetCount => Count - CancelledCount;
+
+    public override string ToString()
+    {
+        return $"{Name} - {NetCount}";
+    }
 }

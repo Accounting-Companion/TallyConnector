@@ -6,6 +6,7 @@ public static class Constants
     public const double Width = 1000;
     public const double Height = 800;
     public const double MenuWidth = 300;
+    public const double ContentWidth = Width-MenuWidth;
 
     public static Brush MenuBackground = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#2FB475"));
 

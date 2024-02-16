@@ -70,6 +70,7 @@ public static class Constants
     public const string TDLFiltersMethodNameAttributeName = $"{TallyConnectorAttributesNameSpace}.TDLFiltersMethodNameAttribute";
     public const string TDLComputeMethodNameAttributeName = $"{TallyConnectorAttributesNameSpace}.TDLComputeMethodNameAttribute";
     public const string TDLNamesetMethodNameAttributeName = $"{TallyConnectorAttributesNameSpace}.TDLNamesetMethodNameAttribute";
+    public const string TDLObjectsMethodNameAttributeName = $"{TallyConnectorAttributesNameSpace}.TDLObjectsMethodNameAttribute";
     public const string EnumChoiceAttributeName = $"{TallyConnectorAttributesNameSpace}.EnumXMLChoiceAttribute";
 
 
@@ -81,8 +82,10 @@ public static class Constants
     public const string GetMainTDLPartMethodName = "Get{0}MainTDLPart";
     public const string GetTDLLinesMethodName = "Get{0}TDLLines";
     public const string GetTDLCollectionsMethodName = "Get{0}TDLCollections";
+    public const string GetFetchListMethodName = "Get{0}FetchList";
     public const string GetTDLFunctionsMethodName = "Get{0}TDLFunctions";
     public const string GetTDLNameSetsMethodName = "Get{0}TDLNameSets";
+    public const string GetTDLObjectsMethodName = "Get{0}TDLObjects";
     public const string GetTDLFieldsMethodName = "Get{0}TDLFields";
     public const string GetEnumFunctionName = "TC_Get{0}";
     public const string GetEnumNameSetName = "TC_{0}Enum";

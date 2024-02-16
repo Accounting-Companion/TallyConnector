@@ -11,6 +11,6 @@ public partial class MainViewModel : BaseViewModel
     [RelayCommand]
     public async Task OnLoaded()
     {
-
+        NavigationState.Navigate(ViewType.DashBoard);
     }
 }

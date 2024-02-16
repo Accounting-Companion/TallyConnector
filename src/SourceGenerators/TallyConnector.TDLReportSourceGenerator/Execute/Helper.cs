@@ -1,6 +1,7 @@
 ﻿using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using System;
+using System.Collections.Generic;
 using TallyConnector.TDLReportSourceGenerator.Extensions.Symbols;
 using TallyConnector.TDLReportSourceGenerator.Models;
 using static System.Net.Mime.MediaTypeNames;
@@ -95,9 +96,25 @@ internal class Helper
             foreach (var child in _complexChildren)
             {
                 members.Add(CreateConstStringVar(child.ReportVarName, $"TC_{_symbol.Name}{child.Name}List", true));
-                if (child.TDLCollectionDetails != null && child.TDLCollectionDetails.CollectionName != null)
+
+                if (child.DefaultTDLCollectionDetails != null && child.DefaultTDLCollectionDetails.CollectionName != null)
                 {
-                    members.Add(CreateConstStringVar(GetCollectionName(child), child.TDLCollectionDetails.CollectionName));
+                    members.Add(CreateConstStringVar(GetCollectionName(child), child.DefaultTDLCollectionDetails.CollectionName));
+                }
+                int Counter = 1;
+                foreach (var xMLData in child.XMLData)
+                {
+                    if (xMLData.ChildSymbolData != null)
+                    {
+                        members.Add(CreateConstStringVar(xMLData.ChildSymbolData.ReportVarName, $"TC_{_symbol.Name}{child.Name}{Counter}List", true));
+                        if (xMLData.ChildSymbolData?.DefaultTDLCollectionDetails != null && xMLData.ChildSymbolData.DefaultTDLCollectionDetails.CollectionName != null)
+                        {
+                            members.Add(CreateConstStringVar(GetCollectionName(xMLData.ChildSymbolData, Counter), xMLData.ChildSymbolData.DefaultTDLCollectionDetails.CollectionName));
+                        }
+                        Counter++;
+                    }
+
+
                 }
             }
             members.AddRange(
@@ -136,9 +153,11 @@ internal class Helper
             }
             members.Add(GenerateGetFunctionsMethodSyntax());
         }
-
+        members.Add(GenerateGetFetchListMethodSyntax());
         return members;
     }
+
+
 
     private MemberDeclarationSyntax GenerateGetObjectsMethodSyntax()
     {
@@ -301,7 +320,7 @@ internal class Helper
 
         List<ExpressionSyntax> functionMethodNames = [InvocationExpression(MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression,
                                                            GetGlobalNameforType(_symbol.MainFullName), IdentifierName(GetDefaultTDLFunctionsMethodName)))];
-        GetMethodNames(_symbol.TDLFunctionMethods, functionMethodNames);
+        GetMethodNames(_symbol, c => c.TDLFunctionMethods, functionMethodNames);
         //foreach (var child in _simpleChildren)
         //{
         //    if (child.IsEnum && child.SymbolData!.TDLFunctionMethods.Count == 0)
@@ -313,15 +332,19 @@ internal class Helper
         //                                                                child.SymbolData!.TypeName)))));
         //    }
         //}
-        AddFunctions(_symbol, functionMethodNames, GetTDLFunctionsMethodName,c => c.TDLFunctionMethods.Count);
+        AddFunctions(_symbol, functionMethodNames, GetTDLFunctionsMethodName, c => c.TDLFunctionMethods.Count);
         statements.Add(CreateAssignFromMethodStatement(tdlMsgVariableName, "Functions", functionMethodNames));
 
         List<ExpressionSyntax> NameSetMethodNames = [];
-        AddFunctions(_symbol, NameSetMethodNames, GetTDLNameSetsMethodName,c=>c.TDLNameSetMethods.Count);
+        AddFunctions(_symbol, NameSetMethodNames, GetTDLNameSetsMethodName, c => c.TDLNameSetMethods.Count);
         if (_symbol.TDLNameSetMethods.Count > 0 || NameSetMethodNames.Count > 0)
         {
-            statements.Add(CreateAssignFromMethodStatement(tdlMsgVariableName, "NameSet", GetMethodNames(_symbol.TDLNameSetMethods, NameSetMethodNames)));
+            statements.Add(CreateAssignFromMethodStatement(tdlMsgVariableName, "NameSet", GetMethodNames(_symbol, c => c.TDLNameSetMethods, NameSetMethodNames)));
         }
+
+        List<ExpressionSyntax> tdlObjectMethodNames = [];
+
+        statements.Add(CreateAssignFromMethodStatement(tdlMsgVariableName, "Object", GetMethodNames(_symbol, c => c.TDLGetObjectMethods, tdlObjectMethodNames)));
         // Return Statement
         statements.Add(ReturnStatement(IdentifierName(envelopeVariableName)));
         var methodDeclarationSyntax = MethodDeclaration(GetGlobalNameforType(RequestEnvelopeFullTypeName),
@@ -331,11 +354,11 @@ internal class Helper
         return methodDeclarationSyntax;
 
 
-        List<ExpressionSyntax> GetMethodNames(FunctionDetails tDLFunctionMethods,
+        List<ExpressionSyntax> GetMethodNames(SymbolData symbol, Func<SymbolData, FunctionDetails> func,
                                               List<ExpressionSyntax>? methodNames = null)
         {
             methodNames ??= [];
-            foreach (var dictvalue in tDLFunctionMethods)
+            foreach (var dictvalue in func(symbol))
             {
                 FunctionDetail value = dictvalue.Value;
                 methodNames.Add(InvocationExpression(MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression,
@@ -343,13 +366,18 @@ internal class Helper
                                                                             IdentifierName(value.FunctionName))));
 
             }
-
+            if (symbol.BaseSymbolData != null)
+            {
+                GetMethodNames(symbol.BaseSymbolData,func,methodNames);
+            }
             return methodNames;
         }
 
-        void AddFunctions(SymbolData symbol, List<ExpressionSyntax> methodNames, string methodFormatString,Func<SymbolData,int> action)
+        static void AddFunctions(SymbolData symbol, List<ExpressionSyntax> methodNames, string methodFormatString, Func<SymbolData, int> action)
         {
-            foreach (var child in symbol.Children.Where(c => !c.IsComplex))
+            IEnumerable<ChildSymbolData> children = symbol.Children.Where(c => !c.IsComplex);
+            IEnumerable<ChildSymbolData> complexchildren = symbol.Children.Where(c => c.IsComplex);
+            foreach (var child in children)
             {
                 if (child.IsEnum && action(child.SymbolData!) == 0)
                 {
@@ -358,7 +386,11 @@ internal class Helper
                                                GetGlobalNameforType(symbol.MainFullName),
                                                IdentifierName(string.Format(methodFormatString,
                                                                             child.SymbolData!.TypeName)))));
-                }                
+                }
+            }
+            foreach (var child in complexchildren)
+            {
+                AddFunctions(child.SymbolData!, methodNames, methodFormatString, action);
             }
             if (symbol.BaseSymbolData != null)
             {
@@ -452,7 +484,7 @@ internal class Helper
                         Argument(LiteralExpression(SyntaxKind.StringLiteralExpression, Literal(name))),
                         Token(SyntaxKind.CommaToken),
                     ];
-                if (child.TDLCollectionDetails == null || child.TDLCollectionDetails.CollectionName == null)
+                if (child.DefaultTDLCollectionDetails == null || child.DefaultTDLCollectionDetails.CollectionName == null)
                 {
                     intializerArgs
                     =
@@ -485,44 +517,58 @@ internal class Helper
             }
             else
             {
-                string ComplexFieldsVariableName = $"{child.Name.Substring(0, 1).ToLower()}{child.Name.Substring(1)}{PartsVariableName.Substring(0, 1).ToUpper()}{PartsVariableName.Substring(1)}";
-                List<SyntaxNodeOrToken> methodArgs =
-                [
-                    Argument(IdentifierName(child.ReportVarName)),
+                AddPartSyntaxForComplexField(child);
+                int localCounter = 1;
+                foreach (var xMLData in child.XMLData)
+                {
+                    if (xMLData.ChildSymbolData != null)
+                    {
+                        AddPartSyntaxForComplexField(xMLData.ChildSymbolData, localCounter);
+                        localCounter++;
+                    }
+                }
+                void AddPartSyntaxForComplexField(ChildSymbolData child, int? localCounter = null)
+                {
+                    string ComplexFieldsVariableName = $"{child.Name.Substring(0, 1).ToLower()}{child.Name.Substring(1)}{PartsVariableName.Substring(0, 1).ToUpper()}{PartsVariableName.Substring(1)}";
+                    List<SyntaxNodeOrToken> methodArgs =
+                    [
+                        Argument(IdentifierName(child.ReportVarName)),
                     Token(SyntaxKind.CommaToken),
-                    Argument(child.TDLCollectionDetails != null && child.TDLCollectionDetails.CollectionName != null ? IdentifierName(GetCollectionName(child)) : LiteralExpression(SyntaxKind.NullLiteralExpression))
-                ];
-                if (child.ListXmlTag != null)
-                {
-                    methodArgs.AddRange([Token(SyntaxKind.CommaToken), Argument(LiteralExpression(SyntaxKind.StringLiteralExpression, Literal(child.ListXmlTag)))]);
-                }
-                if (child.Exclude)
-                {
-                    statements.Add(CreateArrayAssignmentwithExpression(PartsVariableName, counter, InvocationExpression(MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression,
-                                                                                                   GetGlobalNameforType(_symbol.MainFullName),
-                                                                                                   IdentifierName(string.Format(GetMainTDLPartMethodName, child.SymbolData?.TypeName ?? child.Name))))
-                        .WithArgumentList(ArgumentList(SeparatedList<ArgumentSyntax>(methodArgs)))));
-                    counter += 1;
-                    continue;
-                }
-                statements.Add(CreateVarInsideMethodWithExpression(ComplexFieldsVariableName,
-                                                       InvocationExpression(MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression,
-                                                                                                   GetGlobalNameforType(_symbol.MainFullName),
-                                                                                                   IdentifierName(string.Format(GetTDLPartsMethodName, child.SymbolData?.TypeName ?? child.Name))))
-                                                       .WithArgumentList(ArgumentList(SeparatedList<ArgumentSyntax>(methodArgs)))));
+                    Argument(child.DefaultTDLCollectionDetails != null && child.DefaultTDLCollectionDetails.CollectionName != null ? IdentifierName(GetCollectionName(child,localCounter)) : LiteralExpression(SyntaxKind.NullLiteralExpression))
+                    ];
+                    if (child.ListXmlTag != null)
+                    {
+                        methodArgs.AddRange([Token(SyntaxKind.CommaToken), Argument(LiteralExpression(SyntaxKind.StringLiteralExpression, Literal(child.ListXmlTag)))]);
+                    }
+                    if (child.Exclude)
+                    {
+                        statements.Add(CreateArrayAssignmentwithExpression(PartsVariableName, counter, InvocationExpression(MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression,
+                                                                                                       GetGlobalNameforType(_symbol.MainFullName),
+                                                                                                       IdentifierName(string.Format(GetMainTDLPartMethodName, child.SymbolData?.TypeName ?? child.Name))))
+                            .WithArgumentList(ArgumentList(SeparatedList<ArgumentSyntax>(methodArgs)))));
+                        counter += 1;
+                        return;
+                    }
+                    statements.Add(CreateVarInsideMethodWithExpression(ComplexFieldsVariableName,
+                                                           InvocationExpression(MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression,
+                                                                                                       GetGlobalNameforType(_symbol.MainFullName),
+                                                                                                       IdentifierName(string.Format(GetTDLPartsMethodName, child.SymbolData?.TypeName ?? child.Name))))
+                                                           .WithArgumentList(ArgumentList(SeparatedList<ArgumentSyntax>(methodArgs)))));
 
-                statements.Add(ExpressionStatement(InvocationExpression(MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression,
-                                                                                               IdentifierName(PartsVariableName),
-                                                                                               IdentifierName(AddToArrayExtensionMethodName)))
+                    statements.Add(ExpressionStatement(InvocationExpression(MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression,
+                                                                                                   IdentifierName(PartsVariableName),
+                                                                                                   IdentifierName(AddToArrayExtensionMethodName)))
 
-                    .WithArgumentList(ArgumentList(SeparatedList<ArgumentSyntax>(
-                         new SyntaxNodeOrToken[]{
+                        .WithArgumentList(ArgumentList(SeparatedList<ArgumentSyntax>(
+                             new SyntaxNodeOrToken[]{
                             Argument(IdentifierName(ComplexFieldsVariableName)),
                             Token(SyntaxKind.CommaToken),
                             Argument(LiteralExpression(SyntaxKind.NumericLiteralExpression, Literal(counter))),
-                         })))
-                    ));
-                counter += (child.SymbolData?.ComplexFieldsCount ?? 0) + 1;
+                             })))
+                        ));
+                    counter += (child.SymbolData?.ComplexFieldsCount ?? 0) + 1;
+                    return;
+                }
             }
 
         }
@@ -552,6 +598,18 @@ internal class Helper
                 })));
         }
         return [MainPartMethod, methodDeclarationSyntax];
+
+
+    }
+
+    private string GetCollectionName(ChildSymbolData child, int? localCounter)
+    {
+        string v = GetCollectionName(child);
+        if (localCounter == null)
+        {
+            return v;
+        }
+        return $"{v}{localCounter}";
     }
 
     private MethodDeclarationSyntax GenerateMainPartMethodSyntax(string CollectionNameArgName,
@@ -652,33 +710,46 @@ internal class Helper
             for (int i = 0; i < _complexChildren.Count; i++)
             {
                 var child = _complexChildren[i];
-                if (i != 0)
-                {
-                    explodes.Add(Token(SyntaxKind.CommaToken));
-                }
 
-                string text = ":YES";
-                List<InterpolatedStringContentSyntax> nodes =
-                    [
-                        Interpolation(IdentifierName(child.ReportVarName)),
+                AddExplodeArgForComplexChild(child);
+                int Counter = 1;
+                foreach (var xMLData in child.XMLData)
+                {
+                    if (xMLData.ChildSymbolData != null)
+                    {
+                        AddExplodeArgForComplexChild(xMLData.ChildSymbolData);
+                        Counter++;
+                    }
+                }
+                void AddExplodeArgForComplexChild(ChildSymbolData child)
+                {
+                    if (explodes.Count != 0)
+                    {
+                        explodes.Add(Token(SyntaxKind.CommaToken));
+                    }
+                    string text = ":YES";
+                    List<InterpolatedStringContentSyntax> nodes =
+                        [
+                            Interpolation(IdentifierName(child.ReportVarName)),
                         //InterpolatedStringText()
                         //.WithTextToken(Token(TriviaList(), SyntaxKind.InterpolatedStringTextToken, text, text, TriviaList()))
                     ];
-                if (child.TDLCollectionDetails?.ExplodeCondition == null)
-                {
-                    nodes.Add(InterpolatedStringText()
-                        .WithTextToken(Token(TriviaList(), SyntaxKind.InterpolatedStringTextToken, text, text, TriviaList())));
+                    if (child.DefaultTDLCollectionDetails?.ExplodeCondition == null)
+                    {
+                        nodes.Add(InterpolatedStringText()
+                            .WithTextToken(Token(TriviaList(), SyntaxKind.InterpolatedStringTextToken, text, text, TriviaList())));
+                    }
+                    else
+                    {
+                        text = ":";
+                        nodes.Add(InterpolatedStringText()
+                            .WithTextToken(Token(TriviaList(), SyntaxKind.InterpolatedStringTextToken, text, text, TriviaList())));
+                        nodes.Add(Interpolation(CreateFormatExpression(child.DefaultTDLCollectionDetails.ExplodeCondition, child.TDLFieldDetails?.Set ?? "")));
+                    }
+                    InterpolatedStringExpressionSyntax interpolatedStringExpressionSyntax = InterpolatedStringExpression(Token(SyntaxKind.InterpolatedStringStartToken))
+                        .WithContents(List(nodes));
+                    explodes.Add(ExpressionElement(interpolatedStringExpressionSyntax));
                 }
-                else
-                {
-                    text = ":";
-                    nodes.Add(InterpolatedStringText()
-                        .WithTextToken(Token(TriviaList(), SyntaxKind.InterpolatedStringTextToken, text, text, TriviaList())));
-                    nodes.Add(Interpolation(CreateFormatExpression(child.TDLCollectionDetails.ExplodeCondition, child.TDLFieldDetails!.Set)));
-                }
-                InterpolatedStringExpressionSyntax interpolatedStringExpressionSyntax = InterpolatedStringExpression(Token(SyntaxKind.InterpolatedStringStartToken))
-                    .WithContents(List(nodes));
-                explodes.Add(ExpressionElement(interpolatedStringExpressionSyntax));
             }
 
             intializerArgs =
@@ -756,89 +827,101 @@ internal class Helper
                 counter += 1;
                 continue;
             }
+            AddLineSyntaxForComplexField(child);
+            foreach (var xMLData in child.XMLData)
+            {
+                if (xMLData.ChildSymbolData != null)
+                {
+                    AddLineSyntaxForComplexField(xMLData.ChildSymbolData);
+                }
+            }
+            void AddLineSyntaxForComplexField(ChildSymbolData child)
+            {
 
-            List<SyntaxNodeOrToken> constructorArgs =
-                [
-                    Argument(IdentifierName(child.ReportVarName)),
+
+                List<SyntaxNodeOrToken> constructorArgs =
+                    [
+                        Argument(IdentifierName(child.ReportVarName)),
                     Token(SyntaxKind.CommaToken),
                     Argument(CollectionExpression(SeparatedList<CollectionElementSyntax>(new List<SyntaxNodeOrToken>()))),
                     Token(SyntaxKind.CommaToken),
                     Argument(CreateStringLiteral(child.XmlTag)),
                 ];
-            List<SyntaxNodeOrToken> lineIntializerArgs =
-                [
-                    AssignmentExpression(SyntaxKind.SimpleAssignmentExpression,
+                List<SyntaxNodeOrToken> lineIntializerArgs =
+                    [
+                        AssignmentExpression(SyntaxKind.SimpleAssignmentExpression,
                                          IdentifierName("Use"), IdentifierName($"{child.SymbolData!.TypeName}{nameof(ReportName)}"))
-                ];
-            if (child.SymbolData?.IsTallyComplexObject ?? false)
-            {
-                lineIntializerArgs.Add(Token(SyntaxKind.CommaToken));
-                List<SyntaxNodeOrToken> arguments = [];
-                for (int i = 0; i < child.SymbolData.Children.Count; i++)
+                    ];
+                if (child.SymbolData?.IsTallyComplexObject ?? false)
                 {
-                    var c = child.SymbolData.Children[i];
-                    string? set = child.TDLFieldDetails!.Set;
-                    InterpolatedStringExpressionSyntax createStringInterpolation(string middleText, Func<TDLFieldData, string> func)
+                    lineIntializerArgs.Add(Token(SyntaxKind.CommaToken));
+                    List<SyntaxNodeOrToken> arguments = [];
+                    for (int i = 0; i < child.SymbolData.Children.Count; i++)
                     {
-                        List<InterpolatedStringContentSyntax> nodes = [];
-                        var prefixText = "Field    \t: ";
-                        nodes.Add(InterpolatedStringText()
-                            .WithTextToken(Token(TriviaList(), SyntaxKind.InterpolatedStringTextToken, prefixText, prefixText, TriviaList())));
-                        nodes.Add(Interpolation(IdentifierName(GetFieldName(c))));
+                        var c = child.SymbolData.Children[i];
+                        string? set = child.TDLFieldDetails!.Set;
+                        InterpolatedStringExpressionSyntax createStringInterpolation(string middleText, Func<TDLFieldData, string> func)
+                        {
+                            List<InterpolatedStringContentSyntax> nodes = [];
+                            var prefixText = "Field    \t: ";
+                            nodes.Add(InterpolatedStringText()
+                                .WithTextToken(Token(TriviaList(), SyntaxKind.InterpolatedStringTextToken, prefixText, prefixText, TriviaList())));
+                            nodes.Add(Interpolation(IdentifierName(GetFieldName(c))));
 
-                        nodes.Add(InterpolatedStringText()
-                            .WithTextToken(Token(TriviaList(), SyntaxKind.InterpolatedStringTextToken, middleText, middleText, TriviaList())));
+                            nodes.Add(InterpolatedStringText()
+                                .WithTextToken(Token(TriviaList(), SyntaxKind.InterpolatedStringTextToken, middleText, middleText, TriviaList())));
 
-                        nodes.Add(Interpolation(CreateFormatExpression(func(c.TDLFieldDetails!), set)));
-                        InterpolatedStringExpressionSyntax interpolatedStringExpressionSyntax = InterpolatedStringExpression(Token(SyntaxKind.InterpolatedStringStartToken)).WithContents(List(nodes));
+                            nodes.Add(Interpolation(CreateFormatExpression(func(c.TDLFieldDetails!), set)));
+                            InterpolatedStringExpressionSyntax interpolatedStringExpressionSyntax = InterpolatedStringExpression(Token(SyntaxKind.InterpolatedStringStartToken)).WithContents(List(nodes));
 
-                        return interpolatedStringExpressionSyntax;
+                            return interpolatedStringExpressionSyntax;
+                        }
+
+                        SafeAdd(ExpressionElement(createStringInterpolation("\t: Set \t: ", c => c.Set!)));
+                        if (c.TDLFieldDetails?.Invisible != null)
+                        {
+                            SafeAdd(ExpressionElement(createStringInterpolation("\t: Invisible \t: ", c => c.Invisible!)));
+                        }
                     }
-
-                    SafeAdd(ExpressionElement(createStringInterpolation("\t: Set \t: ", c => c.Set!)));
-                    if (c.TDLFieldDetails?.Invisible != null)
+                    void SafeAdd(SyntaxNodeOrToken item)
                     {
-                        SafeAdd(ExpressionElement(createStringInterpolation("\t: Invisible \t: ", c => c.Invisible!)));
+                        if (arguments.Count != 0)
+                        {
+                            arguments.Add(Token(SyntaxKind.CommaToken));
+                        }
+                        arguments.Add(item);
                     }
+                    lineIntializerArgs.Add(AssignmentExpression(SyntaxKind.SimpleAssignmentExpression,
+                                             IdentifierName("Local"), CollectionExpression(SeparatedList<CollectionElementSyntax>(arguments))));
                 }
-                void SafeAdd(SyntaxNodeOrToken item)
+                statements.Add(GetArrayAssignmentExppressionImplicit(LinesVariableName, counter, constructorArgs, lineIntializerArgs));
+                counter++;
+                if (child.Exclude)
                 {
-                    if (arguments.Count != 0)
-                    {
-                        arguments.Add(Token(SyntaxKind.CommaToken));
-                    }
-                    arguments.Add(item);
+                    return;
                 }
-                lineIntializerArgs.Add(AssignmentExpression(SyntaxKind.SimpleAssignmentExpression,
-                                         IdentifierName("Local"), CollectionExpression(SeparatedList<CollectionElementSyntax>(arguments))));
-            }
-            statements.Add(GetArrayAssignmentExppressionImplicit(LinesVariableName, counter, constructorArgs, lineIntializerArgs));
-            counter++;
-            if (child.Exclude)
-            {
-                continue;
-            }
-            string ComplexFieldsVariableName = $"{child.Name.Substring(0, 1).ToLower()}{child.Name.Substring(1)}{LinesVariableName.Substring(0, 1).ToUpper()}{LinesVariableName.Substring(1)}";
-            statements.Add(CreateVarInsideMethodWithExpression(ComplexFieldsVariableName,
-                                                   InvocationExpression(MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression,
-                                                                                               GetGlobalNameforType(_symbol.MainFullName),
-                                                                                               IdentifierName(string.Format(GetTDLLinesMethodName, child.SymbolData?.TypeName ?? child.Name))))
-                                                   .WithArgumentList(ArgumentList(SeparatedList<ArgumentSyntax>(
-                     new SyntaxNodeOrToken[]{
+                string ComplexFieldsVariableName = $"{child.Name.Substring(0, 1).ToLower()}{child.Name.Substring(1)}{LinesVariableName.Substring(0, 1).ToUpper()}{LinesVariableName.Substring(1)}";
+                statements.Add(CreateVarInsideMethodWithExpression(ComplexFieldsVariableName,
+                                                       InvocationExpression(MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression,
+                                                                                                   GetGlobalNameforType(_symbol.MainFullName),
+                                                                                                   IdentifierName(string.Format(GetTDLLinesMethodName, child.SymbolData?.TypeName ?? child.Name))))
+                                                       .WithArgumentList(ArgumentList(SeparatedList<ArgumentSyntax>(
+                         new SyntaxNodeOrToken[]{
                             Argument(CreateStringLiteral(child.XmlTag)),
-                     })))));
+                         })))));
 
-            statements.Add(ExpressionStatement(InvocationExpression(MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression,
-                                                                                           IdentifierName(LinesVariableName),
-                                                                                           IdentifierName(AddToArrayExtensionMethodName)))
-                .WithArgumentList(ArgumentList(SeparatedList<ArgumentSyntax>(
-                     new SyntaxNodeOrToken[]{
+                statements.Add(ExpressionStatement(InvocationExpression(MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression,
+                                                                                               IdentifierName(LinesVariableName),
+                                                                                               IdentifierName(AddToArrayExtensionMethodName)))
+                    .WithArgumentList(ArgumentList(SeparatedList<ArgumentSyntax>(
+                         new SyntaxNodeOrToken[]{
                             Argument(IdentifierName(ComplexFieldsVariableName)),
                             Token(SyntaxKind.CommaToken),
                             Argument(LiteralExpression(SyntaxKind.NumericLiteralExpression, Literal(counter))),
-                     })))
-                ));
-            counter += (child.SymbolData?.ComplexFieldsIncludedCount ?? 0) + 1;
+                         })))
+                    ));
+                counter += (child.SymbolData?.ComplexFieldsIncludedCount ?? 0) + 1;
+            }
         }
         statements.Add(ReturnStatement(IdentifierName(LinesVariableName)));
         var methodDeclarationSyntax = MethodDeclaration(CreateEmptyArrayType(LineFullTypeName),
@@ -1014,34 +1097,8 @@ internal class Helper
         statements.Add(CreateVarArrayWithCount(CollectionFullTypeName, CollectionsVariableName, 1));
         List<SyntaxNodeOrToken> nodesAndTokens =
             [
-                //ExpressionElement(LiteralExpression(SyntaxKind.StringLiteralExpression, Literal("*"))),
+              SpreadElement(  InvocationExpression(IdentifierName(string.Format(GetFetchListMethodName,_symbol.TypeName))).WithArgumentList(ArgumentList()))
             ];
-        AddFetchItems(nodesAndTokens, _symbol);
-
-        static void AddFetchItems(List<SyntaxNodeOrToken> nodesAndTokens, SymbolData symbol)
-        {
-            foreach (var child in symbol.Children.Where(c => !c.IsComplex))
-            {
-                string? name = child.TDLFieldDetails?.FetchText ?? child.TDLFieldDetails?.Set;
-                if (name != null)
-                {
-                    SafeAdd(nodesAndTokens, ExpressionElement(CreateStringLiteral(name)));
-                }
-            }
-            if (symbol.BaseSymbolData != null)
-            {
-                AddFetchItems(nodesAndTokens, symbol.BaseSymbolData.SymbolData);
-            }
-        }
-        foreach (var child in _complexChildren)
-        {
-            if (child.TDLCollectionDetails == null || child.TDLCollectionDetails.CollectionName == null)
-            {
-                continue;
-            }
-            SafeAdd(nodesAndTokens, ExpressionElement(IdentifierName(GetCollectionName(child))));
-        }
-
         statements.Add(GetArrayAssignmentExppressionImplicit(CollectionsVariableName, 0,
             [
                 Argument(IdentifierName(_collectionVariableName)),
@@ -1062,6 +1119,102 @@ internal class Helper
 
     }
 
+
+    private MemberDeclarationSyntax GenerateGetFetchListMethodSyntax()
+    {
+        const string prefixParamName = "prefix";
+        List<SyntaxNodeOrToken> nodesAndTokens = [];
+        AddFetchItems(_symbol);
+
+        void AddFetchItems(SymbolData symbol, bool isChild = false)
+        {
+            var children = symbol.Children.Where(c => !c.IsComplex || (c.SymbolData?.IsTallyComplexObject ?? false))
+                .Where(child =>child.TDLFieldDetails?.IncludeInFetch ?? false)
+                .Select(child => child.TDLFieldDetails?.FetchText ?? child.TDLFieldDetails?.Set)
+                .Where(c => c != null)
+                .ToList();
+            int chunkSize = 10;
+            for (int i = 0; i < children.Count; i += chunkSize)
+            {
+                var chunks = children.Skip(i).Take(chunkSize).ToList();
+
+                if (symbol.IsChild && (isChild || !symbol.IsBaseSymbol))
+                {
+                    List<InterpolatedStringContentSyntax> nodes = [];
+                    int lastIndex = chunks.Count - 1;
+                    for (int k = 0; k < chunks.Count; k++)
+                    {
+                        var chunk = chunks[k];
+                        nodes.Add(Interpolation(IdentifierName(prefixParamName)));
+
+                        string text = (k == lastIndex) ? $".{chunk}" : $".{chunk} ,";
+                        nodes.Add(InterpolatedStringText().WithTextToken(Token(
+                                                                                TriviaList(),
+                                                                                SyntaxKind.InterpolatedStringTextToken,
+                                                                                text,
+                                                                                text,
+                                                                                TriviaList())));
+                    }
+                    var stringSyntax = InterpolatedStringExpression(Token(SyntaxKind.InterpolatedStringStartToken))
+                        .WithContents(List(nodes));
+                    SafeAdd(nodesAndTokens, ExpressionElement(stringSyntax));
+                }
+                else
+                {
+                    SafeAdd(nodesAndTokens, ExpressionElement(CreateStringLiteral(string.Join(", ", chunks))));
+                }
+
+
+            }
+            if (symbol.BaseSymbolData != null)
+            {
+                AddFetchItems(symbol.BaseSymbolData.SymbolData, symbol.IsChild && !symbol.IsBaseSymbol);
+            }
+        }
+        foreach (var child in _complexChildren)
+        {
+            AddFetchListSyntaxofComplexChild(child);
+            void AddFetchListSyntaxofComplexChild(ChildSymbolData child, int? counter = null)
+            {
+                if (child.DefaultTDLCollectionDetails == null || child.DefaultTDLCollectionDetails.CollectionName == null)
+                {
+                    return;
+                }
+                if (!child.IsComplex)
+                {
+                    return;
+                }
+                var exp = InvocationExpression(IdentifierName(string.Format(GetFetchListMethodName, child.SymbolData!.TypeName)))
+                    .WithArgumentList(ArgumentList(SeparatedList<ArgumentSyntax>(new SyntaxNodeOrToken[] { Argument(IdentifierName(GetCollectionName(child, counter))) })));
+
+                //SafeAdd(nodesAndTokens, ExpressionElement(IdentifierName(GetCollectionName(child))));
+                SafeAdd(nodesAndTokens, SpreadElement(exp));
+            }
+            int counter = 1;
+            foreach (var item in child.XMLData)
+            {
+                if (item.ChildSymbolData != null)
+                {
+                    AddFetchListSyntaxofComplexChild(item.ChildSymbolData, counter);
+                }
+                counter++;
+            }
+        }
+        List<StatementSyntax> statements = [ReturnStatement(CollectionExpression(SeparatedList<CollectionElementSyntax>(nodesAndTokens)))];
+        var methodDeclarationSyntax = MethodDeclaration(CreateEmptyArrayType(PredefinedType(Token(SyntaxKind.StringKeyword))),
+                                                        Identifier(string.Format(GetFetchListMethodName, _symbol.TypeName)))
+            .WithModifiers(TokenList([Token(SyntaxKind.InternalKeyword), Token(SyntaxKind.StaticKeyword)]))
+            .WithBody(
+            Block(statements));
+        if (_symbol.IsChild)
+        {
+            methodDeclarationSyntax = methodDeclarationSyntax.WithParameterList(ParameterList(SeparatedList<ParameterSyntax>(new SyntaxNodeOrToken[]
+            {
+                Parameter(Identifier(prefixParamName))
+                .WithType(PredefinedType(Token(SyntaxKind.StringKeyword))) })));
+        }
+        return methodDeclarationSyntax;
+    }
     private static void SafeAdd(List<SyntaxNodeOrToken> nodesAndTokens, SyntaxNodeOrToken item)
     {
         if (nodesAndTokens.Count != 0)
@@ -1087,8 +1240,8 @@ internal class Helper
             {
                 continue;
             }
-          
-            if (child.EnumChoices !=null)
+
+            if (child.EnumChoices != null)
             {
                 foreach (var item in child.EnumChoices)
                 {
@@ -1099,8 +1252,8 @@ internal class Helper
                     nodesAndTokens.Add(ExpressionElement(CreateStringLiteral($"{item}:\"{child.Name}\"")));
                 }
             }
-            
-            
+
+
         }
         intializerArgs.Add(AssignmentExpression(SyntaxKind.SimpleAssignmentExpression,
                                                          IdentifierName("List"),
@@ -1526,12 +1679,19 @@ internal class Helper
         return LiteralExpression(SyntaxKind.StringLiteralExpression, Literal(name));
     }
 
-    internal ArrayTypeSyntax CreateEmptyArrayType(string typeName)
+    internal static ArrayTypeSyntax CreateEmptyArrayType(string typeName)
     {
-        var arrayTypeSyntax = ArrayType(GetGlobalNameforType(typeName))
-            .WithRankSpecifiers(List([ArrayRankSpecifier(SingletonSeparatedList<ExpressionSyntax>(OmittedArraySizeExpression()))]));
+        TypeSyntax elementType = GetGlobalNameforType(typeName);
+        var arrayTypeSyntax = CreateEmptyArrayType(elementType);
         return arrayTypeSyntax;
     }
+
+    internal static ArrayTypeSyntax CreateEmptyArrayType(TypeSyntax elementType)
+    {
+        return ArrayType(elementType)
+                    .WithRankSpecifiers(List([ArrayRankSpecifier(SingletonSeparatedList((ExpressionSyntax)OmittedArraySizeExpression()))]));
+    }
+
     internal ArrayTypeSyntax CreateArrayTypewithCount(string typeName, int Count)
     {
         var arrayTypeSyntax = ArrayType(GetGlobalNameforType(typeName))

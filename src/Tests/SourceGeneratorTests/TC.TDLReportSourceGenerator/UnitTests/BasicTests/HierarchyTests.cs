@@ -133,8 +133,9 @@ public partial class TallyService
     {
         var src = @"#nullable enable
 using System.Xml.Serialization;
+using TallyConnector.Core.Models;
 namespace TestNameSpace;
-[TallyConnector.Core.Attributes.GenerateHelperMethod<UnitTests.Models.Ledger>]
+[TallyConnector.Core.Attributes.GenerateHelperMethod<Voucher>]
 public partial class TallyService : TallyConnector.Services.BaseTallyService
 {
 }";

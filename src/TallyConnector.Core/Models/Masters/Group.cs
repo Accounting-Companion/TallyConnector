@@ -1,17 +1,17 @@
-﻿namespace TallyConnector.Core.Models.Masters;
+﻿using TallyConnector.Core.Models.Interfaces.Masters;
+
+namespace TallyConnector.Core.Models.Masters;
 
 [XmlRoot("GROUP")]
 [TallyObjectType(TallyObjectType.Groups)]
-public class BaseGroup : BasicTallyObject, IAliasTallyObject
+public class BaseGroup :  BaseMasterObject, IBaseGroup
 {
-    private string? name;
+   
 
     public BaseGroup()
     {
-        LanguageNameList = new();
+        
     }
-
-
 
     /// <summary>
     /// Create New Group Under Primary
@@ -20,7 +20,6 @@ public class BaseGroup : BasicTallyObject, IAliasTallyObject
     public BaseGroup(string name)
     {
         Name = name;
-        LanguageNameList = new();
     }
 
     /// <summary>
@@ -31,75 +30,14 @@ public class BaseGroup : BasicTallyObject, IAliasTallyObject
     public BaseGroup(string name, string parent)
     {
         Name = name;
-        LanguageNameList = new();
         Parent = parent;
     }
-
-
-    //Use Old Name Only When you are altering Existing Group
-    [XmlAttribute(AttributeName = "NAME")]
-    [JsonIgnore]
-    [Column(TypeName = $"nvarchar({Constants.MaxNameLength})")]
-    public string? OldName { get; set; }
-
-    [XmlElement(ElementName = "NAME")]
-    [Required]
-    [Column(TypeName = $"nvarchar({Constants.MaxNameLength})")]
-    public string Name
-    {
-        get
-        {
-            name = name == null || name == string.Empty ? OldName : name;
-            return name!;
-        }
-        set => name = value;
-    }
-
-
-    [XmlIgnore]
-    [Column(TypeName = $"nvarchar({Constants.MaxNameLength})")]
-    public string? Alias { get; set; }
-
 
     [XmlElement(ElementName = "PARENT")]
     [Column(TypeName = $"nvarchar({Constants.MaxNameLength})")]
     public string? Parent { get; set; }
 
-    [XmlElement(ElementName = "PARENTID")]
-    [Column(TypeName = $"nvarchar({Constants.GUIDLength})")]
-    [TDLField(Set = "$GUID:Group:$Parent")]
-    public string? ParentId { get; set; }
-
-
-    [XmlElement(ElementName = "PRIMARYGROUP")]
-    [Column(TypeName = $"nvarchar({Constants.MaxNameLength})")]
-    public string? PrimaryGroup { get; set; }
-
-
-    [XmlElement(ElementName = "RESERVENAME")]
-    [Column(TypeName = $"nvarchar({Constants.MaxNameLength})")]
-    public string? ReserveName { get; set; }
-
-    [JsonIgnore]
-    [XmlElement(ElementName = "LANGUAGENAME.LIST")]
-    [TDLCollection(CollectionName = "LanguageName")]
-    public List<LanguageNameList> LanguageNameList { get; set; }
-
-
     
-    public new void PrepareForExport()
-    {
-        if (Parent != null && Parent.Contains("Primary"))
-        {
-            Parent = string.Empty;
-        }
-        if (Name == string.Empty || Name == null)
-        {
-            Name = OldName!;
-        }
-    }
-
-
     public override string ToString()
     {
         return $"Group - {Name}";
@@ -121,19 +59,52 @@ public partial class Group : BaseGroup
     public Group(string name, string parent) : base(name, parent)
     {
     }
+
+    [XmlElement(ElementName = "PARENTID")]
+    [Column(TypeName = $"nvarchar({Constants.GUIDLength})")]
+    [TDLField(Set = "$GUID:Group:$Parent")]
+    public string? ParentId { get; set; }
+
+
+    [XmlElement(ElementName = "PRIMARYGROUP")]
+    [Column(TypeName = $"nvarchar({Constants.MaxNameLength})")]
+    [TDLField(Set = "$_PrimaryGroup")]
+    public string? PrimaryGroup { get; set; }
+
+
+    [XmlElement(ElementName = "RESERVENAME")]
+    [Column(TypeName = $"nvarchar({Constants.MaxNameLength})")]
+    public string? ReserveName { get; set; }
+
+    [JsonIgnore]
+    [XmlElement(ElementName = "LANGUAGENAME.LIST")]
+    [TDLCollection(CollectionName = "LanguageName")]
+    public List<LanguageNameList> LanguageNameList { get; set; }
+    //Use Old Name Only When you are altering Existing Group
+    [XmlElement(ElementName = "OLDNAME")]
+    [JsonIgnore]
+    [Column(TypeName = $"nvarchar({Constants.MaxNameLength})")]
+    [TDLField(Set ="$Name")]
+    public string? OldName { get; set; }
+
+
+
+    [XmlIgnore]
+    [Column(TypeName = $"nvarchar({Constants.MaxNameLength})")]
+    public string? Alias { get; set; }
     /// <summary>
     /// Tally Field - Used for Calculation
     /// </summary>
     [XmlElement(ElementName = "BASICGROUPISCALCULABLE")]
     [Column(TypeName = "nvarchar(3)")]
-    public TallyYesNo? IsCalculable { get; set; }
+    public bool? IsCalculable { get; set; }
 
     /// <summary>
     /// Tally Field - Net Debit/Credit Balances for Reporting 
     /// </summary>
     [XmlElement(ElementName = "ISADDABLE")]
     [Column(TypeName = "nvarchar(3)")]
-    public TallyYesNo? IsAddable { get; set; }
+    public bool? IsAddable { get; set; }
 
     /// <summary>
     /// Tally Field - Method to Allocate when used in purchase invoice
@@ -144,24 +115,24 @@ public partial class Group : BaseGroup
 
     [XmlElement(ElementName = "ISSUBLEDGER")]
     [Column(TypeName = "nvarchar(3)")]
-    public TallyYesNo? IsSubledger { get; set; }
+    public bool? IsSubledger { get; set; }
 
     [XmlElement(ElementName = "ISREVENUE")]
     [Column(TypeName = "nvarchar(3)")]
-    public TallyYesNo? IsRevenue { get; set; }
+    public bool? IsRevenue { get; set; }
 
     [XmlElement(ElementName = "ISDEEMEDPOSITIVE")]
     [Column(TypeName = "nvarchar(3)")]
-    public TallyYesNo? IsDeemedPositive { get; set; }
+    public bool? IsDeemedPositive { get; set; }
 
     [XmlElement(ElementName = "AFFECTSGROSSPROFIT")]
     [Column(TypeName = "nvarchar(3)")]
-    public TallyYesNo? AffectGrossProfit { get; set; }
+    public bool? AffectGrossProfit { get; set; }
 
 
     [XmlElement(ElementName = "CANDELETE")]
     [Column(TypeName = "nvarchar(3)")]
-    public TallyYesNo? CanDelete { get; set; }
+    public bool? CanDelete { get; set; }
 
 
 

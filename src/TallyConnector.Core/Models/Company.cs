@@ -1,34 +1,52 @@
-﻿namespace TallyConnector.Core.Models;
+﻿using TallyConnector.Core.Models.Masters;
+
+namespace TallyConnector.Core.Models;
 /// <summary>
 /// Base Model for Company
 /// </summary>
 [XmlRoot(ElementName = "COMPANY")]
-
-public class BaseCompany : TallyXmlJson
+[TDLFunctionsMethodName(nameof(TC_BaseCompanyFunctions))]
+public class BaseCompany : ITallyBaseObject
 {
+    private const string CleanCompanyNumberFunctionName = "TC_GetCleanedCompanyNumber";
+
     /// <summary>
     /// Name of Company
     /// </summary>
     [XmlElement(ElementName = "NAME")]
     [Column(TypeName = $"nvarchar({Constants.MaxNameLength})")]
     public string? Name { get; set; }
-    
-    [XmlElement(ElementName = "GUID")]
-    [Column(TypeName = $"nvarchar({Constants.GUIDLength})")]
-    public string? GUID { get; set; }
 
-    [XmlElement(ElementName = "BOOKSFROM")]
-    public TallyDate? BooksFrom { get; set; }
+    [XmlElement(ElementName = "TC_STARTINGFROM")]
+    [TDLField(Set = "$STARTINGFROM")]
+    public DateTime? StartingFrom { get; set; }
 
-    [XmlElement(ElementName = "STARTINGFROM")]
-    public TallyDate? StartingFrom { get; set; }
-
-    [XmlElement(ElementName = "ENDINGAT")]
-    public TallyDate? EndDate { get; set; }
+    [XmlElement(ElementName = "TC_ENDINGAT")]
+    [TDLField(Set = "$ENDINGAT")]
+    public DateTime? EndDate { get; set; }
 
     [XmlElement(ElementName = "CLEANEDCOMPANYNUMBER")]
-    public string? CompNum { get; set; }
+    [TDLField(Set = $"$${CleanCompanyNumberFunctionName}")]
+    public string CompNum { get; set; }
 
+    [XmlElement(ElementName = "ISAGGREGATE")]
+    public bool IsGroupCompany { get; set; }
+    public static TDLFunction[] TC_BaseCompanyFunctions()
+    {
+        return [new TDLFunction(CleanCompanyNumberFunctionName) {
+            Returns="String",
+            Variables=["TC_CompNum:String:@@SetCmpNumStr"],
+            Actions=[
+                "01:if:##TC_CompNum Contains \"(\"",
+                "02: SET :TC_CompNum: $$StringFindandReplace:##TC_CompNum:\"(\":\"\"",
+                "03: if:##TC_CompNum Contains \")\"",
+                "04: SET :TC_CompNum:$$StringFindandReplace:##TC_CompNum:\")\":\"\"",
+                "05: ENDIF",
+                "06: ENDIF",
+                "07: Return:##TC_CompNum"
+                ]
+        }];
+    }
 
     public override string ToString()
     {
@@ -40,6 +58,13 @@ public class BaseCompany : TallyXmlJson
 [XmlRoot(ElementName = "COMPANY")]
 public class Company : BaseCompany
 {
+
+    [XmlElement(ElementName = "BOOKSFROM")]
+    public DateTime BooksFrom { get; set; }
+
+    [XmlElement(ElementName = "GUID")]
+    [Column(TypeName = $"nvarchar({Constants.GUIDLength})")]
+    public string? GUID { get; set; }
 
     [XmlElement(ElementName = "BASICCOMPANYFORMALNAME")]
     [Column(TypeName = $"nvarchar({Constants.MaxNameLength})")]
@@ -91,53 +116,40 @@ public class Company : BaseCompany
     //Settings
 
     [XmlElement(ElementName = "ISINVENTORYON")]
-    public TallyYesNo? IsInventoryOn { get; set; }
+    public bool IsInventoryOn { get; set; }
 
     [XmlElement(ElementName = "ISINTEGRATED")]
-    public TallyYesNo? IntegrateAccountswithInventory { get; set; }
+    public bool IntegrateAccountswithInventory { get; set; }
 
     [XmlElement(ElementName = "ISBILLWISEON")]
-    public TallyYesNo? IsBillWiseOn { get; set; }
+    public bool IsBillWiseOn { get; set; }
 
     [XmlElement(ElementName = "ISCOSTCENTRESON")]
-    public TallyYesNo? IsCostCentersOn { get; set; }
+    public bool IsCostCentersOn { get; set; }
 
     [XmlElement(ElementName = "ISTDSON")]
-    public TallyYesNo? IsTDSOn { get; set; }
+    public bool IsTDSOn { get; set; }
 
 
     [XmlElement(ElementName = "ISTCSON")]
-    public TallyYesNo? IsTCSOn { get; set; }
+    public bool IsTCSOn { get; set; }
 
     [XmlElement(ElementName = "ISGSTON")]
-    public TallyYesNo? IsGSTOn { get; set; }
+    public bool IsGSTOn { get; set; }
 
 
     [XmlElement(ElementName = "ISPAYROLLON")]
-    public TallyYesNo? IsPayrollOn { get; set; }
+    public bool IsPayrollOn { get; set; }
 
     [XmlElement(ElementName = "ISINTERESTON")]
-    public TallyYesNo? IsInterestOn { get; set; }
+    public bool IsInterestOn { get; set; }
 
 }
 
 [XmlRoot(ElementName = "COMPANYONDISK")]
-public class CompanyOnDisk : TallyXmlJson
+public class CompanyOnDisk : BaseCompany, ITallyBaseObject
 {
-    [XmlElement(ElementName = "NAME")]
-    public string? Name { get; set; }
-
-    [XmlElement(ElementName = "STARTINGFROM")]
-    public TallyDate? StartingFrom { get; set; }
-
-    [XmlElement(ElementName = "ENDINGAT")]
-    public TallyDate? EndDate { get; set; }
-
-    [XmlElement(ElementName = "CLEANEDCOMPANYNUMBER")]
-    public string? CompNum { get; set; }
-
-    [XmlElement(ElementName = "ISAGGREGATE")]
-    public TallyYesNo IsGroup { get; set; }
+   
 
     public override string ToString()
     {

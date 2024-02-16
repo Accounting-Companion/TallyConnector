@@ -1,9 +1,13 @@
-﻿namespace TallyConnector.Core.Models;
+﻿using TallyConnector.Core.Models.Interfaces.Voucher;
+using TallyConnector.Core.Models.Masters;
+using TallyConnector.Core.Models.TallyComplexObjects;
+
+namespace TallyConnector.Core.Models;
 
 [Serializable]
 [XmlRoot(ElementName = "VOUCHER", Namespace = "")]
 [TallyObjectType(TallyObjectType.Vouchers)]
-public class Voucher : BasicTallyObject, ITallyObject
+public class Voucher : TallyObject, ITallyBaseObject
 {
     public Voucher()
     {
@@ -11,13 +15,14 @@ public class Voucher : BasicTallyObject, ITallyObject
     }
 
     [XmlElement(ElementName = "DATE")]
-    public TallyDate Date { get; set; }
+    public DateTime Date { get; set; }
 
     [XmlElement(ElementName = "REFERENCEDATE")]
-    public TallyDate? ReferenceDate { get; set; }
+    public DateTime? ReferenceDate { get; set; }
 
     [XmlElement(ElementName = "REFERENCE")]
     [Column(TypeName = $"nvarchar({Constants.MaxNameLength})")]
+    [TDLField(FetchText ="adsfdgfhjhkj",IncludeInFetch =false)]
     public string? Reference { get; set; }
 
 
@@ -27,6 +32,7 @@ public class Voucher : BasicTallyObject, ITallyObject
 
     [XmlElement(ElementName = "VOUCHERTYPEID")]
     [Column(TypeName = $"nvarchar({Constants.GUIDLength})")]
+    [TDLField(Set = "$GUID:VoucherType:$VOUCHERTYPENAME")]
     public string? VoucherTypeId { get; set; }
 
 
@@ -40,7 +46,7 @@ public class Voucher : BasicTallyObject, ITallyObject
 
     [XmlElement(ElementName = "ISCOSTCENTRE")]
     [Column(TypeName = $"nvarchar({Constants.MaxNameLength})")]
-    public TallyYesNo? IsCostCentre { get; set; }
+    public bool? IsCostCentre { get; set; }
 
     [XmlElement(ElementName = "COSTCENTRENAME")]
     [Column(TypeName = $"nvarchar({Constants.MaxNameLength})")]
@@ -51,7 +57,7 @@ public class Voucher : BasicTallyObject, ITallyObject
     public string? VoucherEntryMode { get; set; }
 
     [XmlElement(ElementName = "ISINVOICE")]
-    public TallyYesNo IsInvoice { get; set; }
+    public bool IsInvoice { get; set; }
 
     [XmlElement(ElementName = "VOUCHERNUMBER")]
     [Column(TypeName = $"nvarchar({Constants.MaxNameLength})")]
@@ -62,7 +68,7 @@ public class Voucher : BasicTallyObject, ITallyObject
     public bool IsOptional { get; set; }
 
     [XmlElement(ElementName = "EFFECTIVEDATE")]
-    public TallyDate? EffectiveDate { get; set; }
+    public DateTime? EffectiveDate { get; set; }
 
     [XmlElement(ElementName = "NARRATION")]
     [Column(TypeName = $"nvarchar({Constants.MaxNarrLength})")]
@@ -99,7 +105,7 @@ public class Voucher : BasicTallyObject, ITallyObject
 
     [TallyCategory("DispatchDetails")]
     [XmlIgnore]
-    public TallyDate? ShippingDate { get; set; }
+    public DateTime? ShippingDate { get; set; }
 
     private DeliveryNotes _DeliveryNotes;
 
@@ -216,10 +222,8 @@ public class Voucher : BasicTallyObject, ITallyObject
 
     [XmlElement(ElementName = "PARTYLEDGERID")]
     [Column(TypeName = $"nvarchar({Constants.GUIDLength})")]
+    [TDLField(Set = "$GUID:Ledger:$PARTYLEDGERNAME",FetchText = "PARTYLEDGERNAME")]
     public string? PartyLedgerId { get; set; }
-
-    [XmlElement(ElementName = "GSTREGISTRATION")]
-    public GSTRegistration? GSTRegistration { get; set; }
 
     [XmlElement(ElementName = "VOUCHERNUMBERSERIES")]
     public string? VoucherNumberSeries { get; set; }
@@ -279,22 +283,24 @@ public class Voucher : BasicTallyObject, ITallyObject
 
     [XmlArray(ElementName = "ADDRESS.LIST")]
     [XmlArrayItem(ElementName = "ADDRESS")]
+    [TDLCollection(CollectionName = "Address", ExplodeCondition = "$$NumItems:ADDRESS<1")]
     public List<string>? Address { get; set; }
 
     [XmlArray(ElementName = "BASICBUYERADDRESS.LIST")]
     [XmlArrayItem(ElementName = "BASICBUYERADDRESS")]
+    [TDLCollection(CollectionName = "Address", ExplodeCondition = "$$NumItems:BASICBUYERADDRESS<1")]
 
     public List<string>? BuyerAddress { get; set; }
 
     [XmlElement(ElementName = "ISCANCELLED")]
-    public TallyYesNo? IsCancelled { get; set; }
+    public bool? IsCancelled { get; set; }
 
     //EWAY Details
     [XmlElement(ElementName = "OVRDNEWAYBILLAPPLICABILITY")]
-    public TallyYesNo? OverrideEWayBillApplicability { get; set; }
+    public bool? OverrideEWayBillApplicability { get; set; }
 
-    [XmlElement(ElementName = "EWAYBILLDETAILS.LIST")]
-    public List<EwayBillDetail>? EWayBillDetails { get; set; }
+    //[XmlElement(ElementName = "EWAYBILLDETAILS.LIST")]
+    //public List<EwayBillDetail>? EWayBillDetails { get; set; }
 
     [XmlElement(ElementName = "ALLLEDGERENTRIES.LIST", Type = typeof(VoucherLedger))]
     [XmlElement(ElementName = "LEDGERENTRIES.LIST", Type = typeof(EVoucherLedger))]
@@ -305,141 +311,18 @@ public class Voucher : BasicTallyObject, ITallyObject
     [XmlElement(ElementName = "INVENTORYENTRIES.LIST", Type = typeof(InventoryEntries))]
     public List<AllInventoryAllocations>? InventoryAllocations { get; set; }
 
-    [XmlElement(ElementName = "INVENTORYENTRIESOUT.LIST")]
-    public List<InventoryoutAllocations>? InventoriesOut { get; set; }
+    //[XmlElement(ElementName = "INVENTORYENTRIESOUT.LIST")]
+    //public List<InventoryoutAllocations>? InventoriesOut { get; set; }
 
-    [XmlElement(ElementName = "INVENTORYENTRIESIN.LIST")]
-    public List<InventoryinAllocations>? InventoriesIn { get; set; }
+    //[XmlElement(ElementName = "INVENTORYENTRIESIN.LIST")]
+    //public List<InventoryinAllocations>? InventoriesIn { get; set; }
 
-    [XmlElement(ElementName = "CATEGORYENTRY.LIST")]
-    public CategoryEntry? CategoryEntry { get; set; }
+    //[XmlElement(ElementName = "CATEGORYENTRY.LIST")]
+    //public CategoryEntry? CategoryEntry { get; set; }
 
-    [XmlElement(ElementName = "ATTENDANCEENTRIES.LIST")]
-    public List<AttendanceEntry>? AttendanceEntries { get; set; }
+    //[XmlElement(ElementName = "ATTENDANCEENTRIES.LIST")]
+    //public List<AttendanceEntry>? AttendanceEntries { get; set; }
 
-    [JsonIgnore]
-    [XmlAttribute(AttributeName = "DATE")]
-    [NotMapped]
-    public string? Dt
-    {
-        get
-        {
-            if (Date != null)
-            {
-                return ((DateTime)Date!).ToString("yyyMMdd");
-            }
-            else { return null; }
-        }
-        set => Date = value ?? string.Empty;
-    }
-
-
-    [JsonIgnore]
-    [NotMapped]
-    [XmlAttribute(AttributeName = "VCHTYPE")]
-    public string? VchType
-    {
-        get
-        {
-            return VoucherType;
-        }
-        set
-        {
-            VoucherType = value;
-        }
-    }
-
-
-    [JsonIgnore]
-    [NotMapped]
-    [XmlAttribute(AttributeName = "MASTERID")]
-    public string? _MasterId
-    {
-        get
-        {
-            return MasterId.ToString();
-        }
-        set
-        {
-
-        }
-    }
-
-
-
-    public void OrderLedgers()
-    {
-        //if (VchType != "Contra" && VchType != "Purchase" && VchType != "Receipt" && VchType != "Credit Note")
-        //{
-        //    Ledgers?.Sort((x, y) => y.LedgerName!.CompareTo(x.LedgerName));//First Sort Ledger list Using Ledger Names
-        //    Ledgers?.Sort((x, y) => y.TallyAmountField!.TallyAmountField!.CompareTo(x.TallyAmountField!.TallyAmountField)); //Next sort Ledger List Using Ledger Amounts
-        //    Ledgers?.Sort((x, y) => y.TallyAmountField!.IsDebit.CompareTo(x.TallyAmountField!.IsDebit));
-        //}
-        //else
-        //{
-        //    Ledgers?.Sort((x, y) => x.LedgerName!.CompareTo(y.LedgerName));//First Sort Ledger list Using Ledger Names
-        //    Ledgers?.Sort((x, y) => x.TallyAmountField!.TallyAmountField.CompareTo(y.TallyAmountField!.TallyAmountField)); //Next sort Ledger List Using Ledger Amounts
-        //    Ledgers?.Sort((x, y) => x.TallyAmountField!.IsDebit.CompareTo(y.TallyAmountField!.IsDebit));
-        //}
-
-    }
-
-    public new string GetJson(bool Indented = false)
-    {
-        OrderLedgers();
-
-        return base.GetJson(Indented);
-    }
-
-    public new string GetXML(XmlAttributeOverrides? attrOverrides = null)
-    {
-        OrderLedgers();
-        GetJulianday();
-        return base.GetXML(attrOverrides);
-    }
-    public void GetJulianday()
-    {
-        Ledgers?.ForEach(ledg =>
-        {
-            ledg.BillAllocations?.ForEach(billalloc =>
-            {
-                if (billalloc.BillCreditPeriod != null)
-                {
-                    EffectiveDate ??= Date;
-                    DateTime dateTime = (DateTime)EffectiveDate!;
-                    double days = dateTime.Subtract(new DateTime(1900, 1, 1)).TotalDays + 1;
-                    // billalloc.BillCP.JD = days.ToString();
-                }
-            });
-        });
-    }
-
-    public new void PrepareForExport()
-    {
-        OrderLedgers(); //Ensures ledgers are ordered in correct way
-        GetJulianday();
-        //InventoryAllocations?.ForEach(c => c.BatchAllocations?.ForEach(btch => btch.OrderDueDate = Date));
-    }
-
-    /// <inheritdoc/>
-    public override void RemoveNullChilds()
-    {
-        EWayBillDetails = EWayBillDetails?.Where(Ewaybilldetail => !Ewaybilldetail.IsNull())?.ToList();
-        if (EWayBillDetails?.Count == 0)
-        {
-            EWayBillDetails = null;
-        }
-        AttendanceEntries = AttendanceEntries?.Where(attndentry => !attndentry.IsNull())?.ToList();
-        if (AttendanceEntries != null && AttendanceEntries.Count == 0)
-        {
-            AttendanceEntries = null;
-        }
-        Ledgers = Ledgers?.Where(ledg => !ledg.IsNull())?.ToList();
-        if (Ledgers != null && Ledgers.Count == 0)
-        {
-            Ledgers = null;
-        }
-    }
 
     public override string ToString()
     {
@@ -450,19 +333,21 @@ public class Voucher : BasicTallyObject, ITallyObject
 
 
 [XmlRoot(ElementName = "LEDGERENTRIES.LIST")]
+[TDLCollection(CollectionName = "LEDGERENTRIES", ExplodeCondition = $"$PERSISTEDVIEW =$$SysName:{Constants.Voucher.ViewType.InvoiceVoucherView}")]
 public class EVoucherLedger : VoucherLedger
 {
 
 }
 
 [XmlRoot(ElementName = "ALLLEDGERENTRIES.LIST")]
-public class BaseVoucherLedger : TallyBaseObject
+[TDLObjectsMethodName(FunctionName = nameof(GetLedgerEntryObjects))]
+public class BaseVoucherLedger : IBaseLedgerEntry
 {
 
     public BaseVoucherLedger()
     {
     }
-
+    [TDLField(IncludeInFetch = true)]
 
     [XmlElement(ElementName = "INDEXNUMBER")]
     public int IndexNumber { get; set; }
@@ -483,75 +368,60 @@ public class BaseVoucherLedger : TallyBaseObject
 
 
     [XmlElement(ElementName = "ISDEEMEDPOSITIVE")]
-    [JsonIgnore]
-    public TallyYesNo? IsDeemedPositive
-    {
-        get
-        {
-            if (Amount != null)
-            {
-                return Amount.IsDebit;
-            }
-            return null;
-
-        }
-        set { }
-    }
-
+    public bool IsDeemedPositive { get; set; }
 
 
     [XmlElement(ElementName = "AMOUNT")]
-    public TallyAmount? Amount { get; set; }
+    public TallyAmountField Amount { get; set; }
 
 
-    [XmlElement(ElementName = "CATEGORYALLOCATIONS.LIST")]
-    public List<CostCategoryAllocations>? CostCategoryAllocations { get; set; }
+    //[XmlElement(ElementName = "CATEGORYALLOCATIONS.LIST")]
+    //public List<CostCategoryAllocations>? CostCategoryAllocations { get; set; }
+
+
+    public static TallyCustomObject[] GetLedgerEntryObjects()
+    {
+        return [new("LedgerEntry",[
+                                       "LedgerId: $GUID:Ledger:$LedgerName"
+                                   ]){IsModify=YesNo.Yes},];
+    }
 
 }
 
 [XmlRoot(ElementName = "ALLLEDGERENTRIES.LIST")]
-
+[TDLCollection(CollectionName = "ALLLEDGERENTRIES", ExplodeCondition = $"$PERSISTEDVIEW =$$SysName:{Constants.Voucher.ViewType.AccountingVoucherView}")]
 public class VoucherLedger : BaseVoucherLedger
 {
-    public VoucherLedger(string name, TallyAmount amount)
+    public VoucherLedger(string name, TallyAmountField amount)
     {
         LedgerName = name;
-        Amount = amount;
+        //Amount = amount;
     }
     public VoucherLedger()
     {
     }
     [XmlElement(ElementName = "ADDLALLOCTYPE")]
+    [TDLField(IncludeInFetch =true)]
     public AdAllocType AdAllocType { get; set; }
 
     [XmlElement(ElementName = "ISPARTYLEDGER")]
-    public TallyYesNo IsPartyLedger { get; set; }
+    [TDLField(IncludeInFetch = true)]
+    public bool IsPartyLedger { get; set; }
 
     [XmlElement(ElementName = "SWIFTCODE")]
     public string? SWIFTCode { get; set; }
 
-    [XmlElement(ElementName = "BANKALLOCATIONS.LIST")]
-    public List<BankAllocation>? BankAllocations { get; set; }
+    //[XmlElement(ElementName = "BANKALLOCATIONS.LIST")]
+    //public List<BankAllocation>? BankAllocations { get; set; }
 
-    [XmlElement(ElementName = "BILLALLOCATIONS.LIST")]
-    public List<BillAllocations>? BillAllocations { get; set; }
+    //[XmlElement(ElementName = "BILLALLOCATIONS.LIST")]
+    //public List<BillAllocations>? BillAllocations { get; set; }
 
     [XmlElement(ElementName = "INVENTORYALLOCATIONS.LIST")]
+    [TDLCollection(CollectionName = "INVENTORYALLOCATIONS", ExplodeCondition = $"$$NUMITEMS:INVENTORYALLOCATIONS>0")]
     public List<InventoryAllocations>? InventoryAllocations { get; set; }
 
-    public bool IsNull()
-    {
-        if (string.IsNullOrEmpty(LedgerName))
-        {
-            return true;
-        }
-        BankAllocations = BankAllocations?.Where(bankalloc => !bankalloc.IsNull())?.ToList();
-        if (BankAllocations != null && BankAllocations.Count == 0)
-        {
-            BankAllocations = null;
-        }
-        return false;
-    }
+
 }
 
 [XmlRoot(ElementName = "BILLALLOCATIONS.LIST")]
@@ -596,24 +466,27 @@ public class InventoryoutAllocations : InventoryAllocations
 }
 
 [XmlRoot(ElementName = "ALLINVENTORYENTRIES.LIST")]
+[TDLCollection(CollectionName = "ALLINVENTORYENTRIES", ExplodeCondition = $"$PERSISTEDVIEW =$$SysName:{Constants.Voucher.ViewType.InvoiceVoucherView}")]
 public class AllInventoryAllocations : InventoryAllocations
 {
     [XmlElement(ElementName = "ACCOUNTINGALLOCATIONS.LIST")]
     public List<BaseVoucherLedger>? Ledgers { get; set; }
 }
 [XmlRoot(ElementName = "INVENTORYENTRIES.LIST")]
+[TDLCollection(CollectionName = "INVENTORYENTRIES", ExplodeCondition = $"$PERSISTEDVIEW =$$SysName:{Constants.Voucher.ViewType.MfgJournalVoucherView}")]
 public class InventoryEntries : AllInventoryAllocations
 {
 }
 
 [XmlRoot(ElementName = "INVENTORYALLOCATIONS.LIST")]
-public class InventoryAllocations : TallyBaseObject
+public class InventoryAllocations : ITallyBaseObject
 {
     public InventoryAllocations()
     {
     }
     [XmlArray("BASICUSERDESCRIPTION.LIST")]
     [XmlArrayItem(ElementName = "BASICUSERDESCRIPTION")]
+
     public List<string> UserDescriptions { get; set; }
     [XmlElement(ElementName = "INDEXNUMBER")]
     public int IndexNumber { get; set; }
@@ -631,43 +504,30 @@ public class InventoryAllocations : TallyBaseObject
     public string? BOMName { get; set; }
 
     [XmlElement(ElementName = "ISSCRAP")]
-    public TallyYesNo? IsScrap { get; set; }
+    public bool? IsScrap { get; set; }
 
 
     [XmlElement(ElementName = "ISDEEMEDPOSITIVE")]
-    [JsonIgnore]
-    public TallyYesNo? IsDeemedPositive
-    {
-        get
-        {
-            if (Amount != null)
-            {
-                return Amount.IsDebit;
-            }
-            return null;
-
-        }
-        set { }
-    }
+    public bool IsDeemedPositive { get; set; }
 
     [XmlElement(ElementName = "RATE")]
-    public TallyRate? Rate { get; set; }
+    public TallyRateField? Rate { get; set; }
 
     [XmlElement(ElementName = "ACTUALQTY")]
-    public TallyQuantity? ActualQuantity { get; set; }
+    public Quantity? ActualQuantity { get; set; }
 
     [XmlElement(ElementName = "BILLEDQTY")]
-    public TallyQuantity? BilledQuantity { get; set; }
+    public Quantity? BilledQuantity { get; set; }
 
 
     [XmlElement(ElementName = "AMOUNT")]
-    public TallyAmount? Amount { get; set; }
+    public TallyAmountField? Amount { get; set; }
 
-    [XmlElement(ElementName = "BATCHALLOCATIONS.LIST")]
-    public List<BatchAllocations>? BatchAllocations { get; set; }
+    //[XmlElement(ElementName = "BATCHALLOCATIONS.LIST")]
+    //public List<BatchAllocations>? BatchAllocations { get; set; }
 
-    [XmlElement(ElementName = "CATEGORYALLOCATIONS.LIST")]
-    public List<CostCategoryAllocations>? CostCategoryAllocations { get; set; }
+    //[XmlElement(ElementName = "CATEGORYALLOCATIONS.LIST")]
+    //public List<CostCategoryAllocations>? CostCategoryAllocations { get; set; }
 
 }
 
@@ -675,7 +535,7 @@ public class InventoryAllocations : TallyBaseObject
 public class BatchAllocations : TallyBaseObject//Godown Allocations
 {
     [XmlElement(ElementName = "MFDON")]
-    public TallyDate? ManufacturedOn { get; set; }
+    public DateTime? ManufacturedOn { get; set; }
 
     [XmlElement(ElementName = "TRACKINGNUMBER")]
     public string? TrackingNo { get; set; }
@@ -804,7 +664,7 @@ public class AttendanceEntry
 public class DeliveryNotes
 {
     [XmlElement(ElementName = "BASICSHIPPINGDATE")]
-    public TallyDate? ShippingDate { get; set; }
+    public DateTime? ShippingDate { get; set; }
 
     [XmlElement(ElementName = "BASICSHIPDELIVERYNOTE")]
     public string? DeliveryNote { get; set; }
@@ -812,13 +672,13 @@ public class DeliveryNotes
 
 
 [XmlRoot(ElementName = "EWAYBILLDETAILS.LIST")]
-public class EwayBillDetail : TallyBaseObject, ICheckNull
+public class EwayBillDetail : ITallyBaseObject
 {
     [XmlElement(ElementName = "BILLDATE")]
-    public TallyDate? BillDate { get; set; }
+    public DateTime? BillDate { get; set; }
 
     [XmlElement(ElementName = "CONSOLIDATEDBILLDATE")]
-    public TallyDate? ConsolidatedBillDate { get; set; }
+    public DateTime? ConsolidatedBillDate { get; set; }
 
     [XmlElement(ElementName = "BILLNUMBER")]
     public string? BillNumber { get; set; }
@@ -847,24 +707,10 @@ public class EwayBillDetail : TallyBaseObject, ICheckNull
     [XmlElement(ElementName = "TRANSPORTDETAILS.LIST")]
     public List<TransporterDetail>? TransporterDetails { get; set; }
 
-    /// <inheritdoc/>
-    public bool IsNull()
-    {
-        TransporterDetails = TransporterDetails?.Where(Details => !Details.IsNull())?.ToList();
-        if (TransporterDetails?.Count == 0)
-        {
-            TransporterDetails = null;
-        }
-        if (TransporterDetails == null && BillDate is null || BillDate == DateTime.MinValue && string.IsNullOrEmpty(BillNumber))
-        {
-            return true;
-        }
-        return false;
-    }
 }
 
 [XmlRoot(ElementName = "TRANSPORTDETAILS.LIST")]
-public class TransporterDetail : TallyBaseObject, ICheckNull
+public class TransporterDetail : ITallyBaseObject
 {
     [XmlElement(ElementName = "DISTANCE")]
     public string? Distance { get; set; }
@@ -894,20 +740,6 @@ public class TransporterDetail : TallyBaseObject, ICheckNull
     [XmlElement(ElementName = "VEHICLETYPE")]
     public VehicleType? VehicleType { get; set; }
 
-    public bool IsNull()
-    {
-        if (string.IsNullOrEmpty(Distance)
-            && string.IsNullOrEmpty(TransporterName)
-            && string.IsNullOrEmpty(TransporterId)
-            && (TransportMode is null || TransportMode is Models.TransportMode.None)
-            && string.IsNullOrEmpty(DocumentNumber)
-            && string.IsNullOrEmpty(VehicleNumber)
-            && (VehicleType is null || VehicleType is Models.VehicleType.None))
-        {
-            return true;
-        }
-        return false;
-    }
 }
 
 [XmlRoot(ElementName = "CATEGORYENTRY.LIST")]
@@ -951,7 +783,7 @@ public class PayHeadAllocation
 
     [XmlElement(ElementName = "ISDEEMEDPOSITIVE")]
     [JsonIgnore]
-    public TallyYesNo? IsDeemedPositive
+    public bool? IsDeemedPositive
     {
         get
         {
@@ -982,7 +814,7 @@ public class BankAllocation
     /// Use this field for Bank Reconcilliation Date
     /// </summary>
     [XmlElement(ElementName = "BANKERSDATE")]
-    public TallyDate? BankersDate { get; set; }
+    public DateTime? BankersDate { get; set; }
 
     [XmlElement(ElementName = "INSTRUMENTDATE")]
     public TallyDate InstrumentDate { get; set; }
@@ -1078,21 +910,21 @@ public enum BillRefType
 /// </summary>
 public enum VoucherViewType
 {
-    [XmlEnum(Name = "")]
+    [EnumXMLChoice(Choice = "")]
     None = 0,
-    [XmlEnum(Name = "Accounting Voucher View")]
+    [EnumXMLChoice(Choice = "Accounting Voucher View")]
     AccountingVoucherView = 1,
 
-    [XmlEnum(Name = "Invoice Voucher View")]
+    [EnumXMLChoice(Choice = "Invoice Voucher View")]
     InvoiceVoucherView = 2,
 
-    [XmlEnum(Name = "PaySlip Voucher View")]
+    [EnumXMLChoice(Choice = "PaySlip Voucher View")]
     PaySlipVoucherView = 3,
 
-    [XmlEnum(Name = "Multi Consumption Voucher View")]
+    [EnumXMLChoice(Choice = "Multi Consumption Voucher View")]
     MultiConsumptionVoucherView = 4,
 
-    [XmlEnum(Name = "Consumption Voucher View")]
+    [EnumXMLChoice(Choice = "Consumption Voucher View")]
     ConsumptionVoucherView = 5,
 }
 

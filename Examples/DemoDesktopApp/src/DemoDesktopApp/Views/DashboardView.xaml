@@ -1,0 +1,95 @@
+﻿<UserControl x:Class="DemoDesktopApp.Views.DashboardView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:DemoDesktopApp.Views"
+             mc:Ignorable="d" 
+             xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+             xmlns:root="clr-namespace:DemoDesktopApp"
+               xmlns:behaviours="http://schemas.microsoft.com/xaml/behaviors"
+             xmlns:Viewmodels="clr-namespace:DemoDesktopApp.ViewModels"
+             d:DataContext="{d:DesignInstance Type=Viewmodels:DashBoardViewModel}"
+             MinHeight="{x:Static root:Constants.Height}"
+             MinWidth="{x:Static root:Constants.Width}">
+    <behaviours:Interaction.Triggers>
+        <behaviours:EventTrigger EventName="Loaded">
+            <behaviours:InvokeCommandAction Command="{Binding LoadedCommand}"/>
+        </behaviours:EventTrigger>
+    </behaviours:Interaction.Triggers>
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="70"/>
+            <RowDefinition Height="10"/>
+            <RowDefinition Height="auto"/>
+        </Grid.RowDefinitions>
+        <ComboBox HorizontalAlignment="Right" Width="400"
+                  Background="White" BorderBrush="Beige" SelectedValuePath="Name" SelectedValue="{Binding SelectedCompanyName}"
+                  Margin="50,0" Style="{StaticResource MaterialDesignOutlinedComboBox}"
+                  VerticalAlignment="Center" VerticalContentAlignment="Center"
+                  ItemsSource="{Binding CompanyList}"/>
+
+        <Grid Grid.Row="2">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition/>
+                <ColumnDefinition Width="30"/>
+                <ColumnDefinition/>
+                <ColumnDefinition Width="20"/>
+            </Grid.ColumnDefinitions>
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="50"/>
+                    <RowDefinition/>
+                </Grid.RowDefinitions>
+                <TextBlock HorizontalAlignment="Center"  FontSize="20"
+                           Foreground="White" Text="Master Statistics" FontWeight="Bold"/>
+                <ScrollViewer Grid.Row="1" Height="600" VerticalScrollBarVisibility="Visible">
+                    <ItemsControl ItemsSource="{Binding MasterStats}">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <materialDesign:Card Padding="8" Margin="20,5">
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition/>
+                                            <ColumnDefinition/>
+                                        </Grid.ColumnDefinitions>
+                                        <TextBlock HorizontalAlignment="Left" Text="{Binding Name}"/>
+                                        <TextBlock Grid.Column="1" HorizontalAlignment="Right" Text="{Binding Count}"/>
+                                    </Grid>
+                                </materialDesign:Card>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </ScrollViewer>
+            </Grid>
+            <Grid  Grid.Column="2">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="50"/>
+                    <RowDefinition/>
+                </Grid.RowDefinitions>
+                <TextBlock HorizontalAlignment="Center" 
+                           FontSize="20"
+                           Foreground="White" Text="Voucher Statistics" FontWeight="Bold"/>
+                <ScrollViewer  Height="600"  Grid.Row="1">
+                    <ItemsControl ItemsSource="{Binding VoucherStats}">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <materialDesign:Card Padding="8" Margin="20,5">
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition/>
+                                            <ColumnDefinition/>
+                                        </Grid.ColumnDefinitions>
+                                        <TextBlock HorizontalAlignment="Left" Text="{Binding Name}"/>
+                                        <TextBlock Grid.Column="1" HorizontalAlignment="Right" Text="{Binding Count}"/>
+                                    </Grid>
+                                </materialDesign:Card>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </ScrollViewer>
+            </Grid>
+        </Grid>
+
+    </Grid>
+</UserControl>

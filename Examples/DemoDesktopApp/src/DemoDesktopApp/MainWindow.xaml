@@ -10,7 +10,7 @@
         MinWidth="{x:Static local:Constants.Width}" Background="{x:Static local:Constants.Background}">
     <behaviours:Interaction.Triggers>
         <behaviours:EventTrigger EventName="Loaded">
-            <behaviours:InvokeCommandAction Command="{Binding OnLoadedCommand}"/>
+            <behaviours:InvokeCommandAction Command="{Binding LoadedCommand}"/>
         </behaviours:EventTrigger>
     </behaviours:Interaction.Triggers>
     <Grid>

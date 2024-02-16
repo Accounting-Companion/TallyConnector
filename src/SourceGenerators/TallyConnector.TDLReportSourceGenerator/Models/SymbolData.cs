@@ -58,11 +58,18 @@ internal class SymbolData
     public FunctionDetails TDLNameSetMethods { get; set; } = [];
     public FunctionDetails TDLCollectionMethods { get; set; } = [];
     public FunctionDetails TDLGetFilterMethods { get; set; } = [];
+    public FunctionDetails TDLGetObjectMethods { get; set; } = [];
     public TDLCollectionData? TDLCollectionDetails { get; internal set; }
     public MapToData? MapToData { get; internal set; }
     public string MethodNameSuffixPlural { get; internal set; }
     public GenerationMode GenerationMode { get; internal set; }
     public List<INamedTypeSymbol> Args { get; internal set; }
+
+
+    public override string ToString()
+    {
+        return $"Symbol - {Name}";
+    }
 }
 
 
@@ -72,11 +79,16 @@ internal class FunctionDetails : IEnumerable<KeyValuePair<string, FunctionDetail
     public void Add(IMethodSymbol methodSymbol, SymbolData symbolData)
     {
         var detaill = new FunctionDetail(methodSymbol, symbolData);
+        Add(detaill);
+    }
+    public void Add(FunctionDetail detaill)
+    {
         if (!_functiondetails.ContainsKey(detaill.FullName))
         {
             _functiondetails.Add(detaill.FullName, detaill);
             Count++;
         }
+
     }
     public int Count { get; internal set; }
 
@@ -111,7 +123,7 @@ internal class BaseSymbolData : SymbolData
                           INamedTypeSymbol symbol,
                           INamedTypeSymbol reqEnvelope,
                           string methodName,
-                          bool isChild = false) : base(parentSymbol, symbol, methodName, reqEnvelope, isChild)
+                          bool isChild = false, SymbolData? parentSymbolData=null) : base(parentSymbol, symbol, methodName, reqEnvelope, isChild, parentSymbolData)
     {
     }
     public bool Exclude { get; set; }
@@ -145,6 +157,9 @@ internal class ChildSymbolData
                 break;
             case IFieldSymbol fieldSymbol:
                 type = (INamedTypeSymbol)fieldSymbol.Type;
+                break;
+            case INamedTypeSymbol symbol:
+                type = (INamedTypeSymbol)symbol;
                 break;
             default:
                 break;
@@ -193,11 +208,17 @@ internal class ChildSymbolData
     public SymbolData? MainParent { get; private set; }
     public TDLFieldData? TDLFieldDetails { get; set; }
     public string XmlTag { get; set; }
-    public TDLCollectionData? TDLCollectionDetails { get; internal set; }
+    public TDLCollectionData? DefaultTDLCollectionDetails { get; internal set; }
     public string? ListXmlTag { get; internal set; }
 
     public string ReportVarName { get; set; }
     public bool IsNullable { get; private set; }
     public bool IgnoreForCreateDTO { get; internal set; }
     public List<string>? EnumChoices { get; internal set; }
+    public List<XMLData> XMLData { get; internal set; }
+
+    public override string ToString()
+    {
+        return $"Child Symbol - {Name}";
+    }
 }

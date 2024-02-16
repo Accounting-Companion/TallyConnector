@@ -1,11 +1,14 @@
-﻿namespace TallyConnector.Core.Models.Masters;
+﻿using TallyConnector.Core.Models.Interfaces.Masters;
+
+namespace TallyConnector.Core.Models.Masters;
+
 
 [XmlRoot(ElementName = "CURRENCY")]
 [XmlType(AnonymousType = true)]
 [TallyObjectType(TallyObjectType.Currencies)]
-public class Currency : BasicTallyObject, INamedTallyObject
+public class BaseCurrency : TallyObject, IBaseCurrency
 {
-    public Currency()
+    public BaseCurrency()
     {
         FormalName = string.Empty;
         Name = string.Empty;
@@ -16,16 +19,12 @@ public class Currency : BasicTallyObject, INamedTallyObject
     /// </summary>
     /// <param name="originalName">Symbol For Currency</param>
     /// <param name="formalName">Expanded Symbol(In Words) for Currency</param>
-    public Currency(string originalName, string formalName)
+    public BaseCurrency(string originalName, string formalName)
     {
         Name = originalName;
         FormalName = formalName;
     }
 
-    [XmlAttribute(AttributeName = "NAME")]
-    [JsonIgnore]
-    [Column(TypeName = $"nvarchar({Constants.MaxNameLength})")]
-    public string? OldName { get; set; }
     [XmlElement(ElementName = "ORIGINALNAME")]
     [Required]
     [Column(TypeName = "nvarchar(5)")]
@@ -35,6 +34,31 @@ public class Currency : BasicTallyObject, INamedTallyObject
     [Required]
     [Column(TypeName = $"nvarchar({Constants.MaxNameLength})")]
     public string FormalName { get; set; }
+
+
+}
+
+
+[XmlRoot(ElementName = "CURRENCY")]
+[XmlType(AnonymousType = true)]
+[TallyObjectType(TallyObjectType.Currencies)]
+public class Currency : BaseCurrency
+{
+
+    /// <inheritdoc/>
+    public Currency() : base()
+    {
+    }
+    /// <inheritdoc/>
+    public Currency(string originalName, string formalName) : base(originalName, formalName)
+    {
+    }
+
+    [XmlElement(ElementName = "OLDNAME")]
+    [TDLField(Set = "$Name")]
+    [JsonIgnore]
+    [Column(TypeName = $"nvarchar({Constants.MaxNameLength})")]
+    public string OldName { get; set; }
 
 
     [XmlElement(ElementName = "DECIMALSYMBOL")]
@@ -52,17 +76,18 @@ public class Currency : BasicTallyObject, INamedTallyObject
     [Range(0, 4)]
     public int DecimalPlacesPrint { get; set; }
 
-    [XmlElement(ElementName = "INMILLIONS")]
+    [XmlElement(ElementName = "TC_INMILLIONS")]
+    [TDLField(Set = "$InMilllions")]
     [Column(TypeName = "nvarchar(3)")]
-    public TallyYesNo? InMilllions { get; set; }
+    public bool? InMilllions { get; set; }
 
     [XmlElement(ElementName = "ISSUFFIX")]
     [Column(TypeName = "nvarchar(3)")]
-    public TallyYesNo? IsSuffix { get; set; }
+    public bool? IsSuffix { get; set; }
 
     [XmlElement(ElementName = "HASSPACE")]
     [Column(TypeName = "nvarchar(3)")]
-    public TallyYesNo? HasSpace { get; set; }
+    public bool? HasSpace { get; set; }
 
 
 
@@ -75,10 +100,6 @@ public class Currency : BasicTallyObject, INamedTallyObject
     //[XmlElement(ElementName = "DAILYSELLINGRATES.LIST")]
     //public List<DailySellingRate> DailySellingRateList { get; set; }
 
-    public new void PrepareForExport()
-    {
-
-    }
 
     public override string ToString()
     {

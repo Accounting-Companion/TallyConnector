@@ -2,47 +2,46 @@
 
 public enum TallyObjectType
 {
-    [XmlEnum("Currencies")]
+    [EnumXMLChoice("Currencies")]
     Currencies = 1,
-    [XmlEnum("Groups")]
+    [EnumXMLChoice("Groups")]
     Groups = 2,
-    [XmlEnum("Ledgers")]
+    [EnumXMLChoice("Ledgers")]
     Ledgers = 3,
-    [XmlEnum("Cost Categories")]
+    [EnumXMLChoice("Cost Categories")]
     CostCategories = 4,
-    [XmlEnum("Cost Centres")]
+    [EnumXMLChoice("Cost Centres")]
     CostCentres = 5,
-    [XmlEnum("Godowns")]
+    [EnumXMLChoice("Godowns")]
     Godowns = 6,
-    [XmlEnum("Locations")]
+    [EnumXMLChoice("Locations")]
     Locations = 6,
-    [XmlEnum("Stock Categories")]
+    [EnumXMLChoice("Stock Categories")]
     StockCategories = 7,
-    [XmlEnum("Stock Groups")]
+    [EnumXMLChoice("Stock Groups")]
     StockGroups = 8,
-    [XmlEnum("Stock Items")]
+    [EnumXMLChoice("Stock Items")]
     StockItems = 9,
-    [XmlEnum("Units")]
+    [EnumXMLChoice("Units")]
     Units = 10,
-    [XmlEnum("Attendance/Production Types")]
+    [EnumXMLChoice("Attendance/Production Types")]
     AttendanceTypes = 11,
-    [XmlEnum("Employee Groups")]
+    [EnumXMLChoice("Employee Groups")]
     EmployeeGroups = 12,
-    [XmlEnum("Employees")]
+    [EnumXMLChoice("Employees")]
     Employees = 13,
-    [XmlEnum("Voucher Types")]
+    [EnumXMLChoice("Voucher Types")]
     VoucherTypes = 14,
-    [XmlEnum("TaxUnits")]
+    [EnumXMLChoice("TaxUnits")]
     TaxUnits = 15,
-    [XmlEnum("GSTRegistrations")]
+    [EnumXMLChoice("GSTRegistrations")]
     GSTRegistrations = 16,
-    [XmlEnum("Budgets")]
+    [EnumXMLChoice("Budgets")]
     Budgets = 17,
-    [XmlEnum("Budgets & Scenarios")]
+    [EnumXMLChoice("Budgets & Scenarios")]
+    [EnumXMLChoice("Scenarios")]
     BudgetsScenarios = 18,
-    [XmlEnum("Scenarios")]
-    Scenarios = 18,
-    [XmlEnum("Vouchers")]
+    [EnumXMLChoice("Vouchers")]
     Vouchers = 100,
 }
 

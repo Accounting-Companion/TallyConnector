@@ -44,5 +44,6 @@ public class TDLCollectionAttribute : Attribute
     }
 
     public string? ExplodeCondition { get; set; }
+    public Type? TypeInfo { get; set; }
 
 }

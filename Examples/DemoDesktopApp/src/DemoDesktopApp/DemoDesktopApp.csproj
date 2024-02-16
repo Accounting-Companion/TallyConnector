@@ -26,8 +26,5 @@
 	
 	  <ProjectReference Include="..\DemoDesktopApp.Infra\DemoDesktopApp.Infra.csproj" />
 	</ItemGroup>
-	<ItemGroup>
-	  <Folder Include="Views\" />
-	</ItemGroup>
 
 </Project>

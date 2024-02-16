@@ -1,22 +1,12 @@
-﻿
-using Microsoft.CodeAnalysis.CSharp.Syntax;
-using System.Collections.Immutable;
-using System.Data.Common;
+﻿using System.Collections.Immutable;
 using System.Diagnostics;
-using System.Linq;
-using System.Reflection;
-using System.Reflection.Metadata;
 using System.Runtime.CompilerServices;
 using TallyConnector.TDLReportSourceGenerator.Execute;
-using TallyConnector.TDLReportSourceGenerator.Extensions;
-using TallyConnector.TDLReportSourceGenerator.Extensions.Symbols;
-using static TallyConnector.TDLReportSourceGenerator.Constants;
 namespace TallyConnector.TDLReportSourceGenerator;
 
 [Generator(LanguageNames.CSharp)]
 public class TDLReportSourceGenerator : IIncrementalGenerator
 {
-
     private IEqualityComparer<INamedTypeSymbol> c;
 
     public void Initialize(IncrementalGeneratorInitializationContext context)
@@ -73,48 +63,56 @@ public class TDLReportSourceGenerator : IIncrementalGenerator
     private void Execute(SourceProductionContext context,
                           (ImmutableArray<INamedTypeSymbol> Left, ProjectArgs Right) tuple)
     {
-        var (symbols, projectArgs) = tuple;
-        List<Dictionary<string, GenerateSymbolsArgs>> args = [];
-        HashSet<string> names = [];
-        foreach (var symbol in symbols)
+        try
         {
-            string fullName = symbol.OriginalDefinition.ToString();
-            if (names.Contains(fullName))
+            var (symbols, projectArgs) = tuple;
+            List<Dictionary<string, GenerateSymbolsArgs>> args = [];
+            HashSet<string> names = [];
+            foreach (var symbol in symbols)
             {
-                continue;
-            }
-            names.Add(fullName);
-            Dictionary<string, GenerateSymbolsArgs> generateSymbolsArgs = [];
-            ImmutableArray<AttributeData> attributeDatas = symbol.GetAttributes();
-            foreach (var attributeData in attributeDatas)
-            {
-                string attrName = attributeData.GetAttrubuteMetaName();
-                if (attrName == GenerateHelperMethodAttrName)
+                string fullName = symbol.OriginalDefinition.ToString();
+                if (names.Contains(fullName))
                 {
-                    INamedTypeSymbol? attributeClass = attributeData.AttributeClass;
-                    HelperAttributeData? helperAttributeData = GetHelperAttributeData(attributeData);
-                    var typeargs = attributeClass!.TypeArguments;
-                    switch (typeargs.Length)
-                    {
-                        case 1:
-                            typeargs = attributeClass.BaseType!.TypeArguments;
-                            break;
-                        default:
-                            break;
-
-                    }
-                    var getTypeSymbol = (INamedTypeSymbol)typeargs[0];
-                    generateSymbolsArgs.Add(helperAttributeData?.MethodNameSuffix ?? getTypeSymbol.Name, new(symbol, getTypeSymbol,
-                                                        (INamedTypeSymbol)typeargs[1])
-                    {
-                        HelperAttributeData = helperAttributeData
-                    });
+                    continue;
                 }
+                names.Add(fullName);
+                Dictionary<string, GenerateSymbolsArgs> generateSymbolsArgs = [];
+                ImmutableArray<AttributeData> attributeDatas = symbol.GetAttributes();
+                foreach (var attributeData in attributeDatas)
+                {
+                    string attrName = attributeData.GetAttrubuteMetaName();
+                    if (attrName == GenerateHelperMethodAttrName)
+                    {
+                        INamedTypeSymbol? attributeClass = attributeData.AttributeClass;
+                        HelperAttributeData? helperAttributeData = GetHelperAttributeData(attributeData);
+                        var typeargs = attributeClass!.TypeArguments;
+                        switch (typeargs.Length)
+                        {
+                            case 1:
+                                typeargs = attributeClass.BaseType!.TypeArguments;
+                                break;
+                            default:
+                                break;
+
+                        }
+                        var getTypeSymbol = (INamedTypeSymbol)typeargs[0];
+                        generateSymbolsArgs.Add(helperAttributeData?.MethodNameSuffix ?? getTypeSymbol.Name, new(symbol, getTypeSymbol,
+                                                            (INamedTypeSymbol)typeargs[1])
+                        {
+                            HelperAttributeData = helperAttributeData
+                        });
+                    }
+                }
+                args.Add(generateSymbolsArgs);
             }
-            args.Add(generateSymbolsArgs);
+            var generateTDLReportsCommand = new GenerateTDLReportsCommand(args, projectArgs);
+            generateTDLReportsCommand.Execute(context);
         }
-        var generateTDLReportsCommand = new GenerateTDLReportsCommand(args, projectArgs);
-        generateTDLReportsCommand.Execute(context);
+        catch (Exception ex)
+        {
+
+            throw;
+        }
 
     }
 

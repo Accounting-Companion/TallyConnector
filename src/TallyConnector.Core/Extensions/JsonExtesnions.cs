@@ -82,10 +82,10 @@ public static class JsonExtesnions
 [JsonSerializable(typeof(List<VoucherType>))]
 [JsonSerializable(typeof(IEnumerable<VoucherType>))]
 
-[JsonSerializable(typeof(Voucher))]
-[JsonSerializable(typeof(Voucher[]))]
-[JsonSerializable(typeof(List<Voucher>))]
-[JsonSerializable(typeof(IEnumerable<Voucher>))]
+//[JsonSerializable(typeof(Voucher))]
+//[JsonSerializable(typeof(Voucher[]))]
+//[JsonSerializable(typeof(List<Voucher>))]
+//[JsonSerializable(typeof(IEnumerable<Voucher>))]
 
 
 [JsonSerializable(typeof(Unit))]

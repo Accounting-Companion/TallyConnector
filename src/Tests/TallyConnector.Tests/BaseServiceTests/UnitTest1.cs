@@ -18,7 +18,7 @@ public class BaseService
     [Test]
     public async Task TestGetLicenseInfo()
     {
-        var prime3Ledgers = await new Services.TallyPrime.TallyPrime3Service().GetLedgersAsync(new Core.Models.RequestOptions() { Filters = [new("TC_TaxFilter", "$TAXTYPE='GST'")] });
+        var prime3Ledgers = await new Services.TallyPrime.TallyPrime3Service().GetCurrenciesAsync();
         var v = await _baseTallyService.GetLicenseInfoAsync();
         Assert.That(v, Is.Not.Null);
         Assert.Multiple(() =>

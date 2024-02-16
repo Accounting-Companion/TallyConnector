@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
+using TallyConnector.Services;
 
 namespace DemoDesktopApp.Extensions;
 public static partial class ServiceExtensions
@@ -8,6 +9,8 @@ public static partial class ServiceExtensions
         services.AddSingleton<MainViewModel>();
         services.AddSingleton<MainWindow>();
         services.AddSingleton<NavigationState>();
+
+        services.AddSingleton<BaseTallyService>();
 
       
 
