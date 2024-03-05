@@ -1,34 +1,24 @@
-﻿namespace TallyConnector.Core.Models.Masters.Inventory;
+﻿using TallyConnector.Core.Models.TallyComplexObjects;
+
+namespace TallyConnector.Core.Models.Masters.Inventory;
 
 [XmlRoot(ElementName = "STOCKITEM")]
 [XmlType(AnonymousType = true)]
 [TallyObjectType(TallyObjectType.StockItems)]
-public class StockItem : BasicTallyObject, IAliasTallyObject
+public class StockItem : BaseMasterObject
 {
     public StockItem()
     {
         LanguageNameList = new();
     }
 
-    [XmlAttribute(AttributeName = "NAME")]
-    [Column(TypeName = $"nvarchar({Constants.MaxNameLength})")]
+    [XmlElement(ElementName = "OLDNAME")]
+    [TDLField(Set = "$Name")]
     [JsonIgnore]
-    public string? OldName { get; set; }
-
-    private string? name;
-
-    [XmlElement(ElementName = "NAME")]
     [Column(TypeName = $"nvarchar({Constants.MaxNameLength})")]
-    [Required]
-    public string Name
-    {
-        get
-        {
-            name = name == null || name == string.Empty ? OldName : name;
-            return name!;
-        }
-        set => name = value;
-    }
+    public string OldName { get; set; }
+
+
 
     [XmlElement(ElementName = "PARENT")]
     [Column(TypeName = $"nvarchar({Constants.MaxNameLength})")]
@@ -36,6 +26,7 @@ public class StockItem : BasicTallyObject, IAliasTallyObject
 
     [XmlElement(ElementName = "PARENTID")]
     [Column(TypeName = $"nvarchar({Constants.GUIDLength})")]
+    [TDLField(Set = "$GUID:StockCategory:$Parent")]
     public string? StockGroupId { get; set; }
 
     [XmlElement(ElementName = "CATEGORY")]
@@ -44,6 +35,7 @@ public class StockItem : BasicTallyObject, IAliasTallyObject
 
     [XmlElement(ElementName = "CATEGORYID")]
     [Column(TypeName = $"nvarchar({Constants.GUIDLength})")]
+    [TDLField(Set = "$GUID:StockCategory:$Category")]
     public string? CategoryId { get; set; }
 
     [XmlElement(ElementName = "GSTAPPLICABLE")]
@@ -69,22 +61,22 @@ public class StockItem : BasicTallyObject, IAliasTallyObject
 
     [XmlElement(ElementName = "ISCOSTTRACKINGON")]
     [Column(TypeName = "nvarchar(3)")]
-    public TallyYesNo? IsCostTracking { get; set; }
+    public bool? IsCostTracking { get; set; }
 
     [XmlElement(ElementName = "ISCOSTCENTRESON")]
     [Column(TypeName = "nvarchar(3)")]
-    public TallyYesNo? IsCostCentresOn { get; set; }
+    public bool? IsCostCentresOn { get; set; }
 
     [XmlElement(ElementName = "ISBATCHWISEON")]
     [Column(TypeName = "nvarchar(3)")]
-    public TallyYesNo? MaintainInBranches { get; set; }
+    public bool? MaintainInBranches { get; set; }
 
     [XmlElement(ElementName = "ISPERISHABLEON")]
     [Column(TypeName = "nvarchar(3)")]
-    public TallyYesNo? UseExpiryDates { get; set; }
+    public bool? UseExpiryDates { get; set; }
 
     [XmlElement(ElementName = "HASMFGDATE")]
-    public TallyYesNo? TrackDateOfManufacturing { get; set; }
+    public bool? TrackDateOfManufacturing { get; set; }
 
     [XmlElement(ElementName = "BASEUNITS")]
     [Column(TypeName = $"nvarchar({Constants.MaxNameLength})")]
@@ -92,6 +84,7 @@ public class StockItem : BasicTallyObject, IAliasTallyObject
 
     [XmlElement(ElementName = "BASEUNITID")]
     [Column(TypeName = $"nvarchar({Constants.GUIDLength})")]
+    [TDLField(Set = "$GUID:Unit:$BaseUnits")]
     public string? BaseUnitId { get; set; }
 
     [XmlElement(ElementName = "ADDITIONALUNITS")]
@@ -100,10 +93,11 @@ public class StockItem : BasicTallyObject, IAliasTallyObject
 
     [XmlElement(ElementName = "ADDITIONALUNITID")]
     [Column(TypeName = $"nvarchar({Constants.GUIDLength})")]
+    [TDLField(Set = "$GUID:Unit:$AdditionalUnits")]
     public string? AdditionalUnitsId { get; set; }
 
     [XmlElement(ElementName = "INCLUSIVETAX")]
-    public TallyYesNo? InclusiveOfTax { get; set; }
+    public bool? InclusiveOfTax { get; set; }
 
     [XmlElement(ElementName = "DENOMINATOR")]
     [Column(TypeName = "decimal(9,4)")]
@@ -117,17 +111,19 @@ public class StockItem : BasicTallyObject, IAliasTallyObject
     public string? RateOfDuty { get; set; }
 
     [XmlElement(ElementName = "OPENINGBALANCE")]
-    public TallyQuantity? OpeningBal { get; set; }
+    public TallyQuantityField? OpeningBal { get; set; }
 
     [XmlElement(ElementName = "OPENINGVALUE")]
-    public TallyAmount? OpeningValue { get; set; }
+    public TallyAmountField? OpeningValue { get; set; }
 
     [XmlElement(ElementName = "OPENINGRATE")]
-    public TallyRate? OpeningRate { get; set; }
+    public TallyRateField? OpeningRate { get; set; }
 
 
 
     [XmlIgnore]
+    [Column(TypeName = $"nvarchar({Constants.MaxNameLength})")]
+    [TDLField(Set = "$_FirstAlias", IncludeInFetch = true)]
     public string? Alias { get; set; }
 
     [JsonIgnore]
@@ -142,14 +138,14 @@ public class StockItem : BasicTallyObject, IAliasTallyObject
     [XmlArrayItem(ElementName = "MAILINGNAME")]
     public List<string> MailingNames { get; set; }
 
-    [XmlElement(ElementName = "MULTICOMPONENTLIST.LIST")]
-    public List<ComponentsList>? BOMList { get; set; }
+    //[XmlElement(ElementName = "MULTICOMPONENTLIST.LIST")]
+    //public List<ComponentsList>? BOMList { get; set; }
 
-    [XmlElement(ElementName = "GSTDETAILS.LIST")]
-    public List<GSTDetail>? GSTDetails { get; set; }
+    //[XmlElement(ElementName = "GSTDETAILS.LIST")]
+    //public List<GSTDetail>? GSTDetails { get; set; }
 
-    [XmlElement(ElementName = "HSNDETAILS.LIST")]
-    public List<HSNDetail>? HSNDetails { get; set; }
+    //[XmlElement(ElementName = "HSNDETAILS.LIST")]
+    //public List<HSNDetail>? HSNDetails { get; set; }
 
 
     public override string ToString()

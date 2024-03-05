@@ -5,6 +5,6 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace TallyConnector.Core.Models.Interfaces.Voucher;
-public interface IBaseVoucherObject : ITallyBaseObject
+public interface IBaseVoucherObject : IBaseObject
 {
 }

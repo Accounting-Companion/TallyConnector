@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -44,13 +45,51 @@ public static class EnveopeExtensions
                 collection.ComputeVar = requestOptions.ComputeVar;
                 collection.Filters = requestOptions.Filters?.Select(c => c.FilterName!).ToList();
             }
-            
+
             if (requestOptions.Filters != null && requestOptions.Filters.Count > 0)
             {
                 tDLMessage.System ??= [];
-                tDLMessage.System.AddRange(requestOptions.Filters.Select(c=>new Models.System(c.FilterName!,c.FilterFormulae!)));
+                tDLMessage.System.AddRange(requestOptions.Filters.Select(c => new Models.System(c.FilterName!, c.FilterFormulae!)));
             }
-           
+
+        }
+        return requestEnvelope;
+    }
+    public static RequestEnvelope PopulateOptions(this RequestEnvelope requestEnvelope, PaginatedRequestOptions? requestOptions)
+    {
+        if (requestOptions != null)
+        {
+            requestOptions.Filters ??= [];
+            requestOptions.Compute ??= [];
+            requestOptions.ComputeVar ??= [];
+
+            int recordsPerPage = requestOptions.RecordsPerPage ?? 1000;
+            int Start = recordsPerPage * (requestOptions.PageNum - 1);
+            if (!requestOptions.DisableCountTag)
+            {
+                TDLMessage tDLMessage = requestEnvelope.Body.Desc.TDL.TDLMessage;
+                Collection collection = tDLMessage.Collection.First();
+                if (!string.IsNullOrWhiteSpace(requestOptions.Childof))
+                {
+                    collection.Childof = requestOptions.Childof;
+
+                }
+                string CollectionName = $"{collection.Name}_NonPaginated";
+                tDLMessage.Collection.Add(new(CollectionName, collection.Type!, filters: requestOptions.Filters.Select(c => c.FilterName!).ToList()) { Childof=requestOptions.Childof});
+                const string objectCountName = "TC_ObjectsCount";
+                Part part = tDLMessage.Part!.First();
+                part.Lines = [.. part.Lines, objectCountName];
+                tDLMessage.Part = [.. tDLMessage.Part, new(objectCountName, null)];
+                tDLMessage.Line = [.. tDLMessage.Line, new(objectCountName, [objectCountName])];
+                tDLMessage.Field = [.. tDLMessage.Field, new Field(objectCountName, "TC_TotalCount", $"$$NUMITEMS:{CollectionName}")];
+            }
+
+
+            requestOptions.Compute = [.. requestOptions.Compute, "LineIndex : ##vLineIndex"];
+            requestOptions.ComputeVar = [.. requestOptions.ComputeVar, "vLineIndex: Number : IF $$IsEmpty:##vLineIndex THEN 1 ELSE ##vLineIndex + 1"];
+            requestOptions.Filters = [.. requestOptions.Filters, new("TC_PaginationFilter", $"##vLineIndex <= {Start + recordsPerPage} AND ##vLineIndex > {Start}")];
+            requestEnvelope.PopulateOptions((RequestOptions)requestOptions);
+
         }
         return requestEnvelope;
     }

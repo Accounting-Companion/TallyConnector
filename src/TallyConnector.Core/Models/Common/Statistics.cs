@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace TallyConnector.Core.Models.Common;
-public class BaseStatistics : ITallyBaseObject
+public class BaseStatistics : IBaseObject
 {
     [XmlElement(ElementName = "COUNT")]
     [TDLField(Set = "if $$ISEMPTY:$StatVal then 0 else $StatVal")]

@@ -1,6 +1,6 @@
 ﻿namespace TallyConnector.Core.Models;
 
-public class AutoColVoucherTypeStat : ITallyBaseObject
+public class AutoColVoucherTypeStat : IBaseObject
 {
     [XmlElement(ElementName = "NAME")]
     public string Name { get; set; }

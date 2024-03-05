@@ -11,14 +11,14 @@ public class GenerateHelperMethodsAttribute<T> : Attribute where T : Models.Basi
 
 [AttributeUsage(AttributeTargets.Class, AllowMultiple = true, Inherited = false)]
 public class GenerateHelperMethodAttribute<GetObjectType> : GenerateHelperMethodAttribute<GetObjectType, RequestEnvelope>
-    where GetObjectType : ITallyBaseObject
+    where GetObjectType : IBaseObject
 {
 
 }
 
 [AttributeUsage(AttributeTargets.Class, AllowMultiple = true, Inherited = false)]
 public class GenerateHelperMethodAttribute<GetObjectType, RequestEnvelopeType> : Attribute
-    where GetObjectType : ITallyBaseObject
+    where GetObjectType : IBaseObject
     where RequestEnvelopeType : RequestEnvelope
 {
     public GenerationMode GenerationMode { get; set; }

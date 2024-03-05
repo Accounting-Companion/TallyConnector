@@ -13,9 +13,8 @@ public enum TallyObjectType
     [EnumXMLChoice("Cost Centres")]
     CostCentres = 5,
     [EnumXMLChoice("Godowns")]
-    Godowns = 6,
     [EnumXMLChoice("Locations")]
-    Locations = 6,
+    Godowns = 6,
     [EnumXMLChoice("Stock Categories")]
     StockCategories = 7,
     [EnumXMLChoice("Stock Groups")]

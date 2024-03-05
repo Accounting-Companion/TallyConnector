@@ -1,6 +1,6 @@
 ﻿namespace TallyConnector.Core.Models;
 
-public interface ITallyBaseObject
+public interface IBaseObject
 {
     //void RemoveNullChilds();
 }

@@ -528,6 +528,9 @@ public class Line : DCollection
     [XmlElement(ElementName = "LOCAL")]
     public List<string> Local { get; set; } = [];
 
+    [XmlElement(ElementName = "DELETE")]
+    public List<string> Delete { get; set; } = [];
+
 
     [XmlElement(ElementName = "REPEAT")]
     public List<string>? Repeat { get; set; }

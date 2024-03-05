@@ -1,4 +1,6 @@
-﻿namespace TallyConnector.Core.Models;
+﻿
+
+namespace TallyConnector.Core.Models;
 public class BaseRequestOptions
 {
     public string? Company { get; set; }
@@ -31,20 +33,22 @@ public class CountRequestOptions : DateFilterRequestOptions
 public class RequestOptions : DateFilterRequestOptions
 {
     public List<Filter>? Filters { get; set; }
-    public YesNo IsInitialize { get; set; } = YesNo.No;
     public List<string>? Compute { get; set; } = new();
     public List<string>? ComputeVar { get; set; } = new();
-
 }
 
 public class PaginatedRequestOptions : RequestOptions
 {
     public int PageNum { get; set; } = 1;
     public int? RecordsPerPage { get; set; }
+    public string? Childof { get; set; }
+
     /// <summary>
     /// If set to true, Count request is not send  receiving data from tally
     /// </summary>
-    public bool DisableCountRequest { get; set; }
+    public bool DisableCountTag { get; set; }
+
+
 }
 public class MasterRequestOptions : RequestOptions
 {

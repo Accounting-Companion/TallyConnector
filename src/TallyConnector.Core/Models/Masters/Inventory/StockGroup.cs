@@ -3,7 +3,7 @@
 [XmlRoot(ElementName = "STOCKGROUP")]
 [XmlType(AnonymousType = true)]
 [TallyObjectType(TallyObjectType.StockGroups)]
-public class StockGroup : BasicTallyObject, IAliasTallyObject
+public class StockGroup : BaseMasterObject
 {
     public StockGroup()
     {
@@ -11,25 +11,13 @@ public class StockGroup : BasicTallyObject, IAliasTallyObject
         LanguageNameList = new();
     }
 
-    [XmlAttribute(AttributeName = "NAME")]
-    [Column(TypeName = $"nvarchar({Constants.MaxNameLength})")]
+    [XmlElement(ElementName = "OLDNAME")]
+    [TDLField(Set = "$Name")]
     [JsonIgnore]
-    public string? OldName { get; set; }
-
-    private string? name;
-
-    [XmlElement(ElementName = "NAME")]
     [Column(TypeName = $"nvarchar({Constants.MaxNameLength})")]
-    [Required]
-    public string Name
-    {
-        get
-        {
-            name = name == null || name == string.Empty ? OldName : name;
-            return name!;
-        }
-        set => name = value;
-    }
+    public string OldName { get; set; }
+
+
 
     [XmlElement(ElementName = "PARENT")]
     [Column(TypeName = $"nvarchar({Constants.MaxNameLength})")]
@@ -37,10 +25,11 @@ public class StockGroup : BasicTallyObject, IAliasTallyObject
 
     [XmlElement(ElementName = "PARENTID")]
     [Column(TypeName = $"nvarchar({Constants.GUIDLength})")]
+    [TDLField(Set = "$GUID:StockCategory:$Parent")]
     public string? ParentId { get; set; }
 
     [XmlElement(ElementName = "ISADDABLE")]
-    public TallyYesNo? IsAddable { get; set; }  //Should Quantities of Items be Added
+    public bool? IsAddable { get; set; }  //Should Quantities of Items be Added
 
     [XmlElement(ElementName = "GSTAPPLICABLE")]
     public string? GSTApplicability { get; set; }
@@ -49,6 +38,8 @@ public class StockGroup : BasicTallyObject, IAliasTallyObject
     public string? BaseUnit { get; set; }
 
     [XmlIgnore]
+    [Column(TypeName = $"nvarchar({Constants.MaxNameLength})")]
+    [TDLField(Set = "$_FirstAlias", IncludeInFetch = true)]
     public string? Alias { get; set; }
 
     [JsonIgnore]
@@ -56,9 +47,9 @@ public class StockGroup : BasicTallyObject, IAliasTallyObject
     [TDLCollection(CollectionName = "LanguageName")]
     public List<LanguageNameList> LanguageNameList { get; set; }
 
-    [XmlElement(ElementName = "GSTDETAILS.LIST")]
-    public List<GSTDetail>? GSTDetails { get; set; }
-    
+    //[XmlElement(ElementName = "GSTDETAILS.LIST")]
+    //public List<GSTDetail>? GSTDetails { get; set; }
+
     public override string ToString()
     {
         return $"Stock Group - {Name}";

@@ -85,6 +85,7 @@ public interface IBaseTallyService
     /// <param name="token"></param>
     /// <returns></returns>
     Task<List<VoucherStatistics>> GetVoucherStatisticsAsync(DateFilterRequestOptions? requestOptions = null, CancellationToken token = default);
+    Task<LastAlterIdsRoot> GetLastAlterIdsAsync(BaseRequestOptions? baseRequestOptions=null, CancellationToken token=default);
 }
 /// <summary>
 /// contains API to interact with Tally

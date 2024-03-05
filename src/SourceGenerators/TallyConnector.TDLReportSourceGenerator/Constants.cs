@@ -12,8 +12,8 @@ public static class Constants
     public const string TallyAmountClassName = $"{TallyConnectorModelsNameSpace}.TallyComplexObjects.TallyAmountField";
     public const string BaseClassName = "TallyConnector.Services.BaseTallyService";
     public const string XMLToObjectClassName = "TallyConnector.Services.XMLToObject";
-    public const string RequestOptionsClassName = $"{TallyConnectorModelsNameSpace}.PaginatedRequestOptions";
-    public const string PaginatedRequestOptionsClassName = $"{TallyConnectorModelsNameSpace}.RequestOptions";
+    public const string PaginatedRequestOptionsClassName = $"{TallyConnectorModelsNameSpace}.PaginatedRequestOptions";
+    public const string RequestOptionsClassName = $"{TallyConnectorModelsNameSpace}.RequestOptions";
     public const string GetObjfromXmlMethodName = "GetObjfromXml";
     public const string PopulateOptionsExtensionMethodName = "PopulateOptions";
     public const string PopulateDefaultOptionsMethodName = "PopulateDefaultOptions";
@@ -30,9 +30,10 @@ public static class Constants
     public const string XmlRootAttributeName = "System.Xml.Serialization.XmlRootAttribute";
     public const string XMLElementAttributeName = "System.Xml.Serialization.XmlElementAttribute";
     public const string XMLEnumAttributeName = "System.Xml.Serialization.XmlEnumAttribute";
-    
+
     public const string XMLArrayItemAttributeName = "System.Xml.Serialization.XmlArrayItemAttribute";
     public const string XMLArrayAttributeName = "System.Xml.Serialization.XmlArrayAttribute";
+    public const string XmlIgnoreAttributeName = "System.Xml.Serialization.XmlIgnoreAttribute";
 
 
     public const string CancellationTokenStructName = "System.Threading.CancellationToken";
@@ -42,6 +43,7 @@ public static class Constants
     public const string TallyConnectorModelsNameSpace = $"{TallyConnectorNameSpace}.Models";
     public const string TallyConnectorAttributesNameSpace = $"{TallyConnectorNameSpace}.Attributes";
     public const string TallyConnectorResponseNameSpace = $"{TallyConnectorModelsNameSpace}.Common.Response";
+    public const string TallyConnectorPaginationNameSpace = $"{TallyConnectorModelsNameSpace}.Common.Pagination";
     public const string ReportResponseEnvelopeClassName = "ReportResponseEnvelope";
     public const string FieldFullTypeName = $"{TallyConnectorModelsNameSpace}.Field";
     public const string PartFullTypeName = $"{TallyConnectorModelsNameSpace}.Part";
@@ -49,6 +51,8 @@ public static class Constants
     public const string CollectionFullTypeName = $"{TallyConnectorModelsNameSpace}.Collection";
     public const string TDLFunctionFullTypeName = $"{TallyConnectorModelsNameSpace}.TDLFunction";
     public const string TDLNameSetFullTypeName = $"{TallyConnectorModelsNameSpace}.NameSet";
+
+    public const string PaginatedResponseClassName = $"PaginatedResponse";
 
 
     public const string BaseLedgerEntryInterfaceName = $"{TallyConnectorModelsNameSpace}.Interfaces.IBaseLedgerEntry";
@@ -77,6 +81,7 @@ public static class Constants
 
 
     public const string GetObjectsMethodName = "Get{0}Async";
+    public const string GetXMLAttributeOveridesMethodName = "Get{0}XMLAttributeOverides";
     public const string GetRequestEnvelopeMethodName = "Get{0}RequestEnevelope";
     public const string GetTDLPartsMethodName = "Get{0}TDLParts";
     public const string GetMainTDLPartMethodName = "Get{0}MainTDLPart";

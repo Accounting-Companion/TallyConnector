@@ -1,4 +1,4 @@
-﻿namespace TallyConnector.Core.Models.Pagination;
+﻿namespace TallyConnector.Core.Models.Common.Pagination;
 public class Pagination : PaginationBase
 {
 

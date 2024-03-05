@@ -4,28 +4,13 @@
 [XmlRoot(ElementName = "UNIT")]
 [XmlType(AnonymousType = true)]
 [TallyObjectType(TallyObjectType.Units)]
-public class Unit : BasicTallyObject, INamedTallyObject
+public class Unit : BaseMasterObject
 {
-    [XmlAttribute(AttributeName = "NAME")]
-    [Column(TypeName = $"nvarchar({Constants.MaxNameLength})")]
+    [XmlElement(ElementName = "OLDNAME")]
+    [TDLField(Set = "$Name")]
     [JsonIgnore]
-    public string? OldName { get; set; }
-
-    private string? name;
-
-    [XmlElement(ElementName = "NAME")]
     [Column(TypeName = $"nvarchar({Constants.MaxNameLength})")]
-    [Required]
-    public string Name
-    {
-        get
-        {
-            name = name == null || name == string.Empty ? OldName : name;
-            return name!;
-        }
-        set => name = value;
-    }
-
+    public string OldName { get; set; }
 
     [XmlElement(ElementName = "ORIGINALNAME")]
     [Column(TypeName = $"nvarchar({Constants.MaxNameLength})")]
@@ -33,10 +18,12 @@ public class Unit : BasicTallyObject, INamedTallyObject
 
     [XmlElement(ElementName = "BASEUNITS")]
     [Column(TypeName = $"nvarchar({Constants.MaxNameLength})")]
+   
     public string? BaseUnit { get; set; }
 
     [XmlElement(ElementName = "BASEUNITID")]
     [Column(TypeName = $"nvarchar({Constants.GUIDLength})")]
+    [TDLField(Set = "$GUID:Unit:$BaseUnits")]
     public string? BaseUnitId { get; set; }
 
     [XmlElement(ElementName = "ADDITIONALUNITS")]
@@ -44,6 +31,7 @@ public class Unit : BasicTallyObject, INamedTallyObject
 
     [XmlElement(ElementName = "ADDITIONALUNITID")]
     [Column(TypeName = $"nvarchar({Constants.GUIDLength})")]
+    [TDLField(Set = "$GUID:Unit:$AdditionalUnits")]
     public string? AdditionalUnitId { get; set; }
 
 
@@ -54,23 +42,24 @@ public class Unit : BasicTallyObject, INamedTallyObject
     public int DecimalPlaces { get; set; }
 
     [XmlElement(ElementName = "CANDELETE")]
-    public TallyYesNo? CanDelete { get; set; }
+    [TDLField(IncludeInFetch = true)]
+    public bool? CanDelete { get; set; }
 
-    private bool? _IsSimpleUnit;
+    private bool? _isSimpleUnit;
 
     [XmlElement(ElementName = "ISSIMPLEUNIT")]
-    public TallyYesNo IsSimpleUnit
+    public bool IsSimpleUnit
     {
         get
         {
-            _IsSimpleUnit = IssimpleUnit();
-            return _IsSimpleUnit;
+            _isSimpleUnit = IssimpleUnit();
+            return _isSimpleUnit ?? true;
         }
-        set { _IsSimpleUnit = value; }
+        set { _isSimpleUnit = value; }
     }
 
     [XmlElement(ElementName = "ISGSTEXCLUDED")]
-    public TallyYesNo? IsGstExcluded { get; set; }
+    public bool? IsGstExcluded { get; set; }
 
     [XmlElement(ElementName = "CONVERSION")]
     public double Conversion { get; set; }
@@ -81,10 +70,6 @@ public class Unit : BasicTallyObject, INamedTallyObject
             return true;
         }
         return false;
-    }
-
-    public new void PrepareForExport()
-    {
     }
 
     public override string ToString()

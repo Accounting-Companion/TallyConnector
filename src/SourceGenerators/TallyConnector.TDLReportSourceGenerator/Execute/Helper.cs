@@ -2,6 +2,8 @@
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Reflection;
 using TallyConnector.TDLReportSourceGenerator.Extensions.Symbols;
 using TallyConnector.TDLReportSourceGenerator.Models;
 using static System.Net.Mime.MediaTypeNames;
@@ -13,23 +15,34 @@ internal class Helper
     private readonly SymbolData _symbol;
     readonly string _reportVariableName;
     readonly string _collectionVariableName;
+    private readonly string _paginatedCollectionVariableName;
     readonly string ReportName;
     readonly string _collectionName;
+    private readonly string _paginatedCollectionName;
     const string _cancellationTokenArgName = "token";
     const string _reqOptionsArgName = "reqOptions";
     private readonly List<ChildSymbolData> _complexChildren;
     private readonly List<ChildSymbolData> _simpleChildren;
     private readonly bool _includeCollection;
+    private readonly bool _isMasterObject;
+    private readonly bool _isVoucherObject;
+    private readonly bool _isTallyObject;
+
     public Helper(SymbolData symbol)
     {
         _symbol = symbol;
         ReportName = $"TC_{_symbol.TypeName}List";
         _reportVariableName = $"{_symbol.TypeName}{nameof(ReportName)}";
         _collectionVariableName = $"{_symbol.TypeName}{nameof(_collectionName)}";
+        _paginatedCollectionVariableName = $"{_collectionVariableName}Paginated";
         _collectionName = _symbol.IsChild ? _symbol.Name : $"TC_{_symbol.Name}Collection";
+        _paginatedCollectionName = _symbol.IsChild ? _symbol.Name : $"{_collectionName}_Paginated";
         _complexChildren = symbol.Children.Where(c => c.IsComplex || c.IsList).ToList();
         _simpleChildren = symbol.Children.Where(c => !c.IsComplex).ToList();
         _includeCollection = !(_symbol.TDLCollectionDetails?.Exclude ?? false);
+        _isMasterObject = _symbol.Symbol.HasInterfaceWithFullyQualifiedMetadataName(MasterObjectInterfaceName);
+        _isVoucherObject = _symbol.Symbol.HasInterfaceWithFullyQualifiedMetadataName(VoucherObjectInterfaceName);
+        _isTallyObject = _isMasterObject || _isVoucherObject;
     }
 
     public string GetPostRequestEnvelopeCompilationUnit()
@@ -121,11 +134,17 @@ internal class Helper
                 [
                     CreateConstStringVar(_reportVariableName, ReportName, true),
                     CreateConstStringVar(_collectionVariableName, _collectionName),
+                    CreateConstStringVar(_paginatedCollectionVariableName, _paginatedCollectionName),
                 ]);
         }
         if (!_symbol.IsChild)
         {
             members.Add(GenerateGetObjectsMethodSyntax());
+            if (_isTallyObject)
+            {
+                members.Add(GenerateGetObjectsPaginatedMethodSyntax());
+            }
+            members.Add(GenerateGetXmlAttributeOverridesMethodSyntax());
             members.Add(GenerateGetRequestEnvolopeMethodSyntax());
         }
         if (!_symbol.IsEnum)
@@ -158,14 +177,94 @@ internal class Helper
     }
 
 
+    private MemberDeclarationSyntax GenerateGetObjectsPaginatedMethodSyntax()
+    {
+        string reqEnvelopeVarName = "reqEnvelope";
+        string xmlVarName = "reqXml";
+        string xmlRespVarName = "resp";
+        string xmlRespEnvlopeVarName = "respEnv";
+        List<StatementSyntax> statements = [];
 
+        InvocationExpressionSyntax mainExpression = InvocationExpression(MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression,
+                                                                                                               GetGlobalNameforType(_symbol.MainFullName),
+                                                                                                               IdentifierName(string.Format(GetRequestEnvelopeMethodName, _symbol.TypeName))));
+        statements.Add(CreateVarInsideMethodWithExpression(reqEnvelopeVarName, mainExpression));
+
+        statements.Add(ExpressionStatement(InvocationExpression(MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression, IdentifierName(reqEnvelopeVarName), IdentifierName(PopulateOptionsExtensionMethodName)))
+                .WithArgumentList(ArgumentList(SeparatedList<ArgumentSyntax>(new SyntaxNodeOrToken[]
+                {
+                    Argument(IdentifierName(_reqOptionsArgName))
+                })))));
+        statements.Add(ExpressionStatement(AwaitExpression(InvocationExpression(IdentifierName(PopulateDefaultOptionsMethodName))
+            .WithArgumentList(ArgumentList(SeparatedList<ArgumentSyntax>(new SyntaxNodeOrToken[]
+            {
+                Argument(IdentifierName(reqEnvelopeVarName)),
+                Token(SyntaxKind.CommaToken),
+                 Argument(IdentifierName(_cancellationTokenArgName)),
+            }))))));
+        statements.Add(CreateVarInsideMethodWithExpression(xmlVarName,
+                                                           InvocationExpression(MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression,
+                                                           IdentifierName(reqEnvelopeVarName), IdentifierName("GetXML")))));
+        statements.Add(CreateVarInsideMethodWithExpression(xmlRespVarName, AwaitExpression(InvocationExpression(IdentifierName(SendRequestMethodName))
+            .WithArgumentList(ArgumentList(SeparatedList<ArgumentSyntax>(
+            new SyntaxNodeOrToken[]{
+                Argument(IdentifierName(xmlVarName)),
+                Token(SyntaxKind.CommaToken),
+                 Argument(CreateStringLiteral($"Getting {_symbol.MethodNameSuffixPlural}")),
+                 Token(SyntaxKind.CommaToken),
+                 Argument(IdentifierName(_cancellationTokenArgName))
+            }))))));
+
+        statements.Add(CreateVarInsideMethodWithExpression(xmlRespEnvlopeVarName,
+                                                           InvocationExpression(MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression,
+                                                                                                       GetGlobalNameforType(XMLToObjectClassName),
+                                                                                                       GenericName(GetObjfromXmlMethodName)
+            .WithTypeArgumentList(TypeArgumentList(SingletonSeparatedList((TypeSyntax)GetGlobalNameforType($"{_symbol.MainNameSpace}.Models.{GetReportResponseEnvelopeName(_symbol)}"))))))
+                                                           .WithArgumentList(ArgumentList(SeparatedList<ArgumentSyntax>(new SyntaxNodeOrToken[]
+                                                           {
+                                                               Argument(PostfixUnaryExpression(SyntaxKind.SuppressNullableWarningExpression,MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression, IdentifierName(xmlRespVarName), IdentifierName("Response")))),
+                                                               Token(SyntaxKind.CommaToken),
+                                                               Argument(InvocationExpression(IdentifierName(string.Format(GetXMLAttributeOveridesMethodName,_symbol.TypeName)))),
+                                                               Token(SyntaxKind.CommaToken),
+                                                               Argument( IdentifierName("_logger"))
+                                                           })))));
+
+
+        //statements.Add(ReturnStatement(MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression, IdentifierName(xmlRespEnvlopeVarName), IdentifierName("Objects"))));
+
+        statements.Add(ReturnStatement(ImplicitObjectCreationExpression().WithArgumentList(ArgumentList(SeparatedList<ArgumentSyntax>(new SyntaxNodeOrToken[]
+        {
+           Argument(BinaryExpression(SyntaxKind.CoalesceExpression,MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression, IdentifierName(xmlRespEnvlopeVarName), IdentifierName("TotalCount")),LiteralExpression(
+                                                                                SyntaxKind.NumericLiteralExpression,
+                                                                                Literal(0)))),
+           Token(SyntaxKind.CommaToken),
+            Argument(BinaryExpression(SyntaxKind.CoalesceExpression,ConditionalAccessExpression(IdentifierName(_reqOptionsArgName),MemberBindingExpression( IdentifierName("RecordsPerPage"))),LiteralExpression(
+                                                                                SyntaxKind.NumericLiteralExpression,
+                                                                                Literal(1_000)))),
+             Token(SyntaxKind.CommaToken),
+            Argument(MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression, IdentifierName(xmlRespEnvlopeVarName), IdentifierName("Objects"))),
+            Token(SyntaxKind.CommaToken),
+            Argument(LiteralExpression(SyntaxKind.NumericLiteralExpression,
+                                                                            Literal(0))),
+
+        })))));
+        var methodDeclarationSyntax = MethodDeclaration(QualifiedName(GetGlobalNameforType("System.Threading.Tasks"), GenericName("Task")
+         .WithTypeArgumentList(TypeArgumentList(SingletonSeparatedList<TypeSyntax>(QualifiedName(GetGlobalNameforType(TallyConnectorPaginationNameSpace), GenericName(PaginatedResponseClassName)
+         .WithTypeArgumentList(TypeArgumentList(SingletonSeparatedList<TypeSyntax>(GetGlobalNameforType(_symbol.FullName))))))))),
+                                                     Identifier(string.Format(GetObjectsMethodName, _symbol.MethodNameSuffixPlural)))
+         .WithModifiers(TokenList([Token(SyntaxKind.PublicKeyword), Token(SyntaxKind.AsyncKeyword)]))
+         .WithParameterList(ParameterList(SeparatedList<ParameterSyntax>(new SyntaxNodeOrToken[] {Parameter(Identifier(_reqOptionsArgName))
+                .WithType(NullableType(GetGlobalNameforType(PaginatedRequestOptionsClassName)))
+                .WithDefault(EqualsValueClause(LiteralExpression(
+                                                SyntaxKind.NullLiteralExpression))) , Token(SyntaxKind.CommaToken), GetCancellationTokenParameterSyntax()})))
+         .WithBody(Block(statements));
+        return methodDeclarationSyntax;
+    }
     private MemberDeclarationSyntax GenerateGetObjectsMethodSyntax()
     {
         string reqEnvelopeVarName = "reqEnvelope";
         string xmlVarName = "reqXml";
         string xmlRespVarName = "resp";
-        string xmlAttributeOverridesVarName = "XMLAttributeOverrides";
-        string xmlAttributesVarName = "XMLAttributes";
         string xmlRespEnvlopeVarName = "respEnv";
         List<StatementSyntax> statements = [];
         List<SyntaxNodeOrToken> methodArgs = [];
@@ -174,8 +273,7 @@ internal class Helper
                                                                                                                GetGlobalNameforType(_symbol.MainFullName),
                                                                                                                IdentifierName(string.Format(GetRequestEnvelopeMethodName, _symbol.TypeName))));
         statements.Add(CreateVarInsideMethodWithExpression(reqEnvelopeVarName, mainExpression));
-        bool isMasterObject = _symbol.Symbol.HasInterfaceWithFullyQualifiedMetadataName(MasterObjectInterfaceName);
-        bool isVoucherObject = _symbol.Symbol.HasInterfaceWithFullyQualifiedMetadataName(VoucherObjectInterfaceName);
+
         bool haveAnyArgs = _symbol.Args.Any();
         if (haveAnyArgs)
         {
@@ -186,14 +284,14 @@ internal class Helper
                 .WithDefault(EqualsValueClause(LiteralExpression(
                                                 SyntaxKind.NullLiteralExpression))));
         }
-        if (!haveAnyArgs && (isMasterObject || isVoucherObject))
+        if (!haveAnyArgs && (_isMasterObject || _isVoucherObject))
         {
             methodArgs.Add(Parameter(Identifier(_reqOptionsArgName))
-                .WithType(NullableType(GetGlobalNameforType(PaginatedRequestOptionsClassName)))
-                .WithDefault(EqualsValueClause(LiteralExpression(
-                                                SyntaxKind.NullLiteralExpression))));
+                .WithType(GetGlobalNameforType(RequestOptionsClassName)));
+            //.WithDefault(EqualsValueClause(LiteralExpression(
+            //                                SyntaxKind.NullLiteralExpression))));
         }
-        if (haveAnyArgs || isMasterObject || isVoucherObject)
+        if (haveAnyArgs || _isMasterObject || _isVoucherObject)
         {
             var extensionMethodInvokeSyntax = InvocationExpression(MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression, IdentifierName(reqEnvelopeVarName), IdentifierName(PopulateOptionsExtensionMethodName)))
                 .WithArgumentList(ArgumentList(SeparatedList<ArgumentSyntax>(new SyntaxNodeOrToken[]
@@ -224,14 +322,13 @@ internal class Helper
                  Token(SyntaxKind.CommaToken),
                  Argument(IdentifierName(_cancellationTokenArgName))
             }))))));
-        //statements.Add(CreateVarInsideMethodWithExpression(xmlAttributeOverridesVarName, ObjectCreationExpression(GetGlobalNameforType(XmlAttributeOverridesClassName)).WithArgumentList(ArgumentList())));
         //statements.Add(CreateVarInsideMethodWithExpression(xmlAttributesVarName, ObjectCreationExpression(GetGlobalNameforType(XmlAttributesClassName)).WithArgumentList(ArgumentList())));
         //statements.Add(ExpressionStatement(InvocationExpression(MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression, IdentifierName(xmlAttributesVarName), IdentifierName("XmlElements.Add")))
         //    .WithArgumentList(ArgumentList(SingletonSeparatedList(Argument(ImplicitObjectCreationExpression()
-        //        .WithArgumentList(ArgumentList(SingletonSeparatedList(Argument(CreateStringLiteral(_symbol.RootXmlTag)))))))))));
+        //        .WithArgumentList(ArgumentList(SingletonSeparatedList(Argument(CreateStringLiteral(symbol.RootXmlTag)))))))))));
 
         //QualifiedNameSyntax genericNameforEnv = QualifiedName(GetGlobalNameforType(TallyConnectorResponseNameSpace), GenericName(ReportResponseEnvelopeClassName)
-        //            .WithTypeArgumentList(TypeArgumentList(SingletonSeparatedList<TypeSyntax>(GetGlobalNameforType(_symbol.FullName)))));
+        //            .WithTypeArgumentList(TypeArgumentList(SingletonSeparatedList<TypeSyntax>(GetGlobalNameforType(symbol.FullName)))));
 
         //statements.Add(ExpressionStatement(InvocationExpression(MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression, IdentifierName(xmlAttributeOverridesVarName), IdentifierName("Add")))
         //    .WithArgumentList(ArgumentList(SeparatedList<ArgumentSyntax>(new SyntaxNodeOrToken[]
@@ -253,19 +350,15 @@ internal class Helper
                                                            {
                                                                Argument(PostfixUnaryExpression(SyntaxKind.SuppressNullableWarningExpression,MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression, IdentifierName(xmlRespVarName), IdentifierName("Response")))),
                                                                Token(SyntaxKind.CommaToken),
-                                                               Argument( LiteralExpression(
-                                                        SyntaxKind.NullLiteralExpression)),
+                                                               Argument(InvocationExpression(IdentifierName(string.Format(GetXMLAttributeOveridesMethodName,_symbol.TypeName)))),
                                                                Token(SyntaxKind.CommaToken),
                                                                Argument( IdentifierName("_logger"))
                                                            })))));
 
 
         statements.Add(ReturnStatement(MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression, IdentifierName(xmlRespEnvlopeVarName), IdentifierName("Objects"))));
-        if (methodArgs.Count > 0)
-        {
-            methodArgs.Add(Token(SyntaxKind.CommaToken));
-        }
-        methodArgs.Add(GetCancellationTokenParameterSyntax());
+
+        SafeAdd(methodArgs, GetCancellationTokenParameterSyntax());
         var methodDeclarationSyntax = MethodDeclaration(QualifiedName(GetGlobalNameforType("System.Threading.Tasks"), GenericName("Task")
             .WithTypeArgumentList(TypeArgumentList(SingletonSeparatedList<TypeSyntax>(QualifiedName(GetGlobalNameforType(CollectionsNameSpace), GenericName(ListClassName)
             .WithTypeArgumentList(TypeArgumentList(SingletonSeparatedList<TypeSyntax>(GetGlobalNameforType(_symbol.FullName))))))))),
@@ -274,6 +367,66 @@ internal class Helper
             .WithParameterList(ParameterList(SeparatedList<ParameterSyntax>(methodArgs)))
             .WithBody(Block(statements));
 
+        return methodDeclarationSyntax;
+    }
+
+    private MemberDeclarationSyntax GenerateGetXmlAttributeOverridesMethodSyntax()
+    {
+        var xmlAttributeOverridesVarName = "xmlAttributeOverrides";
+        List<StatementSyntax> statements = [];
+        statements.Add(CreateVarInsideMethodWithExpression(xmlAttributeOverridesVarName, ObjectCreationExpression(GetGlobalNameforType(XmlAttributeOverridesClassName)).WithArgumentList(ArgumentList())));
+        HashSet<string> typeNames = [];
+        AddExpressionForOverridenChilds(_symbol);
+        
+        void AddExpressionForOverridenChilds(SymbolData symbol)
+        {
+            typeNames.Add(symbol.FullName);
+            if (symbol.BaseSymbolData != null && !typeNames.Contains(symbol.BaseSymbolData.SymbolData!.FullName))
+            {
+                AddExpressionForOverridenChilds(symbol.BaseSymbolData.SymbolData);
+            }
+            foreach (var child in symbol.Children.Where(c => c.IsOverridden))
+            {
+                ChildSymbolData overriddenChild = child.OverriddenChild!;
+                AddExpressionForOverridenChild(overriddenChild);
+                if (child.IsComplex && !typeNames.Contains(child.SymbolData!.FullName))
+                {
+                    AddExpressionForOverridenChilds(child.SymbolData!);
+                }
+                void AddExpressionForOverridenChild(ChildSymbolData overriddenChild)
+                {
+                    statements.Add(ExpressionStatement(InvocationExpression(MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression, IdentifierName(xmlAttributeOverridesVarName), IdentifierName("Add")))
+                    .WithArgumentList(ArgumentList(
+                                        SeparatedList<ArgumentSyntax>(new SyntaxNodeOrToken[]
+                                        {
+                                         Argument(TypeOfExpression(GetGlobalNameforType(overriddenChild.Parent.FullName))),
+                                          Token(SyntaxKind.CommaToken),
+                                         Argument(CreateStringLiteral(overriddenChild.Name)),
+                                          Token(SyntaxKind.CommaToken),
+                                         Argument(ObjectCreationExpression(GetGlobalNameforType(XmlAttributesClassName))
+                                         .WithArgumentList(ArgumentList())
+                                         .WithInitializer(InitializerExpression(
+                                                        SyntaxKind.ObjectInitializerExpression,
+                                                        SingletonSeparatedList<ExpressionSyntax>(
+                                                            AssignmentExpression(
+                                                                SyntaxKind.SimpleAssignmentExpression,
+                                                                IdentifierName("XmlIgnore"),
+                                                                LiteralExpression(
+                                                                    SyntaxKind.TrueLiteralExpression)))))),
+                                        })))));
+                }
+
+            }
+            
+
+        }
+
+        statements.Add(ReturnStatement(IdentifierName(xmlAttributeOverridesVarName)));
+        var methodDeclarationSyntax = MethodDeclaration(GetGlobalNameforType(XmlAttributeOverridesClassName),
+                                                       Identifier(string.Format(GetXMLAttributeOveridesMethodName, _symbol.TypeName)))
+           .WithModifiers(TokenList([Token(SyntaxKind.PublicKeyword)]))
+           .WithParameterList(ParameterList())
+           .WithBody(Block(statements));
         return methodDeclarationSyntax;
     }
 
@@ -327,7 +480,7 @@ internal class Helper
         //    {
         //        functionMethodNames.Add(InvocationExpression(
         //            MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression,
-        //                                   GetGlobalNameforType(_symbol.MainFullName),
+        //                                   GetGlobalNameforType(symbol.MainFullName),
         //                                   IdentifierName(string.Format(GetTDLFunctionsMethodName,
         //                                                                child.SymbolData!.TypeName)))));
         //    }
@@ -368,13 +521,18 @@ internal class Helper
             }
             if (symbol.BaseSymbolData != null)
             {
-                GetMethodNames(symbol.BaseSymbolData,func,methodNames);
+                GetMethodNames(symbol.BaseSymbolData, func, methodNames);
             }
             return methodNames;
         }
 
-        static void AddFunctions(SymbolData symbol, List<ExpressionSyntax> methodNames, string methodFormatString, Func<SymbolData, int> action)
+        static void AddFunctions(SymbolData symbol,
+                                 List<ExpressionSyntax> methodNames,
+                                 string methodFormatString,
+                                 Func<SymbolData, int> action, HashSet<string>? ComplexTypeNames = null)
         {
+            ComplexTypeNames ??= [];
+            ComplexTypeNames.Add(symbol.FullName);
             IEnumerable<ChildSymbolData> children = symbol.Children.Where(c => !c.IsComplex);
             IEnumerable<ChildSymbolData> complexchildren = symbol.Children.Where(c => c.IsComplex);
             foreach (var child in children)
@@ -390,11 +548,18 @@ internal class Helper
             }
             foreach (var child in complexchildren)
             {
-                AddFunctions(child.SymbolData!, methodNames, methodFormatString, action);
+                if (!ComplexTypeNames.Contains(child.SymbolData!.FullName))
+                {
+                    AddFunctions(child.SymbolData!, methodNames, methodFormatString, action, ComplexTypeNames);
+                }
+
             }
             if (symbol.BaseSymbolData != null)
             {
-                AddFunctions(symbol.BaseSymbolData.SymbolData, methodNames, methodFormatString, action);
+                if (!ComplexTypeNames.Contains(symbol.BaseSymbolData.SymbolData.FullName))
+                {
+                    AddFunctions(symbol.BaseSymbolData.SymbolData, methodNames, methodFormatString, action, ComplexTypeNames);
+                }
             }
         }
     }
@@ -423,7 +588,7 @@ internal class Helper
         const string PartsVariableName = "parts";
         List<StatementSyntax> statements = [];
         bool IsBaseSymbol = _symbol.IsBaseSymbol;
-        statements.Add(CreateVarArrayWithCount(PartFullTypeName, PartsVariableName, IsBaseSymbol ? _symbol.ComplexFieldsCount : _symbol.ComplexFieldsCount + 1));
+        statements.Add(CreateVarArrayWithCount(PartFullTypeName, PartsVariableName, IsBaseSymbol ? _symbol.TDLPartsCount : _symbol.TDLPartsCount + 1));
 
 
         MethodDeclarationSyntax MainPartMethod = GenerateMainPartMethodSyntax(CollectionNameArgName,
@@ -470,7 +635,7 @@ internal class Helper
                             Argument(LiteralExpression(SyntaxKind.NumericLiteralExpression, Literal(counter))),
                      })))
                 ));
-            counter += _symbol.BaseSymbolData.SymbolData?.ComplexFieldsCount ?? 0;
+            counter += _symbol.BaseSymbolData.SymbolData?.TDLPartsCount ?? 0;
 
         }
         foreach (var child in _complexChildren)
@@ -566,7 +731,7 @@ internal class Helper
                             Argument(LiteralExpression(SyntaxKind.NumericLiteralExpression, Literal(counter))),
                              })))
                         ));
-                    counter += (child.SymbolData?.ComplexFieldsCount ?? 0) + 1;
+                    counter += (child.SymbolData?.TDLPartsCount ?? 0) + 1;
                     return;
                 }
             }
@@ -680,7 +845,7 @@ internal class Helper
         const string xmlTagArgName = "xmlTag";
         const string LinesVariableName = "lines";
         List<StatementSyntax> statements = [];
-        statements.Add(CreateVarArrayWithCount(LineFullTypeName, LinesVariableName, _symbol.ComplexFieldsIncludedCount + 1));
+        statements.Add(CreateVarArrayWithCount(LineFullTypeName, LinesVariableName, _symbol.TDLLinesCount + 1));
         List<SyntaxNodeOrToken> args = [];
 
         var childSymbolDatas = _simpleChildren.Where(c => !c.IsList).Select(c => GetFieldName(c)).ToList();
@@ -775,6 +940,46 @@ internal class Helper
                                          IdentifierName("Use"), IdentifierName($"{_symbol.BaseSymbolData.SymbolData.TypeName}{nameof(ReportName)}"))
                 ]);
         }
+        List<SyntaxNodeOrToken> lineIntializerDeleteArgs = [];
+        foreach (var item in _simpleChildren.Where(c => c.IsOverridden))
+        {
+            List<InterpolatedStringContentSyntax> nodes = [];
+            var prefixText = "Field:";
+            nodes.Add(InterpolatedStringText().WithTextToken(Token(TriviaList(), SyntaxKind.InterpolatedStringTextToken, prefixText, prefixText, TriviaList())));
+            nodes.Add(Interpolation(IdentifierName(GetFieldName(item.OverriddenChild!))));
+            InterpolatedStringExpressionSyntax interpolatedStringExpressionSyntax = InterpolatedStringExpression(Token(SyntaxKind.InterpolatedStringStartToken)).WithContents(List(nodes));
+            SafeAdd(lineIntializerDeleteArgs, ExpressionElement(interpolatedStringExpressionSyntax));
+        }
+        foreach (var item in _complexChildren.Where(c => c.IsOverridden))
+        {
+            ChildSymbolData childSymbolData = item.OverriddenChild!;
+            AddExplodeArgForComplexChild(childSymbolData);
+            int Counter = 1;
+            foreach (var xMLData in childSymbolData.XMLData)
+            {
+                if (xMLData.ChildSymbolData != null)
+                {
+                    AddExplodeArgForComplexChild(xMLData.ChildSymbolData);
+                    Counter++;
+                }
+            }
+            void AddExplodeArgForComplexChild(ChildSymbolData childSymbolData)
+            {
+                List<InterpolatedStringContentSyntax> nodes = [];
+                var prefixText = "Explode:";
+                nodes.Add(InterpolatedStringText().WithTextToken(Token(TriviaList(), SyntaxKind.InterpolatedStringTextToken, prefixText, prefixText, TriviaList())));
+                nodes.Add(Interpolation(IdentifierName(childSymbolData.ReportVarName)));
+                InterpolatedStringExpressionSyntax interpolatedStringExpressionSyntax = InterpolatedStringExpression(Token(SyntaxKind.InterpolatedStringStartToken)).WithContents(List(nodes));
+                SafeAdd(lineIntializerDeleteArgs, ExpressionElement(interpolatedStringExpressionSyntax));
+            }
+
+        }
+        if (lineIntializerDeleteArgs.Count > 0)
+        {
+            intializerArgs ??= [];
+            SafeAdd(intializerArgs, AssignmentExpression(SyntaxKind.SimpleAssignmentExpression,
+                                             IdentifierName("Delete"), CollectionExpression(SeparatedList<CollectionElementSyntax>(lineIntializerDeleteArgs))));
+        }
         statements.Add(GetArrayAssignmentExppressionImplicit(LinesVariableName,
                                                  0,
                                                  [
@@ -806,7 +1011,7 @@ internal class Helper
                             Argument(LiteralExpression(SyntaxKind.NumericLiteralExpression, Literal(counter))),
                      })))
                 ));
-            counter += (_symbol.BaseSymbolData?.SymbolData.ComplexFieldsIncludedCount ?? 0) + 1;
+            counter += (_symbol.BaseSymbolData?.SymbolData.TDLLinesCount ?? 0) + 1;
 
         }
         foreach (var child in _complexChildren)
@@ -837,8 +1042,6 @@ internal class Helper
             }
             void AddLineSyntaxForComplexField(ChildSymbolData child)
             {
-
-
                 List<SyntaxNodeOrToken> constructorArgs =
                     [
                         Argument(IdentifierName(child.ReportVarName)),
@@ -852,10 +1055,10 @@ internal class Helper
                         AssignmentExpression(SyntaxKind.SimpleAssignmentExpression,
                                          IdentifierName("Use"), IdentifierName($"{child.SymbolData!.TypeName}{nameof(ReportName)}"))
                     ];
+                List<SyntaxNodeOrToken> lineIntializerLocalArgs = [];
+
                 if (child.SymbolData?.IsTallyComplexObject ?? false)
                 {
-                    lineIntializerArgs.Add(Token(SyntaxKind.CommaToken));
-                    List<SyntaxNodeOrToken> arguments = [];
                     for (int i = 0; i < child.SymbolData.Children.Count; i++)
                     {
                         var c = child.SymbolData.Children[i];
@@ -877,23 +1080,17 @@ internal class Helper
                             return interpolatedStringExpressionSyntax;
                         }
 
-                        SafeAdd(ExpressionElement(createStringInterpolation("\t: Set \t: ", c => c.Set!)));
+                        SafeAdd(lineIntializerLocalArgs, ExpressionElement(createStringInterpolation("\t: Set \t: ", c => c.Set!)));
                         if (c.TDLFieldDetails?.Invisible != null)
                         {
-                            SafeAdd(ExpressionElement(createStringInterpolation("\t: Invisible \t: ", c => c.Invisible!)));
+                            SafeAdd(lineIntializerLocalArgs, ExpressionElement(createStringInterpolation("\t: Invisible \t: ", c => c.Invisible!)));
                         }
                     }
-                    void SafeAdd(SyntaxNodeOrToken item)
-                    {
-                        if (arguments.Count != 0)
-                        {
-                            arguments.Add(Token(SyntaxKind.CommaToken));
-                        }
-                        arguments.Add(item);
-                    }
-                    lineIntializerArgs.Add(AssignmentExpression(SyntaxKind.SimpleAssignmentExpression,
-                                             IdentifierName("Local"), CollectionExpression(SeparatedList<CollectionElementSyntax>(arguments))));
+
                 }
+
+                SafeAdd(lineIntializerArgs, AssignmentExpression(SyntaxKind.SimpleAssignmentExpression,
+                                             IdentifierName("Local"), CollectionExpression(SeparatedList<CollectionElementSyntax>(lineIntializerLocalArgs))));
                 statements.Add(GetArrayAssignmentExppressionImplicit(LinesVariableName, counter, constructorArgs, lineIntializerArgs));
                 counter++;
                 if (child.Exclude)
@@ -920,7 +1117,7 @@ internal class Helper
                             Argument(LiteralExpression(SyntaxKind.NumericLiteralExpression, Literal(counter))),
                          })))
                     ));
-                counter += (child.SymbolData?.ComplexFieldsIncludedCount ?? 0) + 1;
+                counter += (child.SymbolData?.TDLLinesCount ?? 0) + 1;
             }
         }
         statements.Add(ReturnStatement(IdentifierName(LinesVariableName)));
@@ -1037,7 +1234,7 @@ internal class Helper
                 List<SyntaxNodeOrToken>? arguments = [];
                 //if (child.SymbolData!.IsTallyComplexObject)
                 //{
-                //    arguments.Add(Argument(LiteralExpression(SyntaxKind.StringLiteralExpression, Literal(child.TDLFieldDetails!.Set!))));
+                //    lineIntializerDeleteArgs.Add(Argument(LiteralExpression(SyntaxKind.StringLiteralExpression, Literal(child.TDLFieldDetails!.Set!))));
                 //}
                 statements.Add(CreateVarInsideMethodWithExpression(ComplexFieldsVariableName,
                                                        InvocationExpression(MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression,
@@ -1063,7 +1260,7 @@ internal class Helper
                                                         Identifier(string.Format(GetTDLFieldsMethodName, _symbol.TypeName)))
             .WithModifiers(TokenList([Token(SyntaxKind.InternalKeyword), Token(SyntaxKind.StaticKeyword)]))
             .WithBody(Block(statements));
-        //if (_symbol.IsTallyComplexObject)
+        //if (symbol.IsTallyComplexObject)
         //{
 
         //    methodDeclarationSyntax = methodDeclarationSyntax
@@ -1126,10 +1323,20 @@ internal class Helper
         List<SyntaxNodeOrToken> nodesAndTokens = [];
         AddFetchItems(_symbol);
 
-        void AddFetchItems(SymbolData symbol, bool isChild = false)
+        void AddFetchItems(SymbolData symbol)
         {
+            if (symbol.BaseSymbolData != null)
+            {
+                //AddFetchItems(symbol.BaseSymbolData.SymbolData, symbol.IsChild && !symbol.IsBaseSymbol);
+                var exp = InvocationExpression(IdentifierName(string.Format(GetFetchListMethodName, symbol.BaseSymbolData.SymbolData.TypeName)));
+                if (symbol.BaseSymbolData.IsParentChild)
+                {
+                    exp = exp.WithArgumentList(ArgumentList(SeparatedList<ArgumentSyntax>(new SyntaxNodeOrToken[] { Argument(IdentifierName("prefix")) })));
+                }
+                SafeAdd(nodesAndTokens, SpreadElement(exp));
+            };
             var children = symbol.Children.Where(c => !c.IsComplex || (c.SymbolData?.IsTallyComplexObject ?? false))
-                .Where(child =>child.TDLFieldDetails?.IncludeInFetch ?? false)
+                .Where(child => child.TDLFieldDetails?.IncludeInFetch ?? false)
                 .Select(child => child.TDLFieldDetails?.FetchText ?? child.TDLFieldDetails?.Set)
                 .Where(c => c != null)
                 .ToList();
@@ -1138,7 +1345,7 @@ internal class Helper
             {
                 var chunks = children.Skip(i).Take(chunkSize).ToList();
 
-                if (symbol.IsChild && (isChild || !symbol.IsBaseSymbol))
+                if (symbol.IsChild && (!_symbol.IsBaseSymbol || _symbol.IsParentChild))
                 {
                     List<InterpolatedStringContentSyntax> nodes = [];
                     int lastIndex = chunks.Count - 1;
@@ -1166,52 +1373,60 @@ internal class Helper
 
 
             }
-            if (symbol.BaseSymbolData != null)
-            {
-                AddFetchItems(symbol.BaseSymbolData.SymbolData, symbol.IsChild && !symbol.IsBaseSymbol);
-            }
-        }
-        foreach (var child in _complexChildren)
-        {
-            AddFetchListSyntaxofComplexChild(child);
-            void AddFetchListSyntaxofComplexChild(ChildSymbolData child, int? counter = null)
-            {
-                if (child.DefaultTDLCollectionDetails == null || child.DefaultTDLCollectionDetails.CollectionName == null)
-                {
-                    return;
-                }
-                if (!child.IsComplex)
-                {
-                    return;
-                }
-                var exp = InvocationExpression(IdentifierName(string.Format(GetFetchListMethodName, child.SymbolData!.TypeName)))
-                    .WithArgumentList(ArgumentList(SeparatedList<ArgumentSyntax>(new SyntaxNodeOrToken[] { Argument(IdentifierName(GetCollectionName(child, counter))) })));
 
-                //SafeAdd(nodesAndTokens, ExpressionElement(IdentifierName(GetCollectionName(child))));
-                SafeAdd(nodesAndTokens, SpreadElement(exp));
-            }
-            int counter = 1;
-            foreach (var item in child.XMLData)
+            IEnumerable<ChildSymbolData> complexCildren = symbol.Children.Where(c => !c.Exclude && (c.IsComplex || c.IsList));
+            foreach (var child in complexCildren)
             {
-                if (item.ChildSymbolData != null)
+                if (child.ChildTypeFullName == symbol.FullName)
                 {
-                    AddFetchListSyntaxofComplexChild(item.ChildSymbolData, counter);
+                    return;
                 }
-                counter++;
+                AddFetchListSyntaxofComplexChild(child);
+                void AddFetchListSyntaxofComplexChild(ChildSymbolData child, int? counter = null)
+                {
+                    if (child.DefaultTDLCollectionDetails == null || child.DefaultTDLCollectionDetails.CollectionName == null)
+                    {
+                        return;
+                    }
+                    if (!child.IsComplex)
+                    {
+                        return;
+                    }
+                    var exp = InvocationExpression(IdentifierName(string.Format(GetFetchListMethodName, child.SymbolData!.TypeName)))
+                        .WithArgumentList(ArgumentList(SeparatedList<ArgumentSyntax>(new SyntaxNodeOrToken[] { Argument(IdentifierName(GetCollectionName(child, counter))) })));
+
+                    //SafeAdd(nodesAndTokens, ExpressionElement(IdentifierName(GetCollectionName(child))));
+                    SafeAdd(nodesAndTokens, SpreadElement(exp));
+                }
+                int counter = 1;
+                foreach (var item in child.XMLData)
+                {
+                    if (item.ChildSymbolData != null)
+                    {
+                        AddFetchListSyntaxofComplexChild(item.ChildSymbolData, counter);
+                    }
+                    counter++;
+                }
             }
+
+
         }
+
         List<StatementSyntax> statements = [ReturnStatement(CollectionExpression(SeparatedList<CollectionElementSyntax>(nodesAndTokens)))];
         var methodDeclarationSyntax = MethodDeclaration(CreateEmptyArrayType(PredefinedType(Token(SyntaxKind.StringKeyword))),
                                                         Identifier(string.Format(GetFetchListMethodName, _symbol.TypeName)))
             .WithModifiers(TokenList([Token(SyntaxKind.InternalKeyword), Token(SyntaxKind.StaticKeyword)]))
             .WithBody(
             Block(statements));
-        if (_symbol.IsChild)
+        if (_symbol.IsChild && (!_symbol.IsBaseSymbol || _symbol.IsParentChild))
         {
             methodDeclarationSyntax = methodDeclarationSyntax.WithParameterList(ParameterList(SeparatedList<ParameterSyntax>(new SyntaxNodeOrToken[]
-            {
-                Parameter(Identifier(prefixParamName))
-                .WithType(PredefinedType(Token(SyntaxKind.StringKeyword))) })));
+                  {
+                    Parameter(Identifier(prefixParamName))
+                    .WithType(PredefinedType(Token(SyntaxKind.StringKeyword))) })));
+
+
+
         }
         return methodDeclarationSyntax;
     }
@@ -1412,6 +1627,7 @@ internal class Helper
     private IEnumerable<MemberDeclarationSyntax> GetCreateDTOClassMembers()
     {
         List<MemberDeclarationSyntax> members = [];
+        HashSet<string> ComplexTypeNames = [];
         //If Implements BaseLedgerEntryInterface then add extra property to DTO
         if (_symbol.Symbol.HasInterfaceWithFullyQualifiedMetadataName(BaseLedgerEntryInterfaceName))
         {
@@ -1423,13 +1639,25 @@ internal class Helper
 
         return members;
 
-        void CreateProperties(SymbolData symbol)
+        void CreateProperties(SymbolData symbol, bool isBaseSymbol = false)
         {
+            ComplexTypeNames.Add(symbol.FullName);
+            if (symbol.BaseSymbolData != null)
+            {
+                CreateProperties(symbol.BaseSymbolData.SymbolData, true);
+            }
             foreach (var child in symbol.Children)
             {
                 if (child.IgnoreForCreateDTO)
                 {
                     continue;
+                }
+                if (isBaseSymbol)
+                {
+                    if (child.OverriddenBy.Any() && child.OverriddenBy.Where(c => ComplexTypeNames.Contains(c.Parent.FullName)).Any())
+                    {
+                        continue;
+                    }
                 }
                 TypeSyntax typeSyntax;
                 List<SyntaxNodeOrToken> attributes = [];
@@ -1449,11 +1677,29 @@ internal class Helper
                                 {
                                     attributeArgs.Add(Token(SyntaxKind.CommaToken));
                                 }
-                                attributeArgs.Add(AttributeArgument(
+                                switch (namedArg.Value.Type?.SpecialType)
+                                {
+                                    case SpecialType.System_String:
+                                        attributeArgs.Add(AttributeArgument(
                                                             LiteralExpression(
                                                                 SyntaxKind.StringLiteralExpression,
                                                                 Literal(namedArg.Value.Value.ToString())))
                                     .WithNameEquals(NameEquals(IdentifierName(namedArg.Key))));
+                                        break;
+                                    case SpecialType.System_Boolean or SpecialType.System_Int16 or SpecialType.System_Int64 or SpecialType.System_Int32:
+                                        attributeArgs.Add(AttributeArgument(IdentifierName(namedArg.Value.Value.ToString()))
+                                    .WithNameEquals(NameEquals(IdentifierName(namedArg.Key))));
+                                        break;
+                                    default:
+                                        if (namedArg.Value.Kind == TypedConstantKind.Type)
+                                        {
+                                            attributeArgs.Add(AttributeArgument(
+                                                            TypeOfExpression(GetGlobalNameforType(namedArg.Value.Value?.ToString())))
+                                    .WithNameEquals(NameEquals(IdentifierName(namedArg.Key))));
+                                        }
+                                        break;
+                                }
+
                             }
                             item = item.WithArgumentList(AttributeArgumentList(SeparatedList<AttributeArgumentSyntax>(attributeArgs)));
                         }
@@ -1510,10 +1756,7 @@ internal class Helper
                 members.Add(propertyDeclarationSyntax);
             }
 
-            if (symbol.BaseSymbolData != null)
-            {
-                CreateProperties(symbol.BaseSymbolData.SymbolData);
-            }
+
 
 
         }
@@ -1527,6 +1770,7 @@ internal class Helper
 
         string className = GetClassName();
         List<StatementSyntax> statements = [];
+        HashSet<string> ComplexTypeNames = [];
         statements.Add(CreateVarInsideMethodWithExpression(dtoArgName, ObjectCreationExpression(IdentifierName(className))
             .WithArgumentList(ArgumentList())));
 
@@ -1558,17 +1802,25 @@ internal class Helper
             .WithBody(Block(statements));
         return conversionOperatorDeclarationSyntax;
 
-        void AddAssignmentExpressions(SymbolData symbol)
+        void AddAssignmentExpressions(SymbolData symbol, bool isBaseSymbol = false)
         {
+            ComplexTypeNames.Add(symbol.FullName);
             if (symbol.BaseSymbolData != null)
             {
-                AddAssignmentExpressions(symbol.BaseSymbolData.SymbolData);
+                AddAssignmentExpressions(symbol.BaseSymbolData.SymbolData, true);
             }
             foreach (var child in symbol.Children)
             {
                 if (child.IgnoreForCreateDTO)
                 {
                     continue;
+                }
+                if (isBaseSymbol)
+                {
+                    if (child.OverriddenBy.Any() && child.OverriddenBy.Where(c => ComplexTypeNames.Contains(c.Parent.FullName)).Any())
+                    {
+                        continue;
+                    }
                 }
                 if (child.IsComplex)
                 {

@@ -1,6 +1,7 @@
 ﻿using System.Collections.ObjectModel;
 using TallyConnector.Core.Models;
 using TallyConnector.Services;
+using TallyConnector.Services.TallyPrime;
 
 namespace DemoDesktopApp.ViewModels;
 public partial class DashBoardViewModel : BaseViewModel
@@ -25,9 +26,15 @@ public partial class DashBoardViewModel : BaseViewModel
     [RelayCommand]
     public async Task OnLoaded()
     {
+        LastAlterIdsRoot lastAlterIdsRoot = await _baseTallyService.GetLastAlterIdsAsync();
         SelectedCompanyName = await _baseTallyService.GetActiveSimpleCompanyNameAsync();
         CompanyList = new(await _baseTallyService.GetCompaniesAsync());
-        var objs = await new TallyService().GetVouchersAsync();
+        PaginatedRequestOptions requestOptions = new()
+        {
+            PageNum = 1,    
+            RecordsPerPage = 1000,
+        };
+        var objs = await new TallyPrime3Service().GetVouchersAsync(requestOptions);
     }
 
     partial void OnSelectedCompanyNameChanged(string value)

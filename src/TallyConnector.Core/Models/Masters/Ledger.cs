@@ -56,7 +56,7 @@ public partial class Ledger : BaseLedger
 
     [XmlIgnore]
     [Column(TypeName = $"nvarchar({Constants.MaxNameLength})")]
-    [TDLField(Set = "$_FirstAlias")]
+    [TDLField(Set = "$_FirstAlias", IncludeInFetch = true)]
     public string? Alias { get; set; }
 
     [XmlElement(ElementName = "ISDEEMEDPOSITIVE")]

@@ -4,64 +4,36 @@
 [XmlRoot(ElementName = "GODOWN")]
 [XmlType(AnonymousType = true)]
 [TallyObjectType(TallyObjectType.Godowns)]
-public class Godown : BasicTallyObject, IAliasTallyObject
+public class Godown : BaseMasterObject
 {
     public Godown()
     {
-        FAddress = new();
+        Addresses = new();
         LanguageNameList = new();
     }
 
-
-
-    [XmlAttribute(AttributeName = "NAME")]
+    [XmlElement(ElementName = "OLDNAME")]
+    [TDLField(Set = "$Name")]
+    [JsonIgnore]
     [Column(TypeName = $"nvarchar({Constants.MaxNameLength})")]
-    public string? OldName { get; set; }
+    public string OldName { get; set; }
 
-    private string? name;
-
-    [XmlElement(ElementName = "NAME")]
-    [Column(TypeName = $"nvarchar({Constants.MaxNameLength})")]
-    [Required]
-    public string Name
-    {
-        get
-        {
-            name = name == null || name == string.Empty ? OldName : name;
-            return name!;
-        }
-        set => name = value;
-    }
-
-
+   
     [XmlElement(ElementName = "PARENT")]
     [Column(TypeName = $"nvarchar({Constants.MaxNameLength})")]
     public string? Parent { get; set; }
 
     [XmlElement(ElementName = "PARENTID")]
     [Column(TypeName = $"nvarchar({Constants.GUIDLength})")]
+    [TDLField(Set = "$GUID:Godown:$Parent")]
     public string? ParentId { get; set; }
-    [JsonIgnore]
-    [XmlElement(ElementName = "ADDRESS.LIST")]
-    public HAddress FAddress { get; set; }
 
 
-    [XmlIgnore]
-    public string? Address
-    {
-        get
-        {
-            return FAddress.FullAddress;
-        }
+    [XmlArray(ElementName = "ADDRESS.LIST")]
+    [XmlArrayItem(ElementName = "ADDRESS")]
+    [TDLCollection(CollectionName = "Address", ExplodeCondition = "$$NumItems:ADDRESS<1")]
+    public List<string> Addresses { get; set; }
 
-        set
-        {
-            FAddress = new();
-            FAddress.FullAddress = value;
-
-        }
-
-    }
 
     [XmlElement(ElementName = "PINCODE")]
     public string? PinCode { get; set; }
@@ -71,17 +43,19 @@ public class Godown : BasicTallyObject, IAliasTallyObject
 
     [XmlElement(ElementName = "ISEXTERNAL")]
     [Column(TypeName = "nvarchar(3)")]
-    public TallyYesNo? IsExternal { get; set; } // ThirdParty Stock with Us
+    public bool? IsExternal { get; set; } // ThirdParty Stock with Us
 
     [XmlElement(ElementName = "ISINTERNAL")]
-    public TallyYesNo? IsInternal { get; set; } // Our Stock With Third Party
+    public bool? IsInternal { get; set; } // Our Stock With Third Party
 
     [XmlElement(ElementName = "CANDELETE")]
-    public TallyYesNo? CanDelete { get; set; }
+    [TDLField(IncludeInFetch = true)]
+    public bool? CanDelete { get; set; }
 
 
     [XmlIgnore]
-    [Column(TypeName = "nvarchar(60)")]
+    [Column(TypeName = $"nvarchar({Constants.MaxNameLength})")]
+    [TDLField(Set = "$_FirstAlias", IncludeInFetch = true)]
     public string? Alias { get; set; }
 
 
@@ -91,8 +65,8 @@ public class Godown : BasicTallyObject, IAliasTallyObject
     public List<LanguageNameList> LanguageNameList { get; set; }
 
 
-    
-   
+
+
     public override string ToString()
     {
         return $"Godown - {Name}";

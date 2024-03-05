@@ -60,10 +60,10 @@ public static class JsonExtesnions
 [JsonSerializable(typeof(List<Group>))]
 [JsonSerializable(typeof(IEnumerable<Group>))]
 
-//[JsonSerializable(typeof(Ledger))]
-//[JsonSerializable(typeof(Ledger[]))]
-//[JsonSerializable(typeof(List<Ledger>))]
-//[JsonSerializable(typeof(IEnumerable<Ledger>))]
+[JsonSerializable(typeof(Ledger))]
+[JsonSerializable(typeof(Ledger[]))]
+[JsonSerializable(typeof(List<Ledger>))]
+[JsonSerializable(typeof(IEnumerable<Ledger>))]
 
 
 [JsonSerializable(typeof(CostCategory))]

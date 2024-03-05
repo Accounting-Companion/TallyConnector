@@ -4,47 +4,37 @@
 [XmlRoot(ElementName = "COSTCATEGORY")]
 [XmlType(AnonymousType = true)]
 [TallyObjectType(TallyObjectType.CostCategories)]
-public class CostCategory : BasicTallyObject, IAliasTallyObject
+public class CostCategory : BaseMasterObject
 {
     public CostCategory()
     {
-        LanguageNameList = new();
+        LanguageNameList = [];
     }
     public CostCategory(string name)
     {
-        LanguageNameList = new();
+        LanguageNameList = [];
         Name = name;
     }
 
-    [XmlAttribute(AttributeName = "NAME")]
-    [Column(TypeName = $"nvarchar({Constants.MaxNameLength})")]
+    [XmlElement(ElementName = "OLDNAME")]
+    [TDLField(Set = "$Name")]
     [JsonIgnore]
-    public string? OldName { get; set; }
-
-    private string? name;
-
-    [XmlElement(ElementName = "NAME")]
     [Column(TypeName = $"nvarchar({Constants.MaxNameLength})")]
-    [Required]
-    public string Name
-    {
-        get
-        {
-            name = name == null || name == string.Empty ? OldName : name;
-            return name!;
-        }
-        set => name = value;
-    }
+    public string OldName { get; set; }
+
+ 
 
     [XmlElement(ElementName = "ALLOCATEREVENUE")]
     [Column(TypeName = "nvarchar(3)")]
-    public TallyYesNo? AllocateRevenue { get; set; }
+    public bool? AllocateRevenue { get; set; }
 
     [XmlElement(ElementName = "ALLOCATENONREVENUE")]
     [Column(TypeName = "nvarchar(3)")]
-    public TallyYesNo? AllocateNonRevenue { get; set; }
+    public bool? AllocateNonRevenue { get; set; }
 
     [XmlIgnore]
+    [Column(TypeName = $"nvarchar({Constants.MaxNameLength})")]
+    [TDLField(Set = "$_FirstAlias",IncludeInFetch =true)]
     public string? Alias { get; set; }
 
     [JsonIgnore]

@@ -47,11 +47,11 @@ internal class SymbolData
     public bool IsTallyComplexObject { get; private set; }
     public List<ChildSymbolData> Children { get; } = [];
     public int SimpleFieldsCount { get; set; } = 0;
-    public int ComplexFieldsIncludedCount { get; set; } = 0;
+    public int TDLLinesCount { get; set; } = 0;
 
     public ImmutableArray<AttributeData> Attributes { get; }
     public string RootXmlTag { get; set; }
-    public int ComplexFieldsCount { get; internal set; }
+    public int TDLPartsCount { get; internal set; }
     public BaseSymbolData? BaseSymbolData { get; internal set; }
 
     public FunctionDetails TDLFunctionMethods { get; set; } = [];
@@ -64,7 +64,7 @@ internal class SymbolData
     public string MethodNameSuffixPlural { get; internal set; }
     public GenerationMode GenerationMode { get; internal set; }
     public List<INamedTypeSymbol> Args { get; internal set; }
-
+    public bool IsParentChild { get; set; }
 
     public override string ToString()
     {
@@ -123,7 +123,7 @@ internal class BaseSymbolData : SymbolData
                           INamedTypeSymbol symbol,
                           INamedTypeSymbol reqEnvelope,
                           string methodName,
-                          bool isChild = false, SymbolData? parentSymbolData=null) : base(parentSymbol, symbol, methodName, reqEnvelope, isChild, parentSymbolData)
+                          bool isChild = false, SymbolData? parentSymbolData = null) : base(parentSymbol, symbol, methodName, reqEnvelope, isChild, parentSymbolData)
     {
     }
     public bool Exclude { get; set; }
@@ -143,9 +143,30 @@ internal class ChildSymbolData
         IsComplex = ChildType.SpecialType is SpecialType.None && ChildType.TypeKind is not TypeKind.Enum;
         Attributes = childSymbol.GetAttributes();
         ReportVarName = $"{parent.Name}{Name}ReportName";
-
+        IsOverridden = /*childSymbol.DeclaringSyntaxReferences.Any(c => c.GetSyntax() is PropertyDeclarationSyntax propertySyntax && propertySyntax.Modifiers.Any(c => c.IsKind(SyntaxKind.NewKeyword))) || */CheckBaseHasSameProperty();
     }
 
+    private bool CheckBaseHasSameProperty()
+    {
+        if (Parent.BaseSymbolData !=null)
+        {
+            OverriddenChild = GetOverriddenChild(Parent.BaseSymbolData!.SymbolData);
+            OverriddenChild?.OverriddenBy.Add(this);
+            ChildSymbolData? GetOverriddenChild(SymbolData data)
+            {
+                ChildSymbolData? childSymbolData = data.Children.Where(c => c.Name == Name).FirstOrDefault();
+                if (childSymbolData == null && data.BaseSymbolData != null)
+                {
+                    childSymbolData = GetOverriddenChild(data.BaseSymbolData.SymbolData);
+                }
+                return childSymbolData;
+            }
+        }
+        
+        return OverriddenChild is not null;
+
+
+    }
 
     private INamedTypeSymbol GetChildType()
     {
@@ -212,10 +233,13 @@ internal class ChildSymbolData
     public string? ListXmlTag { get; internal set; }
 
     public string ReportVarName { get; set; }
+    public bool IsOverridden { get; private set; }
     public bool IsNullable { get; private set; }
     public bool IgnoreForCreateDTO { get; internal set; }
     public List<string>? EnumChoices { get; internal set; }
     public List<XMLData> XMLData { get; internal set; }
+    public ChildSymbolData? OverriddenChild { get; internal set; }
+    public List<ChildSymbolData> OverriddenBy { get; set; } = [];
 
     public override string ToString()
     {

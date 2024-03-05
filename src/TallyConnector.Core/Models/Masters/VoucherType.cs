@@ -3,7 +3,8 @@
 [XmlRoot(ElementName = "VOUCHERTYPE")]
 [XmlType(AnonymousType = true)]
 [TallyObjectType(TallyObjectType.VoucherTypes)]
-public class VoucherType : BasicTallyObject, IAliasTallyObject
+[TDLObjectsMethodName(nameof(GetVoucherTypeObjects))]
+public class VoucherType : BaseMasterObject
 {
     public VoucherType()
     {
@@ -20,27 +21,15 @@ public class VoucherType : BasicTallyObject, IAliasTallyObject
     }
 
 
-    [XmlAttribute(AttributeName = "NAME")]
+    [XmlElement(ElementName = "OLDNAME")]
     [JsonIgnore]
     [Column(TypeName = $"nvarchar({Constants.MaxNameLength})")]
+    [TDLField(Set = "$Name")]
     public string? OldName { get; set; }
 
-    private string? name;
-
-    [XmlElement(ElementName = "NAME")]
-    [Required]
+    [XmlIgnore]
     [Column(TypeName = $"nvarchar({Constants.MaxNameLength})")]
-    public string Name
-    {
-        get
-        {
-            name = name == null || name == string.Empty ? OldName : name;
-            return name!;
-        }
-        set => name = value;
-    }
-
-    [Column(TypeName = $"nvarchar({Constants.MaxNameLength})")]
+    [TDLField(Set = "$_FirstAlias", IncludeInFetch = true)]
     public string? Alias { get; set; }
 
     [JsonIgnore]
@@ -55,26 +44,27 @@ public class VoucherType : BasicTallyObject, IAliasTallyObject
 
     [XmlElement(ElementName = "PARENTID")]
     [Column(TypeName = $"nvarchar({Constants.GUIDLength})")]
-    public string? ParentId { get; set; }
+    [TDLField(Set = "$GUID:VoucherType:$Parent")]
+    public string ParentId { get; set; }
 
     [XmlElement(ElementName = "NUMBERINGMETHOD")]
     public string? NumberingMethod { get; set; }
 
     [XmlElement(ElementName = "USEZEROENTRIES")]
     [Column(TypeName = "nvarchar(3)")]
-    public TallyYesNo? UseZeroEntries { get; set; }
+    public bool? UseZeroEntries { get; set; }
 
     [XmlElement(ElementName = "ISACTIVE")]
     [Column(TypeName = "nvarchar(3)")]
-    public TallyYesNo? IsActive { get; set; }
+    public bool? IsActive { get; set; }
 
     [XmlElement(ElementName = "PRINTAFTERSAVE")]
     [Column(TypeName = "nvarchar(3)")]
-    public TallyYesNo? PrintAfterSave { get; set; }
+    public bool? PrintAfterSave { get; set; }
 
     [XmlElement(ElementName = "USEFORPOSINVOICE")]
     [Column(TypeName = "nvarchar(3)")]
-    public TallyYesNo? UseforPOSInvoice { get; set; }
+    public bool? UseforPOSInvoice { get; set; }
 
     [XmlElement(ElementName = "VCHPRINTBANKNAME")]
     public string? VchPrintBankName { get; set; }
@@ -90,38 +80,38 @@ public class VoucherType : BasicTallyObject, IAliasTallyObject
 
     [XmlElement(ElementName = "ISOPTIONAL")]
     [Column(TypeName = "nvarchar(3)")]
-    public TallyYesNo? IsOptional { get; set; }
+    public bool? IsOptional { get; set; }
 
     [XmlElement(ElementName = "COMMONNARRATION")]
     [Column(TypeName = "nvarchar(3)")]
-    public TallyYesNo? CommonNarration { get; set; }
+    public bool? CommonNarration { get; set; }
 
     [XmlElement(ElementName = "MULTINARRATION")]
     [Column(TypeName = "nvarchar(3)")]
-    public TallyYesNo? MultiNarration { get; set; }  //Narration for each Ledger
+    public bool? MultiNarration { get; set; }  //Narration for each Ledger
 
     [XmlElement(ElementName = "ISDEFAULTALLOCENABLED")]
     [Column(TypeName = "nvarchar(3)")]
-    public TallyYesNo? IsDefaultAllocationEnabled { get; set; }
+    public bool? IsDefaultAllocationEnabled { get; set; }
 
     [XmlElement(ElementName = "AFFECTSSTOCK")]
     [Column(TypeName = "nvarchar(3)")]
-    public TallyYesNo? EffectStock { get; set; }
+    public bool? EffectStock { get; set; }
 
     [XmlElement(ElementName = "ASMFGJRNL")]
     [Column(TypeName = "nvarchar(3)")]
-    public TallyYesNo? AsMfgJrnl { get; set; }
+    public bool? AsMfgJrnl { get; set; }
 
     [XmlElement(ElementName = "USEFORJOBWORK")]
     [Column(TypeName = "nvarchar(3)")]
-    public TallyYesNo? UseforJobwork { get; set; }
+    public bool? UseforJobwork { get; set; }
 
     [XmlElement(ElementName = "ISFORJOBWORKIN")]
     [Column(TypeName = "nvarchar(3)")]
-    public TallyYesNo? IsforJobworkIn { get; set; }
+    public bool? IsforJobworkIn { get; set; }
 
-    [XmlElement(ElementName = "VOUCHERCLASSLIST.LIST")]
-    public List<VoucherClass>? VoucherClasses { get; set; }
+    //[XmlElement(ElementName = "VOUCHERCLASSLIST.LIST")]
+    //public List<VoucherClass>? VoucherClasses { get; set; }
 
     [XmlElement(ElementName = "DEFAULTVOUCHERCATEGORY")]
     public DefaultVoucherCategory? DefaultVoucherCategory { get; set; }
@@ -132,9 +122,23 @@ public class VoucherType : BasicTallyObject, IAliasTallyObject
 
     [XmlElement(ElementName = "CANDELETE")]
     [Column(TypeName = "nvarchar(3)")]
-    public TallyYesNo? CanDelete { get; set; }
+    public bool? CanDelete { get; set; }
 
+    public static TallyCustomObject[] GetVoucherTypeObjects()
+    {
+        const string CoreVchtypeFormulae1 = "CoreVoucherType:(if $$IsSales:$NAME then \"Sales\" else if $$IsPurchase:$NAME then \"Purchase\" else if $$IsDebitNote:$Name then \"DebitNote\" else if $$IsCreditNote:$Name then \"CreditNote\" else if $$IsPayment:$Name then \"Payment\" else if $$IsReceipt:$Name then \"Receipt\" else if  $$IsContra:$Name then \"Contra\" else if  $$IsJournal:$Name then \"Journal\" else if  $$IsSalesOrder:$Name then \"SalesOrder\" else if  $$IsPurcOrder:$Name then \"PurchaseOrder\" else if  $$IsMemo:$Name then \"Memo\" else \"\") +  ";
+        const string CoreVchtypeFormulae2 = "(if  $$IsRevJrnl:$Name then \"Reversing Journal\"  else if $$IsJobMaterialReceive:$NAME then \"MaterialIn\" else if  $$IsJobMaterialIssue:$Name then \"MaterialOut\" else if  $$IsJobOrderIn:$Name then \"JobWork In Order\" else if  $$IsJobOrderOut:$Name then \"JobWork Out Order\" else if  $$IsRcptNote:$Name then \"ReceiptNote\" else \"\") + ";
+        const string CoreVchtypeFormulae3 = "(if  $$IsDelNote:$Name then \"DeliveryNote\" else if  $$IsPhysStock:$Name then \"PhysicalStock\" else if  $$IsPayroll:$Name then \"Payroll\" else if  $$IsAttendance:$Name then \"Attendance\" else if  $$IsRejIn:$Name then \"RejectionsIn\"  else if  $$IsRejOut:$Name then \"RejectionsOut\" else if  $$IsStockJrnl:$Name then \"StockJournal\" else \"\")";
 
+        return [new TallyCustomObject("VoucherType", [
+            "DefaultVoucherCategory:if $$IsAccountingVch:$NAME then \"AccountingVch\" else " +
+                                   "if $$IsInventoryVch:$NAME then \"InventoryVch\" " +
+                                   "else if $$IsOrderVch:$Name then \"OrderVch\" else " +
+                                   "if $$IsPayrollVch:$Name then \"PayrollVch\" else " +
+                                   "if $$IsAttendance:$Name then \"PayrollAttndVch\" else \"\"",
+
+                                   CoreVchtypeFormulae1 + CoreVchtypeFormulae2 + CoreVchtypeFormulae3]) { IsModify = YesNo.Yes }];
+    }
     public override string ToString()
     {
         return $"VoucherType - {Name}";
@@ -160,64 +164,64 @@ public class VoucherClass
     public string? POSChequeLedger { get; set; }
 
     [XmlElement(ElementName = "FORJOBCOSTING")]
-    public TallyYesNo? ForJobCosting { get; set; }
+    public bool? ForJobCosting { get; set; }
 
     [XmlElement(ElementName = "USEFORINTEREST")]
-    public TallyYesNo? UseforInterest { get; set; }
+    public bool? UseforInterest { get; set; }
 
     [XmlElement(ElementName = "USEFORGAINLOSS")]
-    public TallyYesNo? UseforGainLoss { get; set; }
+    public bool? UseforGainLoss { get; set; }
 
     [XmlElement(ElementName = "USEFORGODOWNTRANSFER")]
-    public TallyYesNo UseforGodownTransfer { get; set; }
+    public bool UseforGodownTransfer { get; set; }
 
     [XmlElement(ElementName = "USEFORCOMPOUND")]
-    public TallyYesNo? UseforCompound { get; set; }
+    public bool? UseforCompound { get; set; }
 
     [XmlElement(ElementName = "CLASSFORVAT")]
-    public TallyYesNo? ClassforVAT { get; set; }
+    public bool? ClassforVAT { get; set; }
 
     [XmlElement(ElementName = "USEFORFBT")]
-    public TallyYesNo? UseforFBT { get; set; }
+    public bool? UseforFBT { get; set; }
 
     [XmlElement(ElementName = "POSENABLECARDLEDGER")]
-    public TallyYesNo? POSEnableCardLedger { get; set; }
+    public bool? POSEnableCardLedger { get; set; }
 
     [XmlElement(ElementName = "POSENABLECASHLEDGER")]
-    public TallyYesNo? POSEnableCashLedger { get; set; }
+    public bool? POSEnableCashLedger { get; set; }
 
     [XmlElement(ElementName = "POSENABLEGIFTLEDGER")]
-    public TallyYesNo? POSEnableGiftLedger { get; set; }
+    public bool? POSEnableGiftLedger { get; set; }
 
     [XmlElement(ElementName = "POSENABLECHEQUELEDGER")]
-    public TallyYesNo? PosEnableChequeLedger { get; set; }
+    public bool? PosEnableChequeLedger { get; set; }
 
     [XmlElement(ElementName = "USEFOREXCISECOMMERCIALINVOICE")]
-    public TallyYesNo? UseforExcisECommercialInvoice { get; set; }
+    public bool? UseforExcisECommercialInvoice { get; set; }
 
     [XmlElement(ElementName = "USEFORSERVICETAX")]
-    public TallyYesNo? UseforServiceTax { get; set; }
+    public bool? UseforServiceTax { get; set; }
 
     [XmlElement(ElementName = "CLASSFOREXCISE")]
-    public TallyYesNo? ClassforExcise { get; set; }
+    public bool? ClassforExcise { get; set; }
 
     [XmlElement(ElementName = "CLASSFORDEALEREXCISESHORTAGE")]
-    public TallyYesNo? ClassforDealerExciseShortage { get; set; }
+    public bool? ClassforDealerExciseShortage { get; set; }
 
     [XmlElement(ElementName = "POSENABLEONACCOUNTLEDGER")]
-    public TallyYesNo? POSEnableOnAccountLedger { get; set; }
+    public bool? POSEnableOnAccountLedger { get; set; }
 
     [XmlElement(ElementName = "USEBANKALLOCFORCC")]
-    public TallyYesNo? UseBankAllocforcc { get; set; }
+    public bool? UseBankAllocforcc { get; set; }
 
     [XmlElement(ElementName = "ISDEFAULTCLASS")]
-    public TallyYesNo? IsDefaultClass { get; set; }
+    public bool? IsDefaultClass { get; set; }
 
     [XmlElement(ElementName = "ADJDIFFINFIRSTLEDGER")]
-    public TallyYesNo? AdjDiffinFirstLedger { get; set; }
+    public bool? AdjDiffinFirstLedger { get; set; }
 
     [XmlElement(ElementName = "ADJDIFFINFIRSTLEDGERITEM")]
-    public TallyYesNo? AdjDiffinFirstLedgerItem { get; set; }
+    public bool? AdjDiffinFirstLedgerItem { get; set; }
 
     [XmlElement(ElementName = "LEDGERFORINVENTORYLIST.LIST")]
     public List<VoucherClassLedger>? LedgersforInventory { get; set; }
@@ -250,13 +254,14 @@ public class VoucherClassLedger
     /// Override using Item Default
     /// </summary>
     [XmlElement(ElementName = "LEDGERFROMITEM")]
-    public TallyYesNo LedgerfromItem { get; set; }
+    public bool LedgerfromItem { get; set; }
 
     [XmlElement(ElementName = "REMOVEZEROENTRIES")]
-    public TallyYesNo RemoveZeroEntries { get; set; }
+    public bool RemoveZeroEntries { get; set; }
 
     [XmlElement(ElementName = "ROUNDLIMIT")]
     [Column(TypeName = "decimal(10,4)")]
+
     public decimal? Roundlimit { get; set; }
 }
 
@@ -269,137 +274,137 @@ public class DefaultAllocforItem
     /// Override using Item Default
     /// </summary>
     [XmlElement(ElementName = "LEDGERFROMITEM")]
-    public TallyYesNo LedgerfromItem { get; set; }
+    public bool LedgerfromItem { get; set; }
 
     [XmlElement(ElementName = "DEFAULTACCALLOCFORITEM.LIST")]
     public List<VoucherClassLedger>? LedgerEntries { get; set; }
 }
 public enum CalculationMethod
 {
-    [XmlEnum(Name = "")]
+    [EnumXMLChoice(Choice = "")]
     None,
-    [XmlEnum(Name = "GST")]
+    [EnumXMLChoice(Choice = "GST")]
     GST = 1,
-    [XmlEnum(Name = "TCS")]
+    [EnumXMLChoice(Choice = "TCS")]
     TCS = 2,
-    [XmlEnum(Name = "TDS")]
+    [EnumXMLChoice(Choice = "TDS")]
     TDS = 3,
-    [XmlEnum(Name = "Excise")]
+    [EnumXMLChoice(Choice = "Excise")]
     Excise = 4,
-    [XmlEnum(Name = "FBT")]
+    [EnumXMLChoice(Choice = "FBT")]
     FBT = 5,
-    [XmlEnum(Name = "Service Tax")]
+    [EnumXMLChoice(Choice = "Service Tax")]
     ServiceTax = 6,
-    [XmlEnum(Name = "VAT")]
+    [EnumXMLChoice(Choice = "VAT")]
     VAT = 7,
-    [XmlEnum(Name = "Default")]
+    [EnumXMLChoice(Choice = "Default")]
     Default = 8,
-    [XmlEnum(Name = "CST")]
+    [EnumXMLChoice(Choice = "CST")]
     CST = 9,
-    [XmlEnum(Name = "CENVAT")]
+    [EnumXMLChoice(Choice = "CENVAT")]
     CENVAT = 10,
-    [XmlEnum(Name = "Krishi Kalyan Cess")]
+    [EnumXMLChoice(Choice = "Krishi Kalyan Cess")]
     KrishiKalyanCess = 11,
-    [XmlEnum(Name = "Swachh Bharat Cess")]
+    [EnumXMLChoice(Choice = "Swachh Bharat Cess")]
     SwachhBharatCess = 12,
-    [XmlEnum(Name = "Additional Tax")]
+    [EnumXMLChoice(Choice = "Additional Tax")]
     AdditionalTax,
-    [XmlEnum(Name = "Surcharge On VAT")]
+    [EnumXMLChoice(Choice = "Surcharge On VAT")]
     SurchargeOnVAT,
-    [XmlEnum(Name = "Cess On VAT")]
+    [EnumXMLChoice(Choice = "Cess On VAT")]
     CessOnVAT,
-    [XmlEnum(Name = "NHIL")]
+    [EnumXMLChoice(Choice = "NHIL")]
     NHIL,
-    [XmlEnum(Name = "On Item Rate")]
+    [EnumXMLChoice(Choice = "On Item Rate")]
     OnItemRate,
-    [XmlEnum(Name = "On Total Sales")]
+    [EnumXMLChoice(Choice = "On Total Sales")]
     OnTotalSales,
-    [XmlEnum(Name = "On Current SubTotal")]
+    [EnumXMLChoice(Choice = "On Current SubTotal")]
     OnCurrentSubTotal,
-    [XmlEnum(Name = "As Surcharge")]
+    [EnumXMLChoice(Choice = "As Surcharge")]
     AsSurcharge,
-    [XmlEnum(Name = "As Additional Excise")]
+    [EnumXMLChoice(Choice = "As Additional Excise")]
     AsExciseSurcharge,
-    [XmlEnum(Name = "Based on Quantity")]
+    [EnumXMLChoice(Choice = "Based on Quantity")]
     OnQuantity,
-    [XmlEnum(Name = "As Flat Rate")]
+    [EnumXMLChoice(Choice = "As Flat Rate")]
     AsFlatRate,
-    [XmlEnum(Name = "As User Defined Value")]
+    [EnumXMLChoice(Choice = "As User Defined Value")]
     AsUserDefined,
-    [XmlEnum(Name = "As Total Amount Rounding")]
+    [EnumXMLChoice(Choice = "As Total Amount Rounding")]
     AsRounding,
-    [XmlEnum(Name = "On VAT Rate")]
+    [EnumXMLChoice(Choice = "On VAT Rate")]
     OnVATRate,
-    [XmlEnum(Name = "On Sales Tax Rate")]
+    [EnumXMLChoice(Choice = "On Sales Tax Rate")]
     OnSalesTaxRate
 }
 
 public enum DefaultVoucherCategory
 {
-    [XmlEnum(Name = "")]
+    [EnumXMLChoice(Choice = "")]
     None = 0,
-    [XmlEnum(Name = "AccountingVch")]
+    [EnumXMLChoice(Choice = "AccountingVch")]
     AccountingVch = 1,
-    [XmlEnum(Name = "InventoryVch")]
+    [EnumXMLChoice(Choice = "InventoryVch")]
     InventoryVch = 2,
-    [XmlEnum(Name = "OrderVch")]
+    [EnumXMLChoice(Choice = "OrderVch")]
     OrderVch = 3,
-    [XmlEnum(Name = "PayrollVch")]
+    [EnumXMLChoice(Choice = "PayrollVch")]
     PayrollVch = 4,
-    [XmlEnum(Name = "PayrollAttndVch")]
+    [EnumXMLChoice(Choice = "PayrollAttndVch")]
     PayrollAttndVch = 5,
 }
 
 public enum CoreVoucherType
 {
-    [XmlEnum(Name = "")]
+    [EnumXMLChoice(Choice = "")]
     None = 0,
-    [XmlEnum(Name = "Sales")]
+    [EnumXMLChoice(Choice = "Sales")]
     Sales = 1,
-    [XmlEnum(Name = "Purchase")]
+    [EnumXMLChoice(Choice = "Purchase")]
     Purchase = 2,
-    [XmlEnum(Name = "DebitNote")]
+    [EnumXMLChoice(Choice = "DebitNote")]
     DebitNote = 3,
-    [XmlEnum(Name = "CreditNote")]
+    [EnumXMLChoice(Choice = "CreditNote")]
     CreditNote = 4,
-    [XmlEnum(Name = "Payment")]
+    [EnumXMLChoice(Choice = "Payment")]
     Payment = 5,
-    [XmlEnum(Name = "Receipt")]
+    [EnumXMLChoice(Choice = "Receipt")]
     Receipt = 6,
-    [XmlEnum(Name = "Contra")]
+    [EnumXMLChoice(Choice = "Contra")]
     Contra = 7,
-    [XmlEnum(Name = "Journal")]
+    [EnumXMLChoice(Choice = "Journal")]
     Journal = 8,
-    [XmlEnum(Name = "SalesOrder")]
+    [EnumXMLChoice(Choice = "SalesOrder")]
     SalesOrder = 9,
-    [XmlEnum(Name = "PurchaseOrder")]
+    [EnumXMLChoice(Choice = "PurchaseOrder")]
     PurchaseOrder = 10,
-    [XmlEnum(Name = "Memo")]
+    [EnumXMLChoice(Choice = "Memo")]
     Memo = 11,
-    [XmlEnum(Name = "Reversing Journal")]
+    [EnumXMLChoice(Choice = "Reversing Journal")]
     ReversingJournal = 12,
-    [XmlEnum(Name = "MaterialIn")]
+    [EnumXMLChoice(Choice = "MaterialIn")]
     MaterialIn = 13,
-    [XmlEnum(Name = "MaterialOut")]
+    [EnumXMLChoice(Choice = "MaterialOut")]
     MaterialOut = 14,
-    [XmlEnum(Name = "JobWork In Order")]
+    [EnumXMLChoice(Choice = "JobWork In Order")]
     JobWorkInOrder = 15,
-    [XmlEnum(Name = "JobWork Out Order")]
+    [EnumXMLChoice(Choice = "JobWork Out Order")]
     JobWorkOutOrder = 16,
-    [XmlEnum(Name = "ReceiptNote")]
+    [EnumXMLChoice(Choice = "ReceiptNote")]
     ReceiptNote = 17,
-    [XmlEnum(Name = "DeliveryNote")]
+    [EnumXMLChoice(Choice = "DeliveryNote")]
     DeliveryNote = 18,
-    [XmlEnum(Name = "PhysicalStock")]
+    [EnumXMLChoice(Choice = "PhysicalStock")]
     PhysicalStock = 19,
-    [XmlEnum(Name = "Payroll")]
+    [EnumXMLChoice(Choice = "Payroll")]
     Payroll = 20,
-    [XmlEnum(Name = "Attendance")]
+    [EnumXMLChoice(Choice = "Attendance")]
     Attendance = 21,
-    [XmlEnum(Name = "RejectionsIn")]
+    [EnumXMLChoice(Choice = "RejectionsIn")]
     RejectionsIn = 22,
-    [XmlEnum(Name = "RejectionsOut")]
+    [EnumXMLChoice(Choice = "RejectionsOut")]
     RejectionsOut = 23,
-    [XmlEnum(Name = "StockJournal")]
+    [EnumXMLChoice(Choice = "StockJournal")]
     StockJournal = 24,
 }

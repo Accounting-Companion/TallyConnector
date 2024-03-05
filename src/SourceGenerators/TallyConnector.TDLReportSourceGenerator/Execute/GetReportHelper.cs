@@ -10,7 +10,7 @@ public class GetReportHelper
     {
         List<MemberDeclarationSyntax> members = [];
         var items = data.Select(c => c.Value).Where(c => !c.IsChild && c.GenerationMode is GenerationMode.All or GenerationMode.Get or GenerationMode.GetMultiple);
-        
+
         foreach (var item in items)
         {
             ClassDeclarationSyntax classDeclarationSyntax = ClassDeclaration(GetReportResponseEnvelopeName(item))
@@ -55,6 +55,22 @@ public class GetReportHelper
                                                             IdentifierName("ElementName"))),
                                                     })))))
                             })),
+                            GetPropertyMemberSyntax(NullableType(PredefinedType(Token( SyntaxKind.IntKeyword))),"TotalCount") 
+                            .WithAttributeLists(List(new AttributeListSyntax[]
+                            {
+                                AttributeList(SingletonSeparatedList<AttributeSyntax>(Attribute(
+                                        IdentifierName(XMLElementAttributeName))
+                .WithArgumentList(AttributeArgumentList(SeparatedList<AttributeArgumentSyntax>(
+                                                new SyntaxNodeOrToken[]{
+                                                    AttributeArgument(
+                                                        LiteralExpression(
+                                                            SyntaxKind.StringLiteralExpression,
+                                                            Literal("TC_TOTALCOUNT")))
+                                                    .WithNameEquals(
+                                                        NameEquals(
+                                                            IdentifierName("ElementName"))),
+                                                    })))))
+                            }))
                         }));
 
             members.Add(classDeclarationSyntax);
@@ -75,7 +91,7 @@ public class GetReportHelper
         return unit;
     }
 
-    
+
 
     internal static string GetReportResponseEnvelopeHelperCompilationUnit(string nameSpace, string name)
     {

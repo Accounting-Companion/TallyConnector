@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace TallyConnector.Core.Models.Interfaces.Masters;
-public interface IBaseMasterObject : ITallyBaseObject
+public interface IBaseMasterObject : IBaseObject
 {
 
 }

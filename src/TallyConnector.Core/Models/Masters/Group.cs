@@ -91,6 +91,7 @@ public partial class Group : BaseGroup
 
     [XmlIgnore]
     [Column(TypeName = $"nvarchar({Constants.MaxNameLength})")]
+    [TDLField(Set = "$_FirstAlias", IncludeInFetch = true)]
     public string? Alias { get; set; }
     /// <summary>
     /// Tally Field - Used for Calculation

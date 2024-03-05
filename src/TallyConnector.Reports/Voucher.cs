@@ -1,4 +1,6 @@
-﻿using TallyConnector.Core.Models.Interfaces.Voucher;
+﻿using System.Xml.Serialization;
+using TallyConnector.Core.Attributes;
+using TallyConnector.Core.Models.Interfaces.Voucher;
 using TallyConnector.Core.Models.Masters;
 using TallyConnector.Core.Models.TallyComplexObjects;
 
@@ -7,14 +9,13 @@ namespace TallyConnector.Core.Models;
 [Serializable]
 [XmlRoot(ElementName = "VOUCHER", Namespace = "")]
 [TallyObjectType(TallyObjectType.Vouchers)]
-[TDLCollection(Type ="Voucher")]
-public class Voucher : TallyObject, IBaseObject, IBaseVoucherObject
+public class Voucher : TallyObject, ITallyBaseObject
 {
     public Voucher()
     {
         _DeliveryNotes = new();
     }
-    
+
     [XmlElement(ElementName = "DATE")]
     public DateTime Date { get; set; }
 
@@ -23,7 +24,7 @@ public class Voucher : TallyObject, IBaseObject, IBaseVoucherObject
 
     [XmlElement(ElementName = "REFERENCE")]
     [Column(TypeName = $"nvarchar({Constants.MaxNameLength})")]
-    [TDLField(FetchText = "adsfdgfhjhkj", IncludeInFetch = false)]
+    [TDLField(FetchText ="adsfdgfhjhkj",IncludeInFetch =false)]
     public string? Reference { get; set; }
 
 
@@ -66,7 +67,6 @@ public class Voucher : TallyObject, IBaseObject, IBaseVoucherObject
 
     [XmlElement(ElementName = "ISOPTIONAL")]
     [Column(TypeName = "nvarchar(3)")]
-    [TDLField(IncludeInFetch = true)]
     public bool IsOptional { get; set; }
 
     [XmlElement(ElementName = "EFFECTIVEDATE")]
@@ -96,7 +96,7 @@ public class Voucher : TallyObject, IBaseObject, IBaseVoucherObject
 
     [TallyCategory(Constants.Voucher.Category.EInvoiceDetails)]
     [XmlElement(ElementName = "IRNACKDATE")]
-    public DateTime? IRNAckDate { get; set; }
+    public string? IRNAckDate { get; set; }
 
 
 
@@ -220,12 +220,11 @@ public class Voucher : TallyObject, IBaseObject, IBaseVoucherObject
     //Party Details
     [TallyCategory("PartyDetails")]
     [XmlElement(ElementName = "PARTYNAME")]
-    [TDLField(IncludeInFetch = true)]
     public string? PartyName { get; set; }
 
     [XmlElement(ElementName = "PARTYLEDGERID")]
     [Column(TypeName = $"nvarchar({Constants.GUIDLength})")]
-    [TDLField(Set = "$GUID:Ledger:$PARTYLEDGERNAME", FetchText = "PARTYLEDGERNAME", IncludeInFetch = true)]
+    [TDLField(Set = "$GUID:Ledger:$PARTYLEDGERNAME",FetchText = "PARTYLEDGERNAME")]
     public string? PartyLedgerId { get; set; }
 
     [XmlElement(ElementName = "VOUCHERNUMBERSERIES")]
@@ -296,7 +295,6 @@ public class Voucher : TallyObject, IBaseObject, IBaseVoucherObject
     public List<string>? BuyerAddress { get; set; }
 
     [XmlElement(ElementName = "ISCANCELLED")]
-    [TDLField(IncludeInFetch = true)]
     public bool? IsCancelled { get; set; }
 
     //EWAY Details
@@ -306,14 +304,14 @@ public class Voucher : TallyObject, IBaseObject, IBaseVoucherObject
     //[XmlElement(ElementName = "EWAYBILLDETAILS.LIST")]
     //public List<EwayBillDetail>? EWayBillDetails { get; set; }
 
-    [XmlElement(ElementName = "ALLLEDGERENTRIES.LIST", Type = typeof(LedgerEntry))]
-    [XmlElement(ElementName = "LEDGERENTRIES.LIST", Type = typeof(ELedgerEntry))]
-    public List<LedgerEntry>? Ledgers { get; set; }
+    [XmlElement(ElementName = "ALLLEDGERENTRIES.LIST", Type = typeof(VoucherLedger))]
+    [XmlElement(ElementName = "LEDGERENTRIES.LIST", Type = typeof(EVoucherLedger))]
+    public List<VoucherLedger>? Ledgers { get; set; }
 
 
-    [XmlElement(ElementName = "ALLINVENTORYENTRIES.LIST", Type = typeof(InventoryEntry))]
+    [XmlElement(ElementName = "ALLINVENTORYENTRIES.LIST", Type = typeof(AllInventoryAllocations))]
     [XmlElement(ElementName = "INVENTORYENTRIES.LIST", Type = typeof(InventoryEntries))]
-    public List<InventoryEntry>? InventoryAllocations { get; set; }
+    public List<AllInventoryAllocations>? InventoryAllocations { get; set; }
 
     [XmlElement(ElementName = "INVENTORYENTRIESOUT.LIST")]
     [TDLCollection(CollectionName = "INVENTORYENTRIESOUT")]
@@ -340,18 +338,17 @@ public class Voucher : TallyObject, IBaseObject, IBaseVoucherObject
 
 [XmlRoot(ElementName = "LEDGERENTRIES.LIST")]
 [TDLCollection(CollectionName = "LEDGERENTRIES", ExplodeCondition = $"$PERSISTEDVIEW =$$SysName:{Constants.Voucher.ViewType.InvoiceVoucherView}")]
-public class ELedgerEntry : LedgerEntry
+public class EVoucherLedger : VoucherLedger
 {
 
 }
 
 [XmlRoot(ElementName = "ALLLEDGERENTRIES.LIST")]
 [TDLObjectsMethodName(FunctionName = nameof(GetLedgerEntryObjects))]
-[TDLCollection(CollectionName = "ALLLEDGERENTRIES", ExplodeCondition = $"$PERSISTEDVIEW =$$SysName:{Constants.Voucher.ViewType.AccountingVoucherView}")]
-public class LedgerEntry : IBaseLedgerEntry
+public class BaseVoucherLedger : IBaseLedgerEntry
 {
 
-    public LedgerEntry()
+    public BaseVoucherLedger()
     {
     }
     [TDLField(IncludeInFetch = true)]
@@ -365,17 +362,10 @@ public class LedgerEntry : IBaseLedgerEntry
 
     [XmlElement(ElementName = "LEDGERID")]
     [Column(TypeName = $"nvarchar({Constants.GUIDLength})")]
-    [TDLField(IncludeInFetch = true)]
     public string? LedgerId { get; set; }
 
-
-    [XmlElement(ElementName = "VOUCHERGUID")]
-    [Column(TypeName = $"nvarchar({Constants.GUIDLength})")]
-    [TDLField(IncludeInFetch = true)]
-    public string? VoucherGUID { get; set; }
-
     [XmlElement(ElementName = "LEDGERTAXTYPE")]
-    [TDLField(IncludeInFetch = true)]
+    [TDLField(IncludeInFetch =true)]
     public string? LedgerTaxType { get; set; }
 
     [XmlElement(ElementName = "VCHLEDGERTYPE")]
@@ -393,8 +383,30 @@ public class LedgerEntry : IBaseLedgerEntry
     //[XmlElement(ElementName = "CATEGORYALLOCATIONS.LIST")]
     //public List<CostCategoryAllocations>? CostCategoryAllocations { get; set; }
 
+
+    public static TallyCustomObject[] GetLedgerEntryObjects()
+    {
+        return [new("LedgerEntry",[
+                                       "LedgerId: $GUID:Ledger:$LedgerName"
+                                   ]){IsModify=YesNo.Yes},];
+    }
+
+}
+
+[XmlRoot(ElementName = "ALLLEDGERENTRIES.LIST")]
+[TDLCollection(CollectionName = "ALLLEDGERENTRIES", ExplodeCondition = $"$PERSISTEDVIEW =$$SysName:{Constants.Voucher.ViewType.AccountingVoucherView}")]
+public class VoucherLedger : BaseVoucherLedger
+{
+    public VoucherLedger(string name, TallyAmountField amount)
+    {
+        LedgerName = name;
+        //Amount = amount;
+    }
+    public VoucherLedger()
+    {
+    }
     [XmlElement(ElementName = "ADDLALLOCTYPE")]
-    [TDLField(IncludeInFetch = true)]
+    [TDLField(IncludeInFetch =true)]
     public AdAllocType AdAllocType { get; set; }
 
     [XmlElement(ElementName = "ISPARTYLEDGER")]
@@ -413,23 +425,14 @@ public class LedgerEntry : IBaseLedgerEntry
 
     [XmlElement(ElementName = "INVENTORYALLOCATIONS.LIST")]
     [TDLCollection(CollectionName = "INVENTORYALLOCATIONS", ExplodeCondition = $"$$NUMITEMS:INVENTORYALLOCATIONS>0")]
-    public List<InventoryEntry>? InventoryAllocations { get; set; }
+    public List<InventoryAllocations>? InventoryAllocations { get; set; }
 
-    public static TallyCustomObject[] GetLedgerEntryObjects()
-    {
-        return [new("LedgerEntry",[
-                                       "LedgerId: $GUID:Ledger:$LedgerName",
-                                       "VoucherGUID:$().GUID",
-                                   ]){IsModify=YesNo.Yes},];
-    }
 
 }
 
-
-
 [XmlRoot(ElementName = "BILLALLOCATIONS.LIST")]
 [TDLObjectsMethodName(FunctionName = nameof(GetBillAllocationObjects))]
-public class BillAllocations : IBaseObject
+public class BillAllocations : TallyBaseObject
 {
     public BillAllocations()
     {
@@ -445,12 +448,8 @@ public class BillAllocations : IBaseObject
     [XmlElement(ElementName = "BILLID")]
     public int BillId { get; set; }
 
-    [XmlElement(ElementName = "BILLCREATIONDATE")]
-    public DateTime BillCreationDate { get; set; }
-
-    [XmlElement(ElementName = "LEDGERID")]
+    [XmlElement(ElementName = "BILLLEDGERID")]
     [Column(TypeName = $"nvarchar({Constants.GUIDLength})")]
-    [TDLField(IncludeInFetch = true)]
     public string LedgerId { get; set; }
 
     [XmlElement(ElementName = "BILLCREDITPERIOD")]
@@ -463,33 +462,39 @@ public class BillAllocations : IBaseObject
     {
         return [new("BillAllocations", new()
                                    {
-                                       "LEDGERID: $.LedgerId"
+                                       "BILLLEDGERID: $.LedgerId"
                                    }){IsModify=YesNo.Yes},];
     }
 }
 
 [XmlRoot(ElementName = "INVENTORYENTRIESIN.LIST")]
-public class InventoryinAllocations : InventoryEntry
+public class InventoryinAllocations : InventoryAllocations
 {
 }
 
 [XmlRoot(ElementName = "INVENTORYENTRIESOUT.LIST")]
-public class InventoryoutAllocations : InventoryEntry
+public class InventoryoutAllocations : InventoryAllocations
 {
 
 }
+
+[XmlRoot(ElementName = "ALLINVENTORYENTRIES.LIST")]
+[TDLCollection(CollectionName = "ALLINVENTORYENTRIES", ExplodeCondition = $"$PERSISTEDVIEW =$$SysName:{Constants.Voucher.ViewType.InvoiceVoucherView}")]
+public class AllInventoryAllocations : InventoryAllocations
+{
+    [XmlElement(ElementName = "ACCOUNTINGALLOCATIONS.LIST")]
+    public List<BaseVoucherLedger>? Ledgers { get; set; }
+}
 [XmlRoot(ElementName = "INVENTORYENTRIES.LIST")]
 [TDLCollection(CollectionName = "INVENTORYENTRIES", ExplodeCondition = $"$PERSISTEDVIEW =$$SysName:{Constants.Voucher.ViewType.MfgJournalVoucherView}")]
-public class InventoryEntries : InventoryEntry
+public class InventoryEntries : AllInventoryAllocations
 {
 }
 
 [XmlRoot(ElementName = "INVENTORYALLOCATIONS.LIST")]
-[TDLCollection(CollectionName = "ALLINVENTORYENTRIES", ExplodeCondition = $"$PERSISTEDVIEW =$$SysName:{Constants.Voucher.ViewType.InvoiceVoucherView}")]
-[TDLObjectsMethodName(FunctionName = nameof(GetInventoryEntryObjects))]
-public class InventoryEntry : IBaseObject
+public class InventoryAllocations : ITallyBaseObject
 {
-    public InventoryEntry()
+    public InventoryAllocations()
     {
     }
     [XmlArray("BASICUSERDESCRIPTION.LIST")]
@@ -505,13 +510,7 @@ public class InventoryEntry : IBaseObject
 
     [XmlElement(ElementName = "STOCKITEMID")]
     [Column(TypeName = $"nvarchar({Constants.GUIDLength})")]
-    [TDLField(Set = "$GUID:StockItem:$StockItemName")]
     public string? StockItemId { get; set; }
-
-    [XmlElement(ElementName = "VOUCHERGUID")]
-    [Column(TypeName = $"nvarchar({Constants.GUIDLength})")]
-    [TDLField(IncludeInFetch = true)]
-    public string? VoucherGUID { get; set; }
 
     [XmlElement(ElementName = "BOMNAME")]
     [Column(TypeName = $"nvarchar({Constants.MaxNameLength})")]
@@ -537,22 +536,12 @@ public class InventoryEntry : IBaseObject
     [XmlElement(ElementName = "AMOUNT")]
     public TallyAmountField? Amount { get; set; }
 
-    [XmlElement(ElementName = "ACCOUNTINGALLOCATIONS.LIST")]
-    [TDLCollection(CollectionName = "ACCOUNTINGALLOCATIONS")]
-    public List<LedgerEntry>? Ledgers { get; set; }
-
     //[XmlElement(ElementName = "BATCHALLOCATIONS.LIST")]
     //public List<BatchAllocations>? BatchAllocations { get; set; }
 
     //[XmlElement(ElementName = "CATEGORYALLOCATIONS.LIST")]
     //public List<CostCategoryAllocations>? CostCategoryAllocations { get; set; }
-    public static TallyCustomObject[] GetInventoryEntryObjects()
-    {
-        return [new("InventoryEntry",
-                                   [
-                                       "VoucherGUID:$().GUID"
-                                   ]){IsModify=YesNo.Yes}];
-    }
+
 }
 
 [XmlRoot(ElementName = "BATCHALLOCATIONS.LIST")]
@@ -696,7 +685,7 @@ public class DeliveryNotes
 
 
 [XmlRoot(ElementName = "EWAYBILLDETAILS.LIST")]
-public class EwayBillDetail : IBaseObject
+public class EwayBillDetail : ITallyBaseObject
 {
     [XmlElement(ElementName = "BILLDATE")]
     public DateTime? BillDate { get; set; }
@@ -734,7 +723,7 @@ public class EwayBillDetail : IBaseObject
 }
 
 [XmlRoot(ElementName = "TRANSPORTDETAILS.LIST")]
-public class TransporterDetail : IBaseObject
+public class TransporterDetail : ITallyBaseObject
 {
     [XmlElement(ElementName = "DISTANCE")]
     public string? Distance { get; set; }

@@ -6,7 +6,7 @@ namespace TallyConnector.Core.Models;
 /// </summary>
 [XmlRoot(ElementName = "COMPANY")]
 [TDLFunctionsMethodName(nameof(TC_BaseCompanyFunctions))]
-public class BaseCompany : ITallyBaseObject
+public class BaseCompany : IBaseObject
 {
     private const string CleanCompanyNumberFunctionName = "TC_GetCleanedCompanyNumber";
 
@@ -147,7 +147,7 @@ public class Company : BaseCompany
 }
 
 [XmlRoot(ElementName = "COMPANYONDISK")]
-public class CompanyOnDisk : BaseCompany, ITallyBaseObject
+public class CompanyOnDisk : BaseCompany, IBaseObject
 {
    
 

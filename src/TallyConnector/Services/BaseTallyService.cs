@@ -1,4 +1,5 @@
 ﻿using System.Globalization;
+using TallyConnector.Core.Extensions;
 using TallyConnector.Core.Models.Common;
 
 namespace TallyConnector.Services;
@@ -7,8 +8,9 @@ namespace TallyConnector.Services;
 /// </summary>
 [GenerateHelperMethod<MasterStatistics>(MethodNameSuffixPlural = nameof(MasterStatistics), GenerationMode = GenerationMode.GetMultiple, Args = [typeof(BaseRequestOptions)])]
 [GenerateHelperMethod<VoucherStatistics>(MethodNameSuffixPlural = nameof(VoucherStatistics), GenerationMode = GenerationMode.GetMultiple, Args = [typeof(DateFilterRequestOptions)])]
-[GenerateHelperMethod<Company>(MethodNameSuffixPlural = "Companies",GenerationMode = GenerationMode.GetMultiple)]
+[GenerateHelperMethod<Company>(MethodNameSuffixPlural = "Companies", GenerationMode = GenerationMode.GetMultiple)]
 [GenerateHelperMethod<CompanyOnDisk>(MethodNameSuffixPlural = "GetCompaniesinDefaultPath", GenerationMode = GenerationMode.GetMultiple)]
+[GenerateHelperMethod<LastAlterIdsRoot>]
 public partial class BaseTallyService : IBaseTallyService
 {
     private readonly HttpClient _httpClient;
@@ -152,6 +154,53 @@ public partial class BaseTallyService : IBaseTallyService
         XMLAttributeOverrides.Add(typeof(Colllection<LicenseInfo>), "Objects", XMLAttributes);
         Envelope<LicenseInfo> envelope = XMLToObject.GetObjfromXml<Envelope<LicenseInfo>>(respXml.Response ?? throw new Exception("Error While Getting License"), XMLAttributeOverrides);
         return envelope.Body.Data.Collection?.Objects?.FirstOrDefault() ?? new();
+    }
+
+    public async Task<LastAlterIdsRoot> GetLastAlterIdsAsync(BaseRequestOptions? baseRequestOptions=null, CancellationToken token=default)
+    {
+        _logger?.LogInformation("Getting Last AlterIds from Tally");
+        string reportName = "AlterIdsReport";
+        RequestEnvelope requestEnvelope = new(HType.Data, reportName);
+        TDLMessage tdlMessage = new()
+        {
+            Report = new() { new(reportName) },
+            Form = new() { new(reportName) },
+            Part = new() { new(reportName, "TC_CompanyCollection") },
+            Line = new() { new(reportName, fields: new() { "TC_MastersLastId", "TC_VouchersLastId" }) },
+            Field = new()
+            {
+                new("TC_MastersLastId", "MastersLastId", "if $$IsEmpty:$ALTMSTID THEN 0 else $ALTMSTID"),
+                new("TC_VouchersLastId", "VouchersLastId", "if $$IsEmpty:$ALTVCHID THEN 0 else $ALTVCHID")
+            },
+            Collection = new()
+            {
+                new(colName:"TC_CompanyCollection",colType:"Company",nativeFields:new(){"ALTMSTID,ALTVCHID"}){Filters=new(){ "TC_CurCompFilter" } },
+            },
+            System = new()
+            {
+                new("TC_CurCompFilter","$Name=##SVCURRENTCOMPANY"),
+            }
+
+        };
+        tdlMessage.Part![0].SetAttributes();
+
+        requestEnvelope.Body.Desc.TDL.TDLMessage = tdlMessage;
+        requestEnvelope.PopulateOptions(baseRequestOptions);
+        await PopulateDefaultOptions(requestEnvelope, token);
+        string xml = requestEnvelope.GetXML();
+
+        TallyResult result = await SendRequestAsync(xml: xml, requestType: "last AlterIds Report", token: token);
+        if (result.Status == RespStatus.Sucess)
+        {
+            LastAlterIdsRoot? lastMasterIdsRoot = XMLToObject.GetObjfromXml<LastAlterIdsRoot>(result.Response!);
+            _logger?.LogInformation("Received Last AlterIds from Tally");
+            return lastMasterIdsRoot;
+        }
+        else
+        {
+            throw new Exception("Error hile getting Last AlterIds");
+        }
+        
     }
 
     /// <inheritdoc/>

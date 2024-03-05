@@ -3,7 +3,7 @@
 [XmlRoot(ElementName = "STOCKCATEGORY")]
 [XmlType(AnonymousType = true)]
 [TallyObjectType(TallyObjectType.StockCategories)]
-public class StockCategory : BasicTallyObject, IAliasTallyObject
+public class StockCategory : BaseMasterObject
 {
     public StockCategory()
     {
@@ -17,25 +17,13 @@ public class StockCategory : BasicTallyObject, IAliasTallyObject
     }
 
 
-    [XmlAttribute(AttributeName = "NAME")]
-    [Column(TypeName = $"nvarchar({Constants.MaxNameLength})")]
+    [XmlElement(ElementName = "OLDNAME")]
+    [TDLField(Set = "$Name")]
     [JsonIgnore]
-    public string? OldName { get; set; }
-
-    private string? name;
-
-    [XmlElement(ElementName = "NAME")]
     [Column(TypeName = $"nvarchar({Constants.MaxNameLength})")]
-    [Required]
-    public string Name
-    {
-        get
-        {
-            name = name == null || name == string.Empty ? OldName : name;
-            return name!;
-        }
-        set => name = value;
-    }
+    public string OldName { get; set; }
+
+
 
     [XmlElement(ElementName = "PARENT")]
     [Column(TypeName = $"nvarchar({Constants.MaxNameLength})")]
@@ -43,9 +31,12 @@ public class StockCategory : BasicTallyObject, IAliasTallyObject
 
     [XmlElement(ElementName = "PARENTID")]
     [Column(TypeName = $"nvarchar({Constants.GUIDLength})")]
+    [TDLField(Set = "$GUID:StockCategory:$Parent")]
     public string? ParentId { get; set; }
 
     [XmlIgnore]
+    [Column(TypeName = $"nvarchar({Constants.MaxNameLength})")]
+    [TDLField(Set = "$_FirstAlias", IncludeInFetch = true)]
     public string? Alias { get; set; }
 
     [JsonIgnore]
@@ -53,11 +44,6 @@ public class StockCategory : BasicTallyObject, IAliasTallyObject
     [TDLCollection(CollectionName = "LanguageName")]
     public List<LanguageNameList> LanguageNameList { get; set; }
 
-
-    public override void RemoveNullChilds()
-    {
-        Name = name!;
-    }
     public override string ToString()
     {
         return $"Stock Category - {Name}";

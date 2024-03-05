@@ -3,13 +3,13 @@
 namespace TallyConnector.Core.Models.TallyComplexObjects;
 [TDLCollection(ExplodeCondition = "NOT $$IsEmpty:{0}")]
 [MaptoDTO<DueDateDTO>]
-public class DueDate : ITallyComplexObject, ITallyBaseObject
+public class DueDate : ITallyComplexObject, IBaseObject
 {
     [TDLField(Set = "$$string:{0}:UniversalDate")]
     [XmlElement(ElementName = "DUEONDATE")]
     public DateTime DueOnDate { get; set; }
 
-    [TDLField(Set = "$$ExtractNumbers:$$DueDateInDays:{0}")]
+    [TDLField(Set = "$$ExtractNumbers:$$DueDateInDays:{0}",Invisible ="$$ISEMPTY:$$Value")]
     [XmlElement(ElementName = "INDAYS")]
     public int InDays { get; set; }
 
@@ -17,6 +17,20 @@ public class DueDate : ITallyComplexObject, ITallyBaseObject
     [XmlElement(ElementName = "INTEXT")]
     public string InText { get; set; }
 
+    public override string ToString()
+    {
+        var duedate = DueOnDate.ToString("dd-MMM-yyyy", CultureInfo.InvariantCulture);
+
+        if (duedate == InText)
+        {
+            return duedate;
+        }
+        else
+        {
+            return $"{duedate} ({InText})";
+        }
+        
+    }
 }
 public class DueDateDTO
 {

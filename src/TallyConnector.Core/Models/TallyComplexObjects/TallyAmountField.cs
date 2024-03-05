@@ -2,10 +2,10 @@
 using System.Globalization;
 using static TallyConnector.Core.Models.Constants;
 namespace TallyConnector.Core.Models.TallyComplexObjects;
-[TDLFunctionsMethodName(FunctionName = nameof(GetTDLFunctions))]
+
 [TDLCollection(ExplodeCondition = "NOT $$IsEmpty:{0}")]
 [DebuggerDisplay("{ToString(),nq}")]
-public class TallyAmountField : ITallyComplexObject, ITallyBaseObject
+public class TallyAmountField : ITallyComplexObject, IBaseObject
 {
     public TallyAmountField()
     {
@@ -46,10 +46,6 @@ public class TallyAmountField : ITallyComplexObject, ITallyBaseObject
     public bool IsDebit { get; set; }
 
 
-    public static List<TDLFunction> GetTDLFunctions()
-    {
-        return [];
-    }
 
     public override string ToString()
     {
