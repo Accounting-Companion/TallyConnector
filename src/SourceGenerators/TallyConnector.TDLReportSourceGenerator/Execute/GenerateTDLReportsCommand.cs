@@ -30,7 +30,7 @@ internal class GenerateTDLReportsCommand
                 INamedTypeSymbol symbol = value.GetSymbol;
                 INamedTypeSymbol reqEnvelope = value.RequestEnvelope;
                 string methodName = value.HelperAttributeData?.MethodNameSuffix ?? item.Key;
-                var symbolData = new SymbolData(value.ParentSymbol, symbol, methodName, reqEnvelope);
+                var symbolData = new SymbolData(value.ParentSymbol, symbol, methodName, reqEnvelope) { ActivitySourceName = value.ActivitySourceName };
                 symbolData.MethodNameSuffixPlural = value.HelperAttributeData?.MethodNameSuffixPlural ?? $"{methodName}s";
                 symbolData.Args = value.HelperAttributeData?.Args ?? [];
                 symbolData.GenerationMode = value.HelperAttributeData?.GenerationMode switch
@@ -111,7 +111,7 @@ internal class GenerateTDLReportsCommand
                 ComplexChildNames.Add(Basevalue.FullName);
                 if (!_data.ContainsKey(Basevalue.FullName))
                 {
-                    SymbolData value = new(symbolData.MainSymbol, baseType, $"{symbolData.TypeName}Base{baseType.Name}", symbolData.ReqEnvelopeSymbol, true, symbolData);
+                    SymbolData value = new(symbolData.MainSymbol, baseType, $"{symbolData.TypeName}Base{baseType.Name}", symbolData.ReqEnvelopeSymbol, true, symbolData) { ActivitySourceName = symbolData.ActivitySourceName };
 
                     value.GenerationMode = symbolData.GenerationMode;
                     value.IsBaseSymbol = true;
@@ -179,7 +179,7 @@ internal class GenerateTDLReportsCommand
                 {
                     continue;
                 };
-              
+
                 symbolData.Children.Add(childData);
                 if (childData.IsComplex || childData.IsEnum)
                 {
@@ -191,7 +191,7 @@ internal class GenerateTDLReportsCommand
                             ComplexChildNames.Add(childData.ChildTypeFullName);
                             if (!_data.ContainsKey(childData.ChildTypeFullName))
                             {
-                                SymbolData value = new(symbolData.MainSymbol, childData.ChildType, $"{symbolData.TypeName}Child{childData.ChildType.Name}", symbolData.ReqEnvelopeSymbol, true);
+                                SymbolData value = new(symbolData.MainSymbol, childData.ChildType, $"{symbolData.TypeName}Child{childData.ChildType.Name}", symbolData.ReqEnvelopeSymbol, true) { ActivitySourceName = symbolData.ActivitySourceName };
                                 _data.Add(childData.ChildTypeFullName, value);
                                 ProcessGetSymbol(value, _data, ComplexChildNames);
                                 childData.SymbolData = value;
@@ -224,6 +224,7 @@ internal class GenerateTDLReportsCommand
                         if (!_data.ContainsKey(childData.ChildTypeFullName))
                         {
                             SymbolData value = new(symbolData.MainSymbol, childData.ChildType, $"{symbolData.TypeName}Child{childData.ChildType.Name}", symbolData.ReqEnvelopeSymbol, true, symbolData);
+                            value.ActivitySourceName = symbolData.ActivitySourceName;
                             value.IsParentChild = true;
                             value.GenerationMode = symbolData.GenerationMode;
                             _data.Add(childData.ChildTypeFullName, value);
@@ -282,6 +283,7 @@ internal class GenerateTDLReportsCommand
                         if (!_data.ContainsKey(fullName))
                         {
                             SymbolData value = new(symbolData.MainSymbol, xmlchildData.ChildType, $"{symbolData.TypeName}Child{xmlchildData.ChildType.Name}", symbolData.ReqEnvelopeSymbol, true, symbolData);
+                            value.ActivitySourceName = symbolData.ActivitySourceName;
                             value.GenerationMode = symbolData.GenerationMode;
                             value.IsParentChild = true;
                             xmlchildData.SymbolData = value;
@@ -420,7 +422,7 @@ internal class GenerateTDLReportsCommand
             childData.TDLFieldDetails ??= new()
             {
                 Set = $"${sameTypeXMLData?.XmlTag ?? upperName}",
-                IncludeInFetch = false
+                ExcludeInFetch = false
             };
             if (childData.TDLFieldDetails.Set == null)
             {
@@ -773,7 +775,7 @@ internal class GenerateTDLReportsCommand
             fieldData.Set = (string)constructorArguments.First().Value!;
             if (constructorArguments.Length == 2)
             {
-                fieldData.IncludeInFetch = (bool)constructorArguments.Skip(1).First().Value!;
+                fieldData.ExcludeInFetch = (bool)constructorArguments.Skip(1).First().Value!;
             }
 
         }
@@ -789,8 +791,8 @@ internal class GenerateTDLReportsCommand
                     case "Set":
                         fieldData.Set = (string)namedArgument.Value.Value!;
                         break;
-                    case "IncludeInFetch":
-                        fieldData.IncludeInFetch = (bool?)namedArgument.Value.Value ?? false;
+                    case "ExcludeInFetch":
+                        fieldData.ExcludeInFetch = (bool?)namedArgument.Value.Value ?? false;
                         break;
                     case "Use":
                         fieldData.Use = (string?)namedArgument.Value.Value;

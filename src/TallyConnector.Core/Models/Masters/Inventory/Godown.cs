@@ -49,13 +49,12 @@ public class Godown : BaseMasterObject
     public bool? IsInternal { get; set; } // Our Stock With Third Party
 
     [XmlElement(ElementName = "CANDELETE")]
-    [TDLField(IncludeInFetch = true)]
     public bool? CanDelete { get; set; }
 
 
     [XmlIgnore]
     [Column(TypeName = $"nvarchar({Constants.MaxNameLength})")]
-    [TDLField(Set = "$_FirstAlias", IncludeInFetch = true)]
+    [TDLField(Set = "$_FirstAlias")]
     public string? Alias { get; set; }
 
 

@@ -27,6 +27,7 @@ internal class Helper
     private readonly bool _isMasterObject;
     private readonly bool _isVoucherObject;
     private readonly bool _isTallyObject;
+    private readonly bool _hasActivitySource;
 
     public Helper(SymbolData symbol)
     {
@@ -43,6 +44,7 @@ internal class Helper
         _isMasterObject = _symbol.Symbol.HasInterfaceWithFullyQualifiedMetadataName(MasterObjectInterfaceName);
         _isVoucherObject = _symbol.Symbol.HasInterfaceWithFullyQualifiedMetadataName(VoucherObjectInterfaceName);
         _isTallyObject = _isMasterObject || _isVoucherObject;
+        _hasActivitySource = !string.IsNullOrWhiteSpace(symbol.ActivitySourceName);
     }
 
     public string GetPostRequestEnvelopeCompilationUnit()
@@ -183,8 +185,21 @@ internal class Helper
         string xmlVarName = "reqXml";
         string xmlRespVarName = "resp";
         string xmlRespEnvlopeVarName = "respEnv";
+        string activityVarName = "activity";
+        string reqTypeVarName = "reqType";
         List<StatementSyntax> statements = [];
-
+        statements.Add(CreateVarInsideMethodWithExpression(reqTypeVarName, CreateStringLiteral($"Getting {_symbol.MethodNameSuffixPlural}")));
+        if (_hasActivitySource)
+        {
+            statements.Add(LocalDeclarationStatement(CreateVariableDeclaration(activityVarName,
+                                                                              InvocationExpression(MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression,
+                                                                                                      IdentifierName(_symbol.ActivitySourceName!),
+                                                                                                      IdentifierName(StartActivityMethodName)))
+                                                                              .WithArgumentList(ArgumentList(SeparatedList<ArgumentSyntax>(new SyntaxNodeOrToken[]
+                                                                              {
+                                                                              Argument(IdentifierName(reqTypeVarName)),
+                                                                              }))))));
+        }
         InvocationExpressionSyntax mainExpression = InvocationExpression(MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression,
                                                                                                                GetGlobalNameforType(_symbol.MainFullName),
                                                                                                                IdentifierName(string.Format(GetRequestEnvelopeMethodName, _symbol.TypeName))));
@@ -210,7 +225,7 @@ internal class Helper
             new SyntaxNodeOrToken[]{
                 Argument(IdentifierName(xmlVarName)),
                 Token(SyntaxKind.CommaToken),
-                 Argument(CreateStringLiteral($"Getting {_symbol.MethodNameSuffixPlural}")),
+                 Argument(IdentifierName(reqTypeVarName)),
                  Token(SyntaxKind.CommaToken),
                  Argument(IdentifierName(_cancellationTokenArgName))
             }))))));
@@ -266,9 +281,22 @@ internal class Helper
         string xmlVarName = "reqXml";
         string xmlRespVarName = "resp";
         string xmlRespEnvlopeVarName = "respEnv";
+        string activityVarName = "activity";
+        string reqTypeVarName = "reqType";
         List<StatementSyntax> statements = [];
         List<SyntaxNodeOrToken> methodArgs = [];
-
+        statements.Add(CreateVarInsideMethodWithExpression(reqTypeVarName, CreateStringLiteral($"Getting {_symbol.MethodNameSuffixPlural}")));
+        if (_hasActivitySource)
+        {
+            statements.Add(LocalDeclarationStatement(CreateVariableDeclaration(activityVarName,
+                                                                              InvocationExpression(MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression,
+                                                                                                      IdentifierName(_symbol.ActivitySourceName!),
+                                                                                                      IdentifierName(StartActivityMethodName)))
+                                                                              .WithArgumentList(ArgumentList(SeparatedList<ArgumentSyntax>(new SyntaxNodeOrToken[]
+                                                                              {
+                                                                              Argument(IdentifierName(reqTypeVarName)),
+                                                                              }))))).WithUsingKeyword(Token(SyntaxKind.UsingKeyword)));
+        }
         InvocationExpressionSyntax mainExpression = InvocationExpression(MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression,
                                                                                                                GetGlobalNameforType(_symbol.MainFullName),
                                                                                                                IdentifierName(string.Format(GetRequestEnvelopeMethodName, _symbol.TypeName))));
@@ -303,13 +331,17 @@ internal class Helper
                                                         LiteralExpression(SyntaxKind.NullLiteralExpression)), Block(
                                                             ExpressionStatement(extensionMethodInvokeSyntax))));
         }
-        statements.Add(ExpressionStatement(AwaitExpression(InvocationExpression(IdentifierName(PopulateDefaultOptionsMethodName))
+        if ( !(_symbol.Symbol.HasOrInheritsFromFullyQualifiedMetadataName(BaseCompanyTypeName) || _symbol.Symbol.HasFullyQualifiedMetadataName(BaseCompanyTypeName)))
+        {
+            statements.Add(ExpressionStatement(AwaitExpression(InvocationExpression(IdentifierName(PopulateDefaultOptionsMethodName))
             .WithArgumentList(ArgumentList(SeparatedList<ArgumentSyntax>(new SyntaxNodeOrToken[]
             {
                 Argument(IdentifierName(reqEnvelopeVarName)),
                 Token(SyntaxKind.CommaToken),
                  Argument(IdentifierName(_cancellationTokenArgName)),
             }))))));
+        }
+        
         statements.Add(CreateVarInsideMethodWithExpression(xmlVarName,
                                                            InvocationExpression(MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression,
                                                            IdentifierName(reqEnvelopeVarName), IdentifierName("GetXML")))));
@@ -318,7 +350,7 @@ internal class Helper
             new SyntaxNodeOrToken[]{
                 Argument(IdentifierName(xmlVarName)),
                 Token(SyntaxKind.CommaToken),
-                 Argument(CreateStringLiteral($"Getting {_symbol.MethodNameSuffixPlural}")),
+                 Argument(IdentifierName(reqTypeVarName)),
                  Token(SyntaxKind.CommaToken),
                  Argument(IdentifierName(_cancellationTokenArgName))
             }))))));
@@ -377,7 +409,7 @@ internal class Helper
         statements.Add(CreateVarInsideMethodWithExpression(xmlAttributeOverridesVarName, ObjectCreationExpression(GetGlobalNameforType(XmlAttributeOverridesClassName)).WithArgumentList(ArgumentList())));
         HashSet<string> typeNames = [];
         AddExpressionForOverridenChilds(_symbol);
-        
+
         void AddExpressionForOverridenChilds(SymbolData symbol)
         {
             typeNames.Add(symbol.FullName);
@@ -417,7 +449,7 @@ internal class Helper
                 }
 
             }
-            
+
 
         }
 
@@ -1321,6 +1353,7 @@ internal class Helper
     {
         const string prefixParamName = "prefix";
         List<SyntaxNodeOrToken> nodesAndTokens = [];
+        //HashSet<string> names = new HashSet<string>();
         AddFetchItems(_symbol);
 
         void AddFetchItems(SymbolData symbol)
@@ -1336,7 +1369,7 @@ internal class Helper
                 SafeAdd(nodesAndTokens, SpreadElement(exp));
             };
             var children = symbol.Children.Where(c => !c.IsComplex || (c.SymbolData?.IsTallyComplexObject ?? false))
-                .Where(child => child.TDLFieldDetails?.IncludeInFetch ?? false)
+                .Where(child => !(child.TDLFieldDetails?.ExcludeInFetch ?? false))
                 .Select(child => child.TDLFieldDetails?.FetchText ?? child.TDLFieldDetails?.Set)
                 .Where(c => c != null)
                 .ToList();
@@ -1374,14 +1407,17 @@ internal class Helper
 
             }
 
-            IEnumerable<ChildSymbolData> complexCildren = symbol.Children.Where(c => !c.Exclude && (c.IsComplex || c.IsList));
+            IEnumerable<ChildSymbolData> complexCildren = symbol.Children.Where(c => (c.IsComplex || c.IsList));
             foreach (var child in complexCildren)
             {
+
                 if (child.ChildTypeFullName == symbol.FullName)
                 {
                     return;
                 }
                 AddFetchListSyntaxofComplexChild(child);
+
+
                 void AddFetchListSyntaxofComplexChild(ChildSymbolData child, int? counter = null)
                 {
                     if (child.DefaultTDLCollectionDetails == null || child.DefaultTDLCollectionDetails.CollectionName == null)

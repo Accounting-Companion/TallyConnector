@@ -92,7 +92,7 @@ public static class TDLReportHelper
                 {
                     ChildField.SetExp = tDLXMLSet.Set;
                 }
-                ChildField.IncludeinFetch = tDLXMLSet.IncludeInFetch;
+                ChildField.IncludeinFetch = tDLXMLSet.ExcludeInFetch;
 
             }
 

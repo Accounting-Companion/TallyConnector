@@ -1,6 +1,4 @@
-﻿using TallyConnector.Core.Models.Masters;
-
-namespace TallyConnector.Core.Models;
+﻿namespace TallyConnector.Core.Models;
 /// <summary>
 /// Base Model for Company
 /// </summary>
@@ -56,7 +54,7 @@ public class BaseCompany : IBaseObject
 
 
 [XmlRoot(ElementName = "COMPANY")]
-public class Company : BaseCompany
+public class Company : BaseCompany,ICompany
 {
 
     [XmlElement(ElementName = "BOOKSFROM")]
@@ -144,6 +142,13 @@ public class Company : BaseCompany
     [XmlElement(ElementName = "ISINTERESTON")]
     public bool IsInterestOn { get; set; }
 
+}
+
+public interface ICompany
+{
+    string? GUID { get; set; }
+
+    string CompNum { get; set; }   
 }
 
 [XmlRoot(ElementName = "COMPANYONDISK")]

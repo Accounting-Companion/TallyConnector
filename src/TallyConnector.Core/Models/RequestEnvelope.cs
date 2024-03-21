@@ -1,7 +1,4 @@
-﻿using System.Collections;
-using System.Xml.Linq;
-
-namespace TallyConnector.Core.Models;
+﻿namespace TallyConnector.Core.Models;
 
 [XmlRoot(ElementName = "ENVELOPE")]
 public class RequestEnvelope : TallyXmlJson

@@ -65,6 +65,7 @@ internal class SymbolData
     public GenerationMode GenerationMode { get; internal set; }
     public List<INamedTypeSymbol> Args { get; internal set; }
     public bool IsParentChild { get; set; }
+    public string? ActivitySourceName { get; internal set; }
 
     public override string ToString()
     {
@@ -142,7 +143,7 @@ internal class ChildSymbolData
         MainParent = Parent.ParentSymbol;
         IsComplex = ChildType.SpecialType is SpecialType.None && ChildType.TypeKind is not TypeKind.Enum;
         Attributes = childSymbol.GetAttributes();
-        ReportVarName = $"{parent.Name}{Name}ReportName";
+        ReportVarName = $"{parent.TypeName}{Name}ReportName";
         IsOverridden = /*childSymbol.DeclaringSyntaxReferences.Any(c => c.GetSyntax() is PropertyDeclarationSyntax propertySyntax && propertySyntax.Modifiers.Any(c => c.IsKind(SyntaxKind.NewKeyword))) || */CheckBaseHasSameProperty();
     }
 

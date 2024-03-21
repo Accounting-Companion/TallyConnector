@@ -24,7 +24,6 @@ public class Voucher : TallyObject, ITallyBaseObject
 
     [XmlElement(ElementName = "REFERENCE")]
     [Column(TypeName = $"nvarchar({Constants.MaxNameLength})")]
-    [TDLField(FetchText ="adsfdgfhjhkj",IncludeInFetch =false)]
     public string? Reference { get; set; }
 
 
@@ -351,7 +350,6 @@ public class BaseVoucherLedger : IBaseLedgerEntry
     public BaseVoucherLedger()
     {
     }
-    [TDLField(IncludeInFetch = true)]
 
     [XmlElement(ElementName = "INDEXNUMBER")]
     public int IndexNumber { get; set; }
@@ -365,7 +363,6 @@ public class BaseVoucherLedger : IBaseLedgerEntry
     public string? LedgerId { get; set; }
 
     [XmlElement(ElementName = "LEDGERTAXTYPE")]
-    [TDLField(IncludeInFetch =true)]
     public string? LedgerTaxType { get; set; }
 
     [XmlElement(ElementName = "VCHLEDGERTYPE")]
@@ -406,11 +403,9 @@ public class VoucherLedger : BaseVoucherLedger
     {
     }
     [XmlElement(ElementName = "ADDLALLOCTYPE")]
-    [TDLField(IncludeInFetch =true)]
     public AdAllocType AdAllocType { get; set; }
 
     [XmlElement(ElementName = "ISPARTYLEDGER")]
-    [TDLField(IncludeInFetch = true)]
     public bool IsPartyLedger { get; set; }
 
     [XmlElement(ElementName = "SWIFTCODE")]

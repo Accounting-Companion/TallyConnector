@@ -78,6 +78,12 @@ public class TDLReportSourceGenerator : IIncrementalGenerator
                 names.Add(fullName);
                 Dictionary<string, GenerateSymbolsArgs> generateSymbolsArgs = [];
                 ImmutableArray<AttributeData> attributeDatas = symbol.GetAttributes();
+                AttributeData activitySourceAttribute = attributeDatas.Where(c => c.HasFullyQualifiedMetadataName(ActivitySourceAttributeName)).FirstOrDefault();
+                string? activitySourceName = null;
+                if (activitySourceAttribute != null)
+                {
+                    activitySourceName = GetActivitySourceSymbol(activitySourceAttribute);
+                }
                 foreach (var attributeData in attributeDatas)
                 {
                     string attrName = attributeData.GetAttrubuteMetaName();
@@ -99,7 +105,8 @@ public class TDLReportSourceGenerator : IIncrementalGenerator
                         generateSymbolsArgs.Add(helperAttributeData?.MethodNameSuffix ?? getTypeSymbol.Name, new(symbol, getTypeSymbol,
                                                             (INamedTypeSymbol)typeargs[1])
                         {
-                            HelperAttributeData = helperAttributeData
+                            HelperAttributeData = helperAttributeData,
+                            ActivitySourceName = activitySourceName
                         });
                     }
                 }
@@ -114,6 +121,23 @@ public class TDLReportSourceGenerator : IIncrementalGenerator
             throw;
         }
 
+    }
+
+    private string? GetActivitySourceSymbol(AttributeData activitySourceAttribute)
+    {
+        if (activitySourceAttribute.NamedArguments != null && activitySourceAttribute.NamedArguments.Length > 0)
+        {
+            var namedArguments = activitySourceAttribute.NamedArguments;
+            foreach (var namedArgument in namedArguments)
+            {
+                switch (namedArgument.Key)
+                {
+                    case "ActivitySource":
+                        return (string?)namedArgument.Value.Value;
+                }
+            }
+        }
+        return null;
     }
 
     private HelperAttributeData? GetHelperAttributeData(AttributeData attributeDataAttribute)
@@ -166,12 +190,12 @@ public class UniqueSymbol(string Name, INamedTypeSymbol Symbol)
 }
 public class GenerateSymbolsArgs
 {
-    public GenerateSymbolsArgs(INamedTypeSymbol parentSymbol, INamedTypeSymbol getSymbol) : this(parentSymbol, getSymbol, null) { }
+    
 
 
     public GenerateSymbolsArgs(INamedTypeSymbol parentSymbol,
                                INamedTypeSymbol getSymbol,
-                               INamedTypeSymbol? requestEnvelope = null)
+                               INamedTypeSymbol requestEnvelope )
     {
         ParentSymbol = parentSymbol;
         GetSymbol = getSymbol;
@@ -186,6 +210,8 @@ public class GenerateSymbolsArgs
     public INamedTypeSymbol? PostEnvelope { get; }
     public string MethodName { get; internal set; }
     internal HelperAttributeData? HelperAttributeData { get; set; }
+
+    public string? ActivitySourceName { get; set; }
 }
 public class ProjectArgs
 {

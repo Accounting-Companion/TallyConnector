@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace TallyConnector.Core.Extensions;
+﻿namespace TallyConnector.Core.Extensions;
 public static class ArrayExtensions
 {
     public static void AddToArray<T>(this T[] src, T[] newArray, int startIndex)

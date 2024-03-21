@@ -5,7 +5,7 @@ public class TDLFieldAttribute : Attribute
 {
     public string Set { get; set; }
 
-    public bool IncludeInFetch { get; set; }
+    public bool ExcludeInFetch { get; set; }
     public string? FetchText { get; set; }
 
     public string? Use { get; set; }

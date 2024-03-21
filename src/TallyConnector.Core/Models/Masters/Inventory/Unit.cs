@@ -42,7 +42,6 @@ public class Unit : BaseMasterObject
     public int DecimalPlaces { get; set; }
 
     [XmlElement(ElementName = "CANDELETE")]
-    [TDLField(IncludeInFetch = true)]
     public bool? CanDelete { get; set; }
 
     private bool? _isSimpleUnit;

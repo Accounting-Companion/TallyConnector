@@ -1,4 +1,5 @@
-﻿using TallyConnector.Core.Models.Masters;
+﻿using System.Diagnostics;
+using TallyConnector.Core.Models.Masters;
 
 namespace TallyConnector.Services;
 [GenerateHelperMethod<Currency>(MethodNameSuffix = "Currency", MethodNameSuffixPlural = "Currencies")]
@@ -6,7 +7,8 @@ namespace TallyConnector.Services;
 [GenerateHelperMethod<Ledger>()]
 [GenerateHelperMethod<VoucherType>()]
 [GenerateHelperMethod<Voucher>()]
-public partial class TallyService : BaseTallyService
+[SetActivitySource(ActivitySource = nameof(TallyServiceActivitySource))]
+public partial class TallyService : BaseTallyService, ITallyService
 {
     public TallyService()
     {

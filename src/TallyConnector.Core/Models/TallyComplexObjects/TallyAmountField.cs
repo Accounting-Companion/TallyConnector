@@ -1,6 +1,5 @@
 ﻿using System.Diagnostics;
 using System.Globalization;
-using static TallyConnector.Core.Models.Constants;
 namespace TallyConnector.Core.Models.TallyComplexObjects;
 
 [TDLCollection(ExplodeCondition = "NOT $$IsEmpty:{0}")]

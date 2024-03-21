@@ -1,10 +1,4 @@
-﻿using System.Runtime.InteropServices;
-using TallyConnector.Core.Models.Common;
-using TallyConnector.Core.Models.Interfaces.Masters;
-using TallyConnector.Core.Models.Masters;
-using TallyConnector.Core.Models.Masters.CostCenter;
-using TallyConnector.Core.Models.Masters.Inventory;
-using TallyConnector.Core.Models.Masters.Payroll;
+﻿using TallyConnector.Core.Models.Common;
 
 namespace TallyConnector.Services;
 /// <summary>
@@ -22,13 +16,13 @@ public interface IBaseTallyService
     /// <summary>
     /// Checks Whether Tally is running at Given Url and port
     /// </summary>
-    /// <returns>true or false</returns>
+    /// <returns>If Tally is running - true<br/>If Tally is not running - false</returns>
     Task<bool> CheckAsync(CancellationToken token = default);
 
     /// <summary>
     /// All future requests will be send to company mentioned here
     /// irrespective of active company in Tally <br/>
-    /// you can overide company by mentioning in request options in Request
+    /// you can also overide company by mentioning in request options in Request
     /// </summary>
     /// <param name="company">instance of company</param>
     void SetCompany(Company company);
@@ -64,28 +58,49 @@ public interface IBaseTallyService
     /// </summary>
     /// <returns></returns>
     Task<LicenseInfo> GetLicenseInfoAsync(CancellationToken token = default);
+    
+    /// <summary>
+    /// Gets Active Simple Company name from Tally
+    /// </summary>
+    /// <param name="token"></param>
+    /// <returns></returns>
     Task<string> GetActiveSimpleCompanyNameAsync(CancellationToken token = default);
 
 
 
     /// <summary>
-    /// Get Statistics of Masters form Tally
-    /// Request options specified here overirdes one setup using Setup() method
+    /// Get Masters Statistics form Tally
     /// </summary>
     /// <param name="requestOptions">Request options to configure tally</param>
-    /// <param name="token"></param>
-    /// <returns></returns>
+    /// <param name="token">Cancellation Token</param>
+    /// <returns>List of Master Statistics</returns>
     Task<List<MasterStatistics>> GetMasterStatisticsAsync(BaseRequestOptions? requestOptions = null, CancellationToken token = default);
 
     /// <summary>
-    /// Get Statistics of Vouchers from Tally
+    /// Get Statistics of Vouchers from Tally <br/>
     /// We can metion specific period using From and To Date in request options
     /// </summary>
     /// <param name="requestOptions">Request options to configure tally</param>
-    /// <param name="token"></param>
+    /// <param name="token">Cancellation Token</param>
     /// <returns></returns>
     Task<List<VoucherStatistics>> GetVoucherStatisticsAsync(DateFilterRequestOptions? requestOptions = null, CancellationToken token = default);
+    
+    
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="baseRequestOptions"></param>
+    /// <param name="token"></param>
+    /// <returns></returns>
     Task<LastAlterIdsRoot> GetLastAlterIdsAsync(BaseRequestOptions? baseRequestOptions=null, CancellationToken token=default);
+    
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="requestOprions"></param>
+    /// <param name="token"></param>
+    /// <returns></returns>
+    Task<AutoVoucherStatisticsEnvelope> GetVoucherStatisticsAsync(AutoColumnReportPeriodRequestOprions requestOptions, CancellationToken token = default);
 }
 /// <summary>
 /// contains API to interact with Tally
@@ -135,8 +150,8 @@ public interface ITallyService : IBaseTallyService
 //    #region Accounting Masters
 //    /*
 //     * Get and Post Methods of Accounting Masters - Currency, Group, Ledger,VoucherType, Cost Category, CostCetre
-//     * To Get an Item use Get[Name]Async<Type>(lookupvalue,options);
-//     * Ex:To Get Group use - await GetGroupAsync<Group>("Name");
+//     * To Get an Item use Get[BaseServiceActivityName]Async<Type>(lookupvalue,options);
+//     * Ex:To Get Group use - await GetGroupAsync<Group>("BaseServiceActivityName");
 //     */
 //    #region Get - Methods 
 
@@ -163,8 +178,8 @@ public interface ITallyService : IBaseTallyService
 
 //    /*
 //     * Bulk Get Methods of Accounting Masters by Pagination - Currency, Group, Ledger,VoucherType, Cost Category, CostCetre
-//     * To Get Items with default type use Get[Name]sPaginatedAsync<Type>(options);
-//     * To Get Items with custom type use Get[Name]sPaginatedAsync(options);
+//     * To Get Items with default type use Get[BaseServiceActivityName]sPaginatedAsync<Type>(options);
+//     * To Get Items with custom type use Get[BaseServiceActivityName]sPaginatedAsync(options);
 //     * Ex:To Get Groups with default type use - await GetGroupsPaginatedAsync(options);
 //     * Ex:To Get Groups with custom type use - await GetGroupsPaginatedAsync<Group>(options);
 //     */
@@ -218,7 +233,7 @@ public interface ITallyService : IBaseTallyService
 
 //    /*
 //     * Bulk Get Methods of Accounting Masters without Pagination - Currency, Group, Ledger,VoucherType, Cost Category, CostCetre
-//     * To Get Items use Get[Name]sAsync<Type>(options);
+//     * To Get Items use Get[BaseServiceActivityName]sAsync<Type>(options);
 //     * Ex:To Get Groups use - await GetGroupsAsync<Group>(options);
 //     */
 //    #region Bulk Get - Methods

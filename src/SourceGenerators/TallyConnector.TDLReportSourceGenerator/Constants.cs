@@ -62,6 +62,7 @@ public static class Constants
     public const string HeaderTypeEnumName = $"{TallyConnectorModelsNameSpace}.HType";
     public const string RequestEnvelopeFullTypeName = $"{TallyConnectorModelsNameSpace}.RequestEnvelope";
     public const string ReportFullTypeName = $"{TallyConnectorModelsNameSpace}.Report";
+    public const string BaseCompanyTypeName = $"{TallyConnectorModelsNameSpace}.BaseCompany";
     public const string FormFullTypeName = $"{TallyConnectorModelsNameSpace}.Form";
     public const string ExtensionsNameSpace = "TallyConnector.Core.Extensions";
     public const string TDLCollectionAttributeName = $"{TallyConnectorAttributesNameSpace}.TDLCollectionAttribute";
@@ -76,6 +77,7 @@ public static class Constants
     public const string TDLNamesetMethodNameAttributeName = $"{TallyConnectorAttributesNameSpace}.TDLNamesetMethodNameAttribute";
     public const string TDLObjectsMethodNameAttributeName = $"{TallyConnectorAttributesNameSpace}.TDLObjectsMethodNameAttribute";
     public const string EnumChoiceAttributeName = $"{TallyConnectorAttributesNameSpace}.EnumXMLChoiceAttribute";
+    public const string ActivitySourceAttributeName = $"{TallyConnectorAttributesNameSpace}.SetActivitySourceAttribute";
 
 
 
@@ -103,4 +105,7 @@ public static class Constants
 
     public const string GetBooleanFromLogicFieldFunctionName = "TC_GetBooleanFromLogicField";
     public const string GetTransformDateToXSDFunctionName = "TC_TransformDateToXSD";
+
+
+    public const string StartActivityMethodName = "StartActivity";
 }
