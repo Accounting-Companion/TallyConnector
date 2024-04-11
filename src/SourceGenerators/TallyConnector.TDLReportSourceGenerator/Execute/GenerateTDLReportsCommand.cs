@@ -84,7 +84,15 @@ internal class GenerateTDLReportsCommand
                 var nameSpace = symbolData.MainNameSpace;
 
                 string src = GetReportHelper.GetReportResponseEnvelopeCompilationUnit(data, nameSpace, name);
-                context.AddSource($"{name}.ReportResponseEnvelope.g.cs", src);
+                context.AddSource($"{symbolData.MainFullName}.ReportResponseEnvelope.g.cs", src);
+
+                string src2 = PostRequestEnvelopeHelper.GetPostRequestEnvelopeCompilationUnit(data, nameSpace, name);
+
+                context.AddSource($"{symbolData.MainFullName}.PostRequestEnvelope.g.cs", src2);
+
+                string src3 = PostObjectsHelper.GetPostObjectsCompilationUnit(data, nameSpace, name);
+
+                context.AddSource($"{symbolData.MainFullName}.PostObject.g.cs", src3);
             }
         }
 
@@ -354,6 +362,16 @@ internal class GenerateTDLReportsCommand
                         xMLData.Add(tXMLData);
                     }
                 }
+                if (attributeName == XMLAttributeAttributeName)
+                {
+                    XMLData? tXMLData = ParseXMLAttributeData(attributeDataAttribute);
+                    if (tXMLData != null)
+                    {
+                        tXMLData.IsAttribute = true;
+                        childData.IsAttribute = true;
+                        xMLData.Add(tXMLData);
+                    }
+                }
                 //if (attributeName == XMLEnumAttributeName && childData.Parent.IsEnum)
                 //{
                 //    xMLData ??= ParseEnumXMLData(attributeDataAttribute);
@@ -549,6 +567,14 @@ internal class GenerateTDLReportsCommand
                             symbolData.TDLGetObjectMethods,
                             symbolData.ParentSymbol?.TDLGetObjectMethods);
             }
+            if (attrName == TDLDefaultFiltersMethodNameAttributeName)
+            {
+                addFunction(symbolData,
+                            attributeDataAttribute,
+                            symbolData.DefaultFilterMethods,
+                            symbolData.ParentSymbol?.DefaultFilterMethods);
+
+            }
         }
         symbolData.RootXmlTag = xmlData?.XmlTag ?? symbolData.Name.ToUpper();
 
@@ -648,6 +674,45 @@ internal class GenerateTDLReportsCommand
                 switch (namedArgument.Key)
                 {
                     case "ElementName":
+                        xMLData.XmlTag = (string)namedArgument.Value.Value!;
+                        break;
+                    case "Type":
+                        xMLData.Symbol = (INamedTypeSymbol)namedArgument.Value.Value!;
+                        break;
+                }
+            }
+
+        }
+        return xMLData;
+    }
+    private XMLData? ParseXMLAttributeData(AttributeData attributeDataAttribute)
+    {
+        XMLData? xMLData = null;
+        if (attributeDataAttribute.ConstructorArguments != null && attributeDataAttribute.ConstructorArguments.Length > 0)
+        {
+            var constructorArguments = attributeDataAttribute.ConstructorArguments;
+            xMLData ??= new();
+            for (int i = 0; i < constructorArguments.Length; i++)
+            {
+                switch (i)
+                {
+                    case 0:
+                        xMLData.XmlTag = constructorArguments.First().Value?.ToString();
+                        break;
+                    default:
+                        break;
+                }
+            }
+        }
+        if (attributeDataAttribute.NamedArguments != null && attributeDataAttribute.NamedArguments.Length > 0)
+        {
+            var namedArguments = attributeDataAttribute.NamedArguments;
+            xMLData ??= new();
+            foreach (var namedArgument in namedArguments)
+            {
+                switch (namedArgument.Key)
+                {
+                    case "AttributeName":
                         xMLData.XmlTag = (string)namedArgument.Value.Value!;
                         break;
                     case "Type":
@@ -826,6 +891,7 @@ internal class XMLData
     public INamedTypeSymbol? Symbol { get; set; }
 
     public ChildSymbolData ChildSymbolData { get; set; }
+    public bool IsAttribute { get;  set; }
 }
 
 internal class MapToData

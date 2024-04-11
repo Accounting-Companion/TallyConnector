@@ -1,31 +1,58 @@
 ﻿namespace TallyConnector.Core.Models;
-
 [XmlRoot(ElementName = "ENVELOPE")]
-public class RequestEnvelope : TallyXmlJson
+public class RequestEnvelope : TallyEnvelope<string>
 {
     public RequestEnvelope()
     {
     }
 
-    public RequestEnvelope(HType Type, string iD)
+    public RequestEnvelope(HType Type, string iD) : base(Type, iD)
     {
-        Header = new(Request: RequestTye.Export, Type: Type, ID: iD); //Configuring Header To get Export data
     }
 
-    public RequestEnvelope(HType Type, string iD, StaticVariables? sv) : this(Type, iD)
+    public RequestEnvelope(TDLReport rootreportfield, StaticVariables? sv = null) : base(rootreportfield, sv)
+    {
+    }
+
+    public RequestEnvelope(HType Type, string iD, StaticVariables? sv) : base(Type, iD, sv)
+    {
+    }
+
+    public RequestEnvelope(HType Type, string iD, StaticVariables sv, TDLReport rootreportfield) : base(Type, iD, sv, rootreportfield)
+    {
+    }
+}
+
+[XmlRoot(ElementName = "ENVELOPE")]
+public class TallyEnvelope<T> : TallyXmlJson where T : class
+{
+    public TallyEnvelope()
+    {
+    }
+
+    public TallyEnvelope(HType Type, string iD)
+    {
+        Header = new(Request: RequestType.Export, Type: Type, ID: iD); //Configuring Header To get Export data
+    }
+    public TallyEnvelope(RequestType requestType, HType Type, string iD)
+    {
+        Header = new(Request: requestType, Type: Type, ID: iD);
+    }
+
+    public TallyEnvelope(HType Type, string iD, StaticVariables? sv) : this(Type, iD)
     {
         Body.Desc.StaticVariables = sv;
     }
 
 
 
-    public RequestEnvelope(HType Type, string iD, StaticVariables sv, TDLReport rootreportfield) : this(Type, iD, sv)
+    public TallyEnvelope(HType Type, string iD, StaticVariables sv, TDLReport rootreportfield) : this(Type, iD, sv)
     {
         Body.Desc.TDL.TDLMessage = new(rootreportfield);
     }
-    public RequestEnvelope(TDLReport rootreportfield, StaticVariables? sv = null)
+    public TallyEnvelope(TDLReport rootreportfield, StaticVariables? sv = null)
     {
-        Header = new(Request: RequestTye.Export, HType.Data, rootreportfield.FieldName);
+        Header = new(Request: RequestType.Export, HType.Data, rootreportfield.FieldName);
         Body.Desc.StaticVariables = sv;
         Body.Desc.TDL = new(rootreportfield);
 
@@ -34,14 +61,23 @@ public class RequestEnvelope : TallyXmlJson
     public Header? Header { get; set; }
 
     [XmlElement(ElementName = "BODY")]
-    public RequestBody Body { get; set; } = new();
+    public RequestBody<T> Body { get; set; } = new();
 }
 
 [XmlRoot(ElementName = "BODY")]
-public class RequestBody
+public class RequestBody<T> where T : class
 {
     [XmlElement(ElementName = "DESC")]
     public ReqDescription Desc { get; set; } = new();
+
+    [XmlElement(ElementName = "DATA")]
+    public RequestData<T> RequestData { get; set; } = new();
+}
+
+public class RequestData<T> where T : class
+{
+    [XmlElement(ElementName = "TALLYMESSAGE")]
+    public T? RequestMessage { get; set; }
 }
 
 [XmlRoot(ElementName = "DESC")]
@@ -287,6 +323,9 @@ public class TDLMessage
         });
     }
 
+    [XmlElement(ElementName = "IMPORTFILE")]
+    public List<ImportFile>? ImportFile { get; set; }
+
     [XmlElement(ElementName = "REPORT")]
     public List<Report>? Report { get; set; }
 
@@ -318,7 +357,33 @@ public class TDLMessage
     public List<System>? System { get; set; } = new();
 
 }
-public class NameSet : DCollection
+
+public class ImportFile : BaseTDLClass
+{
+    public ImportFile(string name, List<string>? option = null)
+    {
+        Name = name;
+        Option = option;
+    }
+
+    public ImportFile()
+    {
+    }
+    [XmlElement(ElementName = "OPTION")]
+    public List<string>? Option = [];
+
+
+    [XmlElement(ElementName = "RESPONSEREPORT")]
+    public string ResponseReport { get; set; }
+
+    [XmlElement(ElementName = "DELETE")]
+    public List<string>? Delete = [];
+
+    [XmlElement(ElementName = "ADD")]
+    public List<string>? Add = [];
+}
+
+public class NameSet : BaseTDLClass
 {
     public NameSet()
     {
@@ -329,13 +394,11 @@ public class NameSet : DCollection
         Name = name;
         SetAttributes();
     }
-    [XmlAttribute(AttributeName = "NAME")]
-    public string Name { get; set; }
 
     [XmlElement(ElementName = "LIST")]
     public List<string> List { get; set; }
 }
-public class TDLFunction : DCollection
+public class TDLFunction : BaseTDLClass
 {
     public TDLFunction()
     {
@@ -348,8 +411,6 @@ public class TDLFunction : DCollection
         SetAttributes();
     }
 
-    [XmlAttribute(AttributeName = "NAME")]
-    public string Name { get; set; }
     [XmlElement(ElementName = "Parameter")]
     public List<string> Parameters { get; set; } = [];
 
@@ -367,19 +428,17 @@ public class TDLFunction : DCollection
 }
 
 [XmlRoot(ElementName = "REPORT")]
-public class Report : DCollection
+public class Report : BaseTDLClass
 {
     public Report() { }
     public Report(string rName)
     {
-        AttrName = rName;
+        Name = rName;
         FormName = rName;
         SetAttributes();
     }
 
 
-    [XmlAttribute(AttributeName = "NAME")]
-    public string? AttrName { get; set; }
 
     [XmlElement(ElementName = "FORMS")]
     public string? FormName { get; set; }
@@ -398,7 +457,7 @@ public class Report : DCollection
 }
 
 [XmlRoot(ElementName = "FORM")]
-public class Form : DCollection
+public class Form : BaseTDLClass
 {
     public Form() { }
 
@@ -415,8 +474,7 @@ public class Form : DCollection
     [XmlElement(ElementName = "XMLTAG")]
     public string? ReportTag { get; set; }
 
-    [XmlAttribute(AttributeName = "NAME")]
-    public string? Name { get; set; } //Should match with FormName in Report
+
 
     [XmlElement(ElementName = "USE")]
     public List<string>? Use { get; set; }
@@ -434,7 +492,7 @@ public class Form : DCollection
 
 
 [XmlRoot(ElementName = "PART")]
-public class Part : DCollection
+public class Part : BaseTDLClass
 {
     public Part(string topPartName, string? colName, string lineName)
     {
@@ -471,8 +529,6 @@ public class Part : DCollection
     [XmlElement(ElementName = "SCROLLED")]
     public string? Scrolled { get; set; } = "Vertical";
 
-    [XmlAttribute(AttributeName = "NAME")]
-    public string? Name { get; set; }
 
     [XmlElement(ElementName = "XMLTAG")]
     public string? XMLTag { get; set; }
@@ -482,7 +538,7 @@ public class Part : DCollection
 
 
 [XmlRoot(ElementName = "LINE")]
-public class Line : DCollection
+public class Line : BaseTDLClass
 {
     public Line(string lineName, List<string> fields, string? xmlTag = null)
     {
@@ -510,11 +566,13 @@ public class Line : DCollection
     [XmlElement(ElementName = "FIELDS")]
     public List<string>? Fields { get; set; }
 
-    [XmlAttribute(AttributeName = "NAME")]
-    public string? Name { get; set; }
+
 
     [XmlElement(ElementName = "XMLTAG")]
     public string? XMLTag { get; set; }
+
+    [XmlElement(ElementName = "XMLATTR")]
+    public List<string>? XMLAttributes { get; set; } = [];
 
     [XmlElement(ElementName = "OPTION")]
     public List<string> Option { get; set; } = new();
@@ -541,7 +599,7 @@ public class Line : DCollection
 
 
 [XmlRoot(ElementName = "FIELD")]
-public class Field : DCollection
+public class Field : BaseTDLClass
 {
 
     public Field(string name, string xMLTag)
@@ -586,8 +644,6 @@ public class Field : DCollection
     [XmlElement(ElementName = "XMLTAG")]
     public string XMLTag { get; set; }  //Desired XML Tag
 
-    [XmlAttribute(AttributeName = "NAME")]
-    public string Name { get; set; }
 
     [XmlElement(ElementName = "FIELDS")]
     public List<string>? Fields { get; set; }
@@ -622,7 +678,7 @@ public class Field : DCollection
 
 
 [XmlRoot(ElementName = "COLLECTION")]
-public class Collection : DCollection
+public class Collection : BaseTDLClass
 {
     public Collection(string colName,
                       string colType,
@@ -712,13 +768,7 @@ public class Collection : DCollection
     /// </summary>
     [XmlElement(ElementName = "OBJECTS")]
     public string? Objects { get; set; }
-
-    [XmlAttribute(AttributeName = "NAME")]
-    public string? Name { get; set; }
-
-
-
-
+    public string DataSource { get; set; }
 }
 
 
@@ -745,8 +795,10 @@ public class System
     public string Text { get; set; }
 }
 
-public class DCollection
+public class BaseTDLClass
 {
+    [XmlAttribute(AttributeName = "NAME")]
+    public string Name { get; set; }
 
     [XmlAttribute(AttributeName = "ISMODIFY")]
     public YesNo IsModify { get; set; }
@@ -780,7 +832,7 @@ public class DCollection
 
 
 [XmlRoot(ElementName = "OBJECT")]
-public class TallyCustomObject : DCollection
+public class TallyCustomObject : BaseTDLClass
 {
     public TallyCustomObject()
     {
@@ -793,8 +845,6 @@ public class TallyCustomObject : DCollection
         LocalFormulas = formulas;
         SetAttributes();
     }
-    [XmlAttribute(AttributeName = "NAME")]
-    public string? Name { get; set; }
 
     [XmlElement(ElementName = "LOCALFORMULA")]
     public List<string> LocalFormulas { get; set; }

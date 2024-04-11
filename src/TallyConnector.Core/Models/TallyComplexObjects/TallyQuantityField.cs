@@ -8,6 +8,7 @@ public class TallyQuantityField : ITallyComplexObject, IBaseObject
 
     [TDLField(TallyType = "Number", Format = "TailUnits")]
     [XmlElement(ElementName = "QUANTITY")]
+    [Column(TypeName = "decimal(20,4)")]
     public decimal Quantity { get; set; }
 
 

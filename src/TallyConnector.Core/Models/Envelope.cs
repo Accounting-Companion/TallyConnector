@@ -10,14 +10,14 @@ public class Envelope<T> : TallyXmlJson
     public Envelope(T ObjecttoExport, StaticVariables staticVariables)
     {
         Body = new();
-        Header = new(Request: RequestTye.Import, Type: HType.Data, ID: "All Masters");
+        Header = new(Request: RequestType.Import, Type: HType.Data, ID: "All Masters");
         Body.Desc.StaticVariables = staticVariables;
         Body.Data.Message.Objects.Add(ObjecttoExport);
     }
     public Envelope(List<T> ObjectstoExport, StaticVariables staticVariables)
     {
         Body = new();
-        Header = new(Request: RequestTye.Import, Type: HType.Data, ID: "All Masters");
+        Header = new(Request: RequestType.Import, Type: HType.Data, ID: "All Masters");
         Body.Desc.StaticVariables = staticVariables;
         Body.Data.Message.Objects.AddRange(ObjectstoExport);
     }
@@ -89,7 +89,7 @@ public class Message<T>
 [XmlRoot(ElementName = "HEADER")]
 public class Header
 {
-    public Header(RequestTye Request, HType Type, string ID)
+    public Header(RequestType Request, HType Type, string ID)
     {
         _request = Request;
         _type = Type;
@@ -97,14 +97,14 @@ public class Header
     }
     public Header() { }
     private int _version = 1;
-    private RequestTye _request;
+    private RequestType _request;
     private HType _type;
     private string? _Id;
     [XmlElement(ElementName = "VERSION")]
     public int Version { get { return _version; } set { _version = value; } }
 
     [XmlElement(ElementName = "TALLYREQUEST")]
-    public RequestTye Request { get { return _request; } set { _request = value; } }
+    public RequestType Request { get { return _request; } set { _request = value; } }
 
     [XmlElement(ElementName = "TYPE")]
     public HType Type { get { return _type; } set { _type = value; } }
@@ -190,7 +190,7 @@ public class SVTo
     public string? Text { get; set; }
 }
 
-public enum RequestTye
+public enum RequestType
 {
     [XmlEnum(Name = "EXPORT")]
     Export,

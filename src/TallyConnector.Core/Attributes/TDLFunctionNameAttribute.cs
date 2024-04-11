@@ -87,3 +87,13 @@ public class TDLObjectsMethodNameAttribute : BaseMethodNameAttribute
     {
     }
 }
+public class TDLDefaultFiltersMethodNameAttribute : BaseMethodNameAttribute
+{
+    public TDLDefaultFiltersMethodNameAttribute()
+    {
+    }
+
+    public TDLDefaultFiltersMethodNameAttribute(string functionName) : base(functionName)
+    {
+    }
+}

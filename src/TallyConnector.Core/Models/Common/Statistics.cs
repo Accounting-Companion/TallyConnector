@@ -36,10 +36,9 @@ public class VoucherStatistics : BaseStatistics
     [TDLField(Set = "if $$ISEMPTY:$$DirectOptionalVch:$Name then 0 else $$DirectOptionalVch:$Name")]
     public int OptionalCount { get; set; }
 
-    public int NetCount => Count - CancelledCount;
 
     public override string ToString()
     {
-        return $"{Name} - {NetCount}";
+        return $"{Name} - {Count}";
     }
 }

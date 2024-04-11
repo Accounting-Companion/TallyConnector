@@ -37,24 +37,16 @@ public partial class Ledger : BaseLedger
     public Ledger(string name, string group)
     {
         //LanguageNameList = [];
-        Addresses = [];
+        Name = name;
         Group = group;
     }
 
-    [XmlElement(ElementName = "OLDNAME")]
+    [XmlAttribute(AttributeName = "NAME")]
     [TDLField(Set = "$Name")]
     [JsonIgnore]
     [Column(TypeName = $"nvarchar({Constants.MaxNameLength})")]
     public string OldName { get; set; }
 
-
-    [XmlElement(ElementName = "PARENTID")]
-    [TDLField(Set = "$guid:group:$parent")]
-    [Column(TypeName = $"nvarchar({Constants.GUIDLength})")]
-    public string? GroupId { get; set; }
-
-
-    [XmlIgnore]
     [Column(TypeName = $"nvarchar({Constants.MaxNameLength})")]
     [TDLField(Set = "$_FirstAlias")]
     public string? Alias { get; set; }
@@ -70,10 +62,6 @@ public partial class Ledger : BaseLedger
     [Column(TypeName = "nvarchar(5)")]
     public string? Currency { get; set; }
 
-    [XmlElement(ElementName = "CURRENCYID")]
-    [Column(TypeName = $"nvarchar({Constants.GUIDLength})")]
-    [TDLField(Set = "$GUID:Currency:$CURRENCYNAME")]
-    public string? CurrencyId { get; set; }
 
     [XmlElement(ElementName = "TAXTYPE")]
     [Column(TypeName = "nvarchar(20)")]
@@ -114,7 +102,7 @@ public partial class Ledger : BaseLedger
     public string? Country { get; set; }
 
     [XmlElement(ElementName = "LEDSTATENAME")]
-    [Column(TypeName = $"nvarchar({Constants.MaxAmountLength})")]
+    [Column(TypeName = $"nvarchar({Constants.MaxNameLength})")]
     public string? State { get; set; }
 
     [XmlElement(ElementName = "PINCODE")]
@@ -126,15 +114,15 @@ public partial class Ledger : BaseLedger
     public string? ContactPerson { get; set; }
 
     [XmlElement(ElementName = "LEDGERPHONE")]
-    [Column(TypeName = "nvarchar(20)")]
+    [Column(TypeName = $"nvarchar({Constants.MaxNameLength})")]
     public string? LandlineNo { get; set; }
 
     [XmlElement(ElementName = "LEDGERMOBILE")]
-    [Column(TypeName = "nvarchar(20)")]
+    [Column(TypeName = $"nvarchar({Constants.MaxNameLength})")]
     public string? MobileNo { get; set; }
 
     [XmlElement(ElementName = "LEDGERFAX")]
-    [Column(TypeName = "nvarchar(20)")]
+    [Column(TypeName = $"nvarchar({Constants.MaxNameLength})")]
     public string? FaxNo { get; set; }
 
     [XmlElement(ElementName = "EMAIL")]
@@ -150,7 +138,7 @@ public partial class Ledger : BaseLedger
     public string? Website { get; set; }
 
     [XmlElement(ElementName = "INCOMETAXNUMBER")]
-    [Column(TypeName = "nvarchar(12)")]
+    [Column(TypeName = "nvarchar(20)")]
     public string? PANNumber { get; set; }
 
     [XmlElement(ElementName = "GSTREGISTRATIONTYPE")]
@@ -241,7 +229,7 @@ public partial class Ledger : BaseLedger
     [Column(TypeName = $"nvarchar({Constants.MaxNarrLength})")]
     public string? Notes { get; set; }
 
-    [JsonIgnore]
+   
 
     [XmlArray(ElementName = "ADDRESS.LIST")]
     [XmlArrayItem(ElementName = "ADDRESS")]
@@ -249,7 +237,6 @@ public partial class Ledger : BaseLedger
     public List<string> Addresses { get; set; }
 
 
-    [JsonIgnore]
     [XmlElement(ElementName = "LANGUAGENAME.LIST")]
     [TDLCollection(CollectionName = "LanguageName")]
     public List<LanguageNameList> LanguageNameList { get; set; }

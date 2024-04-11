@@ -4,51 +4,32 @@
 [XmlRoot(ElementName = "COSTCENTRE")]
 [XmlType(AnonymousType = true)]
 [TallyObjectType(TallyObjectType.CostCentres)]
-public class CostCentre : BasicTallyObject, IAliasTallyObject
+[TDLDefaultFiltersMethodName(FunctionName=nameof(GetDefaultFilters))]
+public class CostCentre : BaseMasterObject
 {
     public CostCentre()
     {
-        LanguageNameList = new();
-        CategoryId = string.Empty;
-        Category = string.Empty;
+        //LanguageNameList = new();
+        //Category = string.Empty;
     }
 
-    [XmlAttribute(AttributeName = "NAME")]
-    [Column(TypeName = $"nvarchar({Constants.MaxNameLength})")]
+    [XmlElement(ElementName = "OLDNAME")]
+    [TDLField(Set = "$Name")]
     [JsonIgnore]
-    public string? OldName { get; set; }
-
-    private string? name;
-
-    [XmlElement(ElementName = "NAME")]
     [Column(TypeName = $"nvarchar({Constants.MaxNameLength})")]
-    [Required]
-    public string Name
-    {
-        get
-        {
-            name = name == null || name == string.Empty ? OldName : name;
-            return name!;
-        }
-        set => name = value;
-    }
+    public string OldName { get; set; }
 
     [XmlElement(ElementName = "CATEGORY")]
     [Column(TypeName = $"nvarchar({Constants.MaxNameLength})")]
     [Required]
     public string Category { get; set; }
 
-    [XmlElement(ElementName = "CATEGORYID")]
-    [Column(TypeName = $"nvarchar({Constants.GUIDLength})")]
-    public string CategoryId { get; set; }
+
 
     [XmlElement(ElementName = "PARENT")]
     [Column(TypeName = $"nvarchar({Constants.MaxNameLength})")]
     public string? Parent { get; set; }
 
-    [XmlElement(ElementName = "PARENTID")]
-    [Column(TypeName = $"nvarchar({Constants.GUIDLength})")]
-    public string? ParentId { get; set; }
 
     [XmlElement(ElementName = "EMAILID")]
     [Column(TypeName = $"nvarchar({Constants.MaxNameLength})")]
@@ -56,7 +37,7 @@ public class CostCentre : BasicTallyObject, IAliasTallyObject
 
     [XmlElement(ElementName = "REVENUELEDFOROPBAL")]
     [Column(TypeName = "nvarchar(3)")]
-    public TallyYesNo? ShowOpeningBal { get; set; }
+    public bool? ShowOpeningBal { get; set; }
 
 
     [XmlIgnore]
@@ -67,7 +48,14 @@ public class CostCentre : BasicTallyObject, IAliasTallyObject
     [TDLCollection(CollectionName = "LanguageName")]
     public List<LanguageNameList> LanguageNameList { get; set; }
 
+    public static Filter[] GetDefaultFilters()
+    {
+        return [
+            new Filter("IsEmployeeGroup", "Not $ISEMPLOYEEGROUP"),
+            new Filter("IsPayroll", "Not $FORPAYROLL")
+            ];
 
+    }
     public override string ToString()
     {
         return $"Cost Center - {Name}";

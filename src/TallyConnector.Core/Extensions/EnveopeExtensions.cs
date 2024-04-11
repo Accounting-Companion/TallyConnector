@@ -38,6 +38,7 @@ public static class EnveopeExtensions
                 collection.Compute = requestOptions.Compute;
                 collection.ComputeVar = requestOptions.ComputeVar;
                 collection.Filters = requestOptions.Filters?.Select(c => c.FilterName!).ToList();
+                collection.Childof = requestOptions.Childof;
             }
 
             if (requestOptions.Filters != null && requestOptions.Filters.Count > 0)
@@ -69,7 +70,7 @@ public static class EnveopeExtensions
 
                 }
                 string CollectionName = $"{collection.Name}_NonPaginated";
-                tDLMessage.Collection.Add(new(CollectionName, collection.Type!, filters: requestOptions.Filters.Select(c => c.FilterName!).ToList()) { Childof=requestOptions.Childof});
+                tDLMessage.Collection.Add(new(CollectionName, collection.Type!, filters: requestOptions.Filters.Select(c => c.FilterName!).ToList()) { Childof = requestOptions.Childof });
                 const string objectCountName = "TC_ObjectsCount";
                 Part part = tDLMessage.Part!.First();
                 part.Lines = [.. part.Lines, objectCountName];
@@ -86,5 +87,15 @@ public static class EnveopeExtensions
 
         }
         return requestEnvelope;
+    }
+
+
+    public static List<Models.System> ToSystem(this IEnumerable<Filter> filters)
+    {
+        return filters.Select(c => new Models.System(c.FilterName!, c.FilterFormulae!)).ToList();
+    }
+    public static List<string> GetFilterNames(this IEnumerable<Filter> filters)
+    {
+        return filters.Select(c => c.FilterName!).ToList();
     }
 }

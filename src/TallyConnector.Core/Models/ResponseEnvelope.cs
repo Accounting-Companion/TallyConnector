@@ -78,3 +78,36 @@ public class ImportResult
     public int? Cacelled { get; set; }
 }
 
+[XmlRoot(ElementName = "RESULT")]
+public class PostResult
+{
+
+    [XmlElement(ElementName = "NAME")]
+    public string Name { get; set; }
+
+    [XmlElement(ElementName = "MASTERID")]
+    public int MasterId { get; set; }
+
+    [XmlElement(ElementName = "OBJECTTYPE")]
+    public string ObjectType { get; set; }
+
+    [XmlElement(ElementName = "GUID")]
+    public string GUID { get; set; }
+
+    [XmlElement(ElementName = "REMOTEID")]
+    public string RemoteId { get; set; }
+
+    [XmlElement(ElementName = "ACTION")]
+    public string Action { get; set; }
+
+    [XmlElement(ElementName = "ERROR")]
+    public string? Error { get; set; }
+}
+
+[XmlRoot(ElementName = "RESULTS")]
+public class PostResults
+{
+
+    [XmlElement(ElementName = "RESULT")]
+    public List<PostResult> Results { get; set; }
+}

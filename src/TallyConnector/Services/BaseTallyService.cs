@@ -153,6 +153,10 @@ public partial class BaseTallyService : IBaseTallyService
                 "USERLEVEL:$$cmpuserlevel",
                 "USERNAME:$$cmpusername",
                 $"TALLYVERSION  :{Constants.License}",
+                $"TALLYSHORTVERSION  :@@VersionReleaseString",
+                $"IsTallyPrime:$$TC_GetBooleanFromLogicField:$$IsProdTallyPrime",
+                $"IsTallyPrimeEditLog:$$TC_GetBooleanFromLogicField:$$IsProdTallyPrimeEL",
+                $"IsTallyPrimeServer:$$TC_GetBooleanFromLogicField:$$IsProdTallyServer",
             ])];
         var reqXml = reqEnvelope.GetXML();
         var respXml = await SendRequestAsync(reqXml, reqType, token);
@@ -214,9 +218,10 @@ public partial class BaseTallyService : IBaseTallyService
 
     }
 
-    
-    public async Task<AutoVoucherStatisticsEnvelope> GetVoucherStatisticsAsync(AutoColumnReportPeriodRequestOprions requestOptions, CancellationToken token = default)
+
+    public async Task<List<AutoColVoucherTypeStat>> GetVoucherStatisticsAsync(AutoColumnReportPeriodRequestOprions requestOptions, CancellationToken token = default)
     {
+        using var activity = BaseTallyServiceActivitySource.StartActivity();
         StaticVariables sv = new()
         {
             SVCompany = requestOptions?.Company,
@@ -257,13 +262,15 @@ public partial class BaseTallyService : IBaseTallyService
         const string cancelledCountFieldName = "TC_VchTypeCancCount";
         const string optionalCountFieldName = "TC_VchTypeOptCount";
         const string totalPeriodCountFieldName = "TC_VchTypeTotalPeriodCount";
-        List<string> rootFields = [nameFieldName, totalCountFieldName, periodCountRootFieldName];
-        Line line = new(reportName, rootFields, "VchTypeStat") { Repeat = [periodCountRootFieldName] };
-        tDLMessage.Line = [line];
+        List<string> rootFields = [nameFieldName, totalCountFieldName];
+        const string line2Name = $"{reportName}Repeat";
+        Line line = new(reportName, rootFields, "VchTypeStat") { Option = [$"{line2Name}:$MigVal>0"] };
+        Line line2 = new(line2Name, [periodCountRootFieldName]) { Name = line2Name, Repeat = [periodCountRootFieldName], IsOption = YesNo.Yes };
+        tDLMessage.Line = [line, line2];
         tDLMessage.Field =
         [
             new(nameFieldName,"Name","$Name"),
-            new(totalCountFieldName,"TotalCount","$TotalCount"),
+            new(totalCountFieldName,"TotalCount","($$DirectTotalVch:$Name)+($$DirectOptionalVch:$Name)+($$DirectCancVch:$Name)"),
             new(periodCountRootFieldName,"PeriodStat",null){Fields=[fromDateFieldName,toDateFieldName,cancelledCountFieldName,optionalCountFieldName,totalPeriodCountFieldName] },
             new(fromDateFieldName,"FromDate","$$TC_TransformDateToXSD:##SVFromDate"){Invisible="$$ISEmpty:$$value"},
             new(toDateFieldName,"ToDate","$$TC_TransformDateToXSD:##SVToDate"){Use="$$ISEmpty:$$value"},
@@ -277,10 +284,9 @@ public partial class BaseTallyService : IBaseTallyService
             {
                 Compute =
                 [
-                    "TotalPeriodCount :  $$DirectTotalVch:$Name",
                     "CancelledCount : $$DirectCancVch:$Name",
                     "OptionalCount :  $$DirectOptionalVch:$Name",
-                    "TotalCount : $$DirectAllVch:$Name",
+                    "TotalPeriodCount : ($$DirectTotalVch:$Name) + $OptionalCount + $CancelledCount",
                 ]
             }
         ];
@@ -288,11 +294,15 @@ public partial class BaseTallyService : IBaseTallyService
         await PopulateDefaultOptions(requestEnvelope, token);
         string requestXml = requestEnvelope.GetXML();
         string RequestType = $"VchType Auto Column Stats({periodicity}) of company - {sv.SVCompany} ({sv.SVFromDate} to {sv.SVToDate})";
+        if (activity != null)
+        {
+            activity.DisplayName = RequestType;
+        }
         TallyResult tallyResult = await SendRequestAsync(requestXml, RequestType, token);
         if (tallyResult.Status == RespStatus.Sucess)
         {
             var k = XMLToObject.GetObjfromXml<AutoVoucherStatisticsEnvelope>(tallyResult.Response!);
-            return k;
+            return k.VoucherTypeStats ?? [];
         }
         else throw new Exception(tallyResult.Response);
     }
@@ -634,6 +644,116 @@ public partial class BaseTallyService : IBaseTallyService
             activity?.SetTag("SVToDate", staticVariables.SVToDate);
         }
     }
+
+
+    protected static void AddCustomResponseReportForPost<T>(TallyEnvelope<T> requestEnvelope) where T : class
+    {
+        var tDLMessage = requestEnvelope.Body.Desc.TDL.TDLMessage;
+
+        const string TDLVarName = "CCTotalMisMatch";
+        const string TDLObjectTypeVarName = "VTMark";
+        const string RemoteIdVarName = "VchType";
+        const string guidVarName = "VchDate";
+        const string MasterIdVarName = "VchMID";
+        const string ActionVarName = "CCCatName";
+        const string NameVarName = "CCLedName";
+        const string errorvarName = "VchNumber";
+
+
+        const string customReportName = "TC_CustomReportAndEvents";
+        const string collectionName = "TC_CustResultsColl";
+        const string importStartFunctionName = "TC_OnImportStart";
+        const string importObjectFunctionName = "TC_BeforeImportObject";
+        const string afterImportObjectFunctionName = "TC_AfterImportObject";
+        const string importEndFunctionName = "TC_OnImportEnd";
+
+        const string objectTypeFieldName = "TC_ObjectTypeField";
+        const string nameFieldName = "TC_NameField";
+        const string masterIdFieldName = "TC_MasterIdField";
+        const string guidFieldName = "TC_guidField";
+        const string remoteIdFieldName = "TC_RemoteIdField";
+        const string actionTypeFieldName = "TC_ActionTypeField";
+        const string respMessageFieldName = "TC_RespMsgField";
+
+
+        const string onKeyword = "On";
+        tDLMessage.ImportFile = [new("ALL MASTERS", [customReportName+":Yes"]){ IsModify=YesNo.Yes},
+            new(customReportName)
+            {
+                IsOption = YesNo.Yes,
+                ResponseReport = customReportName,
+                Delete =[onKeyword],
+                Add =
+                [
+                    $"{onKeyword} : Start Import : Yes : Call : {importStartFunctionName}",
+                    $"{onKeyword} : Import Object : Yes : Call : {importObjectFunctionName}",
+                    $"{onKeyword} : Import Object : Yes :  Import Object ",
+                    $"{onKeyword} : After Import Object  : Yes : Call : {afterImportObjectFunctionName}",
+                    $"{onKeyword} : End Import : Yes : Call : {importEndFunctionName}",
+                ]
+            }];
+        tDLMessage.Report = [new(customReportName)];
+        tDLMessage.Form = [new(customReportName) { ReportTag = "RESULTS" }];
+        tDLMessage.Part = [new(customReportName, collectionName)];
+        tDLMessage.Line = [new(customReportName, [objectTypeFieldName, nameFieldName, masterIdFieldName, guidFieldName, remoteIdFieldName, actionTypeFieldName, respMessageFieldName], "RESULT")];
+        tDLMessage.Field =
+        [
+            new(objectTypeFieldName, "ObjectType", $"${TDLObjectTypeVarName}"),
+            new(nameFieldName, "Name", $"${NameVarName}"),
+            new(masterIdFieldName, "MasterId", $"${MasterIdVarName}"),
+            new(guidFieldName, "GUID", $"${guidVarName}"),
+            new(remoteIdFieldName, "REMOTEID", $"${RemoteIdVarName}"),
+            new(actionTypeFieldName, "ACTION", $"${ActionVarName}"),
+            new(respMessageFieldName, "Error", $"${errorvarName}"),
+        ];
+        int ifcounter = 1;
+        int actionCOunter = 2;
+        var mastersObjectActions = new string[] { "Group", "Ledger", "CostCategory" }.SelectMany(c =>
+        {
+            List<string> actions = [$"TC_IF{ifcounter:00} : IF : ##TC_ObjecType=\"{c}\""];
+            ifcounter++;
+            actions.Add($"TC_C{actionCOunter:00} : Set Object   : ({c},$Name).");
+            actionCOunter++;
+            actions.Add($"TC_IF{ifcounter:00} : ENDIF");
+            ifcounter++;
+            return actions;
+        });
+        tDLMessage.Functions =
+        [
+            new(importStartFunctionName){ Actions=[$"01A    : LISTDELETE : {TDLVarName}"]},
+            new(importObjectFunctionName){
+                Variables =["TC_ObjecType : String:$$type"],
+                Actions=
+                [
+                    $"TC00   : LISTADD   :{TDLVarName} :$REMOTEALTGUID:$REMOTEALTGUID:{RemoteIdVarName}",
+                    $"TC01   : LISTADD   :{TDLVarName} :$REMOTEALTGUID:##TC_ObjecType:{TDLObjectTypeVarName}",
+                ]},
+            new(afterImportObjectFunctionName){
+                Variables =["TC_ObjecType : String:$$type", "TC_Action : String:$$ImportAction"],
+                Actions=
+                [
+                    $"TC_C00 : LISTADD : {TDLVarName}:$REMOTEALTGUID:##TC_Action:{ActionVarName}",
+                    $"TC_C01 : LISTADD : {TDLVarName}:$REMOTEALTGUID:$$LastImportError:{errorvarName}",
+
+                    ..mastersObjectActions,
+
+                    $"TC_IF{ifcounter:00} : IF : ##TC_ObjecType=\"Voucher\"",
+                    $"TC_C{actionCOunter:00} : Set Object   : (Voucher,$$LastCreatedVchId).",
+                    $"TC_IF{ifcounter+1:00} : ENDIF",
+
+                    $"TC_IF{ifcounter+2:00} : IF :  not $$IsEmpty:$MasterId",
+                    $"TC_C50 : LISTADD : {TDLVarName}:$REMOTEALTGUID:$MasterId:{MasterIdVarName}",
+                    $"TC_C51 : LISTADD : {TDLVarName}:$REMOTEALTGUID:$Name:{NameVarName}",
+                    $"TC_C52 : LISTADD : {TDLVarName}:$REMOTEALTGUID:$GUID:{guidVarName}",
+                     $"TC_IF{ifcounter+3:00} : ENDIF",
+
+                ],
+            },
+            new(importEndFunctionName),
+        ];
+        tDLMessage.Collection = [new() { Name = collectionName, DataSource = $"Variable:{TDLVarName}" }];
+    }
+
     public static DateTime GetToDate(DateTime now)
     {
         return new DateTime(now.Month > 3 ? now.Year + 1 : now.Year, 3, 31);

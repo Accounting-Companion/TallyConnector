@@ -1,4 +1,6 @@
-﻿using System.Text.RegularExpressions;
+﻿using System.Diagnostics;
+using System.Text.RegularExpressions;
+using System.Xml.Schema;
 
 namespace TallyConnector.Core.Models;
 
@@ -23,19 +25,19 @@ public class LicenseInfo : TallyXmlJson
 
     [XmlElement(ElementName = "ISADMIN")]
     [TDLField("$$LicenseInfo:IsAdmin")]
-    public TallyYesNo? IsAdmin { get; set; }
+    public bool? IsAdmin { get; set; }
 
     [XmlElement(ElementName = "ISEDUCATIONALMODE")]
     [TDLField("$$LicenseInfo:IsEducationalMode")]
-    public TallyYesNo? IsEducationalMode { get; set; }
+    public bool? IsEducationalMode { get; set; }
 
     [XmlElement(ElementName = "ISSILVER")]
     [TDLField("$$LicenseInfo:IsAdmin")]
-    public TallyYesNo? IsSilver { get; set; }
+    public bool? IsSilver { get; set; }
 
     [XmlElement(ElementName = "ISGOLD")]
     [TDLField("$$LicenseInfo:IsAdmin")]
-    public TallyYesNo? IsGold { get; set; }
+    public bool? IsGold { get; set; }
 
     [XmlElement(ElementName = "PLANNAME")]
     [TDLField("If $$LicenseInfo:IsEducationalMode Then \"Educational Version\" ELSE  If $$LicenseInfo:IsSilver Then \"Silver\" ELSE  If $$LicenseInfo:IsGold Then \"Gold\" else \"\"")]
@@ -43,15 +45,15 @@ public class LicenseInfo : TallyXmlJson
 
     [XmlElement(ElementName = "ISINDIAN")]
     [TDLField("$$LicenseInfo:IsIndian")]
-    public TallyYesNo? IsIndian { get; set; }
+    public bool? IsIndian { get; set; }
 
     [XmlElement(ElementName = "ISREMOTEACCESSMODE")]
     [TDLField("$$LicenseInfo:IsRemoteAccessMode")]
-    public TallyYesNo? IsRemoteAccessMode { get; set; }
+    public bool? IsRemoteAccessMode { get; set; }
 
     [XmlElement(ElementName = "ISLICCLIENTMODE")]
     [TDLField("$$LicenseInfo:IsLicClientMode")]
-    public TallyYesNo? IsLicenseClientMode { get; set; }
+    public bool? IsLicenseClientMode { get; set; }
 
     [XmlElement(ElementName = "APPLICATIONPATH")]
     [TDLField("$$SysInfo:ApplicationPath")]
@@ -70,8 +72,79 @@ public class LicenseInfo : TallyXmlJson
     public string? UserName { get; set; }
 
     [XmlElement(ElementName = "TALLYVERSION")]
-    [TDLField(Constants.License)]
     public string? TallyVersion { get; set; }
 
-    public string? TallyShortVersion => Regex.Replace(Regex.Match(TallyVersion, "[a-zA-Z. 0-9-]+").Value, "(\\s([a-zA-Z]+\\s)+)", "");
+    [XmlElement(ElementName = "TALLYSHORTVERSION")]
+    public ShortVersion TallyShortVersion { get; set; } 
+
+    [XmlElement(ElementName = "ISTALLYPRIME")]
+    public bool IsTallyPrime { get; set; } 
+
+    [XmlElement(ElementName = "ISTALLYPRIMEEDITLOG")]
+    public bool IsTallyPrimeEditLog { get; set; } 
+
+    [XmlElement(ElementName = "ISTALLYPRIMESERVER")]
+    public bool IsTallyPrimeServer { get; set; } 
+}
+[Serializable]
+[DebuggerDisplay("{ToString()}")]
+public  class ShortVersion : IXmlSerializable
+{
+    public ShortVersion() 
+    {
+    }
+
+    public ShortVersion(int majorVersion, decimal minorVersion)
+    {
+        MajorVersion = majorVersion;
+        MinorVersion = minorVersion;
+    }
+
+    public int MajorVersion { get; private set; }
+    public decimal MinorVersion { get; private set; }
+
+    public XmlSchema GetSchema()
+    {
+        return null;
+    }
+
+    public void ReadXml(XmlReader reader)
+    {
+        bool isEmptyElement = reader.IsEmptyElement;
+        if (!isEmptyElement)
+        {
+            string content = reader.ReadElementContentAsString();
+            if (content != null)
+            {
+                ShortVersion shortVersion = content;
+                MajorVersion = shortVersion.MajorVersion;
+                MinorVersion = shortVersion.MinorVersion;
+            }
+        }
+    }
+
+    public void WriteXml(XmlWriter writer)
+    {
+        writer.WriteString(ToString());
+    }
+    public override string ToString()
+    {
+        return $"{MajorVersion}.{MinorVersion}";
+    }
+    public static implicit operator ShortVersion(string version)
+    {
+        var strings = version.Split(['.'],count: 2);
+        int length = strings.Length;
+        int _majorVersion = 0;
+        decimal _minorVersion = 0;
+        if (length > 0)
+        {
+            _ = int.TryParse(strings[0], out _majorVersion);
+            if (length > 1)
+            {
+                _ = decimal.TryParse(strings[1], out _minorVersion);
+            }
+        }
+        return new(_majorVersion, _minorVersion);
+    }
 }

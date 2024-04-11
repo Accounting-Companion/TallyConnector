@@ -58,14 +58,19 @@ internal class SymbolData
     public FunctionDetails TDLNameSetMethods { get; set; } = [];
     public FunctionDetails TDLCollectionMethods { get; set; } = [];
     public FunctionDetails TDLGetFilterMethods { get; set; } = [];
+
+    public FunctionDetails DefaultFilterMethods { get; set; } = [];
     public FunctionDetails TDLGetObjectMethods { get; set; } = [];
     public TDLCollectionData? TDLCollectionDetails { get; internal set; }
+
+   
     public MapToData? MapToData { get; internal set; }
     public string MethodNameSuffixPlural { get; internal set; }
     public GenerationMode GenerationMode { get; internal set; }
     public List<INamedTypeSymbol> Args { get; internal set; }
     public bool IsParentChild { get; set; }
     public string? ActivitySourceName { get; internal set; }
+    
 
     public override string ToString()
     {
@@ -241,6 +246,7 @@ internal class ChildSymbolData
     public List<XMLData> XMLData { get; internal set; }
     public ChildSymbolData? OverriddenChild { get; internal set; }
     public List<ChildSymbolData> OverriddenBy { get; set; } = [];
+    public bool IsAttribute { get;  set; }
 
     public override string ToString()
     {

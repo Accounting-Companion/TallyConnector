@@ -29,6 +29,7 @@ public static class Constants
     public const string IEnumerableInterfaceName = "System.Collections.IEnumerable";
     public const string XmlRootAttributeName = "System.Xml.Serialization.XmlRootAttribute";
     public const string XMLElementAttributeName = "System.Xml.Serialization.XmlElementAttribute";
+    public const string XMLAttributeAttributeName = "System.Xml.Serialization.XmlAttributeAttribute";
     public const string XMLEnumAttributeName = "System.Xml.Serialization.XmlEnumAttribute";
 
     public const string XMLArrayItemAttributeName = "System.Xml.Serialization.XmlArrayItemAttribute";
@@ -50,17 +51,25 @@ public static class Constants
     public const string LineFullTypeName = $"{TallyConnectorModelsNameSpace}.Line";
     public const string CollectionFullTypeName = $"{TallyConnectorModelsNameSpace}.Collection";
     public const string TDLFunctionFullTypeName = $"{TallyConnectorModelsNameSpace}.TDLFunction";
+    public const string FilterFullTypeName = $"{TallyConnectorModelsNameSpace}.Filter";
     public const string TDLNameSetFullTypeName = $"{TallyConnectorModelsNameSpace}.NameSet";
 
     public const string PaginatedResponseClassName = $"PaginatedResponse";
 
 
-    public const string BaseLedgerEntryInterfaceName = $"{TallyConnectorModelsNameSpace}.Interfaces.IBaseLedgerEntry";
+    public const string BaseLedgerEntryInterfaceName = $"{TallyConnectorModelsNameSpace}.Interfaces.Voucher.IBaseLedgerEntry";
+    public const string TallyObjectDTOInterfaceName = $"{TallyConnectorModelsNameSpace}.Interfaces.Masters.IBaseTallyObjectDTO";
 
 
 
     public const string HeaderTypeEnumName = $"{TallyConnectorModelsNameSpace}.HType";
+    public const string RequestTypeEnumName = $"{TallyConnectorModelsNameSpace}.RequestType";
+    public const string TallyEnvelopeTypeName = $"TallyEnvelope";
     public const string RequestEnvelopeFullTypeName = $"{TallyConnectorModelsNameSpace}.RequestEnvelope";
+    public const string ActionEnumFullTypeName = $"{TallyConnectorModelsNameSpace}.Action";
+    public const string TallyEnvelopeFullTypeName = $"{TallyConnectorModelsNameSpace}.TallyEnvelope";
+    public const string PostResultFullTypeName = $"{TallyConnectorModelsNameSpace}.PostResult";
+    public const string PostResultsFullTypeName = $"{TallyConnectorModelsNameSpace}.PostResults";
     public const string ReportFullTypeName = $"{TallyConnectorModelsNameSpace}.Report";
     public const string BaseCompanyTypeName = $"{TallyConnectorModelsNameSpace}.BaseCompany";
     public const string FormFullTypeName = $"{TallyConnectorModelsNameSpace}.Form";
@@ -76,6 +85,7 @@ public static class Constants
     public const string TDLComputeMethodNameAttributeName = $"{TallyConnectorAttributesNameSpace}.TDLComputeMethodNameAttribute";
     public const string TDLNamesetMethodNameAttributeName = $"{TallyConnectorAttributesNameSpace}.TDLNamesetMethodNameAttribute";
     public const string TDLObjectsMethodNameAttributeName = $"{TallyConnectorAttributesNameSpace}.TDLObjectsMethodNameAttribute";
+    public const string TDLDefaultFiltersMethodNameAttributeName = $"{TallyConnectorAttributesNameSpace}.TDLDefaultFiltersMethodNameAttribute";
     public const string EnumChoiceAttributeName = $"{TallyConnectorAttributesNameSpace}.EnumXMLChoiceAttribute";
     public const string ActivitySourceAttributeName = $"{TallyConnectorAttributesNameSpace}.SetActivitySourceAttribute";
 
@@ -83,8 +93,11 @@ public static class Constants
 
 
     public const string GetObjectsMethodName = "Get{0}Async";
+    public const string PostObjectsMethodName = "Post{0}Async";
+
     public const string GetXMLAttributeOveridesMethodName = "Get{0}XMLAttributeOverides";
     public const string GetRequestEnvelopeMethodName = "Get{0}RequestEnevelope";
+    public const string GetPostRequerstEnvelopeMethodName = "GetPostRequestEnvelope";
     public const string GetTDLPartsMethodName = "Get{0}TDLParts";
     public const string GetMainTDLPartMethodName = "Get{0}MainTDLPart";
     public const string GetTDLLinesMethodName = "Get{0}TDLLines";
@@ -100,8 +113,11 @@ public static class Constants
     public const string setValueParamName = "setValue";
     public const string ParseReportMethodName = "ParseReportFromXML";
 
+    public const string PostRequestEnvelopeMessageName = "{0}PostRequestEnvelopeMessage";
+
     public const string AddToArrayExtensionMethodName = "AddToArray";
     public const string GetTallyStringMethodName = "GetTallyString";
+    public const string AddCustomResponseReportForPostMethodName = "AddCustomResponseReportForPost";
 
     public const string GetBooleanFromLogicFieldFunctionName = "TC_GetBooleanFromLogicField";
     public const string GetTransformDateToXSDFunctionName = "TC_TransformDateToXSD";

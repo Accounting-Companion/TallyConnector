@@ -6,10 +6,23 @@ using TallyConnector.TDLReportSourceGenerator.Models;
 namespace TallyConnector.TDLReportSourceGenerator.Execute;
 public static class FactoryMethods
 {
+    public const string CancellationTokenArgName = "token";
     internal static AliasQualifiedNameSyntax GetGlobalNameforType(string typeName)
     {
         return AliasQualifiedName(IdentifierName(Token(SyntaxKind.GlobalKeyword)),
                                                                    IdentifierName(typeName));
+    }
+    internal static LiteralExpressionSyntax CreateStringLiteral(string name)
+    {
+        return LiteralExpression(SyntaxKind.StringLiteralExpression, Literal(name));
+    }
+    internal static ParameterSyntax GetCancellationTokenParameterSyntax()
+    {
+        return Parameter(Identifier(CancellationTokenArgName))
+                    .WithType(GetGlobalNameforType(CancellationTokenStructName))
+                    .WithDefault(EqualsValueClause(LiteralExpression(
+                                                        SyntaxKind.DefaultLiteralExpression,
+                                                        Token(SyntaxKind.DefaultKeyword))));
     }
     internal static PropertyDeclarationSyntax GetPropertyMemberSyntax(TypeSyntax typeSyntax, string Name, bool isOverriden = false)
     {

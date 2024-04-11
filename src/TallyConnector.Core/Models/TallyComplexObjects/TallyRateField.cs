@@ -8,6 +8,7 @@ public class TallyRateField : ITallyComplexObject, IBaseObject
 {
     [TDLField(TallyType = "Rate : Price")]
     [XmlElement(ElementName = "BASERATE")]
+    [Column(TypeName = "decimal(20,4)")]
     public decimal Rate { get; set; }
 
     [TDLField(TallyType = "Number", Set = "$$String:{0}:\"Forex\"", Invisible = $"$$Value=#TC_{nameof(TallyRateField)}_{nameof(Rate)}")]

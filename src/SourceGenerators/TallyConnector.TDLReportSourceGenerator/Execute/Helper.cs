@@ -19,7 +19,7 @@ internal class Helper
     readonly string ReportName;
     readonly string _collectionName;
     private readonly string _paginatedCollectionName;
-    const string _cancellationTokenArgName = "token";
+    
     const string _reqOptionsArgName = "reqOptions";
     private readonly List<ChildSymbolData> _complexChildren;
     private readonly List<ChildSymbolData> _simpleChildren;
@@ -28,6 +28,7 @@ internal class Helper
     private readonly bool _isVoucherObject;
     private readonly bool _isTallyObject;
     private readonly bool _hasActivitySource;
+    private readonly bool _hasDefaultFilters;
 
     public Helper(SymbolData symbol)
     {
@@ -45,6 +46,7 @@ internal class Helper
         _isVoucherObject = _symbol.Symbol.HasInterfaceWithFullyQualifiedMetadataName(VoucherObjectInterfaceName);
         _isTallyObject = _isMasterObject || _isVoucherObject;
         _hasActivitySource = !string.IsNullOrWhiteSpace(symbol.ActivitySourceName);
+        _hasDefaultFilters = _symbol.DefaultFilterMethods.Any();
     }
 
     public string GetPostRequestEnvelopeCompilationUnit()
@@ -110,7 +112,7 @@ internal class Helper
             }
             foreach (var child in _complexChildren)
             {
-                members.Add(CreateConstStringVar(child.ReportVarName, $"TC_{_symbol.Name}{child.Name}List", true));
+                members.Add(CreateConstStringVar(child.ReportVarName, $"TC_{_symbol.TypeName}{child.Name}List", true));
 
                 if (child.DefaultTDLCollectionDetails != null && child.DefaultTDLCollectionDetails.CollectionName != null)
                 {
@@ -121,7 +123,7 @@ internal class Helper
                 {
                     if (xMLData.ChildSymbolData != null)
                     {
-                        members.Add(CreateConstStringVar(xMLData.ChildSymbolData.ReportVarName, $"TC_{_symbol.Name}{child.Name}{Counter}List", true));
+                        members.Add(CreateConstStringVar(xMLData.ChildSymbolData.ReportVarName, $"TC_{_symbol.TypeName}{child.Name}{Counter}List", true));
                         if (xMLData.ChildSymbolData?.DefaultTDLCollectionDetails != null && xMLData.ChildSymbolData.DefaultTDLCollectionDetails.CollectionName != null)
                         {
                             members.Add(CreateConstStringVar(GetCollectionName(xMLData.ChildSymbolData, Counter), xMLData.ChildSymbolData.DefaultTDLCollectionDetails.CollectionName));
@@ -142,9 +144,11 @@ internal class Helper
         if (!_symbol.IsChild)
         {
             members.Add(GenerateGetObjectsMethodSyntax());
+
             if (_isTallyObject)
             {
                 members.Add(GenerateGetObjectsPaginatedMethodSyntax());
+                members.Add(GeneratePostObjectsMethodSyntax());
             }
             members.Add(GenerateGetXmlAttributeOverridesMethodSyntax());
             members.Add(GenerateGetRequestEnvolopeMethodSyntax());
@@ -198,7 +202,8 @@ internal class Helper
                                                                               .WithArgumentList(ArgumentList(SeparatedList<ArgumentSyntax>(new SyntaxNodeOrToken[]
                                                                               {
                                                                               Argument(IdentifierName(reqTypeVarName)),
-                                                                              }))))));
+                                                                              }))))).WithUsingKeyword(
+                                Token(SyntaxKind.UsingKeyword)));
         }
         InvocationExpressionSyntax mainExpression = InvocationExpression(MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression,
                                                                                                                GetGlobalNameforType(_symbol.MainFullName),
@@ -215,7 +220,7 @@ internal class Helper
             {
                 Argument(IdentifierName(reqEnvelopeVarName)),
                 Token(SyntaxKind.CommaToken),
-                 Argument(IdentifierName(_cancellationTokenArgName)),
+                 Argument(IdentifierName(CancellationTokenArgName)),
             }))))));
         statements.Add(CreateVarInsideMethodWithExpression(xmlVarName,
                                                            InvocationExpression(MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression,
@@ -227,7 +232,7 @@ internal class Helper
                 Token(SyntaxKind.CommaToken),
                  Argument(IdentifierName(reqTypeVarName)),
                  Token(SyntaxKind.CommaToken),
-                 Argument(IdentifierName(_cancellationTokenArgName))
+                 Argument(IdentifierName(CancellationTokenArgName))
             }))))));
 
         statements.Add(CreateVarInsideMethodWithExpression(xmlRespEnvlopeVarName,
@@ -331,17 +336,17 @@ internal class Helper
                                                         LiteralExpression(SyntaxKind.NullLiteralExpression)), Block(
                                                             ExpressionStatement(extensionMethodInvokeSyntax))));
         }
-        if ( !(_symbol.Symbol.HasOrInheritsFromFullyQualifiedMetadataName(BaseCompanyTypeName) || _symbol.Symbol.HasFullyQualifiedMetadataName(BaseCompanyTypeName)))
+        if (!(_symbol.Symbol.HasOrInheritsFromFullyQualifiedMetadataName(BaseCompanyTypeName) || _symbol.Symbol.HasFullyQualifiedMetadataName(BaseCompanyTypeName)))
         {
             statements.Add(ExpressionStatement(AwaitExpression(InvocationExpression(IdentifierName(PopulateDefaultOptionsMethodName))
             .WithArgumentList(ArgumentList(SeparatedList<ArgumentSyntax>(new SyntaxNodeOrToken[]
             {
                 Argument(IdentifierName(reqEnvelopeVarName)),
                 Token(SyntaxKind.CommaToken),
-                 Argument(IdentifierName(_cancellationTokenArgName)),
+                 Argument(IdentifierName(CancellationTokenArgName)),
             }))))));
         }
-        
+
         statements.Add(CreateVarInsideMethodWithExpression(xmlVarName,
                                                            InvocationExpression(MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression,
                                                            IdentifierName(reqEnvelopeVarName), IdentifierName("GetXML")))));
@@ -352,25 +357,8 @@ internal class Helper
                 Token(SyntaxKind.CommaToken),
                  Argument(IdentifierName(reqTypeVarName)),
                  Token(SyntaxKind.CommaToken),
-                 Argument(IdentifierName(_cancellationTokenArgName))
+                 Argument(IdentifierName(CancellationTokenArgName))
             }))))));
-        //statements.Add(CreateVarInsideMethodWithExpression(xmlAttributesVarName, ObjectCreationExpression(GetGlobalNameforType(XmlAttributesClassName)).WithArgumentList(ArgumentList())));
-        //statements.Add(ExpressionStatement(InvocationExpression(MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression, IdentifierName(xmlAttributesVarName), IdentifierName("XmlElements.Add")))
-        //    .WithArgumentList(ArgumentList(SingletonSeparatedList(Argument(ImplicitObjectCreationExpression()
-        //        .WithArgumentList(ArgumentList(SingletonSeparatedList(Argument(CreateStringLiteral(symbol.RootXmlTag)))))))))));
-
-        //QualifiedNameSyntax genericNameforEnv = QualifiedName(GetGlobalNameforType(TallyConnectorResponseNameSpace), GenericName(ReportResponseEnvelopeClassName)
-        //            .WithTypeArgumentList(TypeArgumentList(SingletonSeparatedList<TypeSyntax>(GetGlobalNameforType(symbol.FullName)))));
-
-        //statements.Add(ExpressionStatement(InvocationExpression(MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression, IdentifierName(xmlAttributeOverridesVarName), IdentifierName("Add")))
-        //    .WithArgumentList(ArgumentList(SeparatedList<ArgumentSyntax>(new SyntaxNodeOrToken[]
-        //    {
-        //        Argument(TypeOfExpression(genericNameforEnv)),
-        //        Token(SyntaxKind.CommaToken),
-        //        Argument(CreateStringLiteral("Objects")),
-        //        Token(SyntaxKind.CommaToken),
-        //        Argument(IdentifierName(xmlAttributesVarName)),
-        //    })))));
 
 
         statements.Add(CreateVarInsideMethodWithExpression(xmlRespEnvlopeVarName,
@@ -402,6 +390,33 @@ internal class Helper
         return methodDeclarationSyntax;
     }
 
+    private MemberDeclarationSyntax GeneratePostObjectsMethodSyntax()
+    {
+        const string envelopeVariableName = "reqEnvelope";
+        const string reqMsgVariableName = "reqMsg";
+        List<StatementSyntax> statements = [];
+
+        QualifiedNameSyntax node = QualifiedName(GetGlobalNameforType($"{_symbol.MainNameSpace}.Models"), IdentifierName(string.Format(PostRequestEnvelopeMessageName, _symbol.MainSymbol.Name)));
+        statements.Add(CreateVarInsideMethodWithExpression(envelopeVariableName, ObjectCreationExpression(QualifiedName(GetGlobalNameforType(TallyConnectorModelsNameSpace), GenericName(TallyEnvelopeTypeName).WithTypeArgumentList(TypeArgumentList(SingletonSeparatedList((TypeSyntax)node)))))
+            .WithArgumentList(ArgumentList(SeparatedList<ArgumentSyntax>(new SyntaxNodeOrToken[] { })))));
+
+        statements.Add(CreateVarInsideMethodWithExpression(reqMsgVariableName,
+                                                           ObjectCreationExpression(node).WithArgumentList(ArgumentList())));
+        statements.Add(ExpressionStatement(AssignmentExpression(
+                                        SyntaxKind.SimpleAssignmentExpression, MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression,
+                                                                                  IdentifierName(envelopeVariableName),
+                                                                                  IdentifierName("Body.RequestData.RequestMessage")), IdentifierName(reqMsgVariableName))));
+        statements.Add(ReturnStatement(ImplicitObjectCreationExpression()));
+        var methodDeclarationSyntax = MethodDeclaration(QualifiedName(GetGlobalNameforType("System.Threading.Tasks"), GenericName("Task")
+         .WithTypeArgumentList(TypeArgumentList(SingletonSeparatedList<TypeSyntax>(QualifiedName(GetGlobalNameforType(CollectionsNameSpace), GenericName(ListClassName).WithTypeArgumentList(TypeArgumentList(SingletonSeparatedList<TypeSyntax>(IdentifierName(PostResultFullTypeName))))))))),
+                                                     Identifier(string.Format(PostObjectsMethodName, _symbol.MethodNameSuffixPlural)))
+         .WithModifiers(TokenList([Token(SyntaxKind.PublicKeyword), Token(SyntaxKind.AsyncKeyword)]))
+         .WithParameterList(ParameterList(SeparatedList<ParameterSyntax>(new SyntaxNodeOrToken[] {Parameter(Identifier(_reqOptionsArgName))
+                .WithType(NullableType(GetGlobalNameforType(RequestOptionsClassName)))
+                .WithDefault(EqualsValueClause(LiteralExpression(SyntaxKind.NullLiteralExpression))) , Token(SyntaxKind.CommaToken), GetCancellationTokenParameterSyntax()})))
+         .WithBody(Block(statements));
+        return methodDeclarationSyntax;
+    }
     private MemberDeclarationSyntax GenerateGetXmlAttributeOverridesMethodSyntax()
     {
         var xmlAttributeOverridesVarName = "xmlAttributeOverrides";
@@ -462,14 +477,9 @@ internal class Helper
         return methodDeclarationSyntax;
     }
 
-    private ParameterSyntax GetCancellationTokenParameterSyntax()
-    {
-        return Parameter(Identifier(_cancellationTokenArgName))
-                    .WithType(GetGlobalNameforType(CancellationTokenStructName))
-                    .WithDefault(EqualsValueClause(LiteralExpression(
-                                                        SyntaxKind.DefaultLiteralExpression,
-                                                        Token(SyntaxKind.DefaultKeyword))));
-    }
+    
+
+
 
     private MemberDeclarationSyntax GenerateGetRequestEnvolopeMethodSyntax()
     {
@@ -492,7 +502,6 @@ internal class Helper
                                                                                   IdentifierName("Body.Desc.TDL.TDLMessage"))));
         statements.Add(CreateReportAndFormAsssignStatement(tdlMsgVariableName, "Report"));
         statements.Add(CreateReportAndFormAsssignStatement(tdlMsgVariableName, "Form"));
-
 
         statements.Add(CreateAssignFromMethodStatement(tdlMsgVariableName, "Part", [string.Format(GetTDLPartsMethodName, _symbol.TypeName)]));
         statements.Add(CreateAssignFromMethodStatement(tdlMsgVariableName, "Line", [string.Format(GetTDLLinesMethodName, _symbol.TypeName)]));
@@ -530,6 +539,24 @@ internal class Helper
         List<ExpressionSyntax> tdlObjectMethodNames = [];
 
         statements.Add(CreateAssignFromMethodStatement(tdlMsgVariableName, "Object", GetMethodNames(_symbol, c => c.TDLGetObjectMethods, tdlObjectMethodNames)));
+        if (_hasDefaultFilters)
+        {
+            //statements.Add(Create());
+            const string filtersVarName = "defaultFilters";
+            statements.Add(LocalDeclarationStatement(CreateVariableDelaration(QualifiedName(GetGlobalNameforType(CollectionsNameSpace), GenericName(Identifier(ListClassName))
+                .WithTypeArgumentList(TypeArgumentList(SingletonSeparatedList<TypeSyntax>(GetGlobalNameforType(FilterFullTypeName))))), filtersVarName, CreateAssignFromMethodStatementRightExp(GetMethodNames(_symbol, c => c.DefaultFilterMethods, [])))));
+            //statements.Add(ExpressionStatement( AssignmentExpression(SyntaxKind.SimpleAssignmentExpression,IdentifierName(filtersVarName), CreateAssignFromMethodStatementRightExp(GetMethodNames(_symbol, c => c.DefaultFilterMethods, [])))));
+            statements.Add(CreateAssignFromMethodStatement(tdlMsgVariableName, "System", InvocationExpression(MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression, IdentifierName(filtersVarName), IdentifierName("ToSystem")))));
+            statements.Add(ExpressionStatement(AssignmentExpression(SyntaxKind.SimpleAssignmentExpression, MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression, ElementAccessExpression(MemberAccessExpression(
+                                            SyntaxKind.SimpleMemberAccessExpression,
+                                            IdentifierName(tdlMsgVariableName),
+                                            IdentifierName("Collection"))).WithArgumentList(BracketedArgumentList(SingletonSeparatedList<ArgumentSyntax>(
+                                            Argument(
+                                                LiteralExpression(
+                                                    SyntaxKind.NumericLiteralExpression,
+                                                    Literal(0)))))), IdentifierName("Filters")),
+                                            InvocationExpression(MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression, IdentifierName(filtersVarName), IdentifierName("GetFilterNames"))))));
+        }
         // Return Statement
         statements.Add(ReturnStatement(IdentifierName(envelopeVariableName)));
         var methodDeclarationSyntax = MethodDeclaration(GetGlobalNameforType(RequestEnvelopeFullTypeName),
@@ -674,11 +701,11 @@ internal class Helper
         {
             if (child.IsList && !child.IsComplex)
             {
-                var name = $"TC_{_symbol.Name}{child.Name}List";
+                //var name = $"TC_{_symbol.TypeName}{child.Name}List";
                 List<SyntaxNodeOrToken>? intializerArgs = null;
                 List<SyntaxNodeOrToken> lineConstructorArgs =
                     [
-                        Argument(LiteralExpression(SyntaxKind.StringLiteralExpression, Literal(name))),
+                        Argument(IdentifierName(child.ReportVarName)),
                         Token(SyntaxKind.CommaToken),
                     ];
                 if (child.DefaultTDLCollectionDetails == null || child.DefaultTDLCollectionDetails.CollectionName == null)
@@ -688,7 +715,7 @@ internal class Helper
                     [
                         AssignmentExpression(SyntaxKind.SimpleAssignmentExpression,
                                          IdentifierName("Repeat"),
-                                         LiteralExpression(SyntaxKind.StringLiteralExpression, Literal(name))),
+                                         IdentifierName(child.ReportVarName)),
                     ];
                     lineConstructorArgs.Add(Argument(LiteralExpression(SyntaxKind.NullLiteralExpression)));
                 }
@@ -880,7 +907,7 @@ internal class Helper
         statements.Add(CreateVarArrayWithCount(LineFullTypeName, LinesVariableName, _symbol.TDLLinesCount + 1));
         List<SyntaxNodeOrToken> args = [];
 
-        var childSymbolDatas = _simpleChildren.Where(c => !c.IsList).Select(c => GetFieldName(c)).ToList();
+        var childSymbolDatas = _simpleChildren.Where(c => !c.IsList && !c.IsAttribute).Select(c => GetFieldName(c)).ToList();
         const int count = 5;
         if (childSymbolDatas.Count == 0 && _symbol.BaseSymbolData == null)
         {
@@ -900,6 +927,7 @@ internal class Helper
 
             }
         }
+        
         List<SyntaxNodeOrToken>? intializerArgs = null;
         if (_complexChildren.Count > 0)
         {
@@ -1012,6 +1040,18 @@ internal class Helper
             SafeAdd(intializerArgs, AssignmentExpression(SyntaxKind.SimpleAssignmentExpression,
                                              IdentifierName("Delete"), CollectionExpression(SeparatedList<CollectionElementSyntax>(lineIntializerDeleteArgs))));
         }
+        var childSymbolAttributeDatas = _simpleChildren.Where(c => !c.IsList && c.IsAttribute).ToList();
+        if (childSymbolAttributeDatas.Count > 0)
+        {
+            intializerArgs ??= [];
+            List<SyntaxNodeOrToken> xmlAttrArgs = [];
+            foreach (var attrData in childSymbolAttributeDatas)
+            {
+                SafeAdd(xmlAttrArgs, ExpressionElement( CreateStringLiteral($"{attrData.XmlTag}:{attrData.TDLFieldDetails!.Set}")));
+            }
+            SafeAdd(intializerArgs, AssignmentExpression(SyntaxKind.SimpleAssignmentExpression,
+                                            IdentifierName("XMLAttributes"), CollectionExpression(SeparatedList<CollectionElementSyntax>(xmlAttrArgs))));
+        }
         statements.Add(GetArrayAssignmentExppressionImplicit(LinesVariableName,
                                                  0,
                                                  [
@@ -1052,7 +1092,7 @@ internal class Helper
             {
                 statements.Add(GetArrayAssignmentExppressionImplicit(LinesVariableName, counter,
                     [
-                       Argument(LiteralExpression(SyntaxKind.StringLiteralExpression, Literal($"TC_{_symbol.Name}{child.Name}List"))),
+                       Argument(IdentifierName(child.ReportVarName)),
                         Token(SyntaxKind.CommaToken),
                         Argument(CollectionExpression(SeparatedList<CollectionElementSyntax>(
                                                                  new SyntaxNodeOrToken[]
@@ -1214,6 +1254,10 @@ internal class Helper
             }
             if (!child.IsComplex)
             {
+                if (child.IsAttribute)
+                {
+                    continue;
+                }
                 string name = GetFieldName(child);
                 List<SyntaxNodeOrToken> args = [Argument(IdentifierName(name)),
                     Token(SyntaxKind.CommaToken),
@@ -1328,6 +1372,8 @@ internal class Helper
             [
               SpreadElement(  InvocationExpression(IdentifierName(string.Format(GetFetchListMethodName,_symbol.TypeName))).WithArgumentList(ArgumentList()))
             ];
+
+
         statements.Add(GetArrayAssignmentExppressionImplicit(CollectionsVariableName, 0,
             [
                 Argument(IdentifierName(_collectionVariableName)),
@@ -1598,6 +1644,23 @@ internal class Helper
                                                             string propName,
                                                             List<ExpressionSyntax> expressions)
     {
+        return CreateAssignFromMethodStatement(varName, propName, CreateAssignFromMethodStatementRightExp(expressions));
+    }
+    private StatementSyntax CreateAssignFromMethodStatement(string varName,
+                                                            string propName, ExpressionSyntax right)
+    {
+
+        AssignmentExpressionSyntax assignmentExpression = AssignmentExpression(SyntaxKind.SimpleAssignmentExpression, MemberAccessExpression(
+                                            SyntaxKind.SimpleMemberAccessExpression,
+                                            IdentifierName(varName),
+                                            IdentifierName(propName)),
+                                            right);
+        return ExpressionStatement(assignmentExpression);
+    }
+
+
+    private static CollectionExpressionSyntax CreateAssignFromMethodStatementRightExp(List<ExpressionSyntax> expressions)
+    {
         List<SyntaxNodeOrToken> nodes = [];
         for (int i = 0; i < expressions.Count; i++)
         {
@@ -1610,17 +1673,33 @@ internal class Helper
             nodes.Add(SpreadElement(expression));
         }
 
-        return ExpressionStatement(AssignmentExpression(SyntaxKind.SimpleAssignmentExpression, MemberAccessExpression(
-                                    SyntaxKind.SimpleMemberAccessExpression,
-                                    IdentifierName(varName),
-                                    IdentifierName(propName)),
-                                    CollectionExpression(SeparatedList<CollectionElementSyntax>(nodes))));
+        CollectionExpressionSyntax right = CollectionExpression(SeparatedList<CollectionElementSyntax>(nodes));
+        return right;
     }
-
-
 
     public string GetCreateDTOCompilationUnitString()
     {
+
+
+        ClassDeclarationSyntax classDeclarationSyntax = ClassDeclaration(GetDTOClassName());
+        List<SyntaxNodeOrToken> nodesAndTokens = [];
+        if (_symbol.BaseSymbolData != null)
+        {
+            SafeAdd(nodesAndTokens, SimpleBaseType(
+                            IdentifierName(_symbol.BaseSymbolData.Name + "DTO")));
+        }
+        if (!_symbol.IsChild)
+        {
+
+            SafeAdd(nodesAndTokens, SimpleBaseType(
+                            GetGlobalNameforType(TallyObjectDTOInterfaceName)));
+
+        }
+        if (nodesAndTokens.Count > 0)
+        {
+
+            classDeclarationSyntax = classDeclarationSyntax.WithBaseList(BaseList(SeparatedList<BaseTypeSyntax>(nodesAndTokens)));
+        }
         var unit = CompilationUnit()
             .WithUsings(List([UsingDirective(IdentifierName(ExtensionsNameSpace)), UsingDirective(IdentifierName("System.Linq"))]))
             .WithMembers(List(new MemberDeclarationSyntax[]
@@ -1632,7 +1711,7 @@ internal class Helper
                                             TriviaList()))
                 .WithMembers(List(new MemberDeclarationSyntax[]
                 {
-                    ClassDeclaration(GetClassName())
+                    classDeclarationSyntax
                     .WithAttributeLists(List(new AttributeListSyntax[]{
                         AttributeList(SeparatedList<AttributeSyntax>(new SyntaxNodeOrToken[]
                         {
@@ -1647,15 +1726,18 @@ internal class Helper
                                                             IdentifierName("ElementName"))))))
                         }))
                     }))
-                    .WithModifiers(TokenList([Token(SyntaxKind.PublicKeyword),Token(SyntaxKind.PartialKeyword)]))
+                    .WithModifiers(TokenList([Token(SyntaxKind.PublicKeyword), Token(SyntaxKind.PartialKeyword)]))
                     .WithMembers(List(GetCreateDTOClassMembers()))
                 }))
             })).NormalizeWhitespace().ToFullString();
+        if (!_symbol.IsChild)
+        {
 
+        }
         return unit;
     }
 
-    private string GetClassName()
+    private string GetDTOClassName()
     {
         return $"{_symbol.Name}DTO";
     }
@@ -1665,9 +1747,28 @@ internal class Helper
         List<MemberDeclarationSyntax> members = [];
         HashSet<string> ComplexTypeNames = [];
         //If Implements BaseLedgerEntryInterface then add extra property to DTO
-        if (_symbol.Symbol.HasInterfaceWithFullyQualifiedMetadataName(BaseLedgerEntryInterfaceName))
+        //if (_symbol.Symbol.HasInterfaceWithFullyQualifiedMetadataName(BaseLedgerEntryInterfaceName))
+        //{
+        //    members.Add(GetPropertyMemberSyntax(PredefinedType(Token(SyntaxKind.StringKeyword)), "IsDeemedPositive"));
+        //}
+        if (!_symbol.IsChild)
         {
-            members.Add(GetPropertyMemberSyntax(PredefinedType(Token(SyntaxKind.StringKeyword)), "IsDeemedPositive"));
+            members.Add(GetPropertyMemberSyntax(GetGlobalNameforType(ActionEnumFullTypeName), "Action").WithAttributeLists(List(new AttributeListSyntax[]
+            {
+                 AttributeList(SingletonSeparatedList<AttributeSyntax>(Attribute(
+                                        IdentifierName(XMLAttributeAttributeName))
+                .WithArgumentList(AttributeArgumentList(SeparatedList<AttributeArgumentSyntax>(
+                                                new SyntaxNodeOrToken[]{
+                                                    AttributeArgument(
+                                                        LiteralExpression(
+                                                            SyntaxKind.StringLiteralExpression,
+                                                            Literal("Action")))
+                                                    .WithNameEquals(
+                                                        NameEquals(
+                                                            IdentifierName("AttributeName"))),
+                                                    })))))
+            })));
+            // members.Add(GetPropertyMemberSyntax(PredefinedType(Token(SyntaxKind.StringKeyword)), "RemoteId"));
         }
         CreateProperties(_symbol);
 
@@ -1678,10 +1779,10 @@ internal class Helper
         void CreateProperties(SymbolData symbol, bool isBaseSymbol = false)
         {
             ComplexTypeNames.Add(symbol.FullName);
-            if (symbol.BaseSymbolData != null)
-            {
-                CreateProperties(symbol.BaseSymbolData.SymbolData, true);
-            }
+            //if (symbol.BaseSymbolData != null)
+            //{
+            //    CreateProperties(symbol.BaseSymbolData.SymbolData, true);
+            //}
             foreach (var child in symbol.Children)
             {
                 if (child.IgnoreForCreateDTO)
@@ -1729,9 +1830,13 @@ internal class Helper
                                     default:
                                         if (namedArg.Value.Kind == TypedConstantKind.Type)
                                         {
-                                            attributeArgs.Add(AttributeArgument(
-                                                            TypeOfExpression(GetGlobalNameforType(namedArg.Value.Value?.ToString())))
-                                    .WithNameEquals(NameEquals(IdentifierName(namedArg.Key))));
+                                            if (namedArg.Value.Value is INamedTypeSymbol typeofsymbol)
+                                            {
+                                                attributeArgs.Add(AttributeArgument(
+                                                           TypeOfExpression(IdentifierName((typeofsymbol.Name + "DTO").ToString())))
+                                   .WithNameEquals(NameEquals(IdentifierName(namedArg.Key))));
+                                            }
+
                                         }
                                         break;
                                 }
@@ -1804,7 +1909,7 @@ internal class Helper
         var srcArgName = "src";
         var dtoArgName = "dto";
 
-        string className = GetClassName();
+        string className = GetDTOClassName();
         List<StatementSyntax> statements = [];
         HashSet<string> ComplexTypeNames = [];
         statements.Add(CreateVarInsideMethodWithExpression(dtoArgName, ObjectCreationExpression(IdentifierName(className))
@@ -1897,8 +2002,17 @@ internal class Helper
                                     toStringArgs.Add(Argument(MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression, IdentifierName(srcArgName), IdentifierName(childSymbolData.Name))));
                                 }
                             }
-                            expression = InvocationExpression(MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression, expression, IdentifierName("ToString")))
-                                .WithArgumentList(ArgumentList(SeparatedList<ArgumentSyntax>(toStringArgs)));
+                            if (child.IsNullable)
+                            {
+                                expression = ConditionalAccessExpression(expression, InvocationExpression(MemberBindingExpression(IdentifierName("ToString"))).
+                                    WithArgumentList(ArgumentList(SeparatedList<ArgumentSyntax>(toStringArgs))));
+                            }
+                            else
+                            {
+
+                                expression = InvocationExpression(MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression, expression, IdentifierName("ToString")))
+                                    .WithArgumentList(ArgumentList(SeparatedList<ArgumentSyntax>(toStringArgs)));
+                            }
                         }
 
                         statements.Add(ExpressionStatement(AssignmentExpression(SyntaxKind.SimpleAssignmentExpression,
@@ -1962,10 +2076,6 @@ internal class Helper
         return implicitObjectCreationExpressionSyntax;
     }
 
-    private static LiteralExpressionSyntax CreateStringLiteral(string name)
-    {
-        return LiteralExpression(SyntaxKind.StringLiteralExpression, Literal(name));
-    }
 
     internal static ArrayTypeSyntax CreateEmptyArrayType(string typeName)
     {
