@@ -14,11 +14,16 @@ internal static partial class CSharpSourceGeneratorVerifier<TSourceGenerator>
 
         public LanguageVersion LanguageVersion { get; set; } = LanguageVersion.Default;
 
+        
         protected override IEnumerable<ISourceGenerator> GetSourceGenerators()
         {
             return new[] { new TSourceGenerator().AsSourceGenerator() };
         }
-
+        protected override Task RunImplAsync(CancellationToken cancellationToken)
+        {
+            TestState.MarkupHandling = MarkupMode.None;
+            return base.RunImplAsync(cancellationToken);
+        }
         protected override CompilationOptions CreateCompilationOptions()
         {
             CompilationOptions compilationOptions = base.CreateCompilationOptions();

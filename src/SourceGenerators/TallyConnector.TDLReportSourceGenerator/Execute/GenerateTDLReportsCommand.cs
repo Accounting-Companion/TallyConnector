@@ -86,13 +86,16 @@ internal class GenerateTDLReportsCommand
                 string src = GetReportHelper.GetReportResponseEnvelopeCompilationUnit(data, nameSpace, name);
                 context.AddSource($"{symbolData.MainFullName}.ReportResponseEnvelope.g.cs", src);
 
-                string src2 = PostRequestEnvelopeHelper.GetPostRequestEnvelopeCompilationUnit(data, nameSpace, name);
+                if (data.Values.Where(c => c.GenerationMode is GenerationMode.Post or GenerationMode.All).Any())
+                {
+                    string src2 = PostRequestEnvelopeHelper.GetPostRequestEnvelopeCompilationUnit(data, nameSpace, name);
 
-                context.AddSource($"{symbolData.MainFullName}.PostRequestEnvelope.g.cs", src2);
+                    context.AddSource($"{symbolData.MainFullName}.PostRequestEnvelope.g.cs", src2);
 
-                string src3 = PostObjectsHelper.GetPostObjectsCompilationUnit(data, nameSpace, name);
+                    string src3 = PostObjectsHelper.GetPostObjectsCompilationUnit(data, nameSpace, name);
 
-                context.AddSource($"{symbolData.MainFullName}.PostObject.g.cs", src3);
+                    context.AddSource($"{symbolData.MainFullName}.PostObject.g.cs", src3);
+                }
             }
         }
 
@@ -188,7 +191,7 @@ internal class GenerateTDLReportsCommand
                     continue;
                 };
 
-                symbolData.Children.Add(childData);
+                symbolData.Children.Add(childData.Name, childData);
                 if (childData.IsComplex || childData.IsEnum)
                 {
                     if (childData.IsEnum && !childData.Parent.IsEnum)
@@ -891,7 +894,7 @@ internal class XMLData
     public INamedTypeSymbol? Symbol { get; set; }
 
     public ChildSymbolData ChildSymbolData { get; set; }
-    public bool IsAttribute { get;  set; }
+    public bool IsAttribute { get; set; }
 }
 
 internal class MapToData

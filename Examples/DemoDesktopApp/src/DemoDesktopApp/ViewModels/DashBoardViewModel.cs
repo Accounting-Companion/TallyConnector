@@ -39,7 +39,8 @@ public partial class DashBoardViewModel : BaseViewModel
         };
         TallyService tallyService = new();
 
-
+        TallyConnector.Core.Models.Common.Pagination.PaginatedResponse<Voucher> paginatedResponse = await tallyService.GetVouchersAsync();
+        List<Voucher>? data = paginatedResponse.Data;
         var objs = await tallyService.GetLedgersAsync(requestOptions);
         List<LedgerDTO> objects = new List<LedgerDTO>() { new LedgerDTO() { OldName = "Test Ledger from new connecotr", Group = "Sundry Debtors", Action = TallyConnector.Core.Models.Action.Alter } };
         var postResults = await tallyService.PostObjectsAsync(objects);

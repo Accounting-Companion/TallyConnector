@@ -19,7 +19,7 @@ internal class Helper
     readonly string ReportName;
     readonly string _collectionName;
     private readonly string _paginatedCollectionName;
-    
+
     const string _reqOptionsArgName = "reqOptions";
     private readonly List<ChildSymbolData> _complexChildren;
     private readonly List<ChildSymbolData> _simpleChildren;
@@ -39,8 +39,8 @@ internal class Helper
         _paginatedCollectionVariableName = $"{_collectionVariableName}Paginated";
         _collectionName = _symbol.IsChild ? _symbol.Name : $"TC_{_symbol.Name}Collection";
         _paginatedCollectionName = _symbol.IsChild ? _symbol.Name : $"{_collectionName}_Paginated";
-        _complexChildren = symbol.Children.Where(c => c.IsComplex || c.IsList).ToList();
-        _simpleChildren = symbol.Children.Where(c => !c.IsComplex).ToList();
+        _complexChildren = symbol.Children.Values.Where(c => c.IsComplex || c.IsList).ToList();
+        _simpleChildren = symbol.Children.Values.Where(c => !c.IsComplex).ToList();
         _includeCollection = !(_symbol.TDLCollectionDetails?.Exclude ?? false);
         _isMasterObject = _symbol.Symbol.HasInterfaceWithFullyQualifiedMetadataName(MasterObjectInterfaceName);
         _isVoucherObject = _symbol.Symbol.HasInterfaceWithFullyQualifiedMetadataName(VoucherObjectInterfaceName);
@@ -148,7 +148,10 @@ internal class Helper
             if (_isTallyObject)
             {
                 members.Add(GenerateGetObjectsPaginatedMethodSyntax());
-                members.Add(GeneratePostObjectsMethodSyntax());
+                if (_symbol.GenerationMode  is GenerationMode.Post or GenerationMode.All)
+                {
+                    members.Add(GeneratePostObjectsMethodSyntax());
+                }
             }
             members.Add(GenerateGetXmlAttributeOverridesMethodSyntax());
             members.Add(GenerateGetRequestEnvolopeMethodSyntax());
@@ -430,16 +433,23 @@ internal class Helper
             typeNames.Add(symbol.FullName);
             if (symbol.BaseSymbolData != null && !typeNames.Contains(symbol.BaseSymbolData.SymbolData!.FullName))
             {
+                
                 AddExpressionForOverridenChilds(symbol.BaseSymbolData.SymbolData);
             }
-            foreach (var child in symbol.Children.Where(c => c.IsOverridden))
+            foreach (var child in symbol.Children.Values.Where(c => c.IsOverridden))
             {
                 ChildSymbolData overriddenChild = child.OverriddenChild!;
+                if (overriddenChild == null)
+                {
+
+                }
                 AddExpressionForOverridenChild(overriddenChild);
                 if (child.IsComplex && !typeNames.Contains(child.SymbolData!.FullName))
                 {
+                    
                     AddExpressionForOverridenChilds(child.SymbolData!);
                 }
+               
                 void AddExpressionForOverridenChild(ChildSymbolData overriddenChild)
                 {
                     statements.Add(ExpressionStatement(InvocationExpression(MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression, IdentifierName(xmlAttributeOverridesVarName), IdentifierName("Add")))
@@ -477,7 +487,7 @@ internal class Helper
         return methodDeclarationSyntax;
     }
 
-    
+
 
 
 
@@ -592,8 +602,8 @@ internal class Helper
         {
             ComplexTypeNames ??= [];
             ComplexTypeNames.Add(symbol.FullName);
-            IEnumerable<ChildSymbolData> children = symbol.Children.Where(c => !c.IsComplex);
-            IEnumerable<ChildSymbolData> complexchildren = symbol.Children.Where(c => c.IsComplex);
+            IEnumerable<ChildSymbolData> children = symbol.Children.Values.Where(c => !c.IsComplex);
+            IEnumerable<ChildSymbolData> complexchildren = symbol.Children.Values.Where(c => c.IsComplex);
             foreach (var child in children)
             {
                 if (child.IsEnum && action(child.SymbolData!) == 0)
@@ -927,7 +937,7 @@ internal class Helper
 
             }
         }
-        
+
         List<SyntaxNodeOrToken>? intializerArgs = null;
         if (_complexChildren.Count > 0)
         {
@@ -1047,7 +1057,7 @@ internal class Helper
             List<SyntaxNodeOrToken> xmlAttrArgs = [];
             foreach (var attrData in childSymbolAttributeDatas)
             {
-                SafeAdd(xmlAttrArgs, ExpressionElement( CreateStringLiteral($"{attrData.XmlTag}:{attrData.TDLFieldDetails!.Set}")));
+                SafeAdd(xmlAttrArgs, ExpressionElement(CreateStringLiteral($"{attrData.XmlTag}:{attrData.TDLFieldDetails!.Set}")));
             }
             SafeAdd(intializerArgs, AssignmentExpression(SyntaxKind.SimpleAssignmentExpression,
                                             IdentifierName("XMLAttributes"), CollectionExpression(SeparatedList<CollectionElementSyntax>(xmlAttrArgs))));
@@ -1131,9 +1141,11 @@ internal class Helper
 
                 if (child.SymbolData?.IsTallyComplexObject ?? false)
                 {
-                    for (int i = 0; i < child.SymbolData.Children.Count; i++)
+                    int i = 0;
+
+                    foreach (var item in child.SymbolData.Children)
                     {
-                        var c = child.SymbolData.Children[i];
+                        var c = item.Value;
                         string? set = child.TDLFieldDetails!.Set;
                         InterpolatedStringExpressionSyntax createStringInterpolation(string middleText, Func<TDLFieldData, string> func)
                         {
@@ -1157,6 +1169,7 @@ internal class Helper
                         {
                             SafeAdd(lineIntializerLocalArgs, ExpressionElement(createStringInterpolation("\t: Invisible \t: ", c => c.Invisible!)));
                         }
+                        i++;
                     }
 
                 }
@@ -1246,7 +1259,7 @@ internal class Helper
                 counter += child.SymbolData.SimpleFieldsCount;
             }
         }
-        foreach (var child in _symbol.Children)
+        foreach (var child in _symbol.Children.Values)
         {
             if (child.Exclude)
             {
@@ -1414,7 +1427,7 @@ internal class Helper
                 }
                 SafeAdd(nodesAndTokens, SpreadElement(exp));
             };
-            var children = symbol.Children.Where(c => !c.IsComplex || (c.SymbolData?.IsTallyComplexObject ?? false))
+            var children = symbol.Children.Values.Where(c => !c.IsComplex || (c.SymbolData?.IsTallyComplexObject ?? false))
                 .Where(child => !(child.TDLFieldDetails?.ExcludeInFetch ?? false))
                 .Select(child => child.TDLFieldDetails?.FetchText ?? child.TDLFieldDetails?.Set)
                 .Where(c => c != null)
@@ -1453,7 +1466,7 @@ internal class Helper
 
             }
 
-            IEnumerable<ChildSymbolData> complexCildren = symbol.Children.Where(c => (c.IsComplex || c.IsList));
+            IEnumerable<ChildSymbolData> complexCildren = symbol.Children.Values.Where(c => (c.IsComplex || c.IsList));
             foreach (var child in complexCildren)
             {
 
@@ -1530,9 +1543,9 @@ internal class Helper
 
         List<SyntaxNodeOrToken> nodesAndTokens = [];
 
-        for (int i = 0; i < _symbol.Children.Count; i++)
+        foreach (var childitem in _symbol.Children)
         {
-            var child = _symbol.Children[i];
+            var child = childitem.Value;
             if (child.Name == "None")
             {
                 continue;
@@ -1768,6 +1781,10 @@ internal class Helper
                                                             IdentifierName("AttributeName"))),
                                                     })))))
             })));
+            if (!CheckSymbolHasProperty(_symbol,"RemoteId"))
+            {
+                members.Add(GetPropertyMemberSyntax(PredefinedType(Token(SyntaxKind.StringKeyword)), "RemoteId"));
+            }
             // members.Add(GetPropertyMemberSyntax(PredefinedType(Token(SyntaxKind.StringKeyword)), "RemoteId"));
         }
         CreateProperties(_symbol);
@@ -1783,7 +1800,7 @@ internal class Helper
             //{
             //    CreateProperties(symbol.BaseSymbolData.SymbolData, true);
             //}
-            foreach (var child in symbol.Children)
+            foreach (var child in symbol.Children.Values)
             {
                 if (child.IgnoreForCreateDTO)
                 {
@@ -1903,7 +1920,7 @@ internal class Helper
         }
     }
 
-
+    
     private MemberDeclarationSyntax CreateImplicitConverterSyntax()
     {
         var srcArgName = "src";
@@ -1950,7 +1967,7 @@ internal class Helper
             {
                 AddAssignmentExpressions(symbol.BaseSymbolData.SymbolData, true);
             }
-            foreach (var child in symbol.Children)
+            foreach (var child in symbol.Children.Values)
             {
                 if (child.IgnoreForCreateDTO)
                 {
@@ -1996,7 +2013,7 @@ internal class Helper
                             List<SyntaxNodeOrToken> toStringArgs = [];
                             if (child.SymbolData!.FullName == TallyRateClassName)
                             {
-                                ChildSymbolData? childSymbolData = symbol.Children.Where(c => c.SymbolData?.FullName == TallyAmountClassName).FirstOrDefault();
+                                ChildSymbolData? childSymbolData = symbol.Children.Values.Where(c => c.SymbolData?.FullName == TallyAmountClassName).FirstOrDefault();
                                 if (childSymbolData != null)
                                 {
                                     toStringArgs.Add(Argument(MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression, IdentifierName(srcArgName), IdentifierName(childSymbolData.Name))));

@@ -45,7 +45,7 @@ internal class SymbolData
     public SymbolData? ParentSymbol { get; private set; }
     public bool IsEnum { get; private set; }
     public bool IsTallyComplexObject { get; private set; }
-    public List<ChildSymbolData> Children { get; } = [];
+    public Dictionary<string, ChildSymbolData> Children { get; } = [];
     public int SimpleFieldsCount { get; set; } = 0;
     public int TDLLinesCount { get; set; } = 0;
 
@@ -63,14 +63,14 @@ internal class SymbolData
     public FunctionDetails TDLGetObjectMethods { get; set; } = [];
     public TDLCollectionData? TDLCollectionDetails { get; internal set; }
 
-   
+
     public MapToData? MapToData { get; internal set; }
     public string MethodNameSuffixPlural { get; internal set; }
     public GenerationMode GenerationMode { get; internal set; }
     public List<INamedTypeSymbol> Args { get; internal set; }
     public bool IsParentChild { get; set; }
     public string? ActivitySourceName { get; internal set; }
-    
+
 
     public override string ToString()
     {
@@ -154,19 +154,10 @@ internal class ChildSymbolData
 
     private bool CheckBaseHasSameProperty()
     {
-        if (Parent.BaseSymbolData !=null)
+        if (Parent.BaseSymbolData != null)
         {
-            OverriddenChild = GetOverriddenChild(Parent.BaseSymbolData!.SymbolData);
+            OverriddenChild = GetPropertyWithName(Parent.BaseSymbolData!.SymbolData, Name);
             OverriddenChild?.OverriddenBy.Add(this);
-            ChildSymbolData? GetOverriddenChild(SymbolData data)
-            {
-                ChildSymbolData? childSymbolData = data.Children.Where(c => c.Name == Name).FirstOrDefault();
-                if (childSymbolData == null && data.BaseSymbolData != null)
-                {
-                    childSymbolData = GetOverriddenChild(data.BaseSymbolData.SymbolData);
-                }
-                return childSymbolData;
-            }
         }
         
         return OverriddenChild is not null;
@@ -246,7 +237,7 @@ internal class ChildSymbolData
     public List<XMLData> XMLData { get; internal set; }
     public ChildSymbolData? OverriddenChild { get; internal set; }
     public List<ChildSymbolData> OverriddenBy { get; set; } = [];
-    public bool IsAttribute { get;  set; }
+    public bool IsAttribute { get; set; }
 
     public override string ToString()
     {
