@@ -71,6 +71,23 @@ internal class TallyQuantityTests
     }
 
     [Test]
+    public void CheckTallyNegativeQuantity()
+    {
+        string TallyQuantitytXml = "<QUANTITY> -50 Nos</QUANTITY>";
+
+        using TextReader reader = new StringReader(TallyQuantitytXml);
+        var quantity = (TallyQuantity)xmlSerializer.Deserialize(reader);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(quantity.Number, Is.EqualTo(-50));
+            Assert.That(quantity.PrimaryUnits.Number, Is.EqualTo(-50));
+            Assert.That(quantity.PrimaryUnits.Unit, Is.EqualTo("Nos"));
+            Assert.That(quantity.SecondaryUnits, Is.EqualTo(null));
+        });
+    }
+
+    [Test]
     public void CheckTallyQuantitywithSecondaryUnit()
     {
         string TallyQuantitytXml = "<QUANTITY> 1000 Nos =  100 Boxes</QUANTITY>";

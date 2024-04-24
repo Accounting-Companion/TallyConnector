@@ -71,7 +71,7 @@ public class TallyQuantity : IXmlSerializable
             if (content != null && content != string.Empty)
             {
                 content = content.Trim();
-                var matches = Regex.Matches(content, @"\b[0-9.]+\b");
+                var matches = Regex.Matches(content, @"[-+]?\b[0-9.]+\b");
                 if (matches.Count == 2)
                 {
                     Number = decimal.Parse(matches[0].Value, CultureInfo.InvariantCulture);
