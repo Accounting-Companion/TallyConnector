@@ -1929,6 +1929,10 @@ internal class Helper
         string className = GetDTOClassName();
         List<StatementSyntax> statements = [];
         HashSet<string> ComplexTypeNames = [];
+        statements.Add(IfStatement(BinaryExpression(SyntaxKind.EqualsExpression, IdentifierName(srcArgName), LiteralExpression(SyntaxKind.NullLiteralExpression)),Block(SingletonList<StatementSyntax>(
+                                        ReturnStatement(
+                                            LiteralExpression(
+                                                SyntaxKind.NullLiteralExpression))))));
         statements.Add(CreateVarInsideMethodWithExpression(dtoArgName, ObjectCreationExpression(IdentifierName(className))
             .WithArgumentList(ArgumentList())));
 

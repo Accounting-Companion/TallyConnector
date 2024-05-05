@@ -347,6 +347,7 @@ public partial class BaseTallyService : IBaseTallyService
         TallyResult result = new();
         Activity.Current?.AddTag("Tally URL", FullURL);
         HttpRequestMessage requestMessage = new(HttpMethod.Post, FullURL);
+
         //Check whether xml is null or empty
         if (xml != null && requestType != null)
         {

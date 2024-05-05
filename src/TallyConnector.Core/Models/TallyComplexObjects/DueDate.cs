@@ -43,6 +43,10 @@ public class DueDateDTO
 
     public static implicit operator DueDateDTO(DueDate dueDate)
     {
+        if (dueDate == null)
+        {
+            return null;
+        }
         DueDateDTO dueDateDTO = new();
         DateTime dateTime = dueDate.DueOnDate.AddDays(dueDate.InDays);
         dueDateDTO.JD = (dateTime.Subtract(new DateTime(1900, 1, 1)).TotalDays + 1).ToString();
