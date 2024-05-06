@@ -65,11 +65,4 @@
 	</ItemGroup>
 
 
-	
-	<ItemGroup>
-		
-		<ProjectReference Include="..\SourceGenerators\TallyConnector.SourceGenerators\TallyConnector.SourceGenerators.csproj" OutputItemType="Analyzer" />
-	</ItemGroup>
-
-
 </Project>
