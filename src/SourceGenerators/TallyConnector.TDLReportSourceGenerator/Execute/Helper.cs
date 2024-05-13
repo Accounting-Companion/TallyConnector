@@ -17,7 +17,7 @@ internal class Helper
     readonly string _collectionVariableName;
     private readonly string _paginatedCollectionVariableName;
     readonly string ReportName;
-    readonly string _collectionName;
+    readonly string CollectionName;
     private readonly string _paginatedCollectionName;
 
     const string _reqOptionsArgName = "reqOptions";
@@ -35,10 +35,10 @@ internal class Helper
         _symbol = symbol;
         ReportName = $"TC_{_symbol.TypeName}List";
         _reportVariableName = $"{_symbol.TypeName}{nameof(ReportName)}";
-        _collectionVariableName = $"{_symbol.TypeName}{nameof(_collectionName)}";
+        _collectionVariableName = $"{_symbol.TypeName}{nameof(CollectionName)}";
         _paginatedCollectionVariableName = $"{_collectionVariableName}Paginated";
-        _collectionName = _symbol.IsChild ? _symbol.Name : $"TC_{_symbol.Name}Collection";
-        _paginatedCollectionName = _symbol.IsChild ? _symbol.Name : $"{_collectionName}_Paginated";
+        CollectionName = _symbol.IsChild ? _symbol.Name : $"TC_{_symbol.Name}Collection";
+        _paginatedCollectionName = _symbol.IsChild ? _symbol.Name : $"{CollectionName}_Paginated";
         _complexChildren = symbol.Children.Values.Where(c => c.IsComplex || c.IsList).ToList();
         _simpleChildren = symbol.Children.Values.Where(c => !c.IsComplex).ToList();
         _includeCollection = !(_symbol.TDLCollectionDetails?.Exclude ?? false);
@@ -137,7 +137,7 @@ internal class Helper
             members.AddRange(
                 [
                     CreateConstStringVar(_reportVariableName, ReportName, true),
-                    CreateConstStringVar(_collectionVariableName, _collectionName),
+                    CreateConstStringVar(_collectionVariableName, CollectionName),
                     CreateConstStringVar(_paginatedCollectionVariableName, _paginatedCollectionName),
                 ]);
         }

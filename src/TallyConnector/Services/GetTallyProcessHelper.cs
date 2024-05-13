@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics;
+using System.Net.NetworkInformation;
 
 namespace TallyConnector.Services;
 public static class GetTallyProcessesHelper
@@ -9,7 +10,8 @@ public static class GetTallyProcessesHelper
         List<TallyProcessInfo> processInfos = new();
         foreach (Process process in processes)
         {
-            processInfos.Add(new TallyProcessInfo(process));
+            TallyProcessInfo item = new (process);
+            processInfos.Add(item);
         }
         return processInfos;
     }
@@ -22,8 +24,9 @@ public class TallyProcessInfo
     {
         ProcessName = process.ProcessName;
         ProcessId = process.Id;
-        ExePath = process.MainModule.FileName;
-        RootFolder = Path.GetDirectoryName(process.MainModule.FileName);
+        ExePath = process.MainModule?.FileName ?? string.Empty;
+        RootFolder = Path.GetDirectoryName(process.MainModule?.FileName ?? string.Empty) ?? string.Empty;
+
     }
 
     public string ProcessName { get; set; }
