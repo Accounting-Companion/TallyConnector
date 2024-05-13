@@ -5,23 +5,18 @@ VisualStudioVersion = 17.0.31903.59
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{93809C71-F001-49C8-9226-591B592AE0D9}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TallyConnector", "src\TallyConnector\TallyConnector.csproj", "{8DEEE052-2FB3-4D35-8207-15ED87EF6127}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TallyConnector", "src\TallyConnector\TallyConnector.csproj", "{8DEEE052-2FB3-4D35-8207-15ED87EF6127}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TallyConnector.Core", "src\TallyConnector.Core\TallyConnector.Core.csproj", "{01CB1D84-633F-4D7B-A9AB-03F0C7D47B29}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TallyConnector.Core", "src\TallyConnector.Core\TallyConnector.Core.csproj", "{01CB1D84-633F-4D7B-A9AB-03F0C7D47B29}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SourceGenerators", "SourceGenerators", "{FC6FB42C-5BF5-4226-AB94-D31A2759CB16}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TallyConnector.TDLReportSourceGenerator", "src\SourceGenerators\TallyConnector.TDLReportSourceGenerator\TallyConnector.TDLReportSourceGenerator.csproj", "{218197F7-EA08-431C-9BB6-21BBD2A0C3E5}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TallyConnector.SourceGenerators", "src\SourceGenerators\TallyConnector.SourceGenerators\TallyConnector.SourceGenerators.csproj", "{0656AEFD-9E1C-488B-BF2C-88E389938531}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TallyConnector.TDLReportSourceGenerator", "src\SourceGenerators\TallyConnector.TDLReportSourceGenerator\TallyConnector.TDLReportSourceGenerator.csproj", "{218197F7-EA08-431C-9BB6-21BBD2A0C3E5}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
 		Release|Any CPU = Release|Any CPU
-	EndGlobalSection
-	GlobalSection(SolutionProperties) = preSolution
-		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{8DEEE052-2FB3-4D35-8207-15ED87EF6127}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
@@ -36,16 +31,14 @@ Global
 		{218197F7-EA08-431C-9BB6-21BBD2A0C3E5}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{218197F7-EA08-431C-9BB6-21BBD2A0C3E5}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{218197F7-EA08-431C-9BB6-21BBD2A0C3E5}.Release|Any CPU.Build.0 = Release|Any CPU
-		{0656AEFD-9E1C-488B-BF2C-88E389938531}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{0656AEFD-9E1C-488B-BF2C-88E389938531}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{0656AEFD-9E1C-488B-BF2C-88E389938531}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{0656AEFD-9E1C-488B-BF2C-88E389938531}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{8DEEE052-2FB3-4D35-8207-15ED87EF6127} = {93809C71-F001-49C8-9226-591B592AE0D9}
 		{01CB1D84-633F-4D7B-A9AB-03F0C7D47B29} = {93809C71-F001-49C8-9226-591B592AE0D9}
 		{FC6FB42C-5BF5-4226-AB94-D31A2759CB16} = {93809C71-F001-49C8-9226-591B592AE0D9}
 		{218197F7-EA08-431C-9BB6-21BBD2A0C3E5} = {FC6FB42C-5BF5-4226-AB94-D31A2759CB16}
-		{0656AEFD-9E1C-488B-BF2C-88E389938531} = {FC6FB42C-5BF5-4226-AB94-D31A2759CB16}
 	EndGlobalSection
 EndGlobal
