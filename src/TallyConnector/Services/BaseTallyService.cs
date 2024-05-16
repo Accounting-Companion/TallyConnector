@@ -10,7 +10,7 @@ namespace TallyConnector.Services;
 [GenerateHelperMethod<MasterStatistics>(MethodNameSuffixPlural = nameof(MasterStatistics), GenerationMode = GenerationMode.GetMultiple, Args = [typeof(BaseRequestOptions)])]
 [GenerateHelperMethod<VoucherStatistics>(MethodNameSuffixPlural = nameof(VoucherStatistics), GenerationMode = GenerationMode.GetMultiple, Args = [typeof(DateFilterRequestOptions)])]
 [GenerateHelperMethod<Company>(MethodNameSuffixPlural = "Companies", GenerationMode = GenerationMode.GetMultiple)]
-[GenerateHelperMethod<CompanyOnDisk>(MethodNameSuffixPlural = "GetCompaniesinDefaultPath", GenerationMode = GenerationMode.GetMultiple)]
+[GenerateHelperMethod<CompanyOnDisk>(MethodNameSuffixPlural = "CompaniesinDefaultPath", GenerationMode = GenerationMode.GetMultiple)]
 
 [SetActivitySource(ActivitySource = nameof(BaseTallyServiceActivitySource))]
 public partial class BaseTallyService : IBaseTallyService

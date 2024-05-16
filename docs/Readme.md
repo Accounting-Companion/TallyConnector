@@ -1,13 +1,16 @@
 # Tally Connector  [![NuGet Version](https://img.shields.io/nuget/v/TallyConnector.svg?style=flat)](https://www.nuget.org/packages/TallyConnector/)
 
-![builtwithlove](https://raw.githubusercontent.com/BraveUX/for-the-badge/master/src/images/badges/built-with-love.svg)
-![OpneSource](https://raw.githubusercontent.com/BraveUX/for-the-badge/master/src/images/badges/open-source.svg)
-![c#](https://raw.githubusercontent.com/BraveUX/for-the-badge/master/src/images/badges/made-with-c-sharp.svg)
+![forthebadge](https://forthebadge.com/images/badges/built-with-love.svg)
+![open](data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxNDYuOTM3NTcyNDc5MjQ4MDUiIGhlaWdodD0iMzUiIHZpZXdCb3g9IjAgMCAxNDYuOTM3NTcyNDc5MjQ4MDUgMzUiPjxyZWN0IHdpZHRoPSI1OS4xODc1MjY3MDI4ODA4NiIgaGVpZ2h0PSIzNSIgZmlsbD0iI2VmNDA0MSIvPjxyZWN0IHg9IjU5LjE4NzUyNjcwMjg4MDg2IiB3aWR0aD0iODcuNzUwMDQ1Nzc2MzY3MTkiIGhlaWdodD0iMzUiIGZpbGw9IiNjMTNhM2EiLz48dGV4dCB4PSIyOS41OTM3NjMzNTE0NDA0MyIgeT0iMjEuNSIgZm9udC1zaXplPSIxMiIgZm9udC1mYW1pbHk9IidSb2JvdG8nLCBzYW5zLXNlcmlmIiBmaWxsPSIjRkZGRkZGIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBsZXR0ZXItc3BhY2luZz0iMiI+T1BFTjwvdGV4dD48dGV4dCB4PSIxMDMuMDYyNTQ5NTkxMDY0NDUiIHk9IjIxLjUiIGZvbnQtc2l6ZT0iMTIiIGZvbnQtZmFtaWx5PSInTW9udHNlcnJhdCcsIHNhbnMtc2VyaWYiIGZpbGw9IiNGRkZGRkYiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZvbnQtd2VpZ2h0PSI5MDAiIGxldHRlci1zcGFjaW5nPSIyIj5TT1VSQ0U8L3RleHQ+PC9zdmc+)
+![c#](https://forthebadge.com/images/badges/made-with-c-sharp.svg)
 
-## Branch Info
 
-Master Branch is for Latest Version
-If you want old Version 1.0.8 go to [Branch - 1.0.8](https://github.com/Accounting-Companion/TallyConnector/tree/1.08)
+**TallyConnector** is a C# library that serves as a bridge to the Tally XML API.
+
+With **TallyConnector**, you can say goodbye to the complexities of creating and parsing XMLs. Instead, you interact directly with C# objects, making your coding experience smoother and more efficient.
+
+Experience the power of abstraction and let **TallyConnector** handle the heavy lifting of XML manipulation for you!
+
 
 You can use **[Tally Connector](https://github.com/saivineeth100/TallyConnector/)** to Integrate your desktop/Mobile Applications with Tally.
 
@@ -30,6 +33,12 @@ ___
 
 ___
 
+## What's New
+
+- **Auto TDL Report Generation Using Source Generator**: We've introduced an automatic TDL report generation feature. Now, you don't have to manually create TDL reports. Our source generator does it for you!
+
+- **Fetch Only Required Fields**: To optimize performance and efficiency, we've added a feature that fetches only the data you need from Tally. This means less data clutter and faster operations!
+___
 ## 📁 What's included?
 
 | Name| Framework |
