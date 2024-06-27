@@ -1,7 +1,7 @@
 ﻿namespace TallyConnector.Core.Models.Masters;
 [XmlRoot("TAXUNIT")]
 [TallyObjectType(TallyObjectType.TaxUnits)]
-public class TaxUnit : BasicTallyObject, IAliasTallyObject
+public class TaxUnit : BaseMasterObject, IAliasTallyObject
 {
     private string? name;
 

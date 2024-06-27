@@ -735,7 +735,7 @@ public class Collection : BaseTDLClass
     public string? Childof { get; set; }
 
     [XmlElement(ElementName = "BELONGSTO")]
-    public TallyYesNo? BelongsTo { get; set; }
+    public YesNo BelongsTo { get; set; }
 
     [XmlElement(ElementName = "SOURCECOLLECTION")]
     public string? Collections { get; set; }

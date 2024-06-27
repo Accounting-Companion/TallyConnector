@@ -67,10 +67,11 @@ public static class EnveopeExtensions
                 if (!string.IsNullOrWhiteSpace(requestOptions.Childof))
                 {
                     collection.Childof = requestOptions.Childof;
-
+                    collection.BelongsTo = requestOptions.BelongsTo ?? YesNo.None;
+                    collection.Type = requestOptions.CollectionType;
                 }
                 string CollectionName = $"{collection.Name}_NonPaginated";
-                tDLMessage.Collection.Add(new(CollectionName, collection.Type!, filters: requestOptions.Filters.Select(c => c.FilterName!).ToList()) { Childof = requestOptions.Childof });
+                tDLMessage.Collection.Add(new(CollectionName, collection.Type!, filters: requestOptions.Filters.Select(c => c.FilterName!).ToList()) { Childof = requestOptions.Childof, BelongsTo = requestOptions.BelongsTo ??  YesNo.None });
                 const string objectCountName = "TC_ObjectsCount";
                 Part part = tDLMessage.Part!.First();
                 part.Lines = [.. part.Lines, objectCountName];

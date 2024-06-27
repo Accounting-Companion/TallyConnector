@@ -76,7 +76,6 @@ public partial class Group : BaseGroup
     [Column(TypeName = $"nvarchar({Constants.MaxNameLength})")]
     public string? ReserveName { get; set; }
 
-    [JsonIgnore]
     [XmlElement(ElementName = "LANGUAGENAME.LIST")]
     [TDLCollection(CollectionName = "LanguageName")]
     public List<LanguageNameList> LanguageNameList { get; set; }

@@ -1,5 +1,6 @@
 ﻿using TallyConnector.Core.Models.Masters;
 using TallyConnector.Core.Models.TallyPrime3;
+using TallyConnector.Core.Models.TallyPrime3.Masters;
 
 namespace TallyConnector.Services.TallyPrime;
 [GenerateHelperMethod<Currency>(MethodNameSuffix = "Currency", MethodNameSuffixPlural = "Currencies")]

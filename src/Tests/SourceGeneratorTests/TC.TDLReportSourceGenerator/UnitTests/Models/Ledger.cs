@@ -4,11 +4,12 @@ using System.Text.Json.Serialization;
 using System.Xml.Serialization;
 using TallyConnector.Core.Attributes;
 using TallyConnector.Core.Models;
+using TallyConnector.Core.Models.Masters;
 
 namespace UnitTests.Models;
 
 [Serializable]
-public partial class Ledger : BasicTallyObject, IAliasTallyObject
+public partial class Ledger : BaseMasterObject, IAliasTallyObject
 {
     private string? name;
     public Ledger()
@@ -316,28 +317,7 @@ public partial class Ledger : BasicTallyObject, IAliasTallyObject
         return $"Ledger - {Name}";
     }
 
-    /// <summary>
-    /// Removes Null Childs that are created during xml deserilisation
-    /// </summary>
-    public override void RemoveNullChilds()
-    {
-        InterestList = InterestList?.Where(IntList => !IntList.IsNull())?.ToList();
-        if (InterestList?.Count == 0)
-        {
-            InterestList = null;
-        }
-        ClosingBalances = ClosingBalances?.Where(ClsBal => !ClsBal.IsNull())?.ToList();
-        if (ClosingBalances?.Count == 0)
-        {
-            ClosingBalances = null;
-        }
-
-        //MultipleAddresses = MultipleAddresses?.Where(MulAdress => !MulAdress.IsNull())?.ToList();
-        //if (MultipleAddresses?.Count == 0)
-        //{
-        //    MultipleAddresses = null;
-        //}
-    }
+   
 }
 
 [XmlRoot(ElementName = "INTERESTCOLLECTION.LIST", IsNullable = true)]

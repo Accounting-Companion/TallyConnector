@@ -267,8 +267,9 @@ internal class Helper
              Token(SyntaxKind.CommaToken),
             Argument(MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression, IdentifierName(xmlRespEnvlopeVarName), IdentifierName("Objects"))),
             Token(SyntaxKind.CommaToken),
-            Argument(LiteralExpression(SyntaxKind.NumericLiteralExpression,
-                                                                            Literal(0))),
+            Argument(BinaryExpression(SyntaxKind.CoalesceExpression,ConditionalAccessExpression(IdentifierName(_reqOptionsArgName),MemberBindingExpression( IdentifierName("PageNum"))),LiteralExpression(
+                                                                                SyntaxKind.NumericLiteralExpression,
+                                                                                Literal(1)))),
 
         })))));
         var methodDeclarationSyntax = MethodDeclaration(QualifiedName(GetGlobalNameforType("System.Threading.Tasks"), GenericName("Task")
@@ -1897,7 +1898,8 @@ internal class Helper
                     typeSyntax = QualifiedName(GetGlobalNameforType(CollectionsNameSpace), GenericName(ListClassName)
                         .WithTypeArgumentList(TypeArgumentList(SingletonSeparatedList(typeSyntax))));
                 }
-                if (child.IsNullable)
+                List<string> nullabletypes = [LanguageNamesFullTypeName];
+                if (child.IsNullable || nullabletypes.Contains(child.ChildType.GetClassMetaName()))
                 {
                     typeSyntax = NullableType(typeSyntax);
                 }

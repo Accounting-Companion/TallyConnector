@@ -24,19 +24,12 @@ public class StockItem : BaseMasterObject
     [Column(TypeName = $"nvarchar({Constants.MaxNameLength})")]
     public string? StockGroup { get; set; }
 
-    [XmlElement(ElementName = "PARENTID")]
-    [Column(TypeName = $"nvarchar({Constants.GUIDLength})")]
-    [TDLField(Set = "$GUID:StockCategory:$Parent")]
-    public string? StockGroupId { get; set; }
 
     [XmlElement(ElementName = "CATEGORY")]
     [Column(TypeName = $"nvarchar({Constants.MaxNameLength})")]
     public string? Category { get; set; }
 
-    [XmlElement(ElementName = "CATEGORYID")]
-    [Column(TypeName = $"nvarchar({Constants.GUIDLength})")]
-    [TDLField(Set = "$GUID:StockCategory:$Category")]
-    public string? CategoryId { get; set; }
+
 
     [XmlElement(ElementName = "GSTAPPLICABLE")]
     public string? GSTApplicable { get; set; }

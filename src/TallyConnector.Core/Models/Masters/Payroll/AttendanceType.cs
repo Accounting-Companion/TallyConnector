@@ -5,7 +5,7 @@
 [XmlRoot(ElementName = "ATTENDANCETYPE")]
 [XmlType(AnonymousType = true)]
 [TallyObjectType(TallyObjectType.AttendanceTypes)]
-public class AttendanceType : BasicTallyObject, IAliasTallyObject
+public class AttendanceType : BaseMasterObject, IAliasTallyObject
 {
     public AttendanceType()
     {
@@ -17,19 +17,6 @@ public class AttendanceType : BasicTallyObject, IAliasTallyObject
     public string? OldName { get; set; }
 
 
-    private string? name;
-
-    [XmlElement(ElementName = "NAME")]
-    [Required]
-    public string Name
-    {
-        get
-        {
-            name = name == null || name == string.Empty ? OldName : name;
-            return name!;
-        }
-        set => name = value;
-    }
 
     [XmlElement(ElementName = "ATTENDANCEPRODUCTIONTYPE")]
     public string? ProductionType { get; set; }

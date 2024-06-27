@@ -1,5 +1,4 @@
 ﻿using TallyConnector.Core.Models.Interfaces.Voucher;
-using TallyConnector.Core.Models.Masters;
 using TallyConnector.Core.Models.TallyComplexObjects;
 
 namespace TallyConnector.Core.Models;
@@ -59,7 +58,6 @@ public class Voucher : TallyObject, IBaseObject, IBaseVoucherObject
     public string? VoucherNumber { get; set; }
 
     [XmlElement(ElementName = "ISOPTIONAL")]
-    [Column(TypeName = "nvarchar(3)")]
     public bool IsOptional { get; set; }
 
     [XmlElement(ElementName = "EFFECTIVEDATE")]
@@ -484,18 +482,18 @@ public class BaseInventoryEntry : IBaseObject
     public TallyAmountField? Amount { get; set; }
 
 
-    //[XmlElement(ElementName = "BATCHALLOCATIONS.LIST")]
-    //public List<BatchAllocations>? BatchAllocations { get; set; }
+    [XmlElement(ElementName = "BATCHALLOCATIONS.LIST")]
+    public List<BatchAllocations>? BatchAllocations { get; set; }
 
     //[XmlElement(ElementName = "CATEGORYALLOCATIONS.LIST")]
     //public List<CostCategoryAllocations>? CostCategoryAllocations { get; set; }
-    
+
 }
 
 
 
 [XmlRoot(ElementName = "BATCHALLOCATIONS.LIST")]
-public class BatchAllocations : TallyBaseObject//Godown Allocations
+public class BatchAllocations
 {
     [XmlElement(ElementName = "MFDON")]
     public DateTime? ManufacturedOn { get; set; }
@@ -510,28 +508,25 @@ public class BatchAllocations : TallyBaseObject//Godown Allocations
     [Column(TypeName = $"nvarchar({Constants.MaxNameLength})")]
     public string? GodownName { get; set; }
 
-    [XmlElement(ElementName = "GODOWNID")]
-    [Column(TypeName = $"nvarchar({Constants.GUIDLength})")]
-    public string? GodownId { get; set; }
 
     [XmlElement(ElementName = "BATCHNAME")]
     [Column(TypeName = $"nvarchar({Constants.MaxNameLength})")]
     public string? BatchName { get; set; }
 
     [XmlElement(ElementName = "ORDERDUEDATE")]
-    public TallyDueDate? OrderDueDate { get; set; }
+    public DueDate? OrderDueDate { get; set; }
 
     [XmlElement(ElementName = "EXPIRYPERIOD")]
-    public TallyDueDate? ExpiryPeriod { get; set; }
+    public DueDate? ExpiryPeriod { get; set; }
 
     [XmlElement(ElementName = "AMOUNT")]
-    public TallyAmount? Amount { get; set; }
+    public TallyAmountField? Amount { get; set; }
 
     [XmlElement(ElementName = "ACTUALQTY")]
-    public TallyQuantity? ActualQuantity { get; set; }
+    public TallyQuantityField? ActualQuantity { get; set; }
 
     [XmlElement(ElementName = "BILLEDQTY")]
-    public TallyQuantity? BilledQuantity { get; set; }
+    public TallyQuantityField? BilledQuantity { get; set; }
 }
 
 [XmlRoot(ElementName = "CATEGORYALLOCATIONS.LIST")]
@@ -855,13 +850,13 @@ public enum VoucherLookupField
 }
 public enum BillRefType
 {
-    [XmlEnum(Name = "New Ref")]
+    [EnumXMLChoice(Choice = "New Ref")]
     NewRef,
-    [XmlEnum(Name = "On Account")]
+    [EnumXMLChoice(Choice = "On Account")]
     OnAccount,
-    [XmlEnum(Name = "Agst Ref")]
+    [EnumXMLChoice(Choice = "Agst Ref")]
     AgstRef,
-    [XmlEnum(Name = "Advance")]
+    [EnumXMLChoice(Choice = "Advance")]
     Advance
 
 }

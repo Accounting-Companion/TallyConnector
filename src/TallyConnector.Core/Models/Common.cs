@@ -39,6 +39,8 @@ public enum YesNo
     Yes = 1,
     [EnumXMLChoice(Choice = "No")]
     No = 2,
+
+
 }
 
 /// <summary>

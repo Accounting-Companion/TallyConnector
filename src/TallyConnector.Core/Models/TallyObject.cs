@@ -1,4 +1,17 @@
-﻿namespace TallyConnector.Core.Models.Masters;
+﻿
+/* Unmerged change from project 'TallyConnector.Core (net6.0)'
+Before:
+namespace TallyConnector.Core.Models.Masters;
+After:
+using TallyConnector;
+using TallyConnector.Core;
+using TallyConnector.Core.Models;
+using TallyConnector.Core.Models;
+using TallyConnector.Core.Models.Masters;
+*/
+using TallyConnector.Core.Models.Masters;
+
+namespace TallyConnector.Core.Models;
 public class BaseTallyObject : IBaseTallyObject
 {
     [XmlElement(ElementName = "GUID")]

@@ -53,6 +53,7 @@ public static class Constants
     public const string TDLFunctionFullTypeName = $"{TallyConnectorModelsNameSpace}.TDLFunction";
     public const string FilterFullTypeName = $"{TallyConnectorModelsNameSpace}.Filter";
     public const string TDLNameSetFullTypeName = $"{TallyConnectorModelsNameSpace}.NameSet";
+    public const string LanguageNamesFullTypeName = $"{TallyConnectorModelsNameSpace}.LanguageNameList";
 
     public const string PaginatedResponseClassName = $"PaginatedResponse";
 

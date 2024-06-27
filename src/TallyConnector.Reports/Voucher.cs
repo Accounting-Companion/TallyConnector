@@ -1,7 +1,9 @@
-﻿using System.Xml.Serialization;
+﻿using System.ComponentModel.DataAnnotations.Schema;
+using System.Text.Json.Serialization;
+using System.Xml.Serialization;
 using TallyConnector.Core.Attributes;
+using TallyConnector.Core.Converters.XMLConverterHelpers;
 using TallyConnector.Core.Models.Interfaces.Voucher;
-using TallyConnector.Core.Models.Masters;
 using TallyConnector.Core.Models.TallyComplexObjects;
 
 namespace TallyConnector.Core.Models;
@@ -9,7 +11,7 @@ namespace TallyConnector.Core.Models;
 [Serializable]
 [XmlRoot(ElementName = "VOUCHER", Namespace = "")]
 [TallyObjectType(TallyObjectType.Vouchers)]
-public class Voucher : TallyObject, ITallyBaseObject
+public class Voucher : TallyObject
 {
     public Voucher()
     {
@@ -223,7 +225,7 @@ public class Voucher : TallyObject, ITallyBaseObject
 
     [XmlElement(ElementName = "PARTYLEDGERID")]
     [Column(TypeName = $"nvarchar({Constants.GUIDLength})")]
-    [TDLField(Set = "$GUID:Ledger:$PARTYLEDGERNAME",FetchText = "PARTYLEDGERNAME")]
+    [TDLField(Set = "$GUID:Ledger:$PARTYLEDGERNAME", FetchText = "PARTYLEDGERNAME")]
     public string? PartyLedgerId { get; set; }
 
     [XmlElement(ElementName = "VOUCHERNUMBERSERIES")]
@@ -487,7 +489,7 @@ public class InventoryEntries : AllInventoryAllocations
 }
 
 [XmlRoot(ElementName = "INVENTORYALLOCATIONS.LIST")]
-public class InventoryAllocations : ITallyBaseObject
+public class InventoryAllocations
 {
     public InventoryAllocations()
     {

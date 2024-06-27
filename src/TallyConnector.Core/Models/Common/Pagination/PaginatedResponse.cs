@@ -3,8 +3,8 @@ public class PaginatedResponse<T> : PaginationBase where T : IBaseObject
 {
     public PaginatedResponse(int totalCount, int pageSize, List<T>? data, int pageNum) : base(totalCount, pageSize, pageNum)
     {
-        Data = data;
+        Data = data ?? [];
     }
 
-    public List<T>? Data { get; set; }
+    public List<T> Data { get; set; }
 }

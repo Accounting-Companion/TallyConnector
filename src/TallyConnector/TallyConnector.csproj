@@ -39,11 +39,11 @@
 
 
 	<ItemGroup Condition="'$(TargetFramework)' != 'net6.0'">
-		<PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="8.0.0" />
+		<PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="8.0.1" />
 	</ItemGroup>
 
 	<ItemGroup Condition="'$(TargetFramework)' == 'net48'">
-		<PackageReference Include="System.Diagnostics.DiagnosticSource" Version="8.0.0" />
+		<PackageReference Include="System.Diagnostics.DiagnosticSource" Version="8.0.1" />
 	</ItemGroup>
 	<ItemGroup Condition="'$(TargetFramework)' == 'net6.0'">
 		<PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="6.0.4" />

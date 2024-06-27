@@ -1,5 +1,6 @@
 ﻿
 
+
 namespace TallyConnector.Core.Models;
 public class BaseRequestOptions
 {
@@ -36,6 +37,8 @@ public class RequestOptions : DateFilterRequestOptions
     public List<string>? Compute { get; set; } = new();
     public List<string>? ComputeVar { get; set; } = new();
     public string? Childof { get; set; }
+    public string? CollectionType { get; set; }
+    public YesNo? BelongsTo { get; set; }
 }
 
 public class PaginatedRequestOptions : RequestOptions
@@ -47,8 +50,6 @@ public class PaginatedRequestOptions : RequestOptions
     /// If set to true, Count request is not send  receiving data from tally
     /// </summary>
     public bool DisableCountTag { get; set; }
-
-
 }
 public class MasterRequestOptions : RequestOptions
 {

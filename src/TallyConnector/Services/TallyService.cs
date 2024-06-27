@@ -14,6 +14,7 @@ public partial class TallyService : BaseTallyService, ITallyService
 {
     public TallyService()
     {
+        
     }
 
     public TallyService(string baseURL, int port, double timeoutMinutes = 3) : base(baseURL, port, timeoutMinutes)
