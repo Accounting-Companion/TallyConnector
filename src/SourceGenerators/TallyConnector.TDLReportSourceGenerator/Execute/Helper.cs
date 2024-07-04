@@ -148,7 +148,7 @@ internal class Helper
             if (_isTallyObject)
             {
                 members.Add(GenerateGetObjectsPaginatedMethodSyntax());
-                if (_symbol.GenerationMode  is GenerationMode.Post or GenerationMode.All)
+                if (_symbol.GenerationMode is GenerationMode.Post or GenerationMode.All)
                 {
                     members.Add(GeneratePostObjectsMethodSyntax());
                 }
@@ -434,7 +434,7 @@ internal class Helper
             typeNames.Add(symbol.FullName);
             if (symbol.BaseSymbolData != null && !typeNames.Contains(symbol.BaseSymbolData.SymbolData!.FullName))
             {
-                
+
                 AddExpressionForOverridenChilds(symbol.BaseSymbolData.SymbolData);
             }
             foreach (var child in symbol.Children.Values.Where(c => c.IsOverridden))
@@ -447,10 +447,10 @@ internal class Helper
                 AddExpressionForOverridenChild(overriddenChild);
                 if (child.IsComplex && !typeNames.Contains(child.SymbolData!.FullName))
                 {
-                    
+
                     AddExpressionForOverridenChilds(child.SymbolData!);
                 }
-               
+
                 void AddExpressionForOverridenChild(ChildSymbolData overriddenChild)
                 {
                     statements.Add(ExpressionStatement(InvocationExpression(MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression, IdentifierName(xmlAttributeOverridesVarName), IdentifierName("Add")))
@@ -1782,7 +1782,7 @@ internal class Helper
                                                             IdentifierName("AttributeName"))),
                                                     })))))
             })));
-            if (!CheckSymbolHasProperty(_symbol,"RemoteId"))
+            if (!CheckSymbolHasProperty(_symbol, "RemoteId"))
             {
                 members.Add(GetPropertyMemberSyntax(PredefinedType(Token(SyntaxKind.StringKeyword)), "RemoteId"));
             }
@@ -1922,7 +1922,7 @@ internal class Helper
         }
     }
 
-    
+
     private MemberDeclarationSyntax CreateImplicitConverterSyntax()
     {
         var srcArgName = "src";
@@ -1931,7 +1931,7 @@ internal class Helper
         string className = GetDTOClassName();
         List<StatementSyntax> statements = [];
         HashSet<string> ComplexTypeNames = [];
-        statements.Add(IfStatement(BinaryExpression(SyntaxKind.EqualsExpression, IdentifierName(srcArgName), LiteralExpression(SyntaxKind.NullLiteralExpression)),Block(SingletonList<StatementSyntax>(
+        statements.Add(IfStatement(BinaryExpression(SyntaxKind.EqualsExpression, IdentifierName(srcArgName), LiteralExpression(SyntaxKind.NullLiteralExpression)), Block(SingletonList<StatementSyntax>(
                                         ReturnStatement(
                                             LiteralExpression(
                                                 SyntaxKind.NullLiteralExpression))))));
@@ -1991,20 +1991,29 @@ internal class Helper
                     ExpressionSyntax right;
                     if (child.IsList)
                     {
+                        List<SyntaxNodeOrToken> switchExpressions = [];
+                        child.XMLData.ForEach(c =>
+                        {
+                            SafeAdd(switchExpressions, SwitchExpressionArm(
+                                                        DeclarationPattern(
+                                                            GetGlobalNameforType(c.ChildSymbolData.ChildTypeFullName), SingleVariableDesignation(
+                                                                                        Identifier("obj"))),
+                                                        CastExpression(
+                                                            IdentifierName($"{c.ChildSymbolData.Name}DTO"),
+                                                            IdentifierName("obj"))));
+                        });
+                        SafeAdd(switchExpressions, SwitchExpressionArm(DiscardPattern(),
+                                                                       CastExpression(
+                                                                           IdentifierName($"{child.ChildType.Name}DTO"),
+                                                                           IdentifierName("c"))));
                         right = ConditionalAccessExpression(MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression, IdentifierName(srcArgName), IdentifierName(child.Name)),
-                            InvocationExpression(MemberBindingExpression(GenericName("Select")
-                           .WithTypeArgumentList(TypeArgumentList(SeparatedList<TypeSyntax>(new SyntaxNodeOrToken[]
-                           {
-                        GetGlobalNameforType(child.ChildType.OriginalDefinition.ToString()),
-                        Token(SyntaxKind.CommaToken),
-                        IdentifierName($"{child.ChildType.Name}DTO"),
-                           })))))
+                            InvocationExpression(MemberBindingExpression(IdentifierName("Select")))
                            .WithArgumentList(ArgumentList(SingletonSeparatedList(Argument(
                                                                        SimpleLambdaExpression(
                                                                            Parameter(
                                                                                Identifier("c")))
                                                                        .WithExpressionBody(
-                                                                           IdentifierName("c")))))));
+                                                                               SwitchExpression(IdentifierName("c")).WithArms(SeparatedList<SwitchExpressionArmSyntax>(switchExpressions))))))));
 
                         statements.Add(ExpressionStatement(AssignmentExpression(SyntaxKind.SimpleAssignmentExpression,
                                                             MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression, IdentifierName(dtoArgName), IdentifierName(child.Name)),

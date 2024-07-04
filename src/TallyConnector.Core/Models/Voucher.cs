@@ -317,6 +317,7 @@ public class Voucher : TallyObject, IBaseObject, IBaseVoucherObject
 
     public override string ToString()
     {
+        
         return $"{VoucherType} - {VoucherNumber}";
     }
 }
@@ -371,7 +372,7 @@ public class BaseLedgerEntry : IBaseLedgerEntry
 
 
 
-    
+
 
 }
 [TDLCollection(CollectionName = "ALLLEDGERENTRIES", ExplodeCondition = $"$PERSISTEDVIEW =$$SysName:{Constants.Voucher.ViewType.AccountingVoucherView}")]
@@ -448,14 +449,14 @@ public class BaseInventoryEntry : IBaseObject
     [XmlArrayItem(ElementName = "BASICUSERDESCRIPTION")]
 
     public List<string> UserDescriptions { get; set; }
-    
+
 
     [XmlElement(ElementName = "STOCKITEMNAME")]
     [Column(TypeName = $"nvarchar({Constants.MaxNameLength})")]
     public string? StockItemName { get; set; }
 
-    
-   
+
+
 
     [XmlElement(ElementName = "BOMNAME")]
     [Column(TypeName = $"nvarchar({Constants.MaxNameLength})")]
