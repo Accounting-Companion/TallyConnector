@@ -13,7 +13,6 @@ public enum TallyObjectType
     [EnumXMLChoice("Cost Centres")]
     CostCentres = 5,
     [EnumXMLChoice("Godowns")]
-    [EnumXMLChoice("Locations")]
     Godowns = 6,
     [EnumXMLChoice("Stock Categories")]
     StockCategories = 7,
@@ -37,7 +36,7 @@ public enum TallyObjectType
     GSTRegistrations = 16,
     [EnumXMLChoice("Budgets")]
     Budgets = 17,
-    [EnumXMLChoice("Budgets & Scenarios")]
+    [EnumXMLChoice("Budgets & Scenarios", Versions = ["6.6.3"])]
     [EnumXMLChoice("Scenarios")]
     BudgetsScenarios = 18,
     [EnumXMLChoice("Vouchers")]

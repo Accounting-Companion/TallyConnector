@@ -90,27 +90,14 @@ public class ReqDescription
     [XmlElement(ElementName = "TDL")]
     public ReqTDL TDL { get; set; } = new();
 
-    [XmlElement(ElementName = "FUNCPARAMLIST")]
-    public FunctionParam? FunctionParams { get; set; }
+    [XmlArray(ElementName = "FUNCPARAMLIST")]
+    [XmlArrayItem(ElementName = "PARAM")]
+    public List<string>? FunctionParams { get; set; }
 
 
 }
 
-[XmlRoot(ElementName = "FUNCPARAMLIST")]
-public class FunctionParam
-{
-    public FunctionParam()
-    {
-    }
-    public FunctionParam(List<string> param)
-    {
-        Param = param;
-    }
-    [XmlElement(ElementName = "PARAM")]
-    public List<string>? Param { get; set; }
 
-
-}
 [XmlRoot(ElementName = "TDL")]
 public class ReqTDL
 {

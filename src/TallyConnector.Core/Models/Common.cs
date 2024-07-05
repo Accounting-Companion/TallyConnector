@@ -98,17 +98,17 @@ public enum GSTTaxType
 {
     [EnumXMLChoice(Choice = "")]
     None = 0,
-    [EnumXMLChoice(Choice = "Central Tax")]
+    [EnumXMLChoice(Choice = "Central Tax",Versions = ["6.6.3", "1.1.1", "1.1.2", "1.1.3", "1.1.4", "2.0", "2.0.1", "2.1"])]
     [EnumXMLChoice(Choice = "CGST")]
     CGST = 1,
     [EnumXMLChoice(Choice = "Cess")]
     Cess = 2,
-    [EnumXMLChoice(Choice = "Integrated Tax")]
+    [EnumXMLChoice(Choice = "Integrated Tax", Versions = ["6.6.3", "1.1.1", "1.1.2", "1.1.3", "1.1.4", "2.0", "2.0.1", "2.1"])]
     [EnumXMLChoice(Choice = "IGST")]
     IGST = 3,
     [EnumXMLChoice(Choice = "UT Tax")]
     UTTax = 4,
-    [EnumXMLChoice(Choice = "State Tax")]
+    [EnumXMLChoice(Choice = "State Tax", Versions = ["6.6.3", "1.1.1", "1.1.2", "1.1.3", "1.1.4", "2.0", "2.0.1", "2.1"])]
     [EnumXMLChoice(Choice = "SGST/UTGST")]
     SGST = 5,
 }
@@ -123,22 +123,18 @@ public enum ExciseNatureOfPurchase
 }
 public enum GSTRegistrationType
 {
+    
     [EnumXMLChoice(Choice = "")]
     None = 0,
     [EnumXMLChoice(Choice = "Unknown")]
     Unknown = 1,
     [EnumXMLChoice(Choice = "Composition")]
     Composition = 2,
-    /// <summary>
-    /// Consumer for tally version below 3.0
-    /// </summary>
-    [EnumXMLChoice(Choice = "Consumer")]
-    Consumer = 3,
-    /// <summary>
-    /// Added In Prime 3.0, used for Consumer
-    /// </summary>
+
+    [EnumXMLChoice(Choice = "Consumer", Versions = ["6.6.3", "1.1.1", "1.1.2", "1.1.3", "1.1.4", "2.0", "2.0.1", "2.1"])]
     [EnumXMLChoice(Choice = "Unregistered/Consumer")]
-    UnregisteredConsumer = 3,
+    Consumer = 3,
+
     [EnumXMLChoice(Choice = "Regular")]
     Regular = 4,
     [EnumXMLChoice(Choice = "Unregistered")]

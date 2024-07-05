@@ -233,7 +233,7 @@ internal class ChildSymbolData
     public bool IsOverridden { get; private set; }
     public bool IsNullable { get; private set; }
     public bool IgnoreForCreateDTO { get; internal set; }
-    public List<string>? EnumChoices { get; internal set; }
+    public List<EnumChoiceData>? EnumChoices { get; internal set; }
     public List<XMLData> XMLData { get; internal set; }
     public ChildSymbolData? OverriddenChild { get; internal set; }
     public List<ChildSymbolData> OverriddenBy { get; set; } = [];

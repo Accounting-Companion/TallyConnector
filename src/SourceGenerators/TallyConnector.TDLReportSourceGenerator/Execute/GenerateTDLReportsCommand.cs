@@ -388,7 +388,7 @@ internal class GenerateTDLReportsCommand
                         xMLData.Add(txMLData = new());
                     }
                     var choice = ParseEnumChoiceXMLData(attributeDataAttribute);
-                    if (choice != null && !string.IsNullOrEmpty(choice))
+                    if (choice != null && !string.IsNullOrEmpty(choice.Choice))
                     {
                         txMLData.EnumChoices.Add(choice);
                     }
@@ -498,8 +498,10 @@ internal class GenerateTDLReportsCommand
         }
     }
 
-    private string? ParseEnumChoiceXMLData(AttributeData attributeDataAttribute)
+    private EnumChoiceData? ParseEnumChoiceXMLData(AttributeData attributeDataAttribute)
     {
+        EnumChoiceData enumChoiceData;
+        string choice = string.Empty;
         if (attributeDataAttribute.ConstructorArguments != null && attributeDataAttribute.ConstructorArguments.Length > 0)
         {
             var constructorArguments = attributeDataAttribute.ConstructorArguments;
@@ -508,12 +510,15 @@ internal class GenerateTDLReportsCommand
                 switch (i)
                 {
                     case 0:
-                        return constructorArguments.First().Value?.ToString();
+                        choice = constructorArguments.First().Value?.ToString();
+                        break;
                     default:
                         break;
                 }
             }
         }
+        
+        string[] versions = [];
         if (attributeDataAttribute.NamedArguments != null && attributeDataAttribute.NamedArguments.Length > 0)
         {
             var namedArguments = attributeDataAttribute.NamedArguments;
@@ -522,12 +527,16 @@ internal class GenerateTDLReportsCommand
                 switch (namedArgument.Key)
                 {
                     case "Choice":
-                        return (string)namedArgument.Value.Value!;
+                        choice = (string)namedArgument.Value.Value!;
+                        break;
+                    case "Versions":
+                        versions = namedArgument.Value.Values.Select(c => (string)c.Value!).ToArray();
+                        break;
                 }
             }
 
         }
-        return null;
+        return new EnumChoiceData(choice, versions);
     }
 
     private void ParseClassAttributes(SymbolData symbolData)
@@ -889,7 +898,7 @@ internal class XMLData
 {
     public string? XmlTag { get; set; }
 
-    public List<string> EnumChoices { get; set; } = [];
+    public List<EnumChoiceData> EnumChoices { get; set; } = [];
 
     public INamedTypeSymbol? Symbol { get; set; }
 
@@ -909,5 +918,16 @@ public class TDLCollectionData
     public bool? Exclude { get; internal set; }
     public INamedTypeSymbol? Symbol { get; internal set; }
 }
+public class EnumChoiceData
+{
+    public EnumChoiceData(string choice, string[]? versions = null)
+    {
+        Choice = choice;
+        Versions = versions ?? [];
+    }
 
+    public string Choice { get; }
+
+    public string[] Versions { get; }
+}
 

@@ -20,6 +20,11 @@ public static class FactoryMethods
         }
 
     }
+    internal static ExpressionSyntax GetEmptyStringSyntax() => MemberAccessExpression(
+                                                      SyntaxKind.SimpleMemberAccessExpression,
+                                                      PredefinedType(
+                                                          Token(SyntaxKind.StringKeyword)),
+                                                      IdentifierName("Empty"));
     internal static ChildSymbolData GetPropertyWithName(SymbolData symbol, string name)
     {
         symbol.Children.TryGetValue(name, out var property);

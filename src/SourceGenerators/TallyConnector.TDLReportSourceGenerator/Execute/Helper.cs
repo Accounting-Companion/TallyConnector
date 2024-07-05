@@ -92,7 +92,13 @@ internal class Helper
                 .WithMembers(List(new MemberDeclarationSyntax[]
                 {
                     ClassDeclaration(_symbol.MainSymbol.Name)
-                    .WithModifiers(TokenList([Token(SyntaxKind.PartialKeyword)]))
+                    .WithModifiers(TokenList([Token(
+                            TriviaList(
+                                Comment($@"/*
+ * Generated based on {_symbol.FullName}
+ */")),
+                            SyntaxKind.PartialKeyword,
+                            TriviaList())]))
                     .WithMembers(List(GetTDLReportClassMembers()))
                 }))
             })).NormalizeWhitespace().ToFullString();
@@ -180,12 +186,17 @@ internal class Helper
                 members.Add(GenerateGetNamesetsMethodSyntax());
             }
             members.Add(GenerateGetFunctionsMethodSyntax());
+            members.Add(GenerateGetTallyStringMethodSyntax());
         }
-        members.Add(GenerateGetFetchListMethodSyntax());
+        else
+        {
+            members.Add(GenerateGetFetchListMethodSyntax());
+        }
+
         return members;
     }
 
-
+    
     private MemberDeclarationSyntax GenerateGetObjectsPaginatedMethodSyntax()
     {
         string reqEnvelopeVarName = "reqEnvelope";
@@ -253,7 +264,7 @@ internal class Helper
                                                            })))));
 
 
-        //statements.Add(ReturnStatement(MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression, IdentifierName(xmlRespEnvlopeVarName), IdentifierName("Objects"))));
+        //switchStatements.Add(ReturnStatement(MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression, IdentifierName(xmlRespEnvlopeVarName), IdentifierName("Objects"))));
 
         statements.Add(ReturnStatement(ImplicitObjectCreationExpression().WithArgumentList(ArgumentList(SeparatedList<ArgumentSyntax>(new SyntaxNodeOrToken[]
         {
@@ -552,11 +563,11 @@ internal class Helper
         statements.Add(CreateAssignFromMethodStatement(tdlMsgVariableName, "Object", GetMethodNames(_symbol, c => c.TDLGetObjectMethods, tdlObjectMethodNames)));
         if (_hasDefaultFilters)
         {
-            //statements.Add(Create());
+            //switchStatements.Add(Create());
             const string filtersVarName = "defaultFilters";
             statements.Add(LocalDeclarationStatement(CreateVariableDelaration(QualifiedName(GetGlobalNameforType(CollectionsNameSpace), GenericName(Identifier(ListClassName))
                 .WithTypeArgumentList(TypeArgumentList(SingletonSeparatedList<TypeSyntax>(GetGlobalNameforType(FilterFullTypeName))))), filtersVarName, CreateAssignFromMethodStatementRightExp(GetMethodNames(_symbol, c => c.DefaultFilterMethods, [])))));
-            //statements.Add(ExpressionStatement( AssignmentExpression(SyntaxKind.SimpleAssignmentExpression,IdentifierName(filtersVarName), CreateAssignFromMethodStatementRightExp(GetMethodNames(_symbol, c => c.DefaultFilterMethods, [])))));
+            //switchStatements.Add(ExpressionStatement( AssignmentExpression(SyntaxKind.SimpleAssignmentExpression,IdentifierName(filtersVarName), CreateAssignFromMethodStatementRightExp(GetMethodNames(_symbol, c => c.DefaultFilterMethods, [])))));
             statements.Add(CreateAssignFromMethodStatement(tdlMsgVariableName, "System", InvocationExpression(MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression, IdentifierName(filtersVarName), IdentifierName("ToSystem")))));
             statements.Add(ExpressionStatement(AssignmentExpression(SyntaxKind.SimpleAssignmentExpression, MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression, ElementAccessExpression(MemberAccessExpression(
                                             SyntaxKind.SimpleMemberAccessExpression,
@@ -1491,7 +1502,7 @@ internal class Helper
                     var exp = InvocationExpression(IdentifierName(string.Format(GetFetchListMethodName, child.SymbolData!.TypeName)))
                         .WithArgumentList(ArgumentList(SeparatedList<ArgumentSyntax>(new SyntaxNodeOrToken[] { Argument(IdentifierName(GetCollectionName(child, counter))) })));
 
-                    //SafeAdd(nodesAndTokens, ExpressionElement(IdentifierName(GetCollectionName(child))));
+                    //SafeAdd(args, ExpressionElement(IdentifierName(GetCollectionName(child))));
                     SafeAdd(nodesAndTokens, SpreadElement(exp));
                 }
                 int counter = 1;
@@ -1560,7 +1571,7 @@ internal class Helper
                     {
                         nodesAndTokens.Add(Token(SyntaxKind.CommaToken));
                     }
-                    nodesAndTokens.Add(ExpressionElement(CreateStringLiteral($"{item}:\"{child.Name}\"")));
+                    nodesAndTokens.Add(ExpressionElement(CreateStringLiteral($"{item.Choice}:\"{child.Name}\"")));
                 }
             }
 
@@ -1616,6 +1627,131 @@ internal class Helper
             Block(statements));
         return methodDeclarationSyntax;
     }
+
+    private MemberDeclarationSyntax GenerateGetTallyStringMethodSyntax()
+    {
+        List<SyntaxNodeOrToken> switchStatements = [];
+        var objParamName = "obj";
+        var versionVarName = "version";
+
+        bool usesVersion = false;
+        SafeAdd(switchStatements, SwitchExpressionArm(
+                                             ConstantPattern(LiteralExpression(
+                                                                      SyntaxKind.NullLiteralExpression)),
+                                              LiteralExpression(SyntaxKind.NullLiteralExpression)));
+        foreach (var childitem in _symbol.Children)
+        {
+            var child = childitem.Value;
+            ExpressionSyntax? expressionSyntax = null;
+            if (child.EnumChoices != null)
+            {
+                if (child.EnumChoices.Count == 1)
+                {
+                    expressionSyntax = LiteralExpression(SyntaxKind.StringLiteralExpression, Literal(child.EnumChoices.First().Choice));
+                }
+                else if (child.EnumChoices.Count == 0)
+                {
+                    expressionSyntax = child.Name == "None" ? GetEmptyStringSyntax() : LiteralExpression(SyntaxKind.StringLiteralExpression, Literal(child.Name));
+                }
+                else
+                {
+                    usesVersion = true;
+                    List<SyntaxNodeOrToken> nestedSwitchStatements = [];
+                    var addedDefault = false;
+                    foreach (var item in child.EnumChoices)
+                    {
+                        ExpressionSyntax constExpression;
+                        BinaryPatternSyntax? binaryPatternSyntax = null;
+                        constExpression = LiteralExpression(SyntaxKind.StringLiteralExpression, Literal(""));
+
+                        if (item.Versions.Length == 1)
+                        {
+                            constExpression = LiteralExpression(SyntaxKind.StringLiteralExpression, Literal(item.Versions.First()));
+                        }
+                        else if (item.Versions.Length > 1)
+                        {
+                            binaryPatternSyntax = BinaryPattern(SyntaxKind.OrPattern, ConstantPattern(LiteralExpression(
+                                                                                SyntaxKind.StringLiteralExpression,
+                                                                                Literal(item.Versions[0]))), ConstantPattern(LiteralExpression(
+                                                                                SyntaxKind.StringLiteralExpression,
+                                                                                Literal(item.Versions[1]))));
+                            for (int i = 2; i < item.Versions.Length; i++)
+                            {
+                                binaryPatternSyntax = BinaryPattern(SyntaxKind.OrPattern, binaryPatternSyntax, ConstantPattern(LiteralExpression(
+                                                                                SyntaxKind.StringLiteralExpression,
+                                                                                Literal(item.Versions[i]))));
+                            }
+                        }
+                        if (item.Versions.Length == 0)
+                        {
+                            addedDefault = true;
+                            SafeAdd(nestedSwitchStatements, SwitchExpressionArm(DiscardPattern(), LiteralExpression(SyntaxKind.StringLiteralExpression,
+                                                                                                                             Literal(item.Choice))));
+                        }
+                        else
+                        {
+                            SafeAdd(nestedSwitchStatements, SwitchExpressionArm(binaryPatternSyntax == null ? ConstantPattern(constExpression) : binaryPatternSyntax, LiteralExpression(SyntaxKind.StringLiteralExpression,
+                                                                                                                                Literal(item.Choice))));
+                        }
+
+                    }
+                    if (!addedDefault)
+                    {
+                        SafeAdd(nestedSwitchStatements, SwitchExpressionArm(DiscardPattern(), LiteralExpression(SyntaxKind.StringLiteralExpression,
+                                                                                                                             Literal(child.EnumChoices.Where(c => !c.Versions.Any()).First().Choice))));
+                    }
+                    expressionSyntax = SwitchExpression(IdentifierName(versionVarName)).WithArms(SeparatedList<SwitchExpressionArmSyntax>(nestedSwitchStatements));
+                }
+            }
+            else
+            {
+                expressionSyntax = LiteralExpression(SyntaxKind.StringLiteralExpression, Literal(child.Name));
+            }
+            expressionSyntax ??= GetEmptyStringSyntax();
+
+            SafeAdd(switchStatements, SwitchExpressionArm(ConstantPattern(MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression, GetGlobalNameforType(_symbol.FullName), IdentifierName(child.Name))),
+                expressionSyntax));
+        }
+
+        SafeAdd(switchStatements, SwitchExpressionArm(
+                                                DiscardPattern(),
+                                                GetEmptyStringSyntax()));
+
+
+        var methodDeclarationSyntax = MethodDeclaration(NullableType(PredefinedType(Token(SyntaxKind.StringKeyword))), Identifier(GetTallyStringMethodName))
+     .WithModifiers(TokenList([Token(SyntaxKind.InternalKeyword), Token(SyntaxKind.StaticKeyword)]))
+     .WithParameterList(ParameterList(SeparatedList<ParameterSyntax>(new SyntaxNodeOrToken[]
+     {
+         Parameter(Identifier(objParamName))
+                .WithType(NullableType(GetGlobalNameforType(_symbol.FullName))),
+         Token(SyntaxKind.CommaToken),
+         Parameter(Identifier(LicenseInfoPropertyName))
+         .WithType(GetGlobalNameforType(LicenseInfoFullTypeName))
+     })));
+        if (usesVersion)
+        {
+            List<StatementSyntax> statements = [];
+
+            statements.Add(CreateVarInsideMethodWithExpression(versionVarName, InvocationExpression(MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression,
+                                                                                                      IdentifierName(LicenseInfoPropertyName),
+                                                                                                      IdentifierName($"{ShortVersionPropertyName}.ToString")))));
+
+            statements.Add(ReturnStatement(SwitchExpression(
+                                IdentifierName(objParamName))
+                        .WithArms(SeparatedList<SwitchExpressionArmSyntax>(switchStatements))));
+            methodDeclarationSyntax = methodDeclarationSyntax.WithBody(Block(statements));
+        }
+        else
+        {
+            methodDeclarationSyntax = methodDeclarationSyntax.WithExpressionBody(ArrowExpressionClause(SwitchExpression(
+                                IdentifierName(objParamName))
+                        .WithArms(SeparatedList<SwitchExpressionArmSyntax>(switchStatements))))
+                        .WithSemicolonToken(Token(SyntaxKind.SemicolonToken));
+        }
+
+        return methodDeclarationSyntax;
+    }
+
 
     private string GetFieldName(ChildSymbolData child)
     {
@@ -1738,7 +1874,14 @@ internal class Helper
                                                     .WithNameEquals(
                                                         NameEquals(
                                                             IdentifierName("ElementName"))))))
-                        }))
+                        })).WithOpenBracketToken(
+                            Token(
+                                TriviaList(
+                                    Comment($@"/*
+ * Generated based on {_symbol.FullName} for Service {_symbol.MainFullName}
+ */")),
+                                SyntaxKind.OpenBracketToken,
+                                TriviaList()))
                     }))
                     .WithModifiers(TokenList([Token(SyntaxKind.PublicKeyword), Token(SyntaxKind.PartialKeyword)]))
                     .WithMembers(List(GetCreateDTOClassMembers()))
@@ -2058,12 +2201,18 @@ internal class Helper
                     ExpressionSyntax right = MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression, IdentifierName(srcArgName), IdentifierName(child.Name));
                     if (child.ChildType.SpecialType != SpecialType.System_String)
                     {
+
                         var memberAcess = MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression, IdentifierName(srcArgName), IdentifierName(child.Name));
+                        List<SyntaxNodeOrToken> args =
+                                                    [
+                                                        Argument(memberAcess),
+                                                    ];
+                        if (child.ChildType.SpecialType == SpecialType.System_Enum)
+                        {
+                            SafeAdd(args, IdentifierName(LicenseInfoPropertyName));
+                        }
                         right = InvocationExpression(MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression, GetGlobalNameforType(_symbol.MainFullName), IdentifierName(GetTallyStringMethodName)))
-                            .WithArgumentList(ArgumentList(SeparatedList<ArgumentSyntax>(new SyntaxNodeOrToken[]
-                            {
-                            Argument(memberAcess),
-                            })));
+                            .WithArgumentList(ArgumentList(SeparatedList<ArgumentSyntax>(args)));
                     }
                     statements.Add(ExpressionStatement(AssignmentExpression(SyntaxKind.SimpleAssignmentExpression,
                                                         MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression, IdentifierName(dtoArgName), IdentifierName(child.Name)),

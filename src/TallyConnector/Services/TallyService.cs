@@ -14,7 +14,7 @@ public partial class TallyService : BaseTallyService, ITallyService
 {
     public TallyService()
     {
-        
+
     }
 
     public TallyService(string baseURL, int port, double timeoutMinutes = 3) : base(baseURL, port, timeoutMinutes)
@@ -46,6 +46,7 @@ public partial class TallyService : BaseTallyService, ITallyService
         await TPostObjectsAsync(DTOobjects);
 
     }
+    
     public async Task TPostObjectsAsync(IEnumerable<IBaseTallyObjectDTO> objects)
     {
         var message = new TallyServicePostRequestEnvelopeMessage();

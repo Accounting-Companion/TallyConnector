@@ -66,7 +66,7 @@ public class Data<T>
     public Colllection<T>? Collection { get; set; }
 
     [XmlElement(ElementName = "RESULT")]
-    public FunctionResult FuncResult { get; set; } = null;
+    public string? FuncResult { get; set; } = null;
 
 }
 
@@ -212,13 +212,7 @@ public enum HType
     Function,
 }
 
-[XmlRoot(ElementName = "RESULT")]
-public class FunctionResult
-{
 
-    [XmlText]
-    public string? Result { get; set; }
-}
 
 [XmlRoot(ElementName = "ENVELOPE")]
 public class CustomReportEnvelope<T>

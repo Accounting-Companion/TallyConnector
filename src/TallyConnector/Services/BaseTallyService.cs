@@ -23,6 +23,25 @@ public partial class BaseTallyService : IBaseTallyService
 
     protected readonly ILogger _logger;
 
+    private LicenseInfo? _licenseInfo { get; set; }
+    public LicenseInfo LicenseInfo
+    {
+        get
+        {
+            if (_licenseInfo == null)
+            {
+                try
+                {
+                    _licenseInfo = GetLicenseInfoAsync().Result;
+                }
+                finally
+                {
+
+                }
+            }
+            return _licenseInfo;
+        }
+    }
     protected BaseCompany? Company { get; set; }
 
 #if NET7_0_OR_GREATER
@@ -36,8 +55,6 @@ public partial class BaseTallyService : IBaseTallyService
     private static readonly System.Text.RegularExpressions.Regex _xmlTextAsciiRegex = new(@"[\x00-\x1F]");
     private static readonly System.Text.RegularExpressions.Regex _xmlTextHexRegex = new(@"(?<=&#x)(.*?)(?=;)");
 #endif
-
-
 
     /// <summary>
     /// Intiate Tally Service with Default Parameters
@@ -113,7 +130,7 @@ public partial class BaseTallyService : IBaseTallyService
         if (tallyResult.Status == RespStatus.Sucess && tallyResult.Response != null)
         {
             Envelope<string>? Envelope = XMLToObject.GetObjfromXml<Envelope<string>>(tallyResult.Response, null, _logger);
-            string result = Envelope?.Body?.Data?.FuncResult?.Result ?? throw new Exception($"No Active Company in Tally,Either Select any non group company in tally or Use {nameof(SetCompany)} method to set company");
+            string result = Envelope?.Body?.Data?.FuncResult ?? throw new Exception($"No Active Company in Tally,Either Select any non group company in tally or Use {nameof(SetCompany)} method to set company");
             return result;
         }
         else
@@ -165,7 +182,37 @@ public partial class BaseTallyService : IBaseTallyService
         XMLAttributes.XmlElements.Add(new(objectName.ToUpper()));
         XMLAttributeOverrides.Add(typeof(Colllection<LicenseInfo>), "Objects", XMLAttributes);
         Envelope<LicenseInfo> envelope = XMLToObject.GetObjfromXml<Envelope<LicenseInfo>>(respXml.Response ?? throw new Exception("Error While Getting License"), XMLAttributeOverrides);
-        return envelope.Body.Data.Collection?.Objects?.FirstOrDefault() ?? new();
+        LicenseInfo? licenseInfo = envelope.Body.Data.Collection?.Objects?.FirstOrDefault();
+        if (licenseInfo != null)
+        {
+            _licenseInfo = licenseInfo;
+        }
+        else
+        {
+            throw new Exception("No License info received from Tally");
+        }
+        return _licenseInfo;
+    }
+
+    public async Task<string> GetTallyVersionAsync(CancellationToken token = default)
+    {
+        const string RequestType = "Getting Tally Version";
+        using var activity = BaseTallyServiceActivitySource.StartActivity(RequestType);
+        RequestEnvelope requestEnvelope = new(HType.Function, "$$string");
+        requestEnvelope.Body.Desc.FunctionParams = ["@@VersionReleaseString"];
+
+        string Reqxml = requestEnvelope.GetXML();
+        TallyResult tallyResult = await SendRequestAsync(Reqxml, RequestType, token);
+        if (tallyResult.Status == RespStatus.Sucess && tallyResult.Response != null)
+        {
+            Envelope<string>? Envelope = XMLToObject.GetObjfromXml<Envelope<string>>(tallyResult.Response, null, _logger);
+            string result = Envelope?.Body?.Data?.FuncResult ?? throw new Exception($"Error while fetching tally version - no version returned from tally");
+            return result;
+        }
+        else
+        {
+            throw new Exception(tallyResult.Response);
+        }
     }
 
     public async Task<LastAlterIdsRoot> GetLastAlterIdsAsync(BaseRequestOptions? baseRequestOptions = null, CancellationToken token = default)

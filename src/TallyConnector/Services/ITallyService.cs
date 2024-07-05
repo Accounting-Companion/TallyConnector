@@ -101,6 +101,7 @@ public interface IBaseTallyService
     /// <param name="token"></param>
     /// <returns></returns>
     Task<List<AutoColVoucherTypeStat>> GetVoucherStatisticsAsync(AutoColumnReportPeriodRequestOprions requestOptions, CancellationToken token = default);
+    Task<string> GetTallyVersionAsync(CancellationToken token = default);
 }
 /// <summary>
 /// contains API to interact with Tally
