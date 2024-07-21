@@ -194,27 +194,6 @@ public partial class BaseTallyService : IBaseTallyService
         return _licenseInfo;
     }
 
-    public async Task<string> GetTallyVersionAsync(CancellationToken token = default)
-    {
-        const string RequestType = "Getting Tally Version";
-        using var activity = BaseTallyServiceActivitySource.StartActivity(RequestType);
-        RequestEnvelope requestEnvelope = new(HType.Function, "$$string");
-        requestEnvelope.Body.Desc.FunctionParams = ["@@VersionReleaseString"];
-
-        string Reqxml = requestEnvelope.GetXML();
-        TallyResult tallyResult = await SendRequestAsync(Reqxml, RequestType, token);
-        if (tallyResult.Status == RespStatus.Sucess && tallyResult.Response != null)
-        {
-            Envelope<string>? Envelope = XMLToObject.GetObjfromXml<Envelope<string>>(tallyResult.Response, null, _logger);
-            string result = Envelope?.Body?.Data?.FuncResult ?? throw new Exception($"Error while fetching tally version - no version returned from tally");
-            return result;
-        }
-        else
-        {
-            throw new Exception(tallyResult.Response);
-        }
-    }
-
     public async Task<LastAlterIdsRoot> GetLastAlterIdsAsync(BaseRequestOptions? baseRequestOptions = null, CancellationToken token = default)
     {
         var reqType = "Getting Last AlterIds from Tally";
