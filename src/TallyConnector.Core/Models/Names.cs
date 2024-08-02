@@ -34,7 +34,7 @@ public class LanguageNameList
     public List<string> NameList { get; set; }
 
     [XmlElement(ElementName = "LANGUAGEID")]
-    public string LANGUAGEID { get; set; }
+    public int LanguageId { get; set; }
 }
 
 [XmlRoot(ElementName = "NAME.LIST")]

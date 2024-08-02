@@ -33,4 +33,8 @@
 	  <ProjectReference Include="..\..\..\..\TallyConnector\TallyConnector.csproj" />
 	</ItemGroup>
 
+	<ItemGroup>
+	  <Folder Include="Diagnostics\" />
+	</ItemGroup>
+
 </Project>
