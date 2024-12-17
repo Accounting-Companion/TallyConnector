@@ -53,19 +53,15 @@ public class StockItem : BaseMasterObject
     public string? ValuationMethod { get; set; }
 
     [XmlElement(ElementName = "ISCOSTTRACKINGON")]
-    [Column(TypeName = "nvarchar(3)")]
     public bool? IsCostTracking { get; set; }
 
     [XmlElement(ElementName = "ISCOSTCENTRESON")]
-    [Column(TypeName = "nvarchar(3)")]
     public bool? IsCostCentresOn { get; set; }
 
     [XmlElement(ElementName = "ISBATCHWISEON")]
-    [Column(TypeName = "nvarchar(3)")]
     public bool? MaintainInBranches { get; set; }
 
     [XmlElement(ElementName = "ISPERISHABLEON")]
-    [Column(TypeName = "nvarchar(3)")]
     public bool? UseExpiryDates { get; set; }
 
     [XmlElement(ElementName = "HASMFGDATE")]

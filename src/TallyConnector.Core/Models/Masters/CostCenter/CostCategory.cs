@@ -25,11 +25,9 @@ public class CostCategory : BaseMasterObject
  
 
     [XmlElement(ElementName = "ALLOCATEREVENUE")]
-    [Column(TypeName = "nvarchar(3)")]
     public bool? AllocateRevenue { get; set; }
 
     [XmlElement(ElementName = "ALLOCATENONREVENUE")]
-    [Column(TypeName = "nvarchar(3)")]
     public bool? AllocateNonRevenue { get; set; }
 
     [XmlIgnore]

@@ -469,8 +469,7 @@ internal class GenerateTDLReportsCommand
                         childData.TDLFieldDetails.Invisible ??= "$$ISEmpty:$$value";
                         break;
                     case SpecialType.System_DateTime:
-                        childData.TDLFieldDetails.Set = $"$${GetTransformDateToXSDFunctionName}:{childData.TDLFieldDetails.Set}";
-                        childData.TDLFieldDetails.Invisible ??= "$$ISEmpty:$$value";
+                        ApplyDateProperties(childData);
                         break;
                     case SpecialType.System_Enum:
                         childData.TDLFieldDetails.Set = $"{string.Format(GetTDLFunctionsMethodName, childData.SymbolData!.Name)}:{childData.TDLFieldDetails.Set}";
@@ -486,6 +485,20 @@ internal class GenerateTDLReportsCommand
                     childData.TDLFieldDetails.Invisible ??= "$$ISEmpty:$$value";
                     childData.TDLFieldDetails.Set = $"$${string.Format(GetEnumFunctionName, childData.SymbolData!.Name)}:{childData.TDLFieldDetails.Set}";
                 }
+                if (childData.ChildTypeFullName == DateOnlyType)
+                {
+                    ApplyDateProperties(childData);
+                }
+                static void ApplyDateProperties(ChildSymbolData childData)
+                {
+                    childData.TDLFieldDetails!.Set = $"$${GetTransformDateToXSDFunctionName}:{childData.TDLFieldDetails.Set}";
+                    childData.TDLFieldDetails.Invisible ??= "$$ISEmpty:$$value";
+                }
+            }
+            if (childData.IsNullable)
+            {
+                childData.TDLFieldDetails.Invisible ??= "$$ISEmpty:$$value";
+
             }
             childData.DefaultTDLCollectionDetails ??= childData.SymbolData?.TDLCollectionDetails;
 
@@ -496,6 +509,8 @@ internal class GenerateTDLReportsCommand
 
             throw;
         }
+
+
     }
 
     private EnumChoiceData? ParseEnumChoiceXMLData(AttributeData attributeDataAttribute)
@@ -517,7 +532,7 @@ internal class GenerateTDLReportsCommand
                 }
             }
         }
-        
+
         string[] versions = [];
         if (attributeDataAttribute.NamedArguments != null && attributeDataAttribute.NamedArguments.Length > 0)
         {

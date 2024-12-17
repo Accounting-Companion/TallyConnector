@@ -1,3 +1,4 @@
+using TallyConnector.Core.Models;
 using TallyConnector.Services;
 
 namespace TallyConnector.Tests.BaseServiceTests;
@@ -13,7 +14,7 @@ public class BaseService
     [SetUp]
     public void Setup()
     {
-        
+
     }
 
     [Test]
@@ -46,6 +47,13 @@ public class BaseService
     public async Task TestVoucherStatisticsMethod()
     {
         var v = await _baseTallyService.GetVoucherStatisticsAsync();
+        Assert.That(v, Is.Not.Null);
+
+    }
+    [Test]
+    public async Task TestVoucherStatisticsAutoColMethod()
+    {
+        var v = await _baseTallyService.GetVoucherStatisticsAsync(new AutoColumnReportPeriodRequestOptions() { FromDate=new(2016,4,1)});
         Assert.That(v, Is.Not.Null);
 
     }

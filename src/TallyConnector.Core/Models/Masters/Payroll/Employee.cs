@@ -6,7 +6,7 @@ public class Employee : CostCenter.CostCentre
 {
     public Employee()
     {
-        FAddress = new HAddress();
+        
     }
 
     [XmlElement(ElementName = "FORPAYROLL")]
@@ -48,26 +48,6 @@ public class Employee : CostCenter.CostCentre
     [XmlElement(ElementName = "SPOUSENAME")]
     public string? SpouseName { get; set; }
 
-    [XmlIgnore]
-    public string? Address
-    {
-        get
-        {
-            return FAddress.FullAddress;
-        }
-
-        set
-        {
-            if (value != "")
-            {
-
-                FAddress.FullAddress = value;
-            }
-
-
-        }
-
-    }
 
     [XmlElement(ElementName = "CONTACTNUMBERS")]
     public string? PhoneNumber { get; set; }
@@ -143,10 +123,10 @@ public class Employee : CostCenter.CostCentre
     public string? IFSC { get; set; }
 
 
-
-    [JsonIgnore]
-    [XmlElement(ElementName = "ADDRESS.LIST")]
-    public HAddress FAddress { get; set; }
+    [XmlArray(ElementName = "ADDRESS.LIST")]
+    [XmlArrayItem(ElementName = "ADDRESS")]
+    [TDLCollection(CollectionName = "Address", ExplodeCondition = "$$NumItems:ADDRESS<1")]
+    public List<string>? Addresses { get; set; }
 
     [XmlElement(ElementName = "TAXREGIMEDETAILS.LIST")]
     public List<TaxRegimeDetails>? TaxRegimeDetails { get; set; }

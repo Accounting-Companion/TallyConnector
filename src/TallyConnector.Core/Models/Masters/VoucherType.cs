@@ -51,19 +51,15 @@ public class VoucherType : BaseMasterObject
     public string? NumberingMethod { get; set; }
 
     [XmlElement(ElementName = "USEZEROENTRIES")]
-    [Column(TypeName = "nvarchar(3)")]
     public bool? UseZeroEntries { get; set; }
 
     [XmlElement(ElementName = "ISACTIVE")]
-    [Column(TypeName = "nvarchar(3)")]
     public bool? IsActive { get; set; }
 
     [XmlElement(ElementName = "PRINTAFTERSAVE")]
-    [Column(TypeName = "nvarchar(3)")]
     public bool? PrintAfterSave { get; set; }
 
     [XmlElement(ElementName = "USEFORPOSINVOICE")]
-    [Column(TypeName = "nvarchar(3)")]
     public bool? UseforPOSInvoice { get; set; }
 
     [XmlElement(ElementName = "VCHPRINTBANKNAME")]
@@ -79,35 +75,27 @@ public class VoucherType : BaseMasterObject
     public string? VchPrintJurisdiction { get; set; }
 
     [XmlElement(ElementName = "ISOPTIONAL")]
-    [Column(TypeName = "nvarchar(3)")]
     public bool? IsOptional { get; set; }
 
     [XmlElement(ElementName = "COMMONNARRATION")]
-    [Column(TypeName = "nvarchar(3)")]
     public bool? CommonNarration { get; set; }
 
     [XmlElement(ElementName = "MULTINARRATION")]
-    [Column(TypeName = "nvarchar(3)")]
     public bool? MultiNarration { get; set; }  //Narration for each Ledger
 
     [XmlElement(ElementName = "ISDEFAULTALLOCENABLED")]
-    [Column(TypeName = "nvarchar(3)")]
     public bool? IsDefaultAllocationEnabled { get; set; }
 
     [XmlElement(ElementName = "AFFECTSSTOCK")]
-    [Column(TypeName = "nvarchar(3)")]
     public bool? EffectStock { get; set; }
 
     [XmlElement(ElementName = "ASMFGJRNL")]
-    [Column(TypeName = "nvarchar(3)")]
     public bool? AsMfgJrnl { get; set; }
 
     [XmlElement(ElementName = "USEFORJOBWORK")]
-    [Column(TypeName = "nvarchar(3)")]
     public bool? UseforJobwork { get; set; }
 
     [XmlElement(ElementName = "ISFORJOBWORKIN")]
-    [Column(TypeName = "nvarchar(3)")]
     public bool? IsforJobworkIn { get; set; }
 
     //[XmlElement(ElementName = "VOUCHERCLASSLIST.LIST")]
@@ -121,7 +109,6 @@ public class VoucherType : BaseMasterObject
 
 
     [XmlElement(ElementName = "CANDELETE")]
-    [Column(TypeName = "nvarchar(3)")]
     public bool? CanDelete { get; set; }
 
     public static TallyCustomObject[] GetVoucherTypeObjects()

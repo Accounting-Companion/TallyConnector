@@ -6,7 +6,7 @@ namespace TC.TDLReportSourceGenerator.Tests.Verifiers;
 internal static partial class CSharpSourceGeneratorVerifier<TSourceGenerator>
     where TSourceGenerator : IIncrementalGenerator, new()
 {
-    public sealed class Test : CSharpSourceGeneratorTest<EmptySourceGeneratorProvider, MSTestVerifier>
+    public sealed class Test : CSharpSourceGeneratorTest<EmptySourceGeneratorProvider, DefaultVerifier>
     {
         public Test()
         {
@@ -14,11 +14,14 @@ internal static partial class CSharpSourceGeneratorVerifier<TSourceGenerator>
 
         public LanguageVersion LanguageVersion { get; set; } = LanguageVersion.Default;
 
-        
-        protected override IEnumerable<ISourceGenerator> GetSourceGenerators()
+        protected override IEnumerable<Type> GetSourceGenerators()
         {
-            return new[] { new TSourceGenerator().AsSourceGenerator() };
+            return [typeof(TSourceGenerator)];
         }
+        //protected override IEnumerable<ISourceGenerator> GetSourceGenerators()
+        //{
+        //    return [new TSourceGenerator().AsSourceGenerator()];
+        //}
         protected override Task RunImplAsync(CancellationToken cancellationToken)
         {
             TestState.MarkupHandling = MarkupMode.None;

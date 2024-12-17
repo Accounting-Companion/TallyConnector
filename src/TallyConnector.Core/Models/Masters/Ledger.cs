@@ -52,7 +52,6 @@ public partial class Ledger : BaseLedger
     public string? Alias { get; set; }
 
     [XmlElement(ElementName = "ISDEEMEDPOSITIVE")]
-    [Column(TypeName = "nvarchar(3)")]
     public bool IsDeemedPositive { get; set; }
 
     [XmlElement(ElementName = "OPENINGBALANCE")]
@@ -75,7 +74,6 @@ public partial class Ledger : BaseLedger
     public double? RateofTax { get; set; }
 
     [XmlElement(ElementName = "ISBILLWISEON")]
-    [Column(TypeName = "nvarchar(3)")]
     public bool? IsBillwise { get; set; }
 
     [XmlElement(ElementName = "BILLCREDITPERIOD")]
@@ -83,7 +81,6 @@ public partial class Ledger : BaseLedger
     public string? CreditPeriod { get; set; }
 
     [XmlElement(ElementName = "ISCREDITDAYSCHKON")]
-    [Column(TypeName = "nvarchar(3)")]
     public bool? IsCreditCheck { get; set; }
 
 
@@ -146,7 +143,6 @@ public partial class Ledger : BaseLedger
     public GSTRegistrationType GSTRegistrationType { get; set; }
 
     [XmlElement(ElementName = "ISOTHTERRITORYASSESSEE")]
-    [Column(TypeName = "nvarchar(3)")]
     public bool? IsOtherTerritoryAssessee { get; set; }
 
     [XmlElement(ElementName = "PARTYGSTIN")]
@@ -154,11 +150,9 @@ public partial class Ledger : BaseLedger
     public string? GSTIN { get; set; }
 
     [XmlElement(ElementName = "ISECOMMOPERATOR")]
-    [Column(TypeName = "nvarchar(3)")]
     public bool? IsECommerceOperator { get; set; }
 
     [XmlElement(ElementName = "CONSIDERPURCHASEFOREXPORT")]
-    [Column(TypeName = "nvarchar(3)")]
     public bool? DeemedExport { get; set; }
 
     [XmlElement(ElementName = "GSTNATUREOFSUPPLY")]
@@ -166,7 +160,6 @@ public partial class Ledger : BaseLedger
     public GSTPartyType? GSTPartyType { get; set; }
 
     [XmlElement(ElementName = "ISTRANSPORTER")]
-    [Column(TypeName = "nvarchar(3)")]
     public bool? IsTransporter { get; set; }
 
     [XmlElement(ElementName = "TRANSPORTERID")]
@@ -175,39 +168,30 @@ public partial class Ledger : BaseLedger
 
 
     [XmlElement(ElementName = "AFFECTSSTOCK")]
-    [Column(TypeName = "nvarchar(3)")]
     public bool? AffectStock { get; set; }
 
     [XmlElement(ElementName = "ISCOSTCENTRESON")]
-    [Column(TypeName = "nvarchar(3)")]
     public bool? IsCostCenter { get; set; }
 
     [XmlElement(ElementName = "ISREVENUE")]
-    [Column(TypeName = "nvarchar(3)")]
     public bool? IsRevenue { get; set; }
 
     [XmlElement(ElementName = "ISINTERESTON")]
-    [Column(TypeName = "nvarchar(3)")]
     public bool? IsInterestOn { get; set; }
 
     [XmlElement(ElementName = "INTERESTONBILLWISE")]
-    [Column(TypeName = "nvarchar(3)")]
     public bool? IsInterestOnBillWise { get; set; }
 
     [XmlElement(ElementName = "OVERRIDEINTEREST")]
-    [Column(TypeName = "nvarchar(3)")]
     public bool? OverrideInterest { get; set; }
 
     [XmlElement(ElementName = "OVERRIDEADVINTEREST")]
-    [Column(TypeName = "nvarchar(3)")]
     public bool? OverrideAdvanceInterest { get; set; }
 
     [XmlElement(ElementName = "INTERESTINCLDAYOFADDITION")]
-    [Column(TypeName = "nvarchar(3)")]
     public bool? InterestIncludeForAmountsAdded { get; set; }
 
     [XmlElement(ElementName = "INTERESTINCLDAYOFDEDUCTION")]
-    [Column(TypeName = "nvarchar(3)")]
     public bool? InterestIncludeForAmountsDeducted { get; set; }
 
 
@@ -217,7 +201,6 @@ public partial class Ledger : BaseLedger
 
 
     [XmlElement(ElementName = "FORPAYROLL")]
-    [Column(TypeName = "nvarchar(3)")]
     public bool? ForPayroll { get; set; }
 
 
@@ -257,7 +240,6 @@ public partial class Ledger : BaseLedger
     //public List<LedgerGSTRegistrationDetails>? LedgerGSTRegistrationDetails { get; set; }
 
     [XmlElement(ElementName = "CANDELETE")]
-    [Column(TypeName = "nvarchar(3)")]
     public bool? CanDelete { get; set; }
 
 

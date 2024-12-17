@@ -30,6 +30,12 @@ public class TallyDate : IXmlSerializable
     {
         return new(date);
     }
+#if NET6_0_OR_GREATER
+    public static implicit operator TallyDate(DateOnly date)
+    {
+        return new(date.ToDateTime(TimeOnly.MinValue));
+    }
+#endif
     public static implicit operator DateTime?(TallyDate? tallyDate)
     {
         return tallyDate?.Date;
@@ -85,7 +91,7 @@ public class TallyDate : IXmlSerializable
     {
         return Date.ToString("dd-MM-yyyy", CultureInfo.InvariantCulture);
     }
-    
+
 }
 public class TallyDMYYYYDate : TallyDate, IXmlSerializable
 {

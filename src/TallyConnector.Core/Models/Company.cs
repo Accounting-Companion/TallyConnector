@@ -148,13 +148,13 @@ public interface ICompany
 {
     string? GUID { get; set; }
 
-    string CompNum { get; set; }   
+    string CompNum { get; set; }
 }
 
 [XmlRoot(ElementName = "COMPANYONDISK")]
 public class CompanyOnDisk : BaseCompany, IBaseObject
 {
-   
+
 
     public override string ToString()
     {

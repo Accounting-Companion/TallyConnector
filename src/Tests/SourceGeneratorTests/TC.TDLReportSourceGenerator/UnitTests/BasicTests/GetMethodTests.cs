@@ -125,7 +125,7 @@ public class TallyServiceReportResponseEnvelopeForGroup
         ]);
     }
 
-    
+
     [TestMethod]
     public async Task TestComplexModel()
     {
@@ -965,4 +965,80 @@ partial class TallyService
     }
 
 
+
+    [TestMethod]
+    public async Task TestDateOnly()
+    {
+        var src = @"
+#nullable enable
+using System;
+using System.Xml.Serialization;
+namespace TestNameSpace;
+[TallyConnector.Core.Attributes.GenerateHelperMethod<Company>(GenerationMode=TallyConnector.Core.Models.GenerationMode.GetMultiple)]
+public partial class TallyService : TallyConnector.Services.BaseTallyService
+{
+}
+public partial class Company : TallyConnector.Core.Models.ITallyBaseObject
+{
+    [XmlElement(ElementName = ""BOOKSFROM"")]
+    public DateOnly BooksFrom { get; set; }
+
+
+}";
+        var resp1 = @"using TallyConnector.Core.Extensions;
+
+#nullable enable
+namespace TestNameSpace;
+partial class TallyService
+{
+    internal const string GroupParentTDLFieldName = ""TC_Group_Parent"";
+    internal const string GroupOpeningBalTDLFieldName = ""TC_Group_OpeningBal"";
+    internal const string GroupReportName = ""TC_GroupList"";
+    const string Group_collectionName = ""TC_GroupCollection"";
+    internal static global::TallyConnector.Core.Models.RequestEnvelope GetGroupRequestEnevelope()
+    {
+        var reqEnvelope = new global::TallyConnector.Core.Models.RequestEnvelope(global::TallyConnector.Core.Models.HType.Data, GroupReportName);
+        var tdlMsg = reqEnvelope.Body.Desc.TDL.TDLMessage;
+        tdlMsg.Report = [new(GroupReportName)];
+        tdlMsg.Form = [new(GroupReportName)];
+        tdlMsg.Part = [..global::TestNameSpace.TallyService.GetGroupTDLParts()];
+        tdlMsg.Line = [..global::TestNameSpace.TallyService.GetGroupTDLLines()];
+        tdlMsg.Field = [..global::TestNameSpace.TallyService.GetGroupTDLFields()];
+        tdlMsg.Collection = [..global::TestNameSpace.TallyService.GetGroupTDLCollections()];
+        tdlMsg.Functions = [..global::TestNameSpace.TallyService.GetDefaultTDLFunctions()];
+        return reqEnvelope;
+    }
+
+    internal static global::TallyConnector.Core.Models.Part[] GetGroupTDLParts()
+    {
+        var parts = new global::TallyConnector.Core.Models.Part[1];
+        parts[0] = new(GroupReportName, Group_collectionName);
+        return parts;
+    }
+
+    internal static global::TallyConnector.Core.Models.Line[] GetGroupTDLLines()
+    {
+        var lines = new global::TallyConnector.Core.Models.Line[1];
+        lines[0] = new(GroupReportName, [GroupParentTDLFieldName,GroupOpeningBalTDLFieldName], ""GROUP"");
+        return lines;
+    }
+
+    internal static global::TallyConnector.Core.Models.Field[] GetGroupTDLFields()
+    {
+        var fields = new global::TallyConnector.Core.Models.Field[2];
+        fields[0] = new(GroupParentTDLFieldName, ""PARENT"", ""$PARENT"");
+        fields[1] = new(GroupOpeningBalTDLFieldName, ""NAME"", ""$NAME"");
+        return fields;
+    }
+
+    internal static global::TallyConnector.Core.Models.Collection[] GetGroupTDLCollections()
+    {
+        var collections = new global::TallyConnector.Core.Models.Collection[1];
+        collections[0] = new(Group_collectionName, ""GROUP"", nativeFields: [""*""]);
+        return collections;
+    }
+}";
+
+        await VerifyTDLReportSG.VerifyGeneratorAsync(src, ("TestNameSpace.Company.TallyService.TDLReport.g.cs", resp1));
+    }
 }

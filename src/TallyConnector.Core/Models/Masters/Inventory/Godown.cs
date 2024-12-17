@@ -42,7 +42,6 @@ public class Godown : BaseMasterObject
     public string? PhoneNumber { get; set; }
 
     [XmlElement(ElementName = "ISEXTERNAL")]
-    [Column(TypeName = "nvarchar(3)")]
     public bool? IsExternal { get; set; } // ThirdParty Stock with Us
 
     [XmlElement(ElementName = "ISINTERNAL")]

@@ -136,8 +136,10 @@ internal class BaseSymbolData : SymbolData
 
     public SymbolData SymbolData { get; set; }
 }
+
 internal class ChildSymbolData
 {
+
     public ChildSymbolData(ISymbol childSymbol, SymbolData parent)
     {
         Parent = parent;
@@ -146,7 +148,7 @@ internal class ChildSymbolData
         ChildTypeFullName = ChildType.OriginalDefinition.ToString();
         Name = childSymbol.Name;
         MainParent = Parent.ParentSymbol;
-        IsComplex = ChildType.SpecialType is SpecialType.None && ChildType.TypeKind is not TypeKind.Enum;
+        IsComplex =(ChildType.SpecialType is SpecialType.None && !DefaultSimpleTypes.Contains(ChildType.GetClassMetaName())) && ChildType.TypeKind is not TypeKind.Enum;
         Attributes = childSymbol.GetAttributes();
         ReportVarName = $"{parent.TypeName}{Name}ReportName";
         IsOverridden = /*childSymbol.DeclaringSyntaxReferences.Any(c => c.GetSyntax() is PropertyDeclarationSyntax propertySyntax && propertySyntax.Modifiers.Any(c => c.IsKind(SyntaxKind.NewKeyword))) || */CheckBaseHasSameProperty();
@@ -159,7 +161,7 @@ internal class ChildSymbolData
             OverriddenChild = GetPropertyWithName(Parent.BaseSymbolData!.SymbolData, Name);
             OverriddenChild?.OverriddenBy.Add(this);
         }
-        
+
         return OverriddenChild is not null;
 
 

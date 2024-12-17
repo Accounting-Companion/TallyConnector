@@ -39,8 +39,8 @@ public interface IBaseTallyService
     Task<TallyResult> SendRequestAsync(string? xml = null, string? requestType = null, CancellationToken token = default);
 
     /// <summary>
-    /// Checks whether xml as linerror and returns error
-    /// if noerror return null
+    /// Checks whether xml has linerror and returns error
+    /// if noerror returns null
     /// </summary>
     /// <param name="ResXml"></param>
     /// <returns></returns>
@@ -100,7 +100,7 @@ public interface IBaseTallyService
     /// <param name="requestOprions"></param>
     /// <param name="token"></param>
     /// <returns></returns>
-    Task<List<AutoColVoucherTypeStat>> GetVoucherStatisticsAsync(AutoColumnReportPeriodRequestOprions requestOptions, CancellationToken token = default);
+    Task<List<AutoColVoucherTypeStat>> GetVoucherStatisticsAsync(AutoColumnReportPeriodRequestOptions requestOptions, CancellationToken token = default);
     
 }
 /// <summary>
@@ -146,7 +146,7 @@ public interface ITallyService : IBaseTallyService
 
 
 
-//    Task<AutoVoucherStatisticsEnvelope> GetVoucherStatisticsAsync(AutoColumnReportPeriodRequestOprions? requestOptions = null, CancellationToken token = default);
+//    Task<AutoVoucherStatisticsEnvelope> GetVoucherStatisticsAsync(AutoColumnReportPeriodRequestOptions? requestOptions = null, CancellationToken token = default);
 
 //    #region Accounting Masters
 //    /*

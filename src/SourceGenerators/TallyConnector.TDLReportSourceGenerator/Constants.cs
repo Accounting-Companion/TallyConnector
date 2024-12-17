@@ -128,4 +128,8 @@ public static class Constants
 
 
     public const string StartActivityMethodName = "StartActivity";
+
+    public const string DateOnlyType = "System.DateOnly";
+
+    public static List<string> DefaultSimpleTypes = [DateOnlyType];
 }

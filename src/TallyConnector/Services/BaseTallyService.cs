@@ -245,7 +245,7 @@ public partial class BaseTallyService : IBaseTallyService
     }
 
 
-    public async Task<List<AutoColVoucherTypeStat>> GetVoucherStatisticsAsync(AutoColumnReportPeriodRequestOprions requestOptions, CancellationToken token = default)
+    public async Task<List<AutoColVoucherTypeStat>> GetVoucherStatisticsAsync(AutoColumnReportPeriodRequestOptions requestOptions, CancellationToken token = default)
     {
         using var activity = BaseTallyServiceActivitySource.StartActivity();
         StaticVariables sv = new()
@@ -332,7 +332,7 @@ public partial class BaseTallyService : IBaseTallyService
         }
         else throw new Exception(tallyResult.Response);
     }
-    private static string GetPeriodictyString(AutoColumnReportPeriodRequestOprions? requestOptions)
+    private static string GetPeriodictyString(AutoColumnReportPeriodRequestOptions? requestOptions)
     {
         return requestOptions?.Periodicity switch
         {
@@ -375,9 +375,13 @@ public partial class BaseTallyService : IBaseTallyService
         HttpRequestMessage requestMessage = new(HttpMethod.Post, FullURL);
 
         //Check whether xml is null or empty
-        if (xml != null && requestType != null)
+        if (xml != null )
         {
-            LogRequestXML(xml, requestType);
+            LogRequestXML(xml);
+        }
+        if(requestType != null)
+        {
+            LogRequestType(requestType);
         }
         if (xml != null && xml != string.Empty)
         {
@@ -673,7 +677,7 @@ public partial class BaseTallyService : IBaseTallyService
     }
 
 
-    protected static void AddCustomResponseReportForPost<T>(TallyEnvelope<T> requestEnvelope) where T : class
+    public static void AddCustomResponseReportForPost<T>(TallyEnvelope<T> requestEnvelope) where T : class
     {
         var tDLMessage = requestEnvelope.Body.Desc.TDL.TDLMessage;
 

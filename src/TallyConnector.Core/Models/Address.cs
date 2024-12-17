@@ -131,8 +131,7 @@ public class MultiAddress : ICheckNull
     public GSTRegistrationType GSTDealerType { get; set; }
 
     [XmlElement(ElementName = "ISOTHTERRITORYASSESSEE")]
-    [Column(TypeName = "nvarchar(3)")]
-    public TallyYesNo? IsOtherTerritoryAssessee { get; set; }
+    public bool? IsOtherTerritoryAssessee { get; set; }
 
     [XmlElement(ElementName = "PARTYGSTIN")]
     [Column(TypeName = "nvarchar(17)")]

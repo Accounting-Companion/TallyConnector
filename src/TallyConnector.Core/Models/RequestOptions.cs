@@ -17,7 +17,7 @@ public class DateFilterRequestOptions : BaseRequestOptions
     public DateTime? FromDate { get; set; }
     public DateTime? ToDate { get; set; }
 }
-public class AutoColumnReportPeriodRequestOprions : DateFilterRequestOptions
+public class AutoColumnReportPeriodRequestOptions : DateFilterRequestOptions
 {
     public PeriodicityType Periodicity { get; set; }
 }

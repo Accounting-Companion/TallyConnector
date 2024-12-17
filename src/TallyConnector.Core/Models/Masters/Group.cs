@@ -96,14 +96,12 @@ public partial class Group : BaseGroup
     /// Tally Field - Used for Calculation
     /// </summary>
     [XmlElement(ElementName = "BASICGROUPISCALCULABLE")]
-    [Column(TypeName = "nvarchar(3)")]
     public bool? IsCalculable { get; set; }
 
     /// <summary>
     /// Tally Field - Net Debit/Credit Balances for Reporting 
     /// </summary>
     [XmlElement(ElementName = "ISADDABLE")]
-    [Column(TypeName = "nvarchar(3)")]
     public bool? IsAddable { get; set; }
 
     /// <summary>
@@ -114,24 +112,19 @@ public partial class Group : BaseGroup
     public AdAllocType? AddlAllocType { get; set; }
 
     [XmlElement(ElementName = "ISSUBLEDGER")]
-    [Column(TypeName = "nvarchar(3)")]
     public bool? IsSubledger { get; set; }
 
     [XmlElement(ElementName = "ISREVENUE")]
-    [Column(TypeName = "nvarchar(3)")]
     public bool? IsRevenue { get; set; }
 
     [XmlElement(ElementName = "ISDEEMEDPOSITIVE")]
-    [Column(TypeName = "nvarchar(3)")]
     public bool? IsDeemedPositive { get; set; }
 
     [XmlElement(ElementName = "AFFECTSGROSSPROFIT")]
-    [Column(TypeName = "nvarchar(3)")]
     public bool? AffectGrossProfit { get; set; }
 
 
     [XmlElement(ElementName = "CANDELETE")]
-    [Column(TypeName = "nvarchar(3)")]
     public bool? CanDelete { get; set; }
 
 

@@ -64,7 +64,6 @@ public class Voucher : TallyObject, IBaseObject, IBaseVoucherObject
     public DateTime? EffectiveDate { get; set; }
 
     [XmlElement(ElementName = "NARRATION")]
-    [Column(TypeName = $"nvarchar({Constants.MaxNarrLength})")]
     public string? Narration { get; set; }
 
     [XmlElement(ElementName = "PRICELEVEL")]
@@ -371,7 +370,10 @@ public class BaseLedgerEntry : IBaseLedgerEntry
     //public List<BankAllocation>? BankAllocations { get; set; }
 
 
-
+    [XmlArray("USERDESCRIPTION.LIST",Namespace = "UDF")]
+    [XmlArrayItem(ElementName = "USERDESCRIPTION", Namespace = "UDF")]
+    [TDLCollection(CollectionName = "USERDESCRIPTION")]
+    public List<string>? UserDescriptions { get; set; }
 
 
 }
@@ -448,7 +450,7 @@ public class BaseInventoryEntry : IBaseObject
     [XmlArray("BASICUSERDESCRIPTION.LIST")]
     [XmlArrayItem(ElementName = "BASICUSERDESCRIPTION")]
 
-    public List<string> UserDescriptions { get; set; }
+    public List<string>? UserDescriptions { get; set; }
 
 
     [XmlElement(ElementName = "STOCKITEMNAME")]

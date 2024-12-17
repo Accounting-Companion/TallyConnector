@@ -68,7 +68,10 @@ public static class EnveopeExtensions
                 {
                     collection.Childof = requestOptions.Childof;
                     collection.BelongsTo = requestOptions.BelongsTo ?? YesNo.None;
-                    collection.Type = requestOptions.CollectionType;
+                    if (!string.IsNullOrWhiteSpace(requestOptions.CollectionType))
+                    {
+                        collection.Type = requestOptions.CollectionType;
+                    }
                 }
                 string CollectionName = $"{collection.Name}_NonPaginated";
                 tDLMessage.Collection.Add(new(CollectionName, collection.Type!, filters: requestOptions.Filters.Select(c => c.FilterName!).ToList()) { Childof = requestOptions.Childof, BelongsTo = requestOptions.BelongsTo ??  YesNo.None });

@@ -78,15 +78,12 @@ public class Currency : BaseCurrency
 
     [XmlElement(ElementName = "TC_INMILLIONS")]
     [TDLField(Set = "$InMilllions")]
-    [Column(TypeName = "nvarchar(3)")]
     public bool? InMilllions { get; set; }
 
     [XmlElement(ElementName = "ISSUFFIX")]
-    [Column(TypeName = "nvarchar(3)")]
     public bool? IsSuffix { get; set; }
 
     [XmlElement(ElementName = "HASSPACE")]
-    [Column(TypeName = "nvarchar(3)")]
     public bool? HasSpace { get; set; }
 
 

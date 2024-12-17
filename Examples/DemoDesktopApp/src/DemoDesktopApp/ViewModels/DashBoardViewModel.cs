@@ -51,6 +51,7 @@ public partial class DashBoardViewModel : BaseViewModel
         var msg = new global::TallyConnector.Services.Models.TallyServicePostRequestEnvelopeMessage();
         msg.Vouchers = objs.Data.Select(c => (VoucherDTO)c).ToList();
         envp.Body.RequestData.RequestMessage = msg;
+        TallyService.AddCustomResponseReportForPost(envp);
         await File.WriteAllTextAsync("Sales.xml", envp.GetXML());
 
     }

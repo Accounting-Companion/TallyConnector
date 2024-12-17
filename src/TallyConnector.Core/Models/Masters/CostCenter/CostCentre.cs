@@ -36,7 +36,6 @@ public class CostCentre : BaseMasterObject
     public string? EmailId { get; set; }
 
     [XmlElement(ElementName = "REVENUELEDFOROPBAL")]
-    [Column(TypeName = "nvarchar(3)")]
     public bool? ShowOpeningBal { get; set; }
 
 
