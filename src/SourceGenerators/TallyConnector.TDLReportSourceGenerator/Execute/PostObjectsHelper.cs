@@ -22,7 +22,7 @@ public class PostObjectsHelper
         string xmlRespObjectVarName = "postResults";
 
         QualifiedNameSyntax node = QualifiedName(GetGlobalNameforType($"{nameSpace}.Models"), IdentifierName(string.Format(PostRequestEnvelopeMessageName, name)));
-        QualifiedNameSyntax type = QualifiedName(GetGlobalNameforType(TallyConnectorModelsNameSpace), GenericName(TallyEnvelopeTypeName).WithTypeArgumentList(TypeArgumentList(SingletonSeparatedList((TypeSyntax)node))));
+        QualifiedNameSyntax type = QualifiedName(GetGlobalNameforType(TallyConnectorRequestModelsNameSpace), GenericName(TallyResponseEnvelopeTypeName).WithTypeArgumentList(TypeArgumentList(SingletonSeparatedList((TypeSyntax)node))));
 
         List<StatementSyntax> statements = [];
         statements.Add(CreateVarInsideMethodWithExpression(reqTypeVarName, CreateStringLiteral($"Posting Objects to Tally")));
@@ -57,9 +57,10 @@ public class PostObjectsHelper
 
         List<SwitchSectionSyntax> SwitcNnodes = [];
 
-
+        var fieldName = "";
         foreach (var member in data.Select(c => c.Value).Where(c => !c.IsChild && c.GenerationMode is GenerationMode.All or GenerationMode.Post))
         {
+            fieldName = member.ServiceFieldName;
             SwitcNnodes.Add(SwitchSection()
                 .WithLabels(SingletonList<SwitchLabelSyntax>(
                                                             CasePatternSwitchLabel(
@@ -89,11 +90,11 @@ public class PostObjectsHelper
         }
 
 
-        statements.Add(ExpressionStatement(InvocationExpression(IdentifierName(AddCustomResponseReportForPostMethodName))
-            .WithArgumentList(ArgumentList(SeparatedList<ArgumentSyntax>(new SyntaxNodeOrToken[]
-            {
-               Argument(  IdentifierName(envelopevarName)),
-            })))));
+        //statements.Add(ExpressionStatement(InvocationExpression(IdentifierName(AddCustomResponseReportForPostMethodName))
+        //    .WithArgumentList(ArgumentList(SeparatedList<ArgumentSyntax>(new SyntaxNodeOrToken[]
+        //    {
+        //       Argument(  IdentifierName(envelopevarName)),
+        //    })))));
         expressionStatements.Add(SwitchStatement(IdentifierName(objectVarName))
             .WithSections(List(SwitcNnodes)));
         statements.Add(ForEachStatement(IdentifierName(
@@ -109,7 +110,7 @@ public class PostObjectsHelper
 
         statements.Add(CreateVarInsideMethodWithExpression(xmlVarName, InvocationExpression(MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression, IdentifierName(envelopevarName), IdentifierName("GetXML")))));
 
-        statements.Add(CreateVarInsideMethodWithExpression(xmlRespVarName, AwaitExpression(InvocationExpression(IdentifierName(SendRequestMethodName))
+        statements.Add(CreateVarInsideMethodWithExpression(xmlRespVarName, AwaitExpression(InvocationExpression(MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression, IdentifierName(fieldName), IdentifierName(SendRequestMethodName)))
             .WithArgumentList(ArgumentList(SeparatedList<ArgumentSyntax>(
             new SyntaxNodeOrToken[]{
                 Argument(IdentifierName(xmlVarName)),
@@ -134,7 +135,7 @@ public class PostObjectsHelper
                                                                Argument( IdentifierName("_logger"))
                                                           })))));
 
-        statements.Add(ReturnStatement(MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression, IdentifierName(xmlRespObjectVarName),IdentifierName("Results"))));
+        statements.Add(ReturnStatement(MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression, IdentifierName(xmlRespObjectVarName), IdentifierName("Results"))));
 
 
         var unit = CompilationUnit()
@@ -179,7 +180,7 @@ public class PostObjectsHelper
     {
         List<StatementSyntax> statements = [];
         const string envelopevarName = "envp";
-        QualifiedNameSyntax type = QualifiedName(GetGlobalNameforType(TallyConnectorModelsNameSpace), GenericName(TallyEnvelopeTypeName).WithTypeArgumentList(TypeArgumentList(SingletonSeparatedList((TypeSyntax)node))));
+        QualifiedNameSyntax type = QualifiedName(GetGlobalNameforType(TallyConnectorRequestModelsNameSpace), GenericName(TallyResponseEnvelopeTypeName).WithTypeArgumentList(TypeArgumentList(SingletonSeparatedList((TypeSyntax)node))));
         statements.Add(CreateVarInsideMethodWithExpression(envelopevarName, ObjectCreationExpression(type)
             .WithArgumentList(ArgumentList(SeparatedList<ArgumentSyntax>(new SyntaxNodeOrToken[] {
                 Argument(MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression,GetGlobalNameforType(RequestTypeEnumName),IdentifierName("Import"))),

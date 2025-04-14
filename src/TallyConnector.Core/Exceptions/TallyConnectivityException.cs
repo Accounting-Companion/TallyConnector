@@ -26,8 +26,5 @@ public class TallyConnectivityException : Exception
     {
     }
 
-    protected TallyConnectivityException(SerializationInfo info, StreamingContext context) : base(info, context)
-    {
-    }
 }
 

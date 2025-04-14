@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics;
+using TallyConnector.Core.Models.Base;
 
 namespace TallyConnector.Core.Models.TallyComplexObjects;
 
@@ -18,7 +19,7 @@ public class TallyRateField : ITallyComplexObject, IBaseObject
 
     [TDLField(TallyType = "Rate : Unit Symbol")]
     [XmlElement(ElementName = "UNIT")]
-    public string Unit { get; set; }
+    public string Unit { get; set; } = null!;
 
     public string ToString(TallyAmountField amount)
     {

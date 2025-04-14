@@ -22,21 +22,37 @@ public class TDLReportSourceGenerator : IIncrementalGenerator
                 provider.GlobalOptions.TryGetValue("build_property.RootNamespace", out string? rootNamespace);
                 return new ProjectArgs() { RootNamespace = rootNamespace!, ProjectRoot = projectDirectory! };
             });
+        var data = context.SyntaxProvider
+            .ForAttributeWithMetadataName("TallyConnector.Core.Attributes.SourceGenerator.ImplementTallyService",
+                                          SyntaxPredicate,
+                                          SematicTransformAttribute)
+            .Where(static (c) => c.attr != null && c.Item2 != null)
+            .Collect()!;
+
+
         IncrementalValueProvider<ImmutableArray<INamedTypeSymbol>> syntaxProvider = context.SyntaxProvider
           .CreateSyntaxProvider(SyntaxPredicate, SematicTransform)
           .Where(static (type) => type != null).Collect()!;
-        context.RegisterSourceOutput(syntaxProvider.Combine(projectDirProvider), Execute);
+        context.RegisterSourceOutput(data.Combine(projectDirProvider), Execute);
+        // context.RegisterSourceOutput(syntaxProvider.Combine(projectDirProvider), Execute);
     }
 
+
+
+    private (AttributeData attr, INamedTypeSymbol?) SematicTransformAttribute(GeneratorAttributeSyntaxContext context, CancellationToken token)
+    {
+        var attr = context.Attributes.First();
+        return (attr, context.TargetSymbol as INamedTypeSymbol);
+    }
 
     private bool SyntaxPredicate(SyntaxNode node, CancellationToken token)
     {
         if (node == null) return false;
-        if (node is ClassDeclarationSyntax classDeclaration)
-        {
-            return classDeclaration.HasOrPotentiallyHasBaseTypes() || classDeclaration.HasOrPotentiallyHasAttributes();
-        }
-        return false;
+        //if (node is ClassDeclarationSyntax classDeclaration)
+        //{
+        //    return classDeclaration.HasOrPotentiallyHasBaseTypes() || classDeclaration.HasOrPotentiallyHasAttributes();
+        //}
+        return true;
     }
 
 
@@ -56,25 +72,32 @@ public class TDLReportSourceGenerator : IIncrementalGenerator
         if (symbol.HasFullyQualifiedMetadataName(Name) || symbol.HasInterfaceWithFullyQualifiedMetadataName(Name) || symbol.HasOrInheritsFromFullyQualifiedMetadataName(Name))
         {
             return symbol;
-        };
+        }
+        ;
         return null;
     }
 
     private void Execute(SourceProductionContext context,
-                          (ImmutableArray<INamedTypeSymbol> Left, ProjectArgs Right) tuple)
+                          (ImmutableArray<(AttributeData attr, INamedTypeSymbol)> Left, ProjectArgs Right) tuple)
     {
         try
         {
-            var (symbols, projectArgs) = tuple;
+            var (symbolsData, projectArgs) = tuple;
+
             List<Dictionary<string, GenerateSymbolsArgs>> args = [];
             HashSet<string> names = [];
-            foreach (var symbol in symbols)
+
+            foreach (var symbolData in symbolsData)
             {
+                var symbol = symbolData.Item2;
                 string fullName = symbol.OriginalDefinition.ToString();
+
+                // this is required incase the class we are dealing is defined in multiple files
                 if (names.Contains(fullName))
                 {
                     continue;
                 }
+                var fieldName = symbolData.attr.ConstructorArguments.FirstOrDefault().Value?.ToString() ?? "";
                 names.Add(fullName);
                 Dictionary<string, GenerateSymbolsArgs> generateSymbolsArgs = [];
                 ImmutableArray<AttributeData> attributeDatas = symbol.GetAttributes();
@@ -103,7 +126,7 @@ public class TDLReportSourceGenerator : IIncrementalGenerator
                         }
                         var getTypeSymbol = (INamedTypeSymbol)typeargs[0];
                         generateSymbolsArgs.Add(helperAttributeData?.MethodNameSuffix ?? getTypeSymbol.Name, new(symbol, getTypeSymbol,
-                                                            (INamedTypeSymbol)typeargs[1])
+                                                            (INamedTypeSymbol)typeargs[1], fieldName)
                         {
                             HelperAttributeData = helperAttributeData,
                             ActivitySourceName = activitySourceName
@@ -117,7 +140,6 @@ public class TDLReportSourceGenerator : IIncrementalGenerator
         }
         catch (Exception ex)
         {
-
             throw;
         }
 
@@ -165,7 +187,7 @@ public class TDLReportSourceGenerator : IIncrementalGenerator
                         break;
                     case "Args":
                         var values = namedArgument.Value.Values;
-                        helperAttributeData.Args = values.Where(c => c.Value != null).Select(c => (INamedTypeSymbol)c.Value!).ToList();
+                        helperAttributeData.Args = [.. values.Where(c => c.Value != null).Select(c => (INamedTypeSymbol)c.Value!)];
                         break;
                 }
             }
@@ -190,23 +212,25 @@ public class UniqueSymbol(string Name, INamedTypeSymbol Symbol)
 }
 public class GenerateSymbolsArgs
 {
-    
+
 
 
     public GenerateSymbolsArgs(INamedTypeSymbol parentSymbol,
                                INamedTypeSymbol getSymbol,
-                               INamedTypeSymbol requestEnvelope )
+                               INamedTypeSymbol requestEnvelope,string fieldName)
     {
         ParentSymbol = parentSymbol;
         GetSymbol = getSymbol;
         MethodName = getSymbol.Name;
         RequestEnvelope = requestEnvelope;
+        FieldName = fieldName;
     }
     public INamedTypeSymbol ParentSymbol { get; }
     public INamedTypeSymbol GetSymbol { get; }
     public string Name { get; }
     public string NameSpace { get; }
     public INamedTypeSymbol RequestEnvelope { get; }
+    public string FieldName { get; }
     public INamedTypeSymbol? PostEnvelope { get; }
     public string MethodName { get; internal set; }
     internal HelperAttributeData? HelperAttributeData { get; set; }

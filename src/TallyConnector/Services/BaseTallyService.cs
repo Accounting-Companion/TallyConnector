@@ -1,18 +1,14 @@
 ﻿using System.Diagnostics;
 using System.Globalization;
+using TallyConnector.Core;
 using TallyConnector.Core.Extensions;
-using TallyConnector.Core.Models.Common;
+using TallyConnector.Core.Models.Request;
+using TallyConnector.Core.Models.Response;
 
 namespace TallyConnector.Services;
 /// <summary>
 /// Base Tally Service
 /// </summary>
-[GenerateHelperMethod<MasterStatistics>(MethodNameSuffixPlural = nameof(MasterStatistics), GenerationMode = GenerationMode.GetMultiple, Args = [typeof(BaseRequestOptions)])]
-[GenerateHelperMethod<VoucherStatistics>(MethodNameSuffixPlural = nameof(VoucherStatistics), GenerationMode = GenerationMode.GetMultiple, Args = [typeof(DateFilterRequestOptions)])]
-[GenerateHelperMethod<Company>(MethodNameSuffixPlural = "Companies", GenerationMode = GenerationMode.GetMultiple)]
-[GenerateHelperMethod<CompanyOnDisk>(MethodNameSuffixPlural = "CompaniesinDefaultPath", GenerationMode = GenerationMode.GetMultiple)]
-
-[SetActivitySource(ActivitySource = nameof(BaseTallyServiceActivitySource))]
 public partial class BaseTallyService : IBaseTallyService
 {
     private readonly HttpClient _httpClient;
@@ -91,10 +87,10 @@ public partial class BaseTallyService : IBaseTallyService
     }
 
     /// <summary>
-    /// Intiaite Tally Service with httpclient , logger and timeoutMinutes
+    /// Intiaite Tally Service with httpclient , _logger and timeoutMinutes
     /// </summary>
     /// <param name="httpClient">http client</param>
-    /// <param name="logger">logger</param>
+    /// <param name="logger">_logger</param>
     /// <param name="timeoutMinutes">Request timeout in Minutes</param>
     public BaseTallyService(HttpClient httpClient,
                             ILogger? logger = null,
@@ -129,7 +125,7 @@ public partial class BaseTallyService : IBaseTallyService
         TallyResult tallyResult = await SendRequestAsync(Reqxml, RequestType, token);
         if (tallyResult.Status == RespStatus.Sucess && tallyResult.Response != null)
         {
-            Envelope<string>? Envelope = XMLToObject.GetObjfromXml<Envelope<string>>(tallyResult.Response, null, _logger);
+            RequestEnvelope<string>? Envelope = XMLToObject.GetObjfromXml<RequestEnvelope<string>>(tallyResult.Response, null, _logger);
             string result = Envelope?.Body?.Data?.FuncResult ?? throw new Exception($"No Active Company in Tally,Either Select any non group company in tally or Use {nameof(SetCompany)} method to set company");
             return result;
         }
@@ -181,7 +177,7 @@ public partial class BaseTallyService : IBaseTallyService
         var XMLAttributes = new XmlAttributes();
         XMLAttributes.XmlElements.Add(new(objectName.ToUpper()));
         XMLAttributeOverrides.Add(typeof(Colllection<LicenseInfo>), "Objects", XMLAttributes);
-        Envelope<LicenseInfo> envelope = XMLToObject.GetObjfromXml<Envelope<LicenseInfo>>(respXml.Response ?? throw new Exception("Error While Getting License"), XMLAttributeOverrides);
+        RequestEnvelope<LicenseInfo> envelope = XMLToObject.GetObjfromXml<RequestEnvelope<LicenseInfo>>(respXml.Response ?? throw new Exception("Error While Getting License"), XMLAttributeOverrides);
         LicenseInfo? licenseInfo = envelope.Body.Data.Collection?.Objects?.FirstOrDefault();
         if (licenseInfo != null)
         {
@@ -194,159 +190,8 @@ public partial class BaseTallyService : IBaseTallyService
         return _licenseInfo;
     }
 
-    public async Task<LastAlterIdsRoot> GetLastAlterIdsAsync(BaseRequestOptions? baseRequestOptions = null, CancellationToken token = default)
-    {
-        var reqType = "Getting Last AlterIds from Tally";
-
-        _logger.LogInformation(reqType);
-        using var activity = BaseTallyServiceActivitySource.StartActivity(reqType);
-        string reportName = "AlterIdsReport";
-        RequestEnvelope requestEnvelope = new(HType.Data, reportName);
-        TDLMessage tdlMessage = new()
-        {
-            Report = [new(reportName)],
-            Form = [new(reportName)],
-            Part = [new(reportName, "TC_CompanyCollection")],
-            Line = [new(reportName, fields: ["TC_MastersLastId", "TC_VouchersLastId"])],
-            Field =
-            [
-                new("TC_MastersLastId", "MastersLastId", "if $$IsEmpty:$ALTMSTID THEN 0 else $ALTMSTID"),
-                new("TC_VouchersLastId", "VouchersLastId", "if $$IsEmpty:$ALTVCHID THEN 0 else $ALTVCHID")
-            ],
-            Collection =
-            [
-                new(colName:"TC_CompanyCollection",colType:"Company",nativeFields:["ALTMSTID,ALTVCHID"]){Filters=["TC_CurCompFilter"] },
-            ],
-            System =
-            [
-                new("TC_CurCompFilter","$Name=##SVCURRENTCOMPANY"),
-            ]
-
-        };
-        tdlMessage.Part![0].SetAttributes();
-
-        requestEnvelope.Body.Desc.TDL.TDLMessage = tdlMessage;
-        requestEnvelope.PopulateOptions(baseRequestOptions);
-        await PopulateDefaultOptions(requestEnvelope, token);
-        string xml = requestEnvelope.GetXML();
-
-        TallyResult result = await SendRequestAsync(xml: xml, requestType: "last AlterIds Report", token: token);
-        if (result.Status == RespStatus.Sucess)
-        {
-            LastAlterIdsRoot? lastMasterIdsRoot = XMLToObject.GetObjfromXml<LastAlterIdsRoot>(result.Response!);
-            _logger?.LogInformation("Received Last AlterIds from Tally");
-            return lastMasterIdsRoot;
-        }
-        else
-        {
-            throw new Exception("Error hile getting Last AlterIds");
-        }
-
-    }
-
-
-    public async Task<List<AutoColVoucherTypeStat>> GetVoucherStatisticsAsync(AutoColumnReportPeriodRequestOptions requestOptions, CancellationToken token = default)
-    {
-        using var activity = BaseTallyServiceActivitySource.StartActivity();
-        StaticVariables sv = new()
-        {
-            SVCompany = requestOptions?.Company,
-            SVExportFormat = "XML",
-            SVFromDate = requestOptions?.FromDate,
-            SVToDate = requestOptions?.ToDate
-        };
-        const string reportName = "TC_AutoColumnStats";
-        RequestEnvelope requestEnvelope = new(HType.Data, reportName, sv);
-        TDLMessage tDLMessage = requestEnvelope.Body.Desc.TDL.TDLMessage;
-        string periodicity = GetPeriodictyString(requestOptions);
-
-        Report report = new(reportName)
-        {
-            Repeat = [" SVFromDate, SVToDate"],
-            Variable = ["DoSetAutoColumn,SVPeriodicity"],
-            Set =
-            [
-                "DoSetAutoColumn:No",
-                $"SVPeriodicity:\"{periodicity}\"",
-                "DSPRepeatCollection:\"Period Collection\""
-            ]
-        };
-        tDLMessage.Report = [report];
-        Form form = new(reportName)
-        {
-            Option = ["TC_SETAUTOOPTION:$$SetAutoColumns:SVFromDATE,SVTODATE"]
-        };
-        tDLMessage.Form = [form, new("TC_SETAUTOOPTION") { IsOption = YesNo.Yes, PartName = string.Empty }];
-        const string CollectionName = "TC_VchTypeCollection";
-        Part part = new(reportName, CollectionName);
-        tDLMessage.Part = [part];
-        const string nameFieldName = "TC_VchTypeName";
-        const string totalCountFieldName = "TC_VchTypeTotalCount";
-        const string periodCountRootFieldName = "TC_VchTypePeriodStat";
-        const string fromDateFieldName = "TC_VchTypeFromDate";
-        const string toDateFieldName = "TC_VchTypeToDate";
-        const string cancelledCountFieldName = "TC_VchTypeCancCount";
-        const string optionalCountFieldName = "TC_VchTypeOptCount";
-        const string totalPeriodCountFieldName = "TC_VchTypeTotalPeriodCount";
-        List<string> rootFields = [nameFieldName, totalCountFieldName];
-        const string line2Name = $"{reportName}Repeat";
-        Line line = new(reportName, rootFields, "VchTypeStat") { Option = [$"{line2Name}:$MigVal>0"] };
-        Line line2 = new(line2Name, [periodCountRootFieldName]) { Name = line2Name, Repeat = [periodCountRootFieldName], IsOption = YesNo.Yes };
-        tDLMessage.Line = [line, line2];
-        tDLMessage.Field =
-        [
-            new(nameFieldName,"Name","$Name"),
-            new(totalCountFieldName,"TotalCount","($$DirectTotalVch:$Name)+($$DirectOptionalVch:$Name)+($$DirectCancVch:$Name)"),
-            new(periodCountRootFieldName,"PeriodStat",null){Fields=[fromDateFieldName,toDateFieldName,cancelledCountFieldName,optionalCountFieldName,totalPeriodCountFieldName] },
-            new(fromDateFieldName,"FromDate","$$TC_TransformDateToXSD:##SVFromDate"){Invisible="$$ISEmpty:$$value"},
-            new(toDateFieldName,"ToDate","$$TC_TransformDateToXSD:##SVToDate"){Use="$$ISEmpty:$$value"},
-            new(totalPeriodCountFieldName,"TotalCount","$TotalPeriodCount"),
-            new(optionalCountFieldName,"OtionalCount","$OptionalCount"),
-            new(cancelledCountFieldName,"CancelledCount","$CancelledCount")
-        ];
-        tDLMessage.Collection =
-        [
-            new(colName:CollectionName,colType: "VoucherTypes")
-            {
-                Compute =
-                [
-                    "CancelledCount : $$DirectCancVch:$Name",
-                    "OptionalCount :  $$DirectOptionalVch:$Name",
-                    "TotalPeriodCount : ($$DirectTotalVch:$Name) + $OptionalCount + $CancelledCount",
-                ]
-            }
-        ];
-        tDLMessage.Functions = GetDefaultTDLFunctions();
-        await PopulateDefaultOptions(requestEnvelope, token);
-        string requestXml = requestEnvelope.GetXML();
-        string RequestType = $"VchType Auto Column Stats({periodicity}) of company - {sv.SVCompany} ({sv.SVFromDate} to {sv.SVToDate})";
-        if (activity != null)
-        {
-            activity.DisplayName = RequestType;
-        }
-        TallyResult tallyResult = await SendRequestAsync(requestXml, RequestType, token);
-        if (tallyResult.Status == RespStatus.Sucess)
-        {
-            var k = XMLToObject.GetObjfromXml<AutoVoucherStatisticsEnvelope>(tallyResult.Response!);
-            return k.VoucherTypeStats ?? [];
-        }
-        else throw new Exception(tallyResult.Response);
-    }
-    private static string GetPeriodictyString(AutoColumnReportPeriodRequestOptions? requestOptions)
-    {
-        return requestOptions?.Periodicity switch
-        {
-            PeriodicityType.Month => Constants.Periodicty.Month,
-            PeriodicityType.Day => Constants.Periodicty.Day,
-            PeriodicityType.Week => Constants.Periodicty.Week,
-            PeriodicityType.Fortnight => Constants.Periodicty.Fortnight,
-            PeriodicityType.ThreeMonth => Constants.Periodicty.ThreeMonth,
-            PeriodicityType.SixMonth => Constants.Periodicty.SixMonth,
-            PeriodicityType.Year => Constants.Periodicty.Year,
-            null => Constants.Periodicty.Month,
-            _ => throw new NotImplementedException()
-        };
-    }
+   
+    
     /// <inheritdoc/>
     public void Setup(string url,
                       int port)
@@ -375,11 +220,11 @@ public partial class BaseTallyService : IBaseTallyService
         HttpRequestMessage requestMessage = new(HttpMethod.Post, FullURL);
 
         //Check whether xml is null or empty
-        if (xml != null )
+        if (xml != null)
         {
             LogRequestXML(xml);
         }
-        if(requestType != null)
+        if (requestType != null)
         {
             LogRequestType(requestType);
         }
@@ -585,7 +430,7 @@ public partial class BaseTallyService : IBaseTallyService
         return null;
     }
     /// <summary>
-    /// Default functions used in Request Envelope XML
+    /// Default functions used in Request RequestEnvelope XML
     /// </summary>
     /// <returns></returns>
     public static List<TDLFunction> GetDefaultTDLFunctions()
@@ -652,7 +497,7 @@ public partial class BaseTallyService : IBaseTallyService
     [System.Text.RegularExpressions.GeneratedRegex(@"(?<=&#x)(.*?)(?=;)")]
     private static partial System.Text.RegularExpressions.Regex GetXmlTextHexRegex();
 #endif
-    protected async Task PopulateDefaultOptions(RequestEnvelope requestEnvelope, CancellationToken token = default)
+    public async Task PopulateDefaultOptions(RequestEnvelope requestEnvelope, CancellationToken token = default)
     {
         using var activity = BaseTallyServiceActivitySource.StartActivity();
         var staticVariables = requestEnvelope.Body.Desc.StaticVariables ??= new();
@@ -677,7 +522,7 @@ public partial class BaseTallyService : IBaseTallyService
     }
 
 
-    public static void AddCustomResponseReportForPost<T>(TallyEnvelope<T> requestEnvelope) where T : class
+    public static void AddCustomResponseReportForPost<T>(PostRequestEnvelope<T> requestEnvelope) where T : class
     {
         var tDLMessage = requestEnvelope.Body.Desc.TDL.TDLMessage;
 
@@ -739,7 +584,8 @@ public partial class BaseTallyService : IBaseTallyService
         ];
         int ifcounter = 1;
         int actionCOunter = 2;
-        var mastersObjectActions = new string[] { "Group", "Ledger", "CostCategory" }.SelectMany(c =>
+        string[] objectTypes = ["Group", "Ledger", "CostCategory"];
+        var mastersObjectActions = objectTypes.SelectMany(c =>
         {
             List<string> actions = [$"TC_IF{ifcounter:00} : IF : ##TC_ObjecType=\"{c}\""];
             ifcounter++;

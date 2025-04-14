@@ -11,7 +11,7 @@ public class BaseMethodNameAttribute : Attribute
         FunctionName = functionName;
     }
 
-    public string FunctionName { get; set; }
+    public string FunctionName { get; set; } = null!;
 
 }
 

@@ -20,8 +20,5 @@ public class ObjectDoesNotExist : Exception
     {
     }
 
-    protected ObjectDoesNotExist(SerializationInfo info, StreamingContext context) : base(info, context)
-    {
-    }
 }
 

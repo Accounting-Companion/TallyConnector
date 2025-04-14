@@ -7,7 +7,7 @@ public static class GetTallyProcessesHelper
     public static List<TallyProcessInfo> GetTallyProcesses()
     {
         Process[] processes = Process.GetProcessesByName("tally");
-        List<TallyProcessInfo> processInfos = new();
+        List<TallyProcessInfo> processInfos = [];
         foreach (Process process in processes)
         {
             TallyProcessInfo item = new (process);

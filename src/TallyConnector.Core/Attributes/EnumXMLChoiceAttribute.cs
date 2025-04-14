@@ -11,9 +11,9 @@ public class EnumXMLChoiceAttribute : Attribute
         Choice = choice;
     }
 
-    public string Choice { get; set; }
-    public string[] Versions { get; set; }
-    public string[] Terminology { get; set; }
+    public string Choice { get; set; } = null!;
+    public string[] Versions { get; set; } = [];
+    public string[] Terminology { get; set; } = [];
 }
 
 

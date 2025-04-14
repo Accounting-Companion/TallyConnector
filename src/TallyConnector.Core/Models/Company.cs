@@ -1,4 +1,7 @@
-﻿namespace TallyConnector.Core.Models;
+﻿using TallyConnector.Core.Models.Base;
+using TallyConnector.Core.Models.Request;
+
+namespace TallyConnector.Core.Models;
 /// <summary>
 /// Base Model for Company
 /// </summary>
@@ -25,7 +28,7 @@ public class BaseCompany : IBaseObject
 
     [XmlElement(ElementName = "CLEANEDCOMPANYNUMBER")]
     [TDLField(Set = $"$${CleanCompanyNumberFunctionName}")]
-    public string CompNum { get; set; }
+    public string CompNum { get; set; } = null!;
 
     [XmlElement(ElementName = "ISAGGREGATE")]
     public bool IsGroupCompany { get; set; }

@@ -1,4 +1,5 @@
-﻿using System.Collections.Immutable;
+﻿using Microsoft.CodeAnalysis;
+using System.Collections.Immutable;
 using System.Xml.Linq;
 using TallyConnector.TDLReportSourceGenerator;
 using TallyConnector.TDLReportSourceGenerator.Extensions.Symbols;
@@ -33,6 +34,7 @@ internal class GenerateTDLReportsCommand
                 var symbolData = new SymbolData(value.ParentSymbol, symbol, methodName, reqEnvelope) { ActivitySourceName = value.ActivitySourceName };
                 symbolData.MethodNameSuffixPlural = value.HelperAttributeData?.MethodNameSuffixPlural ?? $"{methodName}s";
                 symbolData.Args = value.HelperAttributeData?.Args ?? [];
+                symbolData.ServiceFieldName = value.FieldName;
                 symbolData.GenerationMode = value.HelperAttributeData?.GenerationMode switch
                 {
                     1 => GenerationMode.Get,
@@ -60,6 +62,10 @@ internal class GenerateTDLReportsCommand
                     {
                         string source = helper.GetTDLReportCompilationUnit();
                         context.AddSource($"{symbol.Key}.{symbol.Value.MainSymbol.Name}.TDLReport.g.cs", source);
+                        foreach (var diagnostic in helper.Diagnostics)
+                        {
+                            context.ReportDiagnostic(diagnostic);
+                        }
                     }
                     if (value.GenerationMode is GenerationMode.All or GenerationMode.Post)
                     {
@@ -109,6 +115,7 @@ internal class GenerateTDLReportsCommand
     void ProcessGetSymbol(SymbolData symbolData, Dictionary<string, SymbolData> _data, HashSet<string>? complexChildNames = null)
     {
         ParseClassAttributes(symbolData);
+
         IEnumerable<ISymbol> childSymbols = symbolData.Symbol.GetMembers();
         INamedTypeSymbol? baseType = symbolData.Symbol.BaseType;
         var ComplexChildNames = complexChildNames ?? [];
@@ -122,11 +129,13 @@ internal class GenerateTDLReportsCommand
                 ComplexChildNames.Add(Basevalue.FullName);
                 if (!_data.ContainsKey(Basevalue.FullName))
                 {
-                    SymbolData value = new(symbolData.MainSymbol, baseType, $"{symbolData.TypeName}Base{baseType.Name}", symbolData.ReqEnvelopeSymbol, true, symbolData) { ActivitySourceName = symbolData.ActivitySourceName };
-
-                    value.GenerationMode = symbolData.GenerationMode;
-                    value.IsBaseSymbol = true;
-                    value.IsParentChild = symbolData.IsParentChild;
+                    SymbolData value = new(symbolData.MainSymbol, baseType, $"{symbolData.TypeName}Base{baseType.Name}", symbolData.ReqEnvelopeSymbol, true, symbolData)
+                    {
+                        ActivitySourceName = symbolData.ActivitySourceName,
+                        GenerationMode = symbolData.GenerationMode,
+                        IsBaseSymbol = true,
+                        IsParentChild = symbolData.IsParentChild
+                    };
                     _data.Add(value.FullName, value);
                     ProcessGetSymbol(value, _data, ComplexChildNames);
                     foreach (var item in value.TDLFunctionMethods)
@@ -189,7 +198,8 @@ internal class GenerateTDLReportsCommand
                 if (childData.Attributes.Any(c => c.HasFullyQualifiedMetadataName(XmlIgnoreAttributeName)))
                 {
                     continue;
-                };
+                }
+                ;
 
                 symbolData.Children.Add(childData.Name, childData);
                 if (childData.IsComplex || childData.IsEnum)
@@ -545,7 +555,7 @@ internal class GenerateTDLReportsCommand
                         choice = (string)namedArgument.Value.Value!;
                         break;
                     case "Versions":
-                        versions = namedArgument.Value.Values.Select(c => (string)c.Value!).ToArray();
+                        versions = [.. namedArgument.Value.Values.Select(c => (string)c.Value!)];
                         break;
                 }
             }
@@ -560,52 +570,50 @@ internal class GenerateTDLReportsCommand
         foreach (AttributeData attributeDataAttribute in symbolData.Attributes)
         {
             string attrName = attributeDataAttribute.GetAttrubuteMetaName();
-            if (attrName == XmlRootAttributeName)
+            switch (attrName)
             {
-                xmlData = ParseRootXMLData(attributeDataAttribute);
-            }
-            if (attrName == MaptoDTOAttributeName)
-            {
-                symbolData.MapToData = ParseMapToData(attributeDataAttribute);
-            }
-            if (attrName == TDLCollectionAttributeName)
-            {
-                symbolData.TDLCollectionDetails = ParseTDLCollectionData(attributeDataAttribute);
-            }
-            if (attrName == TDLFunctionsMethodNameAttributeName)
-            {
-                addFunction(symbolData,
-                            attributeDataAttribute,
-                            symbolData.TDLFunctionMethods,
-                            symbolData.ParentSymbol?.TDLFunctionMethods);
-
-            }
-            if (attrName == TDLNamesetMethodNameAttributeName)
-            {
-                addFunction(symbolData,
+                case XmlRootAttributeName:
+                    xmlData = ParseRootXMLData(attributeDataAttribute);
+                    break;
+                case MaptoDTOAttributeName:
+                    symbolData.MapToData = ParseMapToData(attributeDataAttribute);
+                    break;
+                case TDLCollectionAttributeName:
+                    symbolData.TDLCollectionDetails = ParseTDLCollectionData(attributeDataAttribute);
+                    break;
+                case TDLFunctionsMethodNameAttributeName:
+                    addToFunctionList(symbolData,
+                        attributeDataAttribute,
+                        symbolData.TDLFunctionMethods,
+                        symbolData.ParentSymbol?.TDLFunctionMethods);
+                    break;
+                case TDLNamesetMethodNameAttributeName:
+                    addToFunctionList(symbolData,
                             attributeDataAttribute,
                             symbolData.TDLNameSetMethods,
                             symbolData.ParentSymbol?.TDLNameSetMethods);
-            }
-            if (attrName == TDLObjectsMethodNameAttributeName)
-            {
-                addFunction(symbolData,
+                    break;
+                case TDLObjectsMethodNameAttributeName:
+                    addToFunctionList(symbolData,
                             attributeDataAttribute,
                             symbolData.TDLGetObjectMethods,
                             symbolData.ParentSymbol?.TDLGetObjectMethods);
-            }
-            if (attrName == TDLDefaultFiltersMethodNameAttributeName)
-            {
-                addFunction(symbolData,
+                    break;
+                case TDLDefaultFiltersMethodNameAttributeName:
+                    addToFunctionList(symbolData,
                             attributeDataAttribute,
                             symbolData.DefaultFilterMethods,
                             symbolData.ParentSymbol?.DefaultFilterMethods);
+                    break;
 
+                default:
+                    continue;
             }
         }
+        
         symbolData.RootXmlTag = xmlData?.XmlTag ?? symbolData.Name.ToUpper();
 
-        void addFunction(SymbolData symbolData,
+        void addToFunctionList(SymbolData symbolData,
                          AttributeData attributeDataAttribute,
                          FunctionDetails tDLFunctionMethods,
                          FunctionDetails? parentTDLFunctionMethods = null)
@@ -828,13 +836,15 @@ internal class GenerateTDLReportsCommand
         XMLData? xMLData = null;
         if (attributeDataAttribute.ConstructorArguments != null && attributeDataAttribute.ConstructorArguments.Length > 0)
         {
+            xMLData ??= new();
             var constructorArguments = attributeDataAttribute.ConstructorArguments;
             for (int i = 0; i < constructorArguments.Length; i++)
             {
                 switch (i)
                 {
                     case 0:
-
+                        xMLData.XmlTag = (string)constructorArguments[i].Value!;
+                        break;
                     default:
                         break;
                 }

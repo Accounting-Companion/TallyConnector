@@ -1,10 +1,12 @@
-﻿namespace TallyConnector.Core.Models.TallyComplexObjects;
+﻿using TallyConnector.Core.Models.Base;
+
+namespace TallyConnector.Core.Models.TallyComplexObjects;
 [TDLCollection(ExplodeCondition = "NOT $$IsEmpty:{0}")]
 public class TallyQuantityField : ITallyComplexObject, IBaseObject
 {
     [TDLField(TallyType = "Quantity : UnitSymbol")]
     [XmlElement(ElementName = "UNIT")]
-    public string Unit { get; set; }
+    public string Unit { get; set; } = null!;
 
     [TDLField(TallyType = "Number", Format = "TailUnits")]
     [XmlElement(ElementName = "QUANTITY")]

@@ -1,13 +1,9 @@
-﻿using TallyConnector.Core.Models;
+﻿using TallyConnector.Core.Models.Base;
+using TallyConnector.Core.Models.Common;
+using TallyConnector.Core.Models.Request;
 
 namespace TallyConnector.Core.Attributes;
-[AttributeUsage(AttributeTargets.Class, AllowMultiple = true)]
-public class GenerateHelperMethodsAttribute<T> : Attribute where T : Models.BasicTallyObject
-{
-    public string? PluralName { get; set; }
-    public string? TypeName { get; set; }
-    public string? MethodName { get; set; }
-}
+
 
 [AttributeUsage(AttributeTargets.Class, AllowMultiple = true, Inherited = false)]
 public class GenerateHelperMethodAttribute<GetObjectType> : GenerateHelperMethodAttribute<GetObjectType, RequestEnvelope>

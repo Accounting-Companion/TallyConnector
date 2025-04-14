@@ -1,4 +1,5 @@
 ﻿using System.Globalization;
+using TallyConnector.Core.Models.Base;
 
 namespace TallyConnector.Core.Models.TallyComplexObjects;
 [TDLCollection(ExplodeCondition = "NOT $$IsEmpty:{0}")]
@@ -9,13 +10,13 @@ public class DueDate : ITallyComplexObject, IBaseObject
     [XmlElement(ElementName = "DUEONDATE")]
     public DateTime DueOnDate { get; set; }
 
-    [TDLField(Set = "$$ExtractNumbers:$$DueDateInDays:{0}",Invisible ="$$ISEMPTY:$$Value")]
+    [TDLField(Set = "$$ExtractNumbers:$$DueDateInDays:{0}", Invisible = "$$ISEMPTY:$$Value")]
     [XmlElement(ElementName = "INDAYS")]
     public int InDays { get; set; }
 
     [TDLField(Set = "{0}")]
     [XmlElement(ElementName = "INTEXT")]
-    public string InText { get; set; }
+    public string InText { get; set; } = null!;
 
     public override string ToString()
     {
@@ -29,19 +30,19 @@ public class DueDate : ITallyComplexObject, IBaseObject
         {
             return $"{duedate} ({InText})";
         }
-        
+
     }
 }
 public class DueDateDTO
 {
     [XmlAttribute("JD")]
-    public string JD { get; set; }
+    public string JD { get; set; } = null!;
     [XmlAttribute("P")]
-    public string P { get; set; }
+    public string P { get; set; } = null!;
     [XmlText]
-    public string Value { get; set; }
+    public string Value { get; set; } = null!;
 
-    public static implicit operator DueDateDTO(DueDate dueDate)
+    public static implicit operator DueDateDTO?(DueDate? dueDate)
     {
         if (dueDate == null)
         {

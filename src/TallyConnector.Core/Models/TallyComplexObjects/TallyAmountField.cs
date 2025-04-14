@@ -1,5 +1,6 @@
 ﻿using System.Diagnostics;
 using System.Globalization;
+using TallyConnector.Core.Models.Base;
 namespace TallyConnector.Core.Models.TallyComplexObjects;
 
 [TDLCollection(ExplodeCondition = "NOT $$IsEmpty:{0}")]
@@ -24,7 +25,7 @@ public class TallyAmountField : ITallyComplexObject, IBaseObject
 
     [TDLField(Set = "$CurrencyName:Company:##SVCurrentCompany")]
     [XmlElement(ElementName = "CURRENCY")]
-    public string Currency { get; set; }
+    public string? Currency { get; set; }
 
     [TDLField(TallyType = "Number", Set = "$$ForexValue:{0}", Invisible = $"$$Value=#TC_{nameof(TallyAmountField)}_{nameof(Amount)}")]
     [Column(TypeName = "decimal(20,4)")]

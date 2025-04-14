@@ -29,7 +29,7 @@ internal class Helper
     private readonly bool _isTallyObject;
     private readonly bool _hasActivitySource;
     private readonly bool _hasDefaultFilters;
-
+    public List<Diagnostic> Diagnostics { get; set; } = [];
     public Helper(SymbolData symbol)
     {
         _symbol = symbol;
@@ -39,8 +39,8 @@ internal class Helper
         _paginatedCollectionVariableName = $"{_collectionVariableName}Paginated";
         CollectionName = _symbol.IsChild ? _symbol.Name : $"TC_{_symbol.Name}Collection";
         _paginatedCollectionName = _symbol.IsChild ? _symbol.Name : $"{CollectionName}_Paginated";
-        _complexChildren = symbol.Children.Values.Where(c => c.IsComplex || c.IsList).ToList();
-        _simpleChildren = symbol.Children.Values.Where(c => !c.IsComplex).ToList();
+        _complexChildren = [.. symbol.Children.Values.Where(c => c.IsComplex || c.IsList)];
+        _simpleChildren = [.. symbol.Children.Values.Where(c => !c.IsComplex)];
         _includeCollection = !(_symbol.TDLCollectionDetails?.Exclude ?? false);
         _isMasterObject = _symbol.Symbol.HasInterfaceWithFullyQualifiedMetadataName(MasterObjectInterfaceName);
         _isVoucherObject = _symbol.Symbol.HasInterfaceWithFullyQualifiedMetadataName(VoucherObjectInterfaceName);
@@ -80,6 +80,9 @@ internal class Helper
 
     public string GetTDLReportCompilationUnit()
     {
+        Diagnostics = [];
+
+
         var unit = CompilationUnit()
             .WithUsings(List([UsingDirective(IdentifierName(ExtensionsNameSpace))]))
             .WithMembers(List(new MemberDeclarationSyntax[]
@@ -196,7 +199,7 @@ internal class Helper
         return members;
     }
 
-    
+
     private MemberDeclarationSyntax GenerateGetObjectsPaginatedMethodSyntax()
     {
         string reqEnvelopeVarName = "reqEnvelope";
@@ -229,7 +232,7 @@ internal class Helper
                 {
                     Argument(IdentifierName(_reqOptionsArgName))
                 })))));
-        statements.Add(ExpressionStatement(AwaitExpression(InvocationExpression(IdentifierName(PopulateDefaultOptionsMethodName))
+        statements.Add(ExpressionStatement(AwaitExpression(InvocationExpression(MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression, IdentifierName(_symbol.ServiceFieldName), IdentifierName(PopulateDefaultOptionsMethodName)))
             .WithArgumentList(ArgumentList(SeparatedList<ArgumentSyntax>(new SyntaxNodeOrToken[]
             {
                 Argument(IdentifierName(reqEnvelopeVarName)),
@@ -239,7 +242,7 @@ internal class Helper
         statements.Add(CreateVarInsideMethodWithExpression(xmlVarName,
                                                            InvocationExpression(MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression,
                                                            IdentifierName(reqEnvelopeVarName), IdentifierName("GetXML")))));
-        statements.Add(CreateVarInsideMethodWithExpression(xmlRespVarName, AwaitExpression(InvocationExpression(IdentifierName(SendRequestMethodName))
+        statements.Add(CreateVarInsideMethodWithExpression(xmlRespVarName, AwaitExpression(InvocationExpression(MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression, IdentifierName(_symbol.ServiceFieldName), IdentifierName(SendRequestMethodName)))
             .WithArgumentList(ArgumentList(SeparatedList<ArgumentSyntax>(
             new SyntaxNodeOrToken[]{
                 Argument(IdentifierName(xmlVarName)),
@@ -353,7 +356,9 @@ internal class Helper
         }
         if (!(_symbol.Symbol.HasOrInheritsFromFullyQualifiedMetadataName(BaseCompanyTypeName) || _symbol.Symbol.HasFullyQualifiedMetadataName(BaseCompanyTypeName)))
         {
-            statements.Add(ExpressionStatement(AwaitExpression(InvocationExpression(IdentifierName(PopulateDefaultOptionsMethodName))
+            statements.Add(ExpressionStatement(AwaitExpression(InvocationExpression(MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression,
+                                                                                                           IdentifierName(_symbol.ServiceFieldName),
+                                                                                                           IdentifierName(PopulateDefaultOptionsMethodName)))
             .WithArgumentList(ArgumentList(SeparatedList<ArgumentSyntax>(new SyntaxNodeOrToken[]
             {
                 Argument(IdentifierName(reqEnvelopeVarName)),
@@ -365,7 +370,7 @@ internal class Helper
         statements.Add(CreateVarInsideMethodWithExpression(xmlVarName,
                                                            InvocationExpression(MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression,
                                                            IdentifierName(reqEnvelopeVarName), IdentifierName("GetXML")))));
-        statements.Add(CreateVarInsideMethodWithExpression(xmlRespVarName, AwaitExpression(InvocationExpression(IdentifierName(SendRequestMethodName))
+        statements.Add(CreateVarInsideMethodWithExpression(xmlRespVarName, AwaitExpression(InvocationExpression(MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression, IdentifierName(_symbol.ServiceFieldName), IdentifierName(SendRequestMethodName)))
             .WithArgumentList(ArgumentList(SeparatedList<ArgumentSyntax>(
             new SyntaxNodeOrToken[]{
                 Argument(IdentifierName(xmlVarName)),
@@ -412,7 +417,7 @@ internal class Helper
         List<StatementSyntax> statements = [];
 
         QualifiedNameSyntax node = QualifiedName(GetGlobalNameforType($"{_symbol.MainNameSpace}.Models"), IdentifierName(string.Format(PostRequestEnvelopeMessageName, _symbol.MainSymbol.Name)));
-        statements.Add(CreateVarInsideMethodWithExpression(envelopeVariableName, ObjectCreationExpression(QualifiedName(GetGlobalNameforType(TallyConnectorModelsNameSpace), GenericName(TallyEnvelopeTypeName).WithTypeArgumentList(TypeArgumentList(SingletonSeparatedList((TypeSyntax)node)))))
+        statements.Add(CreateVarInsideMethodWithExpression(envelopeVariableName, ObjectCreationExpression(QualifiedName(GetGlobalNameforType(TallyConnectorRequestModelsNameSpace), GenericName(TallyResponseEnvelopeTypeName).WithTypeArgumentList(TypeArgumentList(SingletonSeparatedList((TypeSyntax)node)))))
             .WithArgumentList(ArgumentList(SeparatedList<ArgumentSyntax>(new SyntaxNodeOrToken[] { })))));
 
         statements.Add(CreateVarInsideMethodWithExpression(reqMsgVariableName,
@@ -535,7 +540,7 @@ internal class Helper
         }
 
         List<ExpressionSyntax> functionMethodNames = [InvocationExpression(MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression,
-                                                           GetGlobalNameforType(_symbol.MainFullName), IdentifierName(GetDefaultTDLFunctionsMethodName)))];
+                                                           GetGlobalNameforType(BaseClassName), IdentifierName(GetDefaultTDLFunctionsMethodName)))];
         GetMethodNames(_symbol, c => c.TDLFunctionMethods, functionMethodNames);
         //foreach (var child in _simpleChildren)
         //{
@@ -1397,7 +1402,15 @@ internal class Helper
             [
               SpreadElement(  InvocationExpression(IdentifierName(string.Format(GetFetchListMethodName,_symbol.TypeName))).WithArgumentList(ArgumentList()))
             ];
-
+        if (_symbol.TDLCollectionDetails?.Type == null)
+        {
+            Diagnostics.Add(Diagnostic.Create(new(id: "TC_0001",
+                               title: "Collection Type Not defined",
+                               messageFormat: "Collection Type not defined for {0},{1}",
+                               category: "CodeGenerator",
+                               DiagnosticSeverity.Warning,
+                               isEnabledByDefault: true), _symbol.Symbol.Locations.FirstOrDefault(), _symbol.Name, _symbol.Symbol.Locations.FirstOrDefault()));
+        }
 
         statements.Add(GetArrayAssignmentExppressionImplicit(CollectionsVariableName, 0,
             [
@@ -1438,7 +1451,8 @@ internal class Helper
                     exp = exp.WithArgumentList(ArgumentList(SeparatedList<ArgumentSyntax>(new SyntaxNodeOrToken[] { Argument(IdentifierName("prefix")) })));
                 }
                 SafeAdd(nodesAndTokens, SpreadElement(exp));
-            };
+            }
+            ;
             var children = symbol.Children.Values.Where(c => !c.IsComplex || (c.SymbolData?.IsTallyComplexObject ?? false))
                 .Where(child => !(child.TDLFieldDetails?.ExcludeInFetch ?? false))
                 .Select(child => child.TDLFieldDetails?.FetchText ?? child.TDLFieldDetails?.Set)
@@ -2055,7 +2069,8 @@ internal class Helper
                         new AttributeListSyntax[]{
                             AttributeList(
                                 SeparatedList<AttributeSyntax>(attributes)) }));
-                };
+                }
+                ;
                 members.Add(propertyDeclarationSyntax);
             }
 
@@ -2211,7 +2226,7 @@ internal class Helper
                         {
                             SafeAdd(args, IdentifierName(LicenseInfoPropertyName));
                         }
-                        right = InvocationExpression(MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression, GetGlobalNameforType(_symbol.MainFullName), IdentifierName(GetTallyStringMethodName)))
+                        right = InvocationExpression(MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression, GetGlobalNameforType(BaseClassName), IdentifierName(GetTallyStringMethodName)))
                             .WithArgumentList(ArgumentList(SeparatedList<ArgumentSyntax>(args)));
                     }
                     statements.Add(ExpressionStatement(AssignmentExpression(SyntaxKind.SimpleAssignmentExpression,

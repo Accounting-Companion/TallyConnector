@@ -10,31 +10,34 @@ public class GetMethodTests
 #nullable enable
 using System.Xml.Serialization;
 namespace TallyConnector.Services;
-[TallyConnector.Core.Attributes.GenerateHelperMethod<Group>(GenerationMode=TallyConnector.Core.Models.GenerationMode.GetMultiple)]
-public partial class TallyService : BaseTallyService
+[TallyConnector.Core.Attributes.GenerateHelperMethod<Group>(GenerationMode=TallyConnector.Core.Models.Common.GenerationMode.GetMultiple)]
+[TallyConnector.Core.Attributes.SourceGenerator.ImplementTallyService]
+public partial class TallyService
 {
 }
 [XmlRoot(ElementName = ""GROUP"")]
-public partial class Group : TallyConnector.Core.Models.IBaseObject
+public partial class Group : TallyConnector.Core.Models.BaseMasterObject
 {
     [XmlElement(ElementName = ""PARENT"")]
     public string? Parent { get; set; }
 
-    [XmlElement(ElementName = ""NAME"")]
-    public string? Name { get; set; }
 
 }";
+
         string grpTDLReport = @"using TallyConnector.Core.Extensions;
 
 #nullable enable
 namespace TallyConnector.Services;
+/*
+ * Generated based on TallyConnector.Services.Group
+ */
 partial class TallyService
 {
     internal const string GroupParentTDLFieldName = ""TC_Group_Parent"";
     internal const string GroupNameTDLFieldName = ""TC_Group_Name"";
     internal const string GroupReportName = ""TC_GroupList"";
-    const string Group_collectionName = ""TC_GroupCollection"";
-    const string Group_collectionNamePaginated = ""TC_GroupCollection_Paginated"";
+    const string GroupCollectionName = ""TC_GroupCollection"";
+    const string GroupCollectionNamePaginated = ""TC_GroupCollection_Paginated"";
     public async global::System.Threading.Tasks.Task<global::System.Collections.Generic.List<global::TallyConnector.Services.Group>> GetGroupsAsync(global::System.Threading.CancellationToken token = default)
     {
         var reqType = ""Getting Groups"";
@@ -69,7 +72,7 @@ partial class TallyService
 
     internal static global::TallyConnector.Core.Models.Part GetGroupMainTDLPart()
     {
-        return new(GroupReportName, Group_collectionName);
+        return new(GroupReportName, GroupCollectionName);
     }
 
     internal static global::TallyConnector.Core.Models.Part[] GetGroupTDLParts()
@@ -89,15 +92,21 @@ partial class TallyService
     internal static global::TallyConnector.Core.Models.Field[] GetGroupTDLFields()
     {
         var fields = new global::TallyConnector.Core.Models.Field[2];
-        fields[0] = new(GroupParentTDLFieldName, ""PARENT"", ""$PARENT"");
-        fields[1] = new(GroupNameTDLFieldName, ""NAME"", ""$NAME"");
+        fields[0] = new(GroupParentTDLFieldName, ""PARENT"", ""$PARENT"")
+        {
+            Invisible = ""$$ISEmpty:$$value""
+        };
+        fields[1] = new(GroupNameTDLFieldName, ""NAME"", ""$NAME"")
+        {
+            Invisible = ""$$ISEmpty:$$value""
+        };
         return fields;
     }
 
     internal static global::TallyConnector.Core.Models.Collection[] GetGroupTDLCollections()
     {
         var collections = new global::TallyConnector.Core.Models.Collection[1];
-        collections[0] = new(Group_collectionName, ""GROUP"", nativeFields: [..GetGroupFetchList()]);
+        collections[0] = new(GroupCollectionName, ""GROUP"", nativeFields: [..GetGroupFetchList()]);
         return collections;
     }
 
@@ -119,7 +128,9 @@ public class TallyServiceReportResponseEnvelopeForGroup
     [System.Xml.Serialization.XmlElementAttribute(ElementName = ""TC_TOTALCOUNT"")]
     public int? TotalCount { get; set; }
 }";
-        await VerifyTDLReportSG.VerifyGeneratorAsync(src, [
+        await VerifyTDLReportSG.VerifyGeneratorAsync(src,
+            [DiagnosticResult.CompilerWarning("TC_NoCollectionTypeDefined")],
+            [
             ("TallyConnector.Services.Group.TallyService.TDLReport.g.cs", grpTDLReport),
             ("TallyConnector.Services.TallyService.ReportResponseEnvelope.g.cs",reportResponseEnv)
         ]);

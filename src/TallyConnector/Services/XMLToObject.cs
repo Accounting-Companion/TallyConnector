@@ -7,7 +7,7 @@ public static class XMLToObject
 {
     public static Regex XmlIndexRegex = new("[0-9]+", RegexOptions.Compiled);
     //Converts to given object from Xml
-    public static Dictionary<string, XmlSerializer> _cache = new();
+    public static Dictionary<string, XmlSerializer> _cache = [];
     public static T GetObjfromXml<T>(string Xml, XmlAttributeOverrides? attrOverrides = null, ILogger? Logger = null)
     {
         XmlSerializer XMLSer = attrOverrides == null ? new(typeof(T)) : GetSerializer(typeof(T), attrOverrides);
@@ -109,7 +109,7 @@ public static class XMLToObject
 
     private static IEnumerable<string>? GetInnerError(Exception ex, List<string>? errors = null)
     {
-        errors ??= new List<string>();
+        errors ??= [];
         errors.Add(ex.Message);
         if (ex.InnerException is not null)
         {

@@ -2,19 +2,20 @@
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Text.Json.Serialization;
 using System.Xml.Serialization;
+using TallyConnector.Core;
 using TallyConnector.Core.Attributes;
 using TallyConnector.Core.Models;
-using TallyConnector.Core.Models.Masters;
+using TallyConnector.Core.Models.Common;
 
 namespace UnitTests.Models;
 
 [Serializable]
-public partial class Ledger : BaseMasterObject, IAliasTallyObject
+public partial class Ledger : BaseMasterObject
 {
     private string? name;
     public Ledger()
     {
-        LanguageNameList = new();
+        LanguageNameList = [];
         FAddress = new HAddress();
         Group = string.Empty;
     }
@@ -26,7 +27,7 @@ public partial class Ledger : BaseMasterObject, IAliasTallyObject
     /// <param name="group"></param>
     public Ledger(string name, string group)
     {
-        LanguageNameList = new();
+        LanguageNameList = [];
         FAddress = new HAddress();
         Group = group;
         this.name = name;
@@ -321,7 +322,7 @@ public partial class Ledger : BaseMasterObject, IAliasTallyObject
 }
 
 [XmlRoot(ElementName = "INTERESTCOLLECTION.LIST", IsNullable = true)]
-public class InterestList : ICheckNull
+public class InterestList 
 {
     public InterestList()
     {
@@ -372,7 +373,7 @@ public class InterestList : ICheckNull
 
 
 [XmlRoot(ElementName = "LEDGERCLOSINGVALUES.LIST")]
-public class ClosingBalances : ICheckNull
+public class ClosingBalances 
 {
 
     [XmlElement(ElementName = "DATE")]

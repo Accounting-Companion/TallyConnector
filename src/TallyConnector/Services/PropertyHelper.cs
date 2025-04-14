@@ -7,7 +7,7 @@ namespace TallyConnector.Services;
 /// </summary>
 public static class PropertyHelper
 {
-    private static Dictionary<Type, PropertyInfo[]> _propertyInfoDict = new();
+    private static Dictionary<Type, PropertyInfo[]> _propertyInfoDict = [];
     public static PropertyInfo[] GetPropertyInfo(Type type)
     {
         _ = _propertyInfoDict.TryGetValue(type, out PropertyInfo[]? PropertyInfo);

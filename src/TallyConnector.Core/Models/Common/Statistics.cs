@@ -1,4 +1,7 @@
-﻿namespace TallyConnector.Core.Models.Common;
+﻿using TallyConnector.Core.Models.Base;
+using TallyConnector.Core.Models.Interfaces;
+
+namespace TallyConnector.Core.Models.Common;
 public class BaseStatistics : IBaseObject
 {
     [XmlElement(ElementName = "COUNT")]
@@ -22,7 +25,7 @@ public class MasterStatistics : BaseStatistics
 public class VoucherStatistics : BaseStatistics
 {
     [XmlElement(ElementName = "NAME")]
-    public string Name { get; set; }
+    public string Name { get; set; } = null!;
 
     [XmlElement(ElementName = "CANCELLEDCOUNT")]
     [TDLField(Set = "if $$ISEMPTY:$CancVal then 0 else $CancVal")]

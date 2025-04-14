@@ -5,15 +5,15 @@ public static class Constants
     /// TDL Report is Generated for every object that inherits this Interface
     /// </summary>
     public const string BaseInterfaceName = $"{TallyConnectorModelsNameSpace}.ITallyBaseObject";
-    public const string MasterObjectInterfaceName = $"{TallyConnectorModelsNameSpace}.Interfaces.Masters.IBaseMasterObject";
-    public const string VoucherObjectInterfaceName = $"{TallyConnectorModelsNameSpace}.Interfaces.Voucher.IBaseVoucherObject";
+    public const string MasterObjectInterfaceName = $"{TallyConnectorModelsNameSpace}.Interfaces.IBaseMasterObject";
+    public const string VoucherObjectInterfaceName = $"{TallyConnectorModelsNameSpace}.Interfaces.IBaseVoucherObject";
     public const string TallyComplexObjectInterfaceName = $"{TallyConnectorModelsNameSpace}.TallyComplexObjects.ITallyComplexObject";
     public const string TallyRateClassName = $"{TallyConnectorModelsNameSpace}.TallyComplexObjects.TallyRateField";
     public const string TallyAmountClassName = $"{TallyConnectorModelsNameSpace}.TallyComplexObjects.TallyAmountField";
     public const string BaseClassName = "TallyConnector.Services.BaseTallyService";
     public const string XMLToObjectClassName = "TallyConnector.Services.XMLToObject";
-    public const string PaginatedRequestOptionsClassName = $"{TallyConnectorModelsNameSpace}.PaginatedRequestOptions";
-    public const string RequestOptionsClassName = $"{TallyConnectorModelsNameSpace}.RequestOptions";
+    public const string PaginatedRequestOptionsClassName = $"{TallyConnectorModelsNameSpace}.Request.PaginatedRequestOptions";
+    public const string RequestOptionsClassName = $"{TallyConnectorModelsNameSpace}.Request.RequestOptions";
     public const string GetObjfromXmlMethodName = "GetObjfromXml";
     public const string PopulateOptionsExtensionMethodName = "PopulateOptions";
     public const string PopulateDefaultOptionsMethodName = "PopulateDefaultOptions";
@@ -39,39 +39,43 @@ public static class Constants
 
     public const string CancellationTokenStructName = "System.Threading.CancellationToken";
     public const string GenerateHelperMethodAttrName = $"{TallyConnectorAttributesNameSpace}.GenerateHelperMethodAttribute";
+    public const string ImplementTallyServiceAttrName = $"{TallyConnectorAttributesNameSpace}.SourceGenerator.ImplementTallyService";
 
     public const string TallyConnectorNameSpace = "TallyConnector.Core";
     public const string TallyConnectorModelsNameSpace = $"{TallyConnectorNameSpace}.Models";
+    public const string TallyConnectorCommonModelsNameSpace = $"{TallyConnectorModelsNameSpace}.Common";
+    public const string TallyConnectorRequestModelsNameSpace = $"{TallyConnectorModelsNameSpace}.Request";
+    public const string TallyConnectorResponseModelsNameSpace = $"{TallyConnectorModelsNameSpace}.Response";
     public const string TallyConnectorAttributesNameSpace = $"{TallyConnectorNameSpace}.Attributes";
     public const string TallyConnectorResponseNameSpace = $"{TallyConnectorModelsNameSpace}.Common.Response";
     public const string TallyConnectorPaginationNameSpace = $"{TallyConnectorModelsNameSpace}.Common.Pagination";
     public const string ReportResponseEnvelopeClassName = "ReportResponseEnvelope";
-    public const string FieldFullTypeName = $"{TallyConnectorModelsNameSpace}.Field";
-    public const string PartFullTypeName = $"{TallyConnectorModelsNameSpace}.Part";
-    public const string LineFullTypeName = $"{TallyConnectorModelsNameSpace}.Line";
-    public const string CollectionFullTypeName = $"{TallyConnectorModelsNameSpace}.Collection";
-    public const string TDLFunctionFullTypeName = $"{TallyConnectorModelsNameSpace}.TDLFunction";
+    public const string FieldFullTypeName = $"{TallyConnectorRequestModelsNameSpace}.Field";
+    public const string PartFullTypeName = $"{TallyConnectorRequestModelsNameSpace}.Part";
+    public const string LineFullTypeName = $"{TallyConnectorRequestModelsNameSpace}.Line";
+    public const string CollectionFullTypeName = $"{TallyConnectorRequestModelsNameSpace}.Collection";
+    public const string TDLFunctionFullTypeName = $"{TallyConnectorRequestModelsNameSpace}.TDLFunction";
     public const string FilterFullTypeName = $"{TallyConnectorModelsNameSpace}.Filter";
-    public const string TDLNameSetFullTypeName = $"{TallyConnectorModelsNameSpace}.NameSet";
+    public const string TDLNameSetFullTypeName = $"{TallyConnectorRequestModelsNameSpace}.NameSet";
     public const string LanguageNamesFullTypeName = $"{TallyConnectorModelsNameSpace}.LanguageNameList";
-    public const string LicenseInfoFullTypeName = $"{TallyConnectorModelsNameSpace}.{LicenseInfoPropertyName}";
+    public const string LicenseInfoFullTypeName = $"{TallyConnectorCommonModelsNameSpace}.{LicenseInfoPropertyName}";
 
     public const string PaginatedResponseClassName = $"PaginatedResponse";
 
 
     public const string BaseLedgerEntryInterfaceName = $"{TallyConnectorModelsNameSpace}.Interfaces.Voucher.IBaseLedgerEntry";
-    public const string TallyObjectDTOInterfaceName = $"{TallyConnectorModelsNameSpace}.Interfaces.Masters.IBaseTallyObjectDTO";
+    public const string TallyObjectDTOInterfaceName = $"{TallyConnectorModelsNameSpace}.Interfaces.IBaseTallyObjectDTO";
 
 
 
-    public const string HeaderTypeEnumName = $"{TallyConnectorModelsNameSpace}.HType";
-    public const string RequestTypeEnumName = $"{TallyConnectorModelsNameSpace}.RequestType";
-    public const string TallyEnvelopeTypeName = $"TallyEnvelope";
-    public const string RequestEnvelopeFullTypeName = $"{TallyConnectorModelsNameSpace}.RequestEnvelope";
-    public const string ActionEnumFullTypeName = $"{TallyConnectorModelsNameSpace}.Action";
-    public const string TallyEnvelopeFullTypeName = $"{TallyConnectorModelsNameSpace}.TallyEnvelope";
-    public const string PostResultFullTypeName = $"{TallyConnectorModelsNameSpace}.PostResult";
-    public const string PostResultsFullTypeName = $"{TallyConnectorModelsNameSpace}.PostResults";
+    public const string HeaderTypeEnumName = $"{TallyConnectorRequestModelsNameSpace}.HType";
+    public const string RequestTypeEnumName = $"{TallyConnectorModelsNameSpace}.Request.RequestType";
+    public const string TallyResponseEnvelopeTypeName = $"PostRequestEnvelope";
+    public const string RequestEnvelopeFullTypeName = $"{TallyConnectorRequestModelsNameSpace}.RequestEnvelope";
+    public const string ActionEnumFullTypeName = $"{TallyConnectorCommonModelsNameSpace}.Action";
+    public const string TallyEnvelopeFullTypeName = $"{TallyConnectorModelsNameSpace}.Response.ResponseEnvelope";
+    public const string PostResultFullTypeName = $"{TallyConnectorModelsNameSpace}.Response.PostResult";
+    public const string PostResultsFullTypeName = $"{TallyConnectorModelsNameSpace}.Response.PostResults";
     public const string ReportFullTypeName = $"{TallyConnectorModelsNameSpace}.Report";
     public const string BaseCompanyTypeName = $"{TallyConnectorModelsNameSpace}.BaseCompany";
     public const string FormFullTypeName = $"{TallyConnectorModelsNameSpace}.Form";

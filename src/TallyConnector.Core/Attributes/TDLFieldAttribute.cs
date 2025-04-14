@@ -3,7 +3,7 @@
 [AttributeUsage(AttributeTargets.Property)]
 public class TDLFieldAttribute : Attribute
 {
-    public string Set { get; set; }
+    public string? Set { get; set; }
 
     public bool ExcludeInFetch { get; set; }
     public string? FetchText { get; set; }

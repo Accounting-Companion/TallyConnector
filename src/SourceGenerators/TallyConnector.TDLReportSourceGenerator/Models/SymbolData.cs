@@ -70,7 +70,7 @@ internal class SymbolData
     public List<INamedTypeSymbol> Args { get; internal set; }
     public bool IsParentChild { get; set; }
     public string? ActivitySourceName { get; internal set; }
-
+    public string ServiceFieldName { get; internal set; }
 
     public override string ToString()
     {

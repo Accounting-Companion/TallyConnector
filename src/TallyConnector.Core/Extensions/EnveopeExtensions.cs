@@ -1,4 +1,6 @@
 ﻿using TallyConnector.Core.Models;
+using TallyConnector.Core.Models.Common;
+using TallyConnector.Core.Models.Request;
 
 namespace TallyConnector.Core.Extensions;
 public static class EnveopeExtensions
@@ -44,7 +46,7 @@ public static class EnveopeExtensions
             if (requestOptions.Filters != null && requestOptions.Filters.Count > 0)
             {
                 tDLMessage.System ??= [];
-                tDLMessage.System.AddRange(requestOptions.Filters.Select(c => new Models.System(c.FilterName!, c.FilterFormulae!)));
+                tDLMessage.System.AddRange(requestOptions.Filters.Select(c => new Models.Request.System(c.FilterName!, c.FilterFormulae!)));
             }
 
         }
@@ -74,13 +76,13 @@ public static class EnveopeExtensions
                     }
                 }
                 string CollectionName = $"{collection.Name}_NonPaginated";
-                tDLMessage.Collection.Add(new(CollectionName, collection.Type!, filters: requestOptions.Filters.Select(c => c.FilterName!).ToList()) { Childof = requestOptions.Childof, BelongsTo = requestOptions.BelongsTo ??  YesNo.None });
+                tDLMessage.Collection.Add(new(CollectionName, collection.Type!, filters: [.. requestOptions.Filters.Select(c => c.FilterName!)]) { Childof = requestOptions.Childof, BelongsTo = requestOptions.BelongsTo ?? YesNo.None });
                 const string objectCountName = "TC_ObjectsCount";
                 Part part = tDLMessage.Part!.First();
-                part.Lines = [.. part.Lines, objectCountName];
-                tDLMessage.Part = [.. tDLMessage.Part, new(objectCountName, null)];
-                tDLMessage.Line = [.. tDLMessage.Line, new(objectCountName, [objectCountName])];
-                tDLMessage.Field = [.. tDLMessage.Field, new Field(objectCountName, "TC_TotalCount", $"$$NUMITEMS:{CollectionName}")];
+                part.Lines = [.. part.Lines ?? [], objectCountName];
+                tDLMessage.Part = [.. tDLMessage.Part ?? [], new(objectCountName, null)];
+                tDLMessage.Line = [.. tDLMessage.Line ?? [], new(objectCountName, [objectCountName])];
+                tDLMessage.Field = [.. tDLMessage.Field ?? [], new Field(objectCountName, "TC_TotalCount", $"$$NUMITEMS:{CollectionName}")];
             }
 
 
@@ -94,12 +96,12 @@ public static class EnveopeExtensions
     }
 
 
-    public static List<Models.System> ToSystem(this IEnumerable<Filter> filters)
+    public static List<Models.Request.System> ToSystem(this IEnumerable<Filter> filters)
     {
-        return filters.Select(c => new Models.System(c.FilterName!, c.FilterFormulae!)).ToList();
+        return [.. filters.Select(c => new Models.Request.System(c.FilterName!, c.FilterFormulae!))];
     }
     public static List<string> GetFilterNames(this IEnumerable<Filter> filters)
     {
-        return filters.Select(c => c.FilterName!).ToList();
+        return [.. filters.Select(c => c.FilterName!)];
     }
 }
