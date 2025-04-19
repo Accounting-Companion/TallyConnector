@@ -1,12 +1,4 @@
-﻿using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
-using TallyConnector.TDLReportSourceGenerator.Extensions.Symbols;
-using TallyConnector.TDLReportSourceGenerator.Models;
-using static System.Net.Mime.MediaTypeNames;
+﻿using TallyConnector.TDLReportSourceGenerator.Models;
 
 namespace TallyConnector.TDLReportSourceGenerator.Execute;
 internal class Helper
@@ -623,7 +615,7 @@ internal class Helper
             IEnumerable<ChildSymbolData> complexchildren = symbol.Children.Values.Where(c => c.IsComplex);
             foreach (var child in children)
             {
-                if (child.IsEnum && action(child.SymbolData!) == 0)
+                if (child.IsEnum && action(child.SymbolData!) == 0 && !child.Exclude)
                 {
                     methodNames.Add(InvocationExpression(
                         MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression,
@@ -1276,12 +1268,30 @@ internal class Helper
                 counter += child.SymbolData.SimpleFieldsCount;
             }
         }
+
+        if (_symbol.FullName == BaseObjectName)
+        {
+            List<SyntaxNodeOrToken>? intializerArgs = [];
+            List<SyntaxNodeOrToken>? args = [Argument(CreateStringLiteral("Default"))];
+
+            SafeAdd(AssignmentExpression(SyntaxKind.SimpleAssignmentExpression,
+                                          IdentifierName("IsModify"),
+                                          IdentifierName(YesEnum)), intializerArgs);
+            //SafeAdd(AssignmentExpression(SyntaxKind.SimpleAssignmentExpression,
+            //                              IdentifierName("Invisible"),
+            //                              CreateStringLiteral("$$ISEmpty:$$value")), intializerArgs);
+            var expressionStatementSyntax = GetArrayAssignmentExppressionImplicit(FieldsVariableName, counter, args, intializerArgs);
+            statements.Add(expressionStatementSyntax);
+            counter++;
+        }
+
+
         foreach (var child in _symbol.Children.Values)
         {
-            if (child.Exclude)
-            {
-                continue;
-            }
+            //if (child.Exclude)
+            //{
+            //    continue;
+            //}
             if (!child.IsComplex)
             {
                 if (child.IsAttribute)
@@ -1297,39 +1307,33 @@ internal class Helper
                                                     SyntaxKind.NullLiteralExpression) : CreateStringLiteral(child.TDLFieldDetails!.Set!)),
                 ];
                 List<SyntaxNodeOrToken>? intializerArgs = null;
-                void SafeAdd(SyntaxNodeOrToken token)
-                {
-                    intializerArgs ??= [];
-                    if (intializerArgs.Count != 0)
-                    {
-                        intializerArgs.Add(Token(SyntaxKind.CommaToken));
-                    }
-                    intializerArgs.Add(token);
-                }
+
                 if (child.TDLFieldDetails!.TallyType != null)
                 {
+                    intializerArgs ??= [];
                     SafeAdd(AssignmentExpression(SyntaxKind.SimpleAssignmentExpression,
                                          IdentifierName("Type"),
-                                         LiteralExpression(SyntaxKind.StringLiteralExpression, Literal(child.TDLFieldDetails.TallyType))));
+                                         LiteralExpression(SyntaxKind.StringLiteralExpression, Literal(child.TDLFieldDetails.TallyType))), intializerArgs);
                 }
 
                 if (child.TDLFieldDetails.Format != null)
                 {
+                    intializerArgs ??= [];
                     SafeAdd(AssignmentExpression(SyntaxKind.SimpleAssignmentExpression,
                                          IdentifierName("Format"),
-                                         LiteralExpression(SyntaxKind.StringLiteralExpression, Literal(child.TDLFieldDetails.Format))));
+                                         LiteralExpression(SyntaxKind.StringLiteralExpression, Literal(child.TDLFieldDetails.Format))), intializerArgs);
                 }
                 if (!child.Parent.IsTallyComplexObject)
                 {
+                    
                     if (child.TDLFieldDetails.Invisible != null)
                     {
+                        intializerArgs ??= [];
                         SafeAdd(AssignmentExpression(SyntaxKind.SimpleAssignmentExpression,
                                              IdentifierName("Invisible"),
-                                             child.Parent.IsTallyComplexObject ? CreateFormatExpression(child.TDLFieldDetails!.Invisible!) : CreateStringLiteral(child.TDLFieldDetails!.Invisible!)));
+                                             child.Parent.IsTallyComplexObject ? CreateFormatExpression(child.TDLFieldDetails!.Invisible!) : CreateStringLiteral(child.TDLFieldDetails!.Invisible!)), intializerArgs);
                     }
                 }
-
-
                 var expressionStatementSyntax = GetArrayAssignmentExppressionImplicit(FieldsVariableName, counter, args, intializerArgs);
                 statements.Add(expressionStatementSyntax);
                 counter++;
@@ -1360,6 +1364,14 @@ internal class Helper
                     ));
                 counter += child.SymbolData?.SimpleFieldsCount ?? 0;
             }
+        }
+        static void SafeAdd(SyntaxNodeOrToken token, List<SyntaxNodeOrToken> args)
+        {
+            if (args.Count != 0)
+            {
+                args.Add(Token(SyntaxKind.CommaToken));
+            }
+            args.Add(token);
         }
         statements.Add(ReturnStatement(IdentifierName(FieldsVariableName)));
         var methodDeclarationSyntax = MethodDeclaration(CreateEmptyArrayType(FieldFullTypeName),

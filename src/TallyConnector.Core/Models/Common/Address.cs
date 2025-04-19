@@ -1,69 +1,23 @@
 ﻿namespace TallyConnector.Core.Models.Common;
 
-[Serializable]
-[XmlRoot(ElementName = "ADDRESS.LIST")]
-public class HAddress
-{
-    private List<string> _Address = [];
 
-
-    [XmlElement(ElementName = "ADDRESS")]
-    [TDLCollection(CollectionName = "Address")]
-    public List<string> Address
-    {
-        get { return _Address; }
-        set { _Address = value; }
-    }
-    [JsonIgnore]
-    [XmlIgnore]
-    public string? FullAddress
-    {
-        get { return _Address.Count > 0 ? string.Join(" ..\n", _Address) : null; }
-        set
-        {
-            string[] stringSeparators = [" ..\n"];
-            _Address = value != null ? [.. value.Split(stringSeparators, StringSplitOptions.None)] : [];
-        }
-    }
-
-}
-[XmlRoot(ElementName = "LEDMULTIADDRESSLIST.LIST")]
+[XmlRoot(ElementName = "LEDMULTIADDRESSLIST")]
 public class MultiAddress
 {
 
     public MultiAddress()
     {
-        FAddress = new();
         ExciseJurisdictions = [];
         AddressName = string.Empty;
     }
 
-    [XmlElement(ElementName = "ADDRESSNAME")]
+    [XmlElement(ElementName = "MAILINGNAME")]
     public string AddressName { get; set; }
-    [JsonIgnore]
-    [XmlElement(ElementName = "ADDRESS.LIST")]
-    public HAddress FAddress;
 
-    [XmlIgnore]
-    public string? Address
-    {
-        get
-        {
-            return FAddress?.FullAddress;
-        }
-
-        set
-        {
-            if (value != "")
-            {
-
-                FAddress.FullAddress = value;
-            }
-
-
-        }
-
-    }
+    [XmlArray(ElementName = "ADDRESS.LIST")]
+    [XmlArrayItem(ElementName = "ADDRESS")]
+    [TDLCollection(CollectionName = "ADDRESS")]
+    public List<string> AddressLines {  get; set; }
 
     [XmlElement(ElementName = "COUNTRYNAME")]
     [Column(TypeName = "nvarchar(60)")]
@@ -128,7 +82,6 @@ public class MultiAddress
     public string? ImportExportCode { get; set; }
 
     [XmlElement(ElementName = "GSTREGISTRATIONTYPE")]
-    [Column(TypeName = "nvarchar(15)")]
     public GSTRegistrationType GSTDealerType { get; set; }
 
     [XmlElement(ElementName = "ISOTHTERRITORYASSESSEE")]
@@ -140,21 +93,7 @@ public class MultiAddress
 
     [XmlElement(ElementName = "EXCISEJURISDICTIONDETAILS.LIST")]
     public List<ExciseJurisdiction>? ExciseJurisdictions { get; set; }
-
-
-    public bool IsNull()
-    {
-        if (string.IsNullOrEmpty(AddressName))
-        {
-            return true;
-        }
-        ExciseJurisdictions = ExciseJurisdictions?.Where(ExcJur => !ExcJur.IsNull()).ToList();
-        if (ExciseJurisdictions?.Count == 0)
-        {
-            ExciseJurisdictions = null;
-        }
-        return false;
-    }
+    
 
 }
 [XmlRoot(ElementName = "EXCISEJURISDICTIONDETAILS.LIST")]
@@ -175,13 +114,6 @@ public class ExciseJurisdiction
     [Column(TypeName = "nvarchar(20)")]
     public string? Commissionerate { get; set; }
 
-    public bool IsNull()
-    {
-        if (ApplicableFrom is null || ApplicableFrom == DateTime.MinValue && string.IsNullOrEmpty(Range) && string.IsNullOrEmpty(Division))
-        {
-            return true;
-        }
-        return false;
-    }
+  
 }
 

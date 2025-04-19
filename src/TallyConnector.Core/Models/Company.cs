@@ -1,7 +1,4 @@
-﻿using TallyConnector.Core.Models.Base;
-using TallyConnector.Core.Models.Request;
-
-namespace TallyConnector.Core.Models;
+﻿namespace TallyConnector.Core.Models;
 /// <summary>
 /// Base Model for Company
 /// </summary>

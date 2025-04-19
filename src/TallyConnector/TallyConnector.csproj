@@ -60,5 +60,9 @@
 		<ProjectReference Include="..\SourceGenerators\TallyConnector.TDLReportSourceGenerator\TallyConnector.TDLReportSourceGenerator.csproj" OutputItemType="Analyzer" />
 	</ItemGroup>
 
+	<ItemGroup>
+	
+	</ItemGroup>
+
 
 </Project>

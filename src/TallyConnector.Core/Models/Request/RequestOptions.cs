@@ -1,6 +1,4 @@
-﻿using TallyConnector.Core.Models.Common;
-
-namespace TallyConnector.Core.Models.Request;
+﻿namespace TallyConnector.Core.Models.Request;
 public class BaseRequestOptions
 {
     public string? Company { get; set; }

@@ -37,17 +37,15 @@ public class TallyPrimeServiceTests
 
     }
     [Test]
-    public async Task TestGetObjectsAsync()
+    public async Task TestGetLedgersAsync()
     {
 
-        //var grps = await _service.GetObjects();
-        //foreach (var item in grps)
-        //{
-        //    if(item is TallyConnector.Core.Models.TallyPrime.V4.Masters.Group)
-        //    {
 
-        //    }
-        //}
+        RequestOptions requestOptions = new();
+        //{ Filters = [new("ledgFilter", "$Name ='K.P.Bhutia'")] };
+        
+        var ledgers = await _service.GetLedgersAsync(requestOptions);
+      
         //Assert.That(grps, Is.Not.Null, "");
 
     }

@@ -32,15 +32,12 @@ public enum Action
 /// </summary>
 public enum YesNo
 {
-
     [EnumXMLChoice(Choice = "")]
     None,
     [EnumXMLChoice(Choice = "Yes")]
     Yes = 1,
     [EnumXMLChoice(Choice = "No")]
     No = 2,
-
-
 }
 
 /// <summary>
@@ -92,23 +89,22 @@ public enum TaxType
     [EnumXMLChoice(Choice = "Others")]
     Others = 13,
 }
-
-
+// Refer - [Collection: ListofLedGSTDutyHeads] or [Field: LED GSTDutyType] for updates
 public enum GSTTaxType
 {
     [EnumXMLChoice(Choice = "")]
     None = 0,
-    [EnumXMLChoice(Choice = "Central Tax",Versions = ["6.6.3", "1.1.1", "1.1.2", "1.1.3", "1.1.4", "2.0", "2.0.1", "2.1"])]
+    [EnumXMLChoice(Choice = "Central Tax", Versions = ["6.6.3", "1.1.1", "1.1.2", "1.1.3", "1.1.4", RetiredVersions.TallyPrime.V2, RetiredVersions.TallyPrime.V2_0_1, RetiredVersions.TallyPrime.V2_1])]
     [EnumXMLChoice(Choice = "CGST")]
     CGST = 1,
     [EnumXMLChoice(Choice = "Cess")]
     Cess = 2,
-    [EnumXMLChoice(Choice = "Integrated Tax", Versions = ["6.6.3", "1.1.1", "1.1.2", "1.1.3", "1.1.4", "2.0", "2.0.1", "2.1"])]
+    [EnumXMLChoice(Choice = "Integrated Tax", Versions = ["6.6.3", "1.1.1", "1.1.2", "1.1.3", "1.1.4", RetiredVersions.TallyPrime.V2, RetiredVersions.TallyPrime.V2_0_1, RetiredVersions.TallyPrime.V2_1])]
     [EnumXMLChoice(Choice = "IGST")]
     IGST = 3,
     [EnumXMLChoice(Choice = "UT Tax")]
     UTTax = 4,
-    [EnumXMLChoice(Choice = "State Tax", Versions = ["6.6.3", "1.1.1", "1.1.2", "1.1.3", "1.1.4", "2.0", "2.0.1", "2.1"])]
+    [EnumXMLChoice(Choice = "State Tax", Versions = ["6.6.3", "1.1.1", "1.1.2", "1.1.3", "1.1.4", RetiredVersions.TallyPrime.V2, RetiredVersions.TallyPrime.V2_0_1, RetiredVersions.TallyPrime.V2_1])]
     [EnumXMLChoice(Choice = "SGST/UTGST")]
     SGST = 5,
 }
@@ -123,7 +119,7 @@ public enum ExciseNatureOfPurchase
 }
 public enum GSTRegistrationType
 {
-    
+
     [EnumXMLChoice(Choice = "")]
     None = 0,
     [EnumXMLChoice(Choice = "Unknown")]
@@ -131,7 +127,7 @@ public enum GSTRegistrationType
     [EnumXMLChoice(Choice = "Composition")]
     Composition = 2,
 
-    [EnumXMLChoice(Choice = "Consumer", Versions = ["6.6.3", "1.1.1", "1.1.2", "1.1.3", "1.1.4", "2.0", "2.0.1", "2.1"])]
+    [EnumXMLChoice(Choice = "Consumer", Versions = ["6.6.3", "1.1.1", "1.1.2", "1.1.3", "1.1.4", RetiredVersions.TallyPrime.V2, RetiredVersions.TallyPrime.V2_0_1, RetiredVersions.TallyPrime.V2_1])]
     [EnumXMLChoice(Choice = "Unregistered/Consumer")]
     Consumer = 3,
 

@@ -5,6 +5,7 @@ public static class Constants
     /// TDL Report is Generated for every object that inherits this Interface
     /// </summary>
     public const string BaseInterfaceName = $"{TallyConnectorModelsNameSpace}.ITallyBaseObject";
+    public const string BaseObjectName = $"{TallyConnectorModelsNameSpace}.Base.BaseTallyObject";
     public const string MasterObjectInterfaceName = $"{TallyConnectorModelsNameSpace}.Interfaces.IBaseMasterObject";
     public const string VoucherObjectInterfaceName = $"{TallyConnectorModelsNameSpace}.Interfaces.IBaseVoucherObject";
     public const string TallyComplexObjectInterfaceName = $"{TallyConnectorModelsNameSpace}.TallyComplexObjects.ITallyComplexObject";
@@ -44,6 +45,8 @@ public static class Constants
     public const string TallyConnectorNameSpace = "TallyConnector.Core";
     public const string TallyConnectorModelsNameSpace = $"{TallyConnectorNameSpace}.Models";
     public const string TallyConnectorCommonModelsNameSpace = $"{TallyConnectorModelsNameSpace}.Common";
+    public const string YesEnum = $"{TallyConnectorModelsNameSpace}.Common.YesNo.Yes";
+    public const string NoEnum = $"{TallyConnectorModelsNameSpace}.Common.YesNo.No";
     public const string TallyConnectorRequestModelsNameSpace = $"{TallyConnectorModelsNameSpace}.Request";
     public const string TallyConnectorResponseModelsNameSpace = $"{TallyConnectorModelsNameSpace}.Response";
     public const string TallyConnectorAttributesNameSpace = $"{TallyConnectorNameSpace}.Attributes";

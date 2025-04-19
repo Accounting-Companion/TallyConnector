@@ -1,5 +1,4 @@
 ﻿using TallyConnector.Core.Models.Base;
-using TallyConnector.Core.Models.Interfaces;
 
 namespace TallyConnector.Core.Models;
 

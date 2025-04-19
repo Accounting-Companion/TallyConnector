@@ -1,7 +1,4 @@
-﻿using TallyConnector.Core.Models.Base;
-using TallyConnector.Core.Models.Interfaces;
-
-namespace TallyConnector.Core.Models.Common;
+﻿namespace TallyConnector.Core.Models.Common;
 public class BaseStatistics : IBaseObject
 {
     [XmlElement(ElementName = "COUNT")]

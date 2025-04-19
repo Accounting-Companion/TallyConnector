@@ -1,6 +1,4 @@
-﻿using TallyConnector.Core.Models.Request;
-
-namespace TallyConnector.Services;
+﻿namespace TallyConnector.Services;
 
 /// <summary>
 /// contains API to interact with Tally

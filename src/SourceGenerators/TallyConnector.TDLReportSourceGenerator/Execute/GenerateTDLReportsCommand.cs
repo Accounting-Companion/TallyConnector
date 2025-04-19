@@ -1,8 +1,4 @@
-﻿using Microsoft.CodeAnalysis;
-using System.Collections.Immutable;
-using System.Xml.Linq;
-using TallyConnector.TDLReportSourceGenerator;
-using TallyConnector.TDLReportSourceGenerator.Extensions.Symbols;
+﻿using System.Collections.Immutable;
 using TallyConnector.TDLReportSourceGenerator.Models;
 
 namespace TallyConnector.TDLReportSourceGenerator.Execute;
@@ -56,12 +52,15 @@ internal class GenerateTDLReportsCommand
             {
                 try
                 {
+                    string NameSpace = symbol.Value.MainSymbol.ContainingNamespace.ToString();
+                    var shorten = string.Join("", NameSpace.Split('.').Select(c => c.Any(char.IsDigit) ? c : $"{c[0]}"));
                     SymbolData value = symbol.Value;
                     var helper = new Helper(value);
                     if (value.GenerationMode is GenerationMode.All or GenerationMode.Get or GenerationMode.GetMultiple)
                     {
                         string source = helper.GetTDLReportCompilationUnit();
-                        context.AddSource($"{symbol.Key}.{symbol.Value.MainSymbol.Name}.TDLReport.g.cs", source);
+                        
+                        context.AddSource($"{symbol.Key}.{symbol.Value.MainSymbol.Name}_{shorten}.TDLReport.g.cs", source);
                         foreach (var diagnostic in helper.Diagnostics)
                         {
                             context.ReportDiagnostic(diagnostic);
@@ -72,7 +71,7 @@ internal class GenerateTDLReportsCommand
                         if (!value.IsEnum)
                         {
                             string source = helper.GetCreateDTOCompilationUnitString();
-                            context.AddSource($"{symbol.Key}.{symbol.Value.MainSymbol.Name}.CreateDTO.g.cs", source);
+                            context.AddSource($"{symbol.Key}.{symbol.Value.MainSymbol.Name}_{shorten}.CreateDTO.g.cs", source);
                         }
                     }
                 }
@@ -222,17 +221,18 @@ internal class GenerateTDLReportsCommand
                             {
                                 var value = _data[childData.ChildTypeFullName];
                                 childData.SymbolData = value;
-
-                                //childData.Exclude = true;
+                                childData.Exclude = true;
                             }
                             ParseAttributes(childData);
 
                         }
                         else
                         {
+                            
                             var value = _data[childData.ChildTypeFullName];
                             childData.SymbolData = value;
                             childData.Exclude = true;
+                            ParseAttributes(childData);
                         }
                         continue;
                     }
@@ -346,7 +346,10 @@ internal class GenerateTDLReportsCommand
             }
 
         }
-
+        if(symbolData.FullName == BaseObjectName)
+        {
+            symbolData.SimpleFieldsCount++;
+        }
     }
     // =>Group:BaseGroup=>TallyObject
     private void ParseAttributes(ChildSymbolData childData)
@@ -511,8 +514,6 @@ internal class GenerateTDLReportsCommand
 
             }
             childData.DefaultTDLCollectionDetails ??= childData.SymbolData?.TDLCollectionDetails;
-
-
         }
         catch (Exception)
         {
@@ -610,7 +611,7 @@ internal class GenerateTDLReportsCommand
                     continue;
             }
         }
-        
+
         symbolData.RootXmlTag = xmlData?.XmlTag ?? symbolData.Name.ToUpper();
 
         void addToFunctionList(SymbolData symbolData,

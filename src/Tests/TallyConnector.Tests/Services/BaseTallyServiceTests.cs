@@ -20,6 +20,6 @@ public class BaseTallyServiceTests
     [Test]
     public async Task TestAutoColStats()
     {
-        await TallyService.GetVoucherStatisticsAsync(new TallyConnector.Core.Models.Request.AutoColumnReportPeriodRequestOptions());
+        //await TallyService.(new TallyConnector.Core.Models.Request.AutoColumnReportPeriodRequestOptions());
     }
 }

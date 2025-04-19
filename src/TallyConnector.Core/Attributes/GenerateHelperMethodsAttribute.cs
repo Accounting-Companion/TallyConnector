@@ -1,8 +1,4 @@
-﻿using TallyConnector.Core.Models.Base;
-using TallyConnector.Core.Models.Common;
-using TallyConnector.Core.Models.Request;
-
-namespace TallyConnector.Core.Attributes;
+﻿namespace TallyConnector.Core.Attributes;
 
 
 [AttributeUsage(AttributeTargets.Class, AllowMultiple = true, Inherited = false)]

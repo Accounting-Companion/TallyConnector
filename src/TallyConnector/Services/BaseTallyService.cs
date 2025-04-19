@@ -1,8 +1,6 @@
 ﻿using System.Diagnostics;
 using System.Globalization;
 using TallyConnector.Core;
-using TallyConnector.Core.Extensions;
-using TallyConnector.Core.Models.Request;
 using TallyConnector.Core.Models.Response;
 
 namespace TallyConnector.Services;
@@ -190,8 +188,8 @@ public partial class BaseTallyService : IBaseTallyService
         return _licenseInfo;
     }
 
-   
-    
+
+
     /// <inheritdoc/>
     public void Setup(string url,
                       int port)
@@ -200,8 +198,11 @@ public partial class BaseTallyService : IBaseTallyService
         {
             url = $"http://{url}";
         }
+        // if url or port is changed we remove old LicenseInfo
+        if (url != _baseURL || port != _port) { _licenseInfo = null; }
         _baseURL = url;
         _port = port;
+
     }
 
 

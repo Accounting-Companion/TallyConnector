@@ -1,15 +1,15 @@
-﻿using System.Diagnostics;
-using System.Globalization;
-using TallyConnector.Core;
+﻿using System.Runtime.CompilerServices;
 using TallyConnector.Core.Extensions;
-using TallyConnector.Core.Models.Request;
-using TallyConnector.Core.Models.Response;
+using static TallyConnector.Core.Constants;
+
+//[assembly: InternalsVisibleTo("TestProject")]
 
 namespace TallyConnector.Services;
+
 public class TallyCommonService
 {
-    internal readonly ILogger _logger;
-    internal readonly IBaseTallyService _baseHandler;
+    protected readonly ILogger _logger;
+    protected readonly IBaseTallyService _baseHandler;
 
     public TallyCommonService()
     {
@@ -175,14 +175,14 @@ public class TallyCommonService
     {
         return requestOptions?.Periodicity switch
         {
-            PeriodicityType.Month => Constants.Periodicty.Month,
-            PeriodicityType.Day => Constants.Periodicty.Day,
-            PeriodicityType.Week => Constants.Periodicty.Week,
-            PeriodicityType.Fortnight => Constants.Periodicty.Fortnight,
-            PeriodicityType.ThreeMonth => Constants.Periodicty.ThreeMonth,
-            PeriodicityType.SixMonth => Constants.Periodicty.SixMonth,
-            PeriodicityType.Year => Constants.Periodicty.Year,
-            null => Constants.Periodicty.Month,
+            PeriodicityType.Month => Periodicty.Month,
+            PeriodicityType.Day => Periodicty.Day,
+            PeriodicityType.Week => Periodicty.Week,
+            PeriodicityType.Fortnight => Periodicty.Fortnight,
+            PeriodicityType.ThreeMonth => Periodicty.ThreeMonth,
+            PeriodicityType.SixMonth => Periodicty.SixMonth,
+            PeriodicityType.Year => Periodicty.Year,
+            null => Periodicty.Month,
             _ => throw new NotImplementedException()
         };
     }

@@ -1,5 +1,4 @@
-﻿using TallyConnector.Core.Models.Request;
-using TallyConnector.Core.Models.TallyPrime.V4.Masters;
+﻿using TallyConnector.Core.Models.TallyPrime.V4.Masters;
 
 namespace TallyConnector.Services.TallyPrime.V4;
 
@@ -10,33 +9,23 @@ namespace TallyConnector.Services.TallyPrime.V4;
 [GenerateHelperMethod<CompanyOnDisk>(MethodNameSuffixPlural = "CompaniesinDefaultPath", GenerationMode = GenerationMode.GetMultiple)]
 
 [GenerateHelperMethod<Currency>(MethodNameSuffix = "Currency", MethodNameSuffixPlural = "Currencies")]
+
 [GenerateHelperMethod<Group>()]
+[GenerateHelperMethod<Ledger>()]
+
 [ImplementTallyService(nameof(_baseHandler))]
+
 public partial class TallyPrimeService : TallyCommonService
 {
-    private readonly ILogger _logger;
-    private readonly IBaseTallyService _baseHandler;
-
     public TallyPrimeService()
     {
-        _baseHandler = new BaseTallyService();
-        _logger = NullLogger.Instance;
-    }
-    public TallyPrimeService(IBaseTallyService baseTallyService)
-    {
-        _baseHandler = baseTallyService;
-        _logger = NullLogger.Instance;
     }
 
-    public TallyPrimeService(ILogger logger, IBaseTallyService baseTallyService)
+    public TallyPrimeService(IBaseTallyService baseTallyService) : base(baseTallyService)
     {
-        _logger = logger;
-        _baseHandler = baseTallyService;
     }
 
-    public void SetupTallyService(string url, int port)
+    public TallyPrimeService(ILogger logger, IBaseTallyService baseTallyService) : base(logger, baseTallyService)
     {
-        _baseHandler.Setup(url, port);
     }
-
 }

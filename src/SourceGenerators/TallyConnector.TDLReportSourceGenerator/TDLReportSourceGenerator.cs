@@ -217,7 +217,7 @@ public class GenerateSymbolsArgs
 
     public GenerateSymbolsArgs(INamedTypeSymbol parentSymbol,
                                INamedTypeSymbol getSymbol,
-                               INamedTypeSymbol requestEnvelope,string fieldName)
+                               INamedTypeSymbol requestEnvelope, string fieldName)
     {
         ParentSymbol = parentSymbol;
         GetSymbol = getSymbol;

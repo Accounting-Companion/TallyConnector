@@ -1,6 +1,4 @@
-﻿using TallyConnector.Core.Models.Request;
-
-namespace TallyConnector.Core.Extensions;
+﻿namespace TallyConnector.Core.Extensions;
 public static class RequestOptionsExtensions
 {
     public static RequestOptions ToRequestOptions(this PaginatedRequestOptions? paginatedRequestOptions, int defaultPaginationCount=1000)

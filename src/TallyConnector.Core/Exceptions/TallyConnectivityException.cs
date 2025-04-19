@@ -1,6 +1,4 @@
-﻿using System.Runtime.Serialization;
-
-namespace TallyConnector.Core.Exceptions;
+﻿namespace TallyConnector.Core.Exceptions;
 
 [Serializable]
 public class TallyConnectivityException : Exception

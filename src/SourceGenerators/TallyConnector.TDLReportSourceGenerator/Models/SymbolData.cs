@@ -1,10 +1,6 @@
-﻿
-using Microsoft.CodeAnalysis;
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Immutable;
-using System.Xml.Serialization;
 using TallyConnector.TDLReportSourceGenerator.Execute;
-using TallyConnector.TDLReportSourceGenerator.Extensions.Symbols;
 
 namespace TallyConnector.TDLReportSourceGenerator.Models;
 

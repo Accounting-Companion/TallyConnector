@@ -1,6 +1,4 @@
-﻿using TallyConnector.Core.Models.Base;
-
-namespace TallyConnector.Core.Models.Common;
+﻿namespace TallyConnector.Core.Models.Common;
 
 public class AutoColVoucherTypeStat : IBaseObject
 {

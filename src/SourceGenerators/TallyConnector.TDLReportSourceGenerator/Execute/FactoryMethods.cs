@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using TallyConnector.TDLReportSourceGenerator.Models;
+﻿using TallyConnector.TDLReportSourceGenerator.Models;
 
 namespace TallyConnector.TDLReportSourceGenerator.Execute;
 public static class FactoryMethods
@@ -46,6 +43,10 @@ public static class FactoryMethods
     internal static LiteralExpressionSyntax CreateStringLiteral(string name)
     {
         return LiteralExpression(SyntaxKind.StringLiteralExpression, Literal(name));
+    }    
+    internal static LiteralExpressionSyntax CreateNullLiteral()
+    {
+        return LiteralExpression(SyntaxKind.NullLiteralExpression);
     }
     internal static ParameterSyntax GetCancellationTokenParameterSyntax()
     {

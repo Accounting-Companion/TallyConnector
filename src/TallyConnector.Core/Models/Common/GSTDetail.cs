@@ -95,18 +95,20 @@ public enum GSTTaxabilityType
 
 }
 /// <summary>
-/// GST Registration details of party ledgers 
-/// Added from Prime3
+/// GST Registration details of party ledgers
 /// </summary>
 [XmlRoot(ElementName = "LEDGSTREGDETAILS.LIST")]
-public class LedgerGSTRegistrationDetails
+public class LedgerGSTRegistrationDetail
 {
     [XmlElement("APPLICABLEFROM")]
-    public DateTime? ApplicableFrom { get; set; }
+    public DateTime ApplicableFrom { get; set; }
+
     [XmlElement("GSTREGISTRATIONTYPE")]
-    public GSTRegistrationType? GSTRegistrationType { get; set; }
+    public GSTRegistrationType GSTRegistrationType { get; set; }
+
     [XmlElement("STATE")]
     public string? State { get; set; }
+
     [XmlElement("PLACEOFSUPPLY")]
     public string? PlaceOfSupply { get; set; }
 
@@ -114,10 +116,14 @@ public class LedgerGSTRegistrationDetails
     public bool? IsOtherTerritoryAssesse { get; set; }
 
     [XmlElement("CONSIDERPURCHASEFOREXPORT")]
-    public bool? ConsiderPurchaseForExport { get; set; }
+    public bool ConsiderPurchaseForExport { get; set; }
 
     [XmlElement("ISTRANSPORTER")]
-    public bool? IsTransporter { get; set; }
+    public bool IsTransporter { get; set; }
+
+    [XmlElement("TRANSPORTERID")]
+    public string? TransporterId { get; set; }
+
     [XmlElement("ISCOMMONPARTY")]
     public bool? IsCommonParty { get; set; }
 

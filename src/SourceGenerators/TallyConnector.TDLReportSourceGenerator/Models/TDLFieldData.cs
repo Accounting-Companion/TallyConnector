@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace TallyConnector.TDLReportSourceGenerator.Models;
+﻿namespace TallyConnector.TDLReportSourceGenerator.Models;
 public class TDLFieldData
 {
     public string? Set { get; set; }

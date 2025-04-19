@@ -30,6 +30,8 @@ internal static partial class CSharpSourceGeneratorVerifier<TSourceGenerator>
         protected override CompilationOptions CreateCompilationOptions()
         {
             CompilationOptions compilationOptions = base.CreateCompilationOptions();
+            
+            
             return compilationOptions.WithSpecificDiagnosticOptions(
                  compilationOptions.SpecificDiagnosticOptions.SetItems(CSharpVerifierHelper.NullableWarnings));
         }

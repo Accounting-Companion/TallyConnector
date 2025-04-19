@@ -5,7 +5,7 @@ public static class Constants
 {
     // Source - "DEFTDL:src\..\..\tdl.core\src\..\..\tdl.template\src\formula\formula.tdl"
     // Search with Const Name 
-    
+
     public const string Prefix = "TC_";
     public const string MaxNumberLength = "31";
     public const string MaxAmountLength = "26";
@@ -32,6 +32,27 @@ public static class Constants
 
     public const string GetBooleanFromLogicFieldFunctionName = "TC_GetBooleanFromLogicField";
     public const string TransformDateFunctionName = "TC_TransformDateToXSD";
+    public static class SupportedVersions
+    {
+        public static class TallyPrime
+        {
+            public const string V4 = "4.0";
+            public const string V4_1 = "4.1";
+            public const string V5 = "5.0";
+            public const string V5_1 = "5.1";
+            public const string V6 = "6.0";
+        }
+    }
+    public static class RetiredVersions
+    {
+        public static class TallyPrime
+        {
+            public const string V2 = "2.0";
+            public const string V2_0_1 = "2.0.1";
+            public const string V2_1 = "2.1";
+            public const string V3 = "3.0";
+        }
+    }
 
     public static class Periodicty
     {

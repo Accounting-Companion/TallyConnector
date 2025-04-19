@@ -2,9 +2,8 @@
 
 public interface ITallyObject : IBaseTallyObject
 {
-    int AlterId { get; set; }
-    int MasterId { get; set; }
-
+    ulong AlterId { get; set; }
+    ulong MasterId { get; set; }
 
 }
 

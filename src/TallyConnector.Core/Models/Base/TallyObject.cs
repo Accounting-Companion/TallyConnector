@@ -1,6 +1,4 @@
-﻿using TallyConnector.Core.Models.Interfaces;
-
-namespace TallyConnector.Core.Models.Base;
+﻿namespace TallyConnector.Core.Models.Base;
 public class BaseTallyObject : IBaseTallyObject
 {
     [XmlElement(ElementName = "GUID")]
@@ -16,10 +14,18 @@ public class TallyObject : BaseTallyObject, ITallyObject
     [XmlElement(ElementName = "MASTERID")]
     [IgnoreForCreateDTO]
     [TDLField(ExcludeInFetch = true)]
-    public int MasterId { get; set; }
+    public ulong MasterId { get; set; }
 
     [IgnoreForCreateDTO]
     [XmlElement(ElementName = "ALTERID")]
-    public int AlterId { get; set; }
+    public ulong AlterId { get; set; }
+
+    [IgnoreForCreateDTO]
+    [XmlElement(ElementName = "ENTEREDBY")]
+    public string? EnteredBy { get; set; }
+
+    [IgnoreForCreateDTO]
+    [XmlElement(ElementName = "ALTEREDBY")]
+    public string? AlteredBy { get; set; }
 
 }

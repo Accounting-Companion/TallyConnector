@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace TallyConnector.Core.Models.Base.Masters;
+﻿namespace TallyConnector.Core.Models.Base.Masters;
 
 [TDLCollection(Type = "Group")]
 [XmlRoot("GROUP")]
@@ -13,7 +7,7 @@ public class BaseGroup : BaseAliasedMasterObject
 {
 
     /// <summary>
-    /// Name of group
+    /// Name of parent group
     /// </summary>
     [XmlElement(ElementName = "PARENT")]
     public string? Parent { get; set; }

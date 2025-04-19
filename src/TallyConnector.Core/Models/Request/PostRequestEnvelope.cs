@@ -1,6 +1,4 @@
-﻿using TallyConnector.Core.Models.Common;
-
-namespace TallyConnector.Core.Models.Request;
+﻿namespace TallyConnector.Core.Models.Request;
 [XmlRoot(ElementName = "ENVELOPE")]
 public class RequestEnvelope : PostRequestEnvelope<string>
 {
@@ -409,6 +407,13 @@ public class Line : BaseTDLClass
 public class Field : BaseTDLClass
 {
 
+    public Field(string name)
+    {
+        XMLTag = null;
+        Set = null;
+        Name = name;
+        SetAttributes();
+    }
     public Field(string name, string xMLTag)
     {
         XMLTag = xMLTag;

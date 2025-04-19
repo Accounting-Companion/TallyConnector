@@ -1,6 +1,4 @@
-﻿using TallyConnector.Core.Models.Interfaces;
-
-namespace TallyConnector.Core.Models.Interfaces.Masters;
+﻿namespace TallyConnector.Core.Models.Interfaces.Masters;
 public interface IBaseCurrency : IBaseMasterObject
 {
     string Name { get; set; }
