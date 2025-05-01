@@ -105,7 +105,7 @@ public static class Constants
     public const string PostObjectsMethodName = "Post{0}Async";
 
     public const string GetXMLAttributeOveridesMethodName = "Get{0}XMLAttributeOverides";
-    public const string GetRequestEnvelopeMethodName = "Get{0}RequestEnevelope";
+    public const string GetRequestEnvelopeMethodName = "Get{0}RequestEnvelope";
     public const string GetPostRequerstEnvelopeMethodName = "GetPostRequestEnvelope";
     public const string GetTDLPartsMethodName = "Get{0}TDLParts";
     public const string GetMainTDLPartMethodName = "Get{0}MainTDLPart";
@@ -138,5 +138,31 @@ public static class Constants
 
     public const string DateOnlyType = "System.DateOnly";
 
+    public const string SimpleFieldsCountFieldName = "SimpleFieldsCount";
+    
     public static List<string> DefaultSimpleTypes = [DateOnlyType];
+
+
+    
+    public class Models
+    {
+
+        public class Interfaces
+        {
+            public const string PREFIX = $"{TallyConnectorModelsNameSpace}.Interfaces";
+            public const string TallyRequestableObjectInterfaceFullName = $"{PREFIX}.ITallyRequestableObject";
+        }
+    }
+    public class Attributes
+    {
+        public const string PREFIX = TallyConnectorAttributesNameSpace;
+
+        public class SourceGenerator
+        {
+            public const string PREFIX = $"{TallyConnectorAttributesNameSpace}.SourceGenerator";
+            public const string ImplementTallyRequestableObjectAttribute = $"{PREFIX}.ImplementTallyRequestableObjectAttribute";
+
+        }
+
+    }
 }

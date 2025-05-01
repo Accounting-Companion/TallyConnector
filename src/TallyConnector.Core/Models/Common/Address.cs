@@ -92,6 +92,7 @@ public class MultiAddress
     public string? GSTIN { get; set; }
 
     [XmlElement(ElementName = "EXCISEJURISDICTIONDETAILS.LIST")]
+    [TDLCollection(CollectionName = "EXCISEJURISDICTIONDETAILS", ExplodeCondition = "$$NUMITEMS:EXCISEJURISDICTIONDETAILS>0")]
     public List<ExciseJurisdiction>? ExciseJurisdictions { get; set; }
     
 

@@ -1,6 +1,9 @@
-﻿namespace TallyConnector.Core.Models.Base.Masters;
+﻿using TallyConnector.Core.Attributes.SourceGenerator;
 
-public class BaseCurrency : BaseMasterObject
+namespace TallyConnector.Core.Models.Base.Masters;
+
+//[ImplementTallyRequestableObject]
+public partial class BaseCurrency : BaseMasterObject
 {
     [XmlElement(ElementName = "ORIGINALNAME")]
     public new string Name { get; set; } = null!;

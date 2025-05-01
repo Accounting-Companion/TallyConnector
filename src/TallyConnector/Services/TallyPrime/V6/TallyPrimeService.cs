@@ -1,4 +1,5 @@
-﻿using TallyConnector.Core.Models.TallyPrime.V6.Masters;
+﻿using TallyConnector.Core.Attributes;
+using TallyConnector.Core.Models.TallyPrime.V6.Masters;
 
 namespace TallyConnector.Services.TallyPrime.V6;
 
@@ -24,4 +25,5 @@ public partial class TallyPrimeService : TallyCommonService
     public TallyPrimeService(ILogger logger, IBaseTallyService baseTallyService) : base(logger, baseTallyService)
     {
     }
+
 }

@@ -2,7 +2,7 @@
 
 	<PropertyGroup>
 		<IncludeAllContentForSelfExtract>true</IncludeAllContentForSelfExtract>
-		<TargetFrameworks>net9.0;net8.0;net48</TargetFrameworks>
+		<TargetFrameworks>net9.0;net8.0</TargetFrameworks>
 		<OutputType>Library</OutputType>
 		<AssemblyName>TallyConnector</AssemblyName>
 		<LangVersion>latest</LangVersion>
@@ -39,8 +39,8 @@
 
 
 	<ItemGroup>
-		<PackageReference Include="System.Diagnostics.DiagnosticSource" Version="9.0.2" />
-		<PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="9.0.2" />
+		<PackageReference Include="System.Diagnostics.DiagnosticSource" Version="9.0.4" />
+		<PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="9.0.4" />
 	</ItemGroup>
 
 

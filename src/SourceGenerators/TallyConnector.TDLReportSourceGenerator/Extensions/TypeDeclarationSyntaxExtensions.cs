@@ -55,4 +55,9 @@ public static class TypeDeclarationSyntaxExtensions
 
         return false;
     }
+
+    public static bool HasPartialKeyword(this ClassDeclarationSyntax namedTypeSymbol)
+    {
+        return namedTypeSymbol.Modifiers.Any(c => c.IsKind(SyntaxKind.PartialKeyword));
+    }
 }
