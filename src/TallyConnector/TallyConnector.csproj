@@ -55,13 +55,11 @@
 
 
 	<ItemGroup>
-
-		<ProjectReference Include="..\TallyConnector.Core\TallyConnector.Core.csproj" />
 		<ProjectReference Include="..\SourceGenerators\TallyConnector.TDLReportSourceGenerator\TallyConnector.TDLReportSourceGenerator.csproj" OutputItemType="Analyzer" />
 	</ItemGroup>
 
 	<ItemGroup>
-	
+	  <ProjectReference Include="..\TallyConnector.Models\TallyConnector.Models.csproj" />
 	</ItemGroup>
 
 

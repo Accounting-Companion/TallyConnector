@@ -1,5 +1,4 @@
-﻿using Microsoft.Extensions.Logging;
-using UnitTests.Models;
+﻿using Microsoft.Testing.Platform.Logging;
 
 namespace TC.TDLReportSourceGenerator.Tests.Verifiers;
 internal static partial class CSharpSourceGeneratorVerifier<TSourceGenerator>
@@ -55,9 +54,9 @@ internal static partial class CSharpSourceGeneratorVerifier<TSourceGenerator>
 
         };
         
-        test.TestState.AdditionalReferences.Add(typeof(ILogger).Assembly);
+        //test.TestState.AdditionalReferences.Add(typeof(ILogger).Assembly);
         //test.TestState.AdditionalReferences.Add(typeof(Ledger).Assembly);
-        test.TestState.AdditionalReferences.Add(typeof(TallyConnector.Services.TallyCommonService).Assembly);
+        //test.TestState.AdditionalReferences.Add(typeof(TallyConnector.Services.TallyCommonService).Assembly);
         test.TestState.AdditionalReferences.Add(typeof(TallyConnector.Core.Models.BaseCompany).Assembly);
         foreach ((string filename, string content) in generatedSources)
         {

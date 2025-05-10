@@ -1,11 +1,17 @@
 ﻿namespace TallyConnector.Core.Models.Interfaces;
 
-#if NET8_0_OR_GREATER
+
 public interface ITallyRequestableObject
 {
-    public static abstract Task<RequestEnvelope> GetRequestEnvelope();
+    // static string XMLTag;
+    static abstract XmlAttributeOverrides GetXMLAttributeOverides();
+    static abstract RequestEnvelope GetRequestEnvelope();
 
 }
 
 
-#endif
+public interface IBaseTallyRequestableObject
+{
+    static abstract Part[] GetTDLParts();
+    static abstract Field[] GetTDLFields();
+}

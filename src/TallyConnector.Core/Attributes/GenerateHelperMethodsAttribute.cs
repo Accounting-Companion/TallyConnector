@@ -1,4 +1,6 @@
-﻿namespace TallyConnector.Core.Attributes;
+﻿using TallyConnector.Core.Models;
+
+namespace TallyConnector.Core.Attributes;
 
 
 [AttributeUsage(AttributeTargets.Class, AllowMultiple = true, Inherited = false)]

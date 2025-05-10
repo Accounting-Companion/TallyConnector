@@ -23,12 +23,14 @@
 		<!--<VersionSuffix>rc</VersionSuffix>-->
 		<GeneratePackageOnBuild>True</GeneratePackageOnBuild>
 		<!--<GenerateDocumentationFile>True</GenerateDocumentationFile>-->
-		<EmitCompilerGeneratedFiles>true</EmitCompilerGeneratedFiles>
-	<CompilerGeneratedFilesOutputPath>Generated</CompilerGeneratedFilesOutputPath>
+		<!--<EmitCompilerGeneratedFiles>true</EmitCompilerGeneratedFiles>
+	<CompilerGeneratedFilesOutputPath>Generated</CompilerGeneratedFilesOutputPath>-->
 	</PropertyGroup>
 
-	
 
+	<ItemGroup>
+		<Compile Remove="Generated\**\*" />
+	</ItemGroup>
 	<ItemGroup Condition=" '$(TargetFramework)' == 'net48'">
 		<Reference Include="Microsoft.CSharp" />
 		<Reference Include="System.ComponentModel.DataAnnotations" />
@@ -36,8 +38,4 @@
 		<PackageReference Include="System.Text.Json" Version="9.0.4" />
 	</ItemGroup>
 
-	<ItemGroup>
-
-		<ProjectReference Include="..\SourceGenerators\TallyConnector.TDLReportSourceGenerator\TallyConnector.TDLReportSourceGenerator.csproj" OutputItemType="Analyzer" />
-	</ItemGroup>
 </Project>

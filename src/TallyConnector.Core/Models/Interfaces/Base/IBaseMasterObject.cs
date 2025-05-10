@@ -13,7 +13,7 @@ public interface IBaseTallyObjectDTO
 {
     string RemoteId { get; set; }
 
-    Common.Action Action { get; set; }
+    Action Action { get; set; }
 }
 
 public interface IBaseMasterObjectDTO : IBaseTallyObjectDTO

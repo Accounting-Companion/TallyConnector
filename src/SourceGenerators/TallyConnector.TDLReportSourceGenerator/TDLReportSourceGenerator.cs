@@ -288,6 +288,7 @@ public class TDLReportSourceGeneratorV2 : IIncrementalGenerator
     {
         var token = context.CancellationToken;
         var assembly = compilation.Assembly;
+
         TDLReportTransformer tDLReportTransformer = new(assembly);
         foreach (var modelSymbol in modelSymbols)
         {
@@ -299,10 +300,9 @@ public class TDLReportSourceGeneratorV2 : IIncrementalGenerator
         foreach (var modelData in modelDataList)
         {
             var tDLReportSourceGenerator = new TDLReportGenerator(modelData);
-            string code =  tDLReportSourceGenerator.Generate(token);
+            string code = tDLReportSourceGenerator.Generate(token);
             context.AddSource($"{modelData.FullName}", code);
         }
-
     }
 
 

@@ -111,3 +111,13 @@ public class PostResults
     [XmlElement(ElementName = "RESULT")]
     public List<PostResult> Results { get; set; } = [];
 }
+
+[XmlRoot("ENVELOPE")]
+public class ReportResponseEnvelope<T> where T : ITallyRequestableObject
+{
+    public static Type TypeInfo = typeof(ReportResponseEnvelope<T>);
+    public List<T> Objects { get; set; } = [];
+
+    [System.Xml.Serialization.XmlElementAttribute(ElementName = "TC_TOTALCOUNT")]
+    public int? TotalCount { get; set; }
+}

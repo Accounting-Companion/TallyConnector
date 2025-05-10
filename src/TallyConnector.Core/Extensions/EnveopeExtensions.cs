@@ -39,6 +39,7 @@ public static class EnveopeExtensions
                 collection.ComputeVar = requestOptions.ComputeVar;
                 collection.Filters = requestOptions.Filters?.Select(c => c.FilterName!).ToList();
                 collection.Childof = requestOptions.Childof;
+                collection.BelongsTo = requestOptions.BelongsTo ?? YesNo.None;
             }
 
             if (requestOptions.Filters != null && requestOptions.Filters.Count > 0)

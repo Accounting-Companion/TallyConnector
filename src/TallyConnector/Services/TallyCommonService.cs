@@ -1,5 +1,11 @@
-﻿using System.Runtime.CompilerServices;
+﻿using System.Reflection;
+using System.Runtime.CompilerServices;
+using System.Xml.Serialization;
 using TallyConnector.Core.Extensions;
+using TallyConnector.Core.Models.Interfaces;
+using TallyConnector.Core.Models.Response;
+using TallyConnector.Models.Common;
+using TallyConnector.Models.Common.Pagination;
 using static TallyConnector.Core.Constants;
 
 //[assembly: InternalsVisibleTo("TestProject")]
@@ -187,4 +193,26 @@ public class TallyCommonService
         };
     }
 
+    public async Task<List<T>> GetObjectsAsync<T>(RequestOptions options, CancellationToken token = default) where T : ITallyRequestableObject,IBaseObject
+    {
+        var reqEnvelope = T.GetRequestEnvelope();
+        reqEnvelope.PopulateOptions(options);
+        await _baseHandler.PopulateDefaultOptions(reqEnvelope, token);
+        var reqXml = reqEnvelope.GetXML();    
+        var resp = await _baseHandler.SendRequestAsync(reqXml, "", token);
+        var respEnv = XMLToObject.GetObjfromXml<ReportResponseEnvelope<T>>(resp.Response!, T.GetXMLAttributeOverides());
+        return respEnv.Objects;
+    }  
+    public async Task<PaginatedResponse<T>> GetObjectsAsync<T>(PaginatedRequestOptions? options=null, CancellationToken token = default) where T : ITallyRequestableObject,IBaseObject
+    {
+        var reqEnvelope = T.GetRequestEnvelope();
+        reqEnvelope.PopulateOptions(options);
+        await _baseHandler.PopulateDefaultOptions(reqEnvelope, token);
+        var reqXml = reqEnvelope.GetXML();    
+        var resp = await _baseHandler.SendRequestAsync(reqXml, "", token);
+        var respEnv = XMLToObject.GetObjfromXml<ReportResponseEnvelope<T>>(resp.Response!, T.GetXMLAttributeOverides());
+        return new(respEnv.TotalCount ?? 0, options?.RecordsPerPage ?? 1000, respEnv.Objects, options?.PageNum ?? 1);
+    }
+
 }
+

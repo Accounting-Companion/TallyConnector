@@ -831,7 +831,7 @@ internal class Helper
                     .WithDefault(EqualsValueClause(IdentifierName(_reportVariableName))),
                     Token(SyntaxKind.CommaToken),
                     Parameter(Identifier(CollectionNameArgName))
-                        .WithType(NullableType( PredefinedType(Token(SyntaxKind.StringKeyword))))
+                        .WithType(NullableType(PredefinedType(Token(SyntaxKind.StringKeyword))))
                         .WithDefault(EqualsValueClause(IdentifierName(_collectionVariableName))),
                     Token(SyntaxKind.CommaToken),
                      Parameter(Identifier(XmlTagArgName))

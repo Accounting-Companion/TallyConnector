@@ -1,0 +1,37 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+	  <TargetFrameworks>net9.0;net8.0</TargetFrameworks>
+	  <ImplicitUsings>enable</ImplicitUsings>
+	  <Nullable>enable</Nullable>
+	  <AssemblyName>TallyConnector.Models</AssemblyName>
+	  <LangVersion>latest</LangVersion>
+	  <PackageTags>tally,xml,tallyprime,tallyerp9,tallyxml</PackageTags>
+
+	  <PackageLicenseExpression>MIT</PackageLicenseExpression>
+	  <Authors>saivineeth</Authors>
+	  <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
+	  <RepositoryUrl>https://github.com/Accounting-Companion/TallyConnector.git</RepositoryUrl>
+	  <PackageProjectUrl>https://github.com/Accounting-Companion/TallyConnector</PackageProjectUrl>
+
+	  <RepositoryType>git</RepositoryType>
+	  <!--<VersionSuffix>rc</VersionSuffix>-->
+	  <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
+	  <!--<GenerateDocumentationFile>True</GenerateDocumentationFile>-->
+	  <EmitCompilerGeneratedFiles>true</EmitCompilerGeneratedFiles>
+	  <CompilerGeneratedFilesOutputPath>Generated</CompilerGeneratedFilesOutputPath>
+  </PropertyGroup>
+
+	<ItemGroup>
+		<Compile Remove="Generated\**\*" />
+	</ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\TallyConnector.Core\TallyConnector.Core.csproj" />
+  </ItemGroup>
+
+	<ItemGroup>
+
+		<ProjectReference Include="..\SourceGenerators\TallyConnector.TDLReportSourceGenerator\TallyConnector.TDLReportSourceGenerator.csproj" OutputItemType="Analyzer" />
+	</ItemGroup>
+
+</Project>

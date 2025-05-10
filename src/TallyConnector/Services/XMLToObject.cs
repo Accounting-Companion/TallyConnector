@@ -24,17 +24,7 @@ public static class XMLToObject
         };
         StringReader stringReader = new StringReader(Xml);
         XmlReader rd = XmlReader.Create(stringReader, xset, context);
-        //StringReader XmlStream = new StringReader(Xml);
-        if (typeof(T).Name.Contains("VoucherEnvelope"))
-        {
-            XmlReader xslreader = XmlReader.Create(new StringReader("<xsl:stylesheet version=\"1.0\" xmlns:xsl=\"http://www.w3.org/1999/XSL/Transform\"><xsl:template match=\"@*|node()\">    <xsl:copy>        <xsl:apply-templates select=\"@*|node()\" />    </xsl:copy></xsl:template><xsl:template match=\"/ENVELOPE/BODY/DATA/TALLYMESSAGE/VOUCHER/LEDGERENTRIES.LIST\">		<ALLLEDGERENTRIES.LIST><xsl:apply-templates select=\"@*|node()\" /></ALLLEDGERENTRIES.LIST></xsl:template>   <xsl:template match=\"/ENVELOPE/BODY/DATA/TALLYMESSAGE/VOUCHER/INVENTORYENTRIES.LIST\">		   <ALLINVENTORYENTRIES.LIST><xsl:apply-templates select=\"@*|node()\" /></ALLINVENTORYENTRIES.LIST>	   </xsl:template></xsl:stylesheet>"));
-            XslCompiledTransform xslTransform = new();
-            xslTransform.Load(xslreader);
-            StringWriter textWriter = new();
-            XmlWriter xmlwriter = XmlWriter.Create(textWriter, new XmlWriterSettings() { OmitXmlDeclaration = true, Encoding = Encoding.Unicode });
-            xslTransform.Transform(rd, null, xmlwriter);
-            rd = XmlReader.Create(new StringReader(textWriter.ToString()), xset, context);
-        }
+
         try
         {
             T obj = (T)XMLSer.Deserialize(rd);
@@ -79,7 +69,8 @@ public static class XMLToObject
                             {
                                 internalErrors = new List<string>(internalErrors) { $"Error in {line.Trim()}" };
                                 break;
-                            };
+                            }
+                            ;
                         }
                         values = Splittedstrings.Skip(linenum).Take(StartIndex - linenum + 1);
                     }

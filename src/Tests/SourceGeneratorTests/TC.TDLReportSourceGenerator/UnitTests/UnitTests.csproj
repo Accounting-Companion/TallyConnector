@@ -31,7 +31,8 @@
 	<ItemGroup>
 	  <ProjectReference Include="..\..\..\..\SourceGenerators\TallyConnector.TDLReportSourceGenerator\TallyConnector.TDLReportSourceGenerator.csproj" />
 	  <ProjectReference Include="..\..\..\..\TallyConnector.Core\TallyConnector.Core.csproj" />
-	  <ProjectReference Include="..\..\..\..\TallyConnector\TallyConnector.csproj" />
+	  <!--<ProjectReference Include="..\..\..\..\TallyConnector.Core\TallyConnector.Core.csproj" />-->
+
 	</ItemGroup>
 
 	<ItemGroup>

@@ -45,13 +45,13 @@ public static class Constants
     public const string TallyConnectorNameSpace = "TallyConnector.Core";
     public const string TallyConnectorModelsNameSpace = $"{TallyConnectorNameSpace}.Models";
     public const string TallyConnectorCommonModelsNameSpace = $"{TallyConnectorModelsNameSpace}.Common";
-    public const string YesEnum = $"{TallyConnectorModelsNameSpace}.Common.YesNo.Yes";
-    public const string NoEnum = $"{TallyConnectorModelsNameSpace}.Common.YesNo.No";
+    public const string YesEnum = $"{TallyConnectorModelsNameSpace}.YesNo.Yes";
+    public const string NoEnum = $"{TallyConnectorModelsNameSpace}.YesNo.No";
     public const string TallyConnectorRequestModelsNameSpace = $"{TallyConnectorModelsNameSpace}.Request";
     public const string TallyConnectorResponseModelsNameSpace = $"{TallyConnectorModelsNameSpace}.Response";
     public const string TallyConnectorAttributesNameSpace = $"{TallyConnectorNameSpace}.Attributes";
     public const string TallyConnectorResponseNameSpace = $"{TallyConnectorModelsNameSpace}.Common.Response";
-    public const string TallyConnectorPaginationNameSpace = $"{TallyConnectorModelsNameSpace}.Common.Pagination";
+    public const string TallyConnectorPaginationNameSpace = $"TallyConnector.Models.Common.Pagination";
     public const string ReportResponseEnvelopeClassName = "ReportResponseEnvelope";
     public const string FieldFullTypeName = $"{TallyConnectorRequestModelsNameSpace}.Field";
     public const string PartFullTypeName = $"{TallyConnectorRequestModelsNameSpace}.Part";
@@ -61,7 +61,7 @@ public static class Constants
     public const string FilterFullTypeName = $"{TallyConnectorModelsNameSpace}.Filter";
     public const string TDLNameSetFullTypeName = $"{TallyConnectorRequestModelsNameSpace}.NameSet";
     public const string LanguageNamesFullTypeName = $"{TallyConnectorModelsNameSpace}.LanguageNameList";
-    public const string LicenseInfoFullTypeName = $"{TallyConnectorCommonModelsNameSpace}.{LicenseInfoPropertyName}";
+    public const string LicenseInfoFullTypeName = $"{TallyConnectorModelsNameSpace}.{LicenseInfoPropertyName}";
 
     public const string PaginatedResponseClassName = $"PaginatedResponse";
 
@@ -75,7 +75,7 @@ public static class Constants
     public const string RequestTypeEnumName = $"{TallyConnectorModelsNameSpace}.Request.RequestType";
     public const string TallyResponseEnvelopeTypeName = $"PostRequestEnvelope";
     public const string RequestEnvelopeFullTypeName = $"{TallyConnectorRequestModelsNameSpace}.RequestEnvelope";
-    public const string ActionEnumFullTypeName = $"{TallyConnectorCommonModelsNameSpace}.Action";
+    public const string ActionEnumFullTypeName = $"{TallyConnectorModelsNameSpace}.Action";
     public const string TallyEnvelopeFullTypeName = $"{TallyConnectorModelsNameSpace}.Response.ResponseEnvelope";
     public const string PostResultFullTypeName = $"{TallyConnectorModelsNameSpace}.Response.PostResult";
     public const string PostResultsFullTypeName = $"{TallyConnectorModelsNameSpace}.Response.PostResults";
@@ -109,6 +109,7 @@ public static class Constants
     public const string GetPostRequerstEnvelopeMethodName = "GetPostRequestEnvelope";
     public const string GetTDLPartsMethodName = "Get{0}TDLParts";
     public const string GetMainTDLPartMethodName = "Get{0}MainTDLPart";
+    public const string GetMainTDLLineMethodName = "Get{0}MainTDLLine";
     public const string GetTDLLinesMethodName = "Get{0}TDLLines";
     public const string GetTDLCollectionsMethodName = "Get{0}TDLCollections";
     public const string GetFetchListMethodName = "Get{0}FetchList";
@@ -139,6 +140,7 @@ public static class Constants
     public const string DateOnlyType = "System.DateOnly";
 
     public const string SimpleFieldsCountFieldName = "SimpleFieldsCount";
+    public const string ComplexFieldsCountFieldName = "ComplexFieldsCount";
     
     public static List<string> DefaultSimpleTypes = [DateOnlyType];
 
@@ -151,6 +153,14 @@ public static class Constants
         {
             public const string PREFIX = $"{TallyConnectorModelsNameSpace}.Interfaces";
             public const string TallyRequestableObjectInterfaceFullName = $"{PREFIX}.ITallyRequestableObject";
+
+
+        }
+
+        public class Response
+        {
+            public const string PREFIX = $"{TallyConnectorModelsNameSpace}.Response";
+            public const string ReportResponseEnvelopeClassName = $"{PREFIX}.ReportResponseEnvelope";
         }
     }
     public class Attributes

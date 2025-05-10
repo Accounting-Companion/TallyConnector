@@ -1,10 +1,10 @@
 ﻿using System.Collections.ObjectModel;
 using System.IO;
 using TallyConnector.Core.Models;
-using TallyConnector.Core.Models.Common;
 using TallyConnector.Core.Models.TallyPrime.V4.Masters;
 using TallyConnector.Core.Models.Request;
 using TallyConnector.Services;
+using TallyConnector.Models.Common;
 
 namespace DemoDesktopApp.ViewModels;
 public partial class DashBoardViewModel : BaseViewModel
@@ -16,10 +16,10 @@ public partial class DashBoardViewModel : BaseViewModel
     ObservableCollection<BaseCompany> _companyList;
 
     [ObservableProperty]
-    List<TallyConnector.Core.Models.Common.MasterStatistics> _masterStats;
+    List<MasterStatistics> _masterStats;
 
     [ObservableProperty]
-    List<TallyConnector.Core.Models.Common.VoucherStatistics> _voucherStats;
+    List<VoucherStatistics> _voucherStats;
     [ObservableProperty]
     string _selectedCompanyName;
     public DashBoardViewModel(BaseTallyService baseTallyService)

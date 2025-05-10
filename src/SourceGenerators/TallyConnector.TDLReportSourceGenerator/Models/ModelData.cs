@@ -1,12 +1,6 @@
-﻿using Microsoft.CodeAnalysis;
-using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Data.SqlTypes;
-using System.Numerics;
-using System.Security.Cryptography;
-using System.Text;
+﻿
 using TallyConnector.TDLReportSourceGenerator.Services;
+using TallyConnector.TDLReportSourceGenerator.Services.AttributeTransformers.Common;
 
 namespace TallyConnector.TDLReportSourceGenerator.Models;
 public class ModelData
@@ -17,6 +11,7 @@ public class ModelData
         FullName = symbol.GetClassMetaName();
         Name = symbol.Name;
         Namespace = symbol.ContainingNamespace.ToString();
+        IsRequestableObjectInterface = true;
     }
 
     public BaseModelData? BaseData { get; set; }
@@ -28,6 +23,13 @@ public class ModelData
     public string Name { get; }
     public string Namespace { get; }
     public int SimplePropertiesCount { get; internal set; }
+    /// <summary>
+    /// this will be false we  fetch class not by attribute (TallyRequestableObjectInterface) but from base or complex properties
+    /// </summary>
+    public bool IsRequestableObjectInterface { get; set; }
+    public int ComplexPropertiesCount { get; internal set; }
+    public TDLCollectionData? TDLCollectionData { get; internal set; }
+    public string? XMLTag { get; internal set; }
 }
 public class BaseModelData
 {
@@ -36,26 +38,22 @@ public class BaseModelData
         FullName = fullName;
         Name = name;
     }
-
-    public bool IsTallyRequestableObject { get; set; }
-
     public string FullName { get; set; }
     public string Name { get; private set; }
     public ModelData? ModelData { get; set; }
-
-
+    public bool Exclude { get; internal set; }
 }
 public class PropertyData
 {
     public string? _fieldSuffix;
-    public PropertyData(ISymbol member)
+    public PropertyData(ISymbol member, ModelData modelData)
     {
         MemberSymbol = member;
         Name = member.Name;
+        ModelData = modelData;
         PropertyOriginalType = GetChildType();
         IsComplex = (PropertyOriginalType.SpecialType is SpecialType.None && !DefaultSimpleTypes.Contains(PropertyOriginalType.GetClassMetaName())) && PropertyOriginalType.TypeKind is not TypeKind.Enum;
     }
-
     public string Name { get; set; }
     public INamedTypeSymbol PropertyOriginalType { get; }
     public bool IsComplex { get; private set; }
@@ -68,6 +66,16 @@ public class PropertyData
     public bool IsNullable { get; private set; }
 
     public PropertyTDLFieldData? TDLFieldData { get; set; }
+    public TDLCollectionData? TDLCollectionData { get; internal set; }
+    public ModelData? OriginalModelData { get; internal set; }
+    public bool Exclude { get; internal set; }
+    public bool IsAttribute { get; internal set; }
+    public PropertyData? OveriddenProperty { get; internal set; }
+    public List<XMLData> XMLData { get; internal set; } = [];
+    public XMLData? DefaultXMLData { get; internal set; }
+    public string? ListXMLTag { get; internal set; }
+    public string? CollectionPrefix { get; internal set; }
+    public ModelData ModelData { get; }
 
     internal void SetFieldName(string parentClassName) => _fieldSuffix = Utils.GenerateUniqueNameSuffix($"{parentClassName}\0{Name}");
 
@@ -124,7 +132,44 @@ public class PropertyData
         return $"Property - {FieldName}";
     }
 }
+
+public class XMLData
+{
+    public string? XmlTag { get; set; }
+
+    //public List<EnumChoiceData> EnumChoices { get; set; } = [];
+
+    public INamedTypeSymbol? Symbol { get; set; }
+
+    public ModelData? ModelData { get; set; }
+    public bool IsAttribute { get; set; }
+    public bool Exclude { get; internal set; }
+}
+
 public class PropertyTDLFieldData
 {
+    public string Set { get; internal set; }
+    public bool ExcludeInFetch { get; internal set; }
+    public string? Use { get; internal set; }
+    public string? TallyType { get; internal set; }
+    public string? Format { get; internal set; }
+    public string? Invisible { get; internal set; }
+    public string? FetchText { get; internal set; }
+}
 
+
+public class PropertyHolder
+{
+    public PropertyHolder(IEnumerable<PropertyData> properties)
+    {
+        Properties = properties;
+    }
+    public PropertyHolder(IEnumerable<PropertyData> properties, PropertyData? parent)
+    {
+        Properties = properties;
+        Parent = parent;
+    }
+
+    public PropertyData? Parent { get; set; }
+    public IEnumerable<PropertyData> Properties { get; set; }
 }

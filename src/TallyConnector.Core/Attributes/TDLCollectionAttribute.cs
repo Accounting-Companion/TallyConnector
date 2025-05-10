@@ -17,16 +17,16 @@ public class TDLCollectionAttribute : Attribute
         _collectionName = collectionName;
         _type = type;
     }
-    public TDLCollectionAttribute(string? collectionName, string? type, bool include)
+    public TDLCollectionAttribute(string? collectionName, string? type, bool exclude)
     {
         _collectionName = collectionName;
         _type = type;
-        Exclude = include;
+        Exclude = exclude;
     }
-    public TDLCollectionAttribute(string? collectionName, bool include)
+    public TDLCollectionAttribute(string? collectionName, bool exclude)
     {
         _collectionName = collectionName;
-        Exclude = include;
+        Exclude = exclude;
     }
 
     public string? Type
