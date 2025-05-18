@@ -100,15 +100,16 @@ public static class Utils
                                                                              visited);
                 allProperties.AddRange(directProperties);
                 allProperties.AddRange(GetAllProperties(directProperties,visited));
-                foreach (var xMLData in property.XMLData)
+                
+            }
+            foreach (var xMLData in property.XMLData)
+            {
+                if (xMLData.ModelData != null && visited.Add(xMLData.ModelData.FullName))
                 {
-                    if (xMLData.ModelData != null && visited.Add(xMLData.ModelData.FullName))
-                    {
-                        List<PropertyData> innerdirectProperties = GetAllDirectProperties(xMLData.ModelData,
-                                                                             visited);
-                        allProperties.AddRange(innerdirectProperties);
-                        allProperties.AddRange(GetAllProperties(innerdirectProperties, visited));
-                    }
+                    List<PropertyData> innerdirectProperties = GetAllDirectProperties(xMLData.ModelData,
+                                                                         visited);
+                    allProperties.AddRange(innerdirectProperties);
+                    allProperties.AddRange(GetAllProperties(innerdirectProperties, visited));
                 }
             }
         }
@@ -128,7 +129,8 @@ public static class Utils
                 properties.AddRange(GetAllDirectProperties(currentSymbol.ModelData, visited));
             }
         }
-        properties.AddRange(modelData.Properties.Values.Where(c => !c.Exclude));
+        
+        properties.AddRange(modelData.Properties.Values);
         return properties;
     }
 

@@ -312,11 +312,6 @@ public class TDLReportGenerator
 
             foreach (var complexProperty in _allComplexProperties)
             {
-                if (complexProperty.Exclude)
-                {
-                    continue;
-                }
-                
                 List<SyntaxNodeOrToken> args = [];
                 List<SyntaxNodeOrToken>? intializerArgs = null;
 
@@ -561,6 +556,7 @@ public class TDLReportGenerator
         foreach (var property in _allSimpleProperties)
         {
             if (property.IsOveridden) continue;
+            if (property.Exclude) continue;
             string name = GetFieldNameVariableName(property);
             List<SyntaxNodeOrToken> constructerArgs = [];
             constructerArgs.SafeAddArgument(IdentifierName(name));

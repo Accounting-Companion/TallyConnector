@@ -92,7 +92,7 @@ public class TDLReportTransformer
         {
             modelData.BaseData.ModelData = ExistingmodelData;
             modelData.ComplexPropertiesCount += ExistingmodelData.ComplexPropertiesCount;
-            modelData.SimplePropertiesCount += ExistingmodelData.SimplePropertiesCount;
+            //modelData.SimplePropertiesCount += ExistingmodelData.SimplePropertiesCount;
             return;
         }
         var baseModelData = await TransformModelDataAsync(baseType, complexProperties, collectionPrefix, false, token);
@@ -186,21 +186,25 @@ public class TDLReportTransformer
             }
         }
         complexProperties.Add(fullName);
+        ModelData ComplexPropertyModelData;
         if (_symbolsCache.TryGetValue(fullName, out var ExistingmodelData))
         {
-            propertyData.OriginalModelData = ExistingmodelData;
+            ComplexPropertyModelData = ExistingmodelData;
             modelData.ComplexPropertiesCount += ExistingmodelData.ComplexPropertiesCount;
             //modelData.SimplePropertiesCount += ExistingmodelData.SimplePropertiesCount;
-            return;
         }
-        ModelData ComplexPropertyModelData = await TransformModelDataAsync(propertyType,
-                                                                           complexProperties,
-                                                                           propertyData.CollectionPrefix,
-                                                                           AddMainSymbolCollection,
-                                                                           token);
+        else
+        {
+            ComplexPropertyModelData = await TransformModelDataAsync(propertyType,
+                                                                               complexProperties,
+                                                                               propertyData.CollectionPrefix,
+                                                                               AddMainSymbolCollection,
+                                                                               token);
+
+            modelData.ComplexPropertiesCount += ComplexPropertyModelData.ComplexPropertiesCount;
+            modelData.SimplePropertiesCount += ComplexPropertyModelData.SimplePropertiesCount;
+        }
         //await TransformMembers(ComplexPropertyModelData, propertyType, complexProperties, propertyData.CollectionPrefix, token);
-        modelData.ComplexPropertiesCount += ComplexPropertyModelData.ComplexPropertiesCount;
-        modelData.SimplePropertiesCount += ComplexPropertyModelData.SimplePropertiesCount;
 
         propertyData.OriginalModelData = ComplexPropertyModelData;
 
@@ -221,7 +225,19 @@ public class TDLReportTransformer
             {
                 continue;
             }
-            xMLData.ModelData = await TransformModelDataAsync(xMLData.Symbol, complexProperties, collectionPrefix, true, token);
+            ModelData xmlModelData;
+            if (_symbolsCache.TryGetValue(xMLData.Symbol.GetClassMetaName(), out xmlModelData))
+            {
+                modelData.ComplexPropertiesCount += xmlModelData.ComplexPropertiesCount;
+                //modelData.SimplePropertiesCount += ExistingmodelData.SimplePropertiesCount;
+            }
+            else
+            {
+                xmlModelData = await TransformModelDataAsync(xMLData.Symbol, complexProperties, collectionPrefix, true, token);
+                modelData.ComplexPropertiesCount += xmlModelData.ComplexPropertiesCount;
+                modelData.SimplePropertiesCount += xmlModelData.SimplePropertiesCount;
+            }
+            xMLData.ModelData = xmlModelData;
             if (xMLData.ModelData.TDLCollectionData?.CollectionName == null)
             {
                 xMLData.CollectionPrefix = collectionPrefix;
