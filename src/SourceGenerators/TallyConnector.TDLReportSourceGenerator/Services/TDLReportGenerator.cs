@@ -600,7 +600,7 @@ public class TDLReportGenerator
         statements.Add(ReturnStatement(IdentifierName(CollectionsVariableName)));
         var methodDeclarationSyntax = MethodDeclaration(CreateEmptyArrayType(CollectionFullTypeName),
                                                         Identifier(string.Format(GetTDLCollectionsMethodName, "")))
-            .WithModifiers(TokenList([Token(SyntaxKind.InternalKeyword), Token(SyntaxKind.StaticKeyword)]))
+            .WithModifiers(TokenList([Token(SyntaxKind.PublicKeyword), Token(SyntaxKind.StaticKeyword)]))
             .WithBody(
             Block(statements));
         return methodDeclarationSyntax;
@@ -650,7 +650,7 @@ public class TDLReportGenerator
         List<StatementSyntax> statements = [ReturnStatement(CollectionExpression(SeparatedList<CollectionElementSyntax>(nodesAndTokens)))];
         var methodDeclarationSyntax = MethodDeclaration(CreateEmptyArrayType(PredefinedType(Token(SyntaxKind.StringKeyword))),
                                                         Identifier(string.Format(GetFetchListMethodName, "")))
-            .WithModifiers(TokenList([Token(SyntaxKind.InternalKeyword), Token(SyntaxKind.StaticKeyword)]))
+            .WithModifiers(TokenList([Token(SyntaxKind.PublicKeyword), Token(SyntaxKind.StaticKeyword)]))
             .WithBody(
             Block(statements));
         //if (_symbol.IsChild && (!_symbol.IsBaseSymbol || _symbol.IsParentChild))

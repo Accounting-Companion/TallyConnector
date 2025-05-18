@@ -107,14 +107,14 @@ partial class Ledger : global::TallyConnector.Core.Models.Interfaces.ITallyReque
         return _fields;
     }
 
-    internal static global::TallyConnector.Core.Models.Request.Collection[] GetTDLCollections()
+    public static global::TallyConnector.Core.Models.Request.Collection[] GetTDLCollections()
     {
         var collections = new global::TallyConnector.Core.Models.Request.Collection[1];
         collections[0] = new(CollectionName, ""Ledger"", nativeFields: [..GetFetchList()]);
         return collections;
     }
 
-    internal static string[] GetFetchList()
+    public static string[] GetFetchList()
     {
         return[""Name"", ""Parent"", ""Address""];
     }
@@ -237,14 +237,14 @@ partial class Ledger : global::TallyConnector.Core.Models.Interfaces.ITallyReque
         return _fields;
     }
 
-    internal static global::TallyConnector.Core.Models.Request.Collection[] GetTDLCollections()
+    public static global::TallyConnector.Core.Models.Request.Collection[] GetTDLCollections()
     {
         var collections = new global::TallyConnector.Core.Models.Request.Collection[1];
         collections[0] = new(CollectionName, ""Ledger"", nativeFields: [..GetFetchList()]);
         return collections;
     }
 
-    internal static string[] GetFetchList()
+    public static string[] GetFetchList()
     {
         return[""Name"", ""Parent"", ""MULTIADRESS.ADDRESS""];
     }
@@ -370,14 +370,14 @@ partial class Voucher : global::TallyConnector.Core.Models.Interfaces.ITallyRequ
         return _fields;
     }
 
-    internal static global::TallyConnector.Core.Models.Request.Collection[] GetTDLCollections()
+    public static global::TallyConnector.Core.Models.Request.Collection[] GetTDLCollections()
     {
         var collections = new global::TallyConnector.Core.Models.Request.Collection[1];
         collections[0] = new(CollectionName, ""Voucher"", nativeFields: [..GetFetchList()]);
         return collections;
     }
 
-    internal static string[] GetFetchList()
+    public static string[] GetFetchList()
     {
         return[""VoucherTypeName"", ""VoucherNumber"", ""AllLedgerEntries.LedgerName"", ""LedgerEntries.LedgerName,LedgerEntries.NewProp""];
     }
@@ -527,14 +527,14 @@ partial class Voucher : global::TallyConnector.Core.Models.Interfaces.ITallyRequ
         return _fields;
     }
 
-    internal static global::TallyConnector.Core.Models.Request.Collection[] GetTDLCollections()
+    public static global::TallyConnector.Core.Models.Request.Collection[] GetTDLCollections()
     {
         var collections = new global::TallyConnector.Core.Models.Request.Collection[1];
         collections[0] = new(CollectionName, ""Voucher"", nativeFields: [..GetFetchList()]);
         return collections;
     }
 
-    internal static string[] GetFetchList()
+    public static string[] GetFetchList()
     {
         return[""VoucherTypeName"", ""VoucherNumber"", ""AllLedgerEntries.LedgerName"", ""LedgerEntries.LedgerName,LedgerEntries.NewProp"", ""INVENTORYALLOCATIONS.StockItemName"", ""INVENTORYALLOCATIONS.ACCOUNTINGALLOCATIONS.LedgerName,INVENTORYALLOCATIONS.ACCOUNTINGALLOCATIONS.NewProp""];
     }

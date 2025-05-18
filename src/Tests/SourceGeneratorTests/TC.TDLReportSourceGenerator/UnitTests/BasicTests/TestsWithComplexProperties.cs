@@ -135,14 +135,14 @@ partial class Ledger : global::TallyConnector.Core.Models.Interfaces.ITallyReque
         return _fields;
     }
 
-    internal static global::TallyConnector.Core.Models.Request.Collection[] GetTDLCollections()
+    public static global::TallyConnector.Core.Models.Request.Collection[] GetTDLCollections()
     {
         var collections = new global::TallyConnector.Core.Models.Request.Collection[1];
         collections[0] = new(CollectionName, ""Ledger"", nativeFields: [..GetFetchList()]);
         return collections;
     }
 
-    internal static string[] GetFetchList()
+    public static string[] GetFetchList()
     {
         return[""Name"", ""Parent"", ""LEDGSTREGDETAILS.APPLICABLEFROM,LEDGSTREGDETAILS.STATE,LEDGSTREGDETAILS.PLACEOFSUPPLY""];
     }

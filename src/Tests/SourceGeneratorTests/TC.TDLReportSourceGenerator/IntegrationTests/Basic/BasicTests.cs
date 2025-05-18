@@ -1,110 +1,420 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System.Xml.Serialization;
-using TallyConnector.Services;
+﻿using System.Xml.Serialization;
 
-namespace IntegrationTests.Basic; 
-//{
-//    [TestClass]
-//    public class BasicTests
-//    {
-//        const string _rootTag = "GROUP";
-//        [TestMethod]
-//        public void TestConstStrings()
-//        {
-//            Assert.AreEqual($"TC_{nameof(TestBasicNS.Group)}_{nameof(TestBasicNS.Group.Name)}", TestBasicNS.TallyService.GroupNameTDLFieldName);
-//            Assert.AreEqual($"TC_{nameof(TestBasicNS.Group)}_{nameof(TestBasicNS.Group.Parent)}", TestBasicNS.TallyService.GroupParentTDLFieldName);
+namespace IntegrationTests.Basic;
+
+public class BasicTestsWithSimpleProperties
+{
+    [Test]
+    public void VerifyBasicClassWithNoInheritance()
+    {
+        Type type = typeof(ModelWithSimpleProperties);
+
+        Assert.That(type.IsAssignableTo(typeof(ITallyRequestableObject)), Is.True);
+
+        var modelName = nameof(ModelWithSimpleProperties);
+        var modelNameUppper = modelName.ToUpper();
+
+        var assemblyName = type.Assembly.GetName().Name;
+        var FullName = type.FullName;
+
+        var fieldPrefix = $"{assemblyName}\0{FullName}";
+
+        string fieldName1 = $"Name_{Utils.GenerateUniqueNameSuffix($"{fieldPrefix}\0Name")}";
+        string fieldName2 = $"Parent_{Utils.GenerateUniqueNameSuffix($"{fieldPrefix}\0Parent")}";
+
+        string reportNameSuffix = Utils.GenerateUniqueNameSuffix(fieldPrefix);
+        string reportName = $"{modelName}_{reportNameSuffix}";
+        string colName = $"{modelName}sCollection_{reportNameSuffix}";
+        string[] fetchList = ["NAME", "PARENT"];
+
+        Assert.That(ModelWithSimpleProperties.GetFetchList(), Is.EqualTo(fetchList).AsCollection);
+
+        var collections = ModelWithSimpleProperties.GetTDLCollections();
+        Assert.That(collections, Has.Length.EqualTo(1));
+
+        var collection1 = collections[0];
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(collection1.Name, Is.EqualTo(colName));
+            Assert.That(collection1.Type, Is.EqualTo("Ledger"));
+            Assert.That(collection1.NativeFields, Is.Not.Null);
+            Assert.That(collection1.NativeFields, Is.EqualTo(fetchList).AsCollection);
+        });
+        var tdlFields = ModelWithSimpleProperties.GetTDLFields();
+        Assert.That(tdlFields, Has.Length.EqualTo(2));
+
+        var tdlfield1 = tdlFields[0];
+        Assert.Multiple(() =>
+        {
+            Assert.That(tdlfield1.Name,
+                            Is.EqualTo(fieldName1));
+            Assert.That(tdlfield1.Set, Is.EqualTo("$NAME"));
+
+            Assert.That(tdlfield1.XMLTag, Is.EqualTo("NAME"));
+        });
+
+        var tdlfield2 = tdlFields[1];
+        Assert.Multiple(() =>
+        {
+            Assert.That(tdlfield2.Name,
+                            Is.EqualTo(fieldName2));
+            Assert.That(tdlfield2.Set, Is.EqualTo("$PARENT"));
+
+            Assert.That(tdlfield2.XMLTag, Is.EqualTo("PARENT"));
+        });
+        Assert.That(ModelWithSimpleProperties.GetTDLParts(), Is.EqualTo(Array.Empty<Part>()));
+
+        var mainPart = ModelWithSimpleProperties.GetMainTDLPart();
+        Assert.Multiple(() =>
+        {
+            Assert.That(mainPart.Name, Is.EqualTo(reportName));
+            Assert.That(mainPart.Lines, Is.EqualTo(new string[] { reportName }).AsCollection);
+            Assert.That(mainPart.XMLTag, Is.Null);
+            Assert.That(mainPart.Repeat, Is.EqualTo($"{reportName} : {colName}"));
+        });
+
+        Assert.That(ModelWithSimpleProperties.GetTDLLines(), Is.EqualTo(Array.Empty<Line>()));
+
+        var mainLine = ModelWithSimpleProperties.GetMainTDLLine();
+        Assert.Multiple(() =>
+        {
+            Assert.That(mainLine.Name, Is.EqualTo(reportName));
+            Assert.That(mainLine.Fields, Is.EqualTo(new string[] { fieldName1, fieldName2 }).AsCollection);
+            Assert.That(mainLine.XMLTag, Is.EqualTo(modelNameUppper));
+        });
+
+        var xmlAttributeOverrides = ModelWithSimpleProperties.GetXMLAttributeOverides();
+        var rootAttr = xmlAttributeOverrides[ReportResponseEnvelope<ModelWithSimpleProperties>.TypeInfo, "Objects"];
+
+        Assert.That(rootAttr, Is.Not.Null);
+        Assert.That(rootAttr.XmlElements, Has.Count.EqualTo(1));
+
+        var xmlElem = rootAttr.XmlElements[0];
+        Assert.That(xmlElem!.ElementName, Is.EqualTo(modelNameUppper));
+
+        var envelope = ModelWithSimpleProperties.GetRequestEnvelope();
+        var tdlMsg = envelope.Body.Desc.TDL.TDLMessage;
+
+        Assert.That(tdlMsg.Report, Has.Count.EqualTo(1));
+        var report1 = tdlMsg.Report[0];
+        Assert.Multiple(() =>
+        {
+            Assert.That(report1.Name, Is.EqualTo(reportName));
+            Assert.That(report1.FormName, Is.EqualTo(reportName));
+        });
+        Assert.That(tdlMsg.Form, Has.Count.EqualTo(1));
+        var form1 = tdlMsg.Form[0];
+        Assert.Multiple(() =>
+        {
+            Assert.That(form1.Name, Is.EqualTo(reportName));
+            Assert.That(form1.PartName, Is.EqualTo(reportName));
+        });
+        Assert.Multiple(() =>
+        {
+            Assert.That(tdlMsg.Part, Has.Count.EqualTo(1));
+            Assert.That(tdlMsg.Form, Has.Count.EqualTo(1));
+            Assert.That(tdlMsg.Field, Has.Count.EqualTo(2));
+            Assert.That(tdlMsg.Collection, Has.Count.EqualTo(1));
+        });
+    }
+    
+    [Test]
+    public void VerifyBasicClassWithInheritance()
+    {
+        Type baseType = typeof(ModelWithSimpleProperties);
+        Type type = typeof(ModelWithSimplePropertiesandInheritance);
+
+        Assert.That(type.IsAssignableTo(typeof(ITallyRequestableObject)), Is.True);
+
+        var modelName = nameof(ModelWithSimplePropertiesandInheritance);
+        var modelNameUppper = modelName.ToUpper();
+
+        var baseAssemblyName = baseType.Assembly.GetName().Name;
+        var assemblyName = type.Assembly.GetName().Name;
+        var baseFullName = baseType.FullName;
+        var FullName = type.FullName;
+
+        var baseFieldPrefix = $"{baseAssemblyName}\0{baseFullName}";
+        var fieldPrefix = $"{assemblyName}\0{FullName}";
+
+        
+
+        string fieldName1 = $"Name_{Utils.GenerateUniqueNameSuffix($"{baseFieldPrefix}\0Name")}";
+        string fieldName2 = $"Parent_{Utils.GenerateUniqueNameSuffix($"{baseFieldPrefix}\0Parent")}";
+        string fieldName3 = $"IsBillWise_{Utils.GenerateUniqueNameSuffix($"{fieldPrefix}\0IsBillWise")}";
+
+        string reportNameSuffix = Utils.GenerateUniqueNameSuffix(fieldPrefix);
+        string reportName = $"{modelName}_{reportNameSuffix}";
+        string colName = $"{modelName}sCollection_{reportNameSuffix}";
+        string[] fetchList = ["NAME", "PARENT", "ISBILLWISEON"];
+
+        Assert.That(ModelWithSimplePropertiesandInheritance.GetFetchList(), Is.EqualTo(fetchList).AsCollection);
+
+        var collections = ModelWithSimplePropertiesandInheritance.GetTDLCollections();
+        Assert.That(collections, Has.Length.EqualTo(1));
+
+        var collection1 = collections[0];
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(collection1.Name, Is.EqualTo(colName));
+            Assert.That(collection1.Type, Is.EqualTo("Ledger"));
+            Assert.That(collection1.NativeFields, Is.Not.Null);
+            Assert.That(collection1.NativeFields, Is.EqualTo(fetchList).AsCollection);
+        });
+        var tdlFields = ModelWithSimplePropertiesandInheritance.GetTDLFields();
+        Assert.That(tdlFields, Has.Length.EqualTo(3));
+
+        var tdlfield1 = tdlFields[0];
+        Assert.Multiple(() =>
+        {
+            Assert.That(tdlfield1.Name,
+                            Is.EqualTo(fieldName1));
+            Assert.That(tdlfield1.Set, Is.EqualTo("$NAME"));
+
+            Assert.That(tdlfield1.XMLTag, Is.EqualTo("NAME"));
+        });
+
+        var tdlfield2 = tdlFields[1];
+        Assert.Multiple(() =>
+        {
+            Assert.That(tdlfield2.Name,
+                            Is.EqualTo(fieldName2));
+            Assert.That(tdlfield2.Set, Is.EqualTo("$PARENT"));
+
+            Assert.That(tdlfield2.XMLTag, Is.EqualTo("PARENT"));
+        });
+
+        var tdlfield3 = tdlFields[2];
+        Assert.Multiple(() =>
+        {
+            Assert.That(tdlfield3.Name,
+                            Is.EqualTo(fieldName3));
+            Assert.That(tdlfield3.Set, Is.EqualTo("$ISBILLWISEON"));
+
+            Assert.That(tdlfield3.XMLTag, Is.EqualTo("ISBILLWISEON"));
+        });
+
+        Assert.That(ModelWithSimplePropertiesandInheritance.GetTDLParts(), Is.EqualTo(Array.Empty<Part>()));
+
+        var mainPart = ModelWithSimplePropertiesandInheritance.GetMainTDLPart();
+        Assert.Multiple(() =>
+        {
+            Assert.That(mainPart.Name, Is.EqualTo(reportName));
+            Assert.That(mainPart.Lines, Is.EqualTo(new string[] { reportName }).AsCollection);
+            Assert.That(mainPart.XMLTag, Is.Null);
+            Assert.That(mainPart.Repeat, Is.EqualTo($"{reportName} : {colName}"));
+        });
+
+        Assert.That(ModelWithSimplePropertiesandInheritance.GetTDLLines(), Is.EqualTo(Array.Empty<Line>()));
+
+        var mainLine = ModelWithSimplePropertiesandInheritance.GetMainTDLLine();
+        Assert.Multiple(() =>
+        {
+            Assert.That(mainLine.Name, Is.EqualTo(reportName));
+            Assert.That(mainLine.Fields, Is.EqualTo(new string[] { fieldName1, fieldName2 ,fieldName3}).AsCollection);
+            Assert.That(mainLine.XMLTag, Is.EqualTo(modelNameUppper));
+        });
+
+        var xmlAttributeOverrides = ModelWithSimplePropertiesandInheritance.GetXMLAttributeOverides();
+        var rootAttr = xmlAttributeOverrides[ReportResponseEnvelope<ModelWithSimplePropertiesandInheritance>.TypeInfo, "Objects"];
+
+        Assert.That(rootAttr, Is.Not.Null);
+        Assert.That(rootAttr.XmlElements, Has.Count.EqualTo(1));
+
+        var xmlElem = rootAttr.XmlElements[0];
+        Assert.That(xmlElem!.ElementName, Is.EqualTo(modelNameUppper));
+
+        var envelope = ModelWithSimplePropertiesandInheritance.GetRequestEnvelope();
+        var tdlMsg = envelope.Body.Desc.TDL.TDLMessage;
+
+        Assert.That(tdlMsg.Report, Has.Count.EqualTo(1));
+        var report1 = tdlMsg.Report[0];
+        Assert.Multiple(() =>
+        {
+            Assert.That(report1.Name, Is.EqualTo(reportName));
+            Assert.That(report1.FormName, Is.EqualTo(reportName));
+        });
+        Assert.That(tdlMsg.Form, Has.Count.EqualTo(1));
+        var form1 = tdlMsg.Form[0];
+        Assert.Multiple(() =>
+        {
+            Assert.That(form1.Name, Is.EqualTo(reportName));
+            Assert.That(form1.PartName, Is.EqualTo(reportName));
+        });
+        Assert.Multiple(() =>
+        {
+            Assert.That(tdlMsg.Part, Has.Count.EqualTo(1));
+            Assert.That(tdlMsg.Form, Has.Count.EqualTo(1));
+            Assert.That(tdlMsg.Field, Has.Count.EqualTo(3));
+            Assert.That(tdlMsg.Collection, Has.Count.EqualTo(1));
+        });
+    }
+    [Test]
+    public void VerifyBasicClassWithInheritanceandOverridenProp()
+    {
+        Type baseType = typeof(ModelWithSimpleProperties);
+        Type type = typeof(ModelWithSimplePropertiesInheritanceandOveridden);
+
+        Assert.That(type.IsAssignableTo(typeof(ITallyRequestableObject)), Is.True);
+
+        var modelName = nameof(ModelWithSimplePropertiesInheritanceandOveridden);
+        var modelNameUppper = modelName.ToUpper();
+
+        var baseAssemblyName = baseType.Assembly.GetName().Name;
+        var assemblyName = type.Assembly.GetName().Name;
+        var baseFullName = baseType.FullName;
+        var FullName = type.FullName;
+
+        var baseFieldPrefix = $"{baseAssemblyName}\0{baseFullName}";
+        var fieldPrefix = $"{assemblyName}\0{FullName}";
 
 
-//            Assert.AreEqual($"TC_{nameof(TestBasicNS.Group)}List", TestBasicNS.TallyService.GroupReportName);
-//        }
-//        [TestMethod]
-//        public void TestGetParts()
-//        {
-//            var parts = TestBasicNS.TallyService.GetGroupTDLParts();
 
-//            Assert.AreEqual(1, parts.Length);
-//            var part1 = parts[0];
+        string fieldName2 = $"Name_{Utils.GenerateUniqueNameSuffix($"{fieldPrefix}\0Name")}";
+        string fieldName1 = $"Parent_{Utils.GenerateUniqueNameSuffix($"{baseFieldPrefix}\0Parent")}";
+        string fieldName3 = $"IsBillWise_{Utils.GenerateUniqueNameSuffix($"{fieldPrefix}\0IsBillWise")}";
 
-//            Assert.AreEqual(TestBasicNS.TallyService.GroupReportName, part1.Name);
-//            Assert.AreEqual($"{TestBasicNS.TallyService.GroupReportName} : TC_GroupCollection", part1.Repeat);
+        string reportNameSuffix = Utils.GenerateUniqueNameSuffix(fieldPrefix);
+        string reportName = $"{modelName}_{reportNameSuffix}";
+        string colName = $"{modelName}sCollection_{reportNameSuffix}";
+        string[] fetchList = [ "PARENT", "OVERIDDENNAME", "ISBILLWISEON"];
 
-//        }
-//        [TestMethod]
-//        public void TestGetLines()
-//        {
-//            var lines = TestBasicNS.TallyService.GetGroupTDLLines();
+        Assert.That(ModelWithSimplePropertiesInheritanceandOveridden.GetFetchList(), Is.EqualTo(fetchList).AsCollection);
 
-//            Assert.AreEqual(1, lines.Length);
-//            var line1 = lines[0];
+        var collections = ModelWithSimplePropertiesInheritanceandOveridden.GetTDLCollections();
+        Assert.That(collections, Has.Length.EqualTo(1));
 
-//            Assert.AreEqual(TestBasicNS.TallyService.GroupReportName, line1.Name);
-//            Assert.AreEqual(_rootTag, line1.XMLTag);
+        var collection1 = collections[0];
 
-//            Assert.AreEqual(2, line1.Fields!.Count);
+        Assert.Multiple(() =>
+        {
+            Assert.That(collection1.Name, Is.EqualTo(colName));
+            Assert.That(collection1.Type, Is.EqualTo("Ledger"));
+            Assert.That(collection1.NativeFields, Is.Not.Null);
+            Assert.That(collection1.NativeFields, Is.EqualTo(fetchList).AsCollection);
+        });
+        var tdlFields = ModelWithSimplePropertiesInheritanceandOveridden.GetTDLFields();
+        Assert.That(tdlFields, Has.Length.EqualTo(3));
 
-//            Assert.AreEqual(TestBasicNS.TallyService.GroupParentTDLFieldName, line1.Fields![0]);
-//            Assert.AreEqual(TestBasicNS.TallyService.GroupNameTDLFieldName, line1.Fields![1]);
+        var tdlfield1 = tdlFields[0];
+        Assert.Multiple(() =>
+        {
+            Assert.That(tdlfield1.Name,
+                            Is.EqualTo(fieldName1));
+            Assert.That(tdlfield1.Set, Is.EqualTo("$PARENT"));
 
-//        }
-//        [TestMethod]
-//        public void TestGetFields()
-//        {
-//            var fields = TestBasicNS.TallyService.GetGroupTDLFields();
-//            Assert.AreEqual(2, fields.Length);
-//            var field1 = fields[0];
-//            Assert.AreEqual(TestBasicNS.TallyService.GroupParentTDLFieldName, field1.Name);
-//            Assert.AreEqual("PARENT", field1.XMLTag);
-//            Assert.AreEqual("$PARENT", field1.Set);
+            Assert.That(tdlfield1.XMLTag, Is.EqualTo("PARENT"));
+        });
 
-//            var field2 = fields[1];
-//            Assert.AreEqual(TestBasicNS.TallyService.GroupNameTDLFieldName, field2.Name);
-//            Assert.AreEqual("NAME", field2.XMLTag);
-//            Assert.AreEqual("$NAME", field2.Set);
-//        }
+        var tdlfield2 = tdlFields[1];
+        Assert.Multiple(() =>
+        {
+            Assert.That(tdlfield2.Name,
+                            Is.EqualTo(fieldName2));
+            Assert.That(tdlfield2.Set, Is.EqualTo("$OVERIDDENNAME"));
 
-//        [TestMethod]
-//        public void TestGetCollections()
-//        {
-//            var collections = TestBasicNS.TallyService.GetGroupTDLCollections();
-//            Assert.AreEqual(1, collections.Length);
+            Assert.That(tdlfield2.XMLTag, Is.EqualTo("OVERIDDENNAME"));
+        });
 
-//            var collection1 = collections[0];
-//            Assert.AreEqual("TC_GroupCollection", collection1.Name);
+        
 
-//            Assert.AreEqual(_rootTag, collection1.Type);
-//            CollectionAssert.AreEqual(new List<string>() { "PARENT, NAME" }, collection1.NativeFields);
-//        }
+        var tdlfield3 = tdlFields[2];
+        Assert.Multiple(() =>
+        {
+            Assert.That(tdlfield3.Name,
+                            Is.EqualTo(fieldName3));
+            Assert.That(tdlfield3.Set, Is.EqualTo("$ISBILLWISEON"));
 
-//        [TestMethod]
-//        public void TestGetFetchList()
-//        {
-//            var fetchlist = TestBasicNS.TallyService.GetGroupFetchList();
-//            CollectionAssert.AreEqual(new List<string>() { "PARENT, NAME" }, fetchlist);
-//        }
+            Assert.That(tdlfield3.XMLTag, Is.EqualTo("ISBILLWISEON"));
+        });
 
-//        [TestMethod]
-//        public void TestReqXML()
-//        {
-//            var reqXml = TestBasicNS.TallyService.GetGroupRequestEnevelope().GetXML();
-//            Assert.AreEqual("""<ENVELOPE Action="None"><HEADER><VERSION>1</VERSION><TALLYREQUEST>EXPORT</TALLYREQUEST><TYPE>DATA</TYPE><ID>TC_GroupList</ID></HEADER><BODY><DESC><STATICVARIABLES><SVEXPORTFORMAT>$$SysName:XML</SVEXPORTFORMAT></STATICVARIABLES><TDL><TDLMESSAGE><REPORT NAME="TC_GroupList" ISMODIFY="No" ISFIXED="No" ISINITIALIZE="No" ISOPTION="No" ISINTERNAL="No"><FORMS>TC_GroupList</FORMS></REPORT><FORM NAME="TC_GroupList" ISMODIFY="No" ISFIXED="No" ISINITIALIZE="No" ISOPTION="No" ISINTERNAL="No"><TOPPARTS>TC_GroupList</TOPPARTS></FORM><PART NAME="TC_GroupList" ISMODIFY="No" ISFIXED="No" ISINITIALIZE="No" ISOPTION="No" ISINTERNAL="No"><TOPLINES>TC_GroupList</TOPLINES><REPEAT>TC_GroupList : TC_GroupCollection</REPEAT><SCROLLED>Vertical</SCROLLED></PART><LINE NAME="TC_GroupList" ISMODIFY="No" ISFIXED="No" ISINITIALIZE="No" ISOPTION="No" ISINTERNAL="No"><FIELDS>TC_Group_Parent</FIELDS><FIELDS>TC_Group_Name</FIELDS><XMLTAG>GROUP</XMLTAG></LINE><FIELD NAME="TC_Group_Parent" ISMODIFY="No" ISFIXED="No" ISINITIALIZE="No" ISOPTION="No" ISINTERNAL="No"><SET>$PARENT</SET><XMLTAG>PARENT</XMLTAG></FIELD><FIELD NAME="TC_Group_Name" ISMODIFY="No" ISFIXED="No" ISINITIALIZE="No" ISOPTION="No" ISINTERNAL="No"><SET>$NAME</SET><XMLTAG>NAME</XMLTAG></FIELD><COLLECTION NAME="TC_GroupCollection" ISMODIFY="No" ISFIXED="No" ISINITIALIZE="No" ISOPTION="No" ISINTERNAL="No"><TYPE>GROUP</TYPE><NATIVEMETHOD>PARENT, NAME</NATIVEMETHOD></COLLECTION><FUNCTION NAME="TC_GetBooleanFromLogicField" ISMODIFY="No" ISFIXED="No" ISINITIALIZE="No" ISOPTION="No" ISINTERNAL="No"><Parameter>val : Logical : None</Parameter><Returns>String</Returns><Action>000 :   If  : $$ISEmpty:##val</Action><Action>001 :Return : ##val</Action><Action>002 : Else    :</Action><Action>003 : If  :  ##val </Action><Action>004 :Return :"true"</Action><Action>005 : Else    :</Action><Action>006 :Return : "false"</Action><Action>007 : End If</Action><Action>008 : End If</Action></FUNCTION><FUNCTION NAME="TC_TransformDateToXSD" ISMODIFY="No" ISFIXED="No" ISINITIALIZE="No" ISOPTION="No" ISINTERNAL="No"><Parameter>ParamInputDate   : Date</Parameter><VARIABLES>ParamSeparator        : String : "-"</VARIABLES><VARIABLES>TempVarYear           : String</VARIABLES><VARIABLES>TempVarMonth          : String</VARIABLES><VARIABLES>TempVarDate           : String</VARIABLES><Returns>String</Returns><Action>01  : If        : NOT $$IsEmpty:##ParamInputDate</Action><Action>02  :   Set     : TempVarYear       : $$Zerofill:($$YearofDate:##ParamInputDate):4</Action><Action>03  :   Set     : TempVarMonth      : $$Zerofill:($$MonthofDate:##ParamInputDate):2</Action><Action>04  :   Set     : TempVarDate       : $$Zerofill:($$DayofDate:##ParamInputDate):2</Action><Action>05  :   Return  : $$String:##TempVarYear + $$String:##ParamSeparator + $$String:##TempVarMonth + $$String:##ParamSeparator + $$String:##TempVarDate</Action><Action>06  : End If</Action><Action>07  : Return    : ""</Action></FUNCTION></TDLMESSAGE></TDL></DESC><DATA /></BODY></ENVELOPE>""", reqXml);
-//        }
-//    }
-//}
+        Assert.That(ModelWithSimplePropertiesInheritanceandOveridden.GetTDLParts(), Is.EqualTo(Array.Empty<Part>()));
 
-//namespace TestBasicNS
-//{
-//    [TallyConnector.Core.Attributes.GenerateHelperMethod<Group>(GenerationMode = TallyConnector.Core.Models.Common.GenerationMode.GetMultiple)]
-//    public partial class TallyService : BaseTallyService
-//    {
-//    }
-//    [XmlRoot(ElementName = "GROUP")]
-//    public partial class Group : TallyConnector.Core.Models.Base.IBaseObject
-//    {
-//        [XmlElement(ElementName = "PARENT")]
-//        public string? Parent { get; set; }
+        var mainPart = ModelWithSimplePropertiesInheritanceandOveridden.GetMainTDLPart();
+        Assert.Multiple(() =>
+        {
+            Assert.That(mainPart.Name, Is.EqualTo(reportName));
+            Assert.That(mainPart.Lines, Is.EqualTo(new string[] { reportName }).AsCollection);
+            Assert.That(mainPart.XMLTag, Is.Null);
+            Assert.That(mainPart.Repeat, Is.EqualTo($"{reportName} : {colName}"));
+        });
 
-//        [XmlElement(ElementName = "NAME")]
-//        public string? Name { get; set; }
+        Assert.That(ModelWithSimplePropertiesInheritanceandOveridden.GetTDLLines(), Is.EqualTo(Array.Empty<Line>()));
 
-//    }
-//}
+        var mainLine = ModelWithSimplePropertiesInheritanceandOveridden.GetMainTDLLine();
+        Assert.Multiple(() =>
+        {
+            Assert.That(mainLine.Name, Is.EqualTo(reportName));
+            Assert.That(mainLine.Fields, Is.EqualTo(new string[] { fieldName1, fieldName2, fieldName3 }).AsCollection);
+            Assert.That(mainLine.XMLTag, Is.EqualTo(modelNameUppper));
+        });
+
+        var xmlAttributeOverrides = ModelWithSimplePropertiesInheritanceandOveridden.GetXMLAttributeOverides();
+        var rootAttr = xmlAttributeOverrides[ReportResponseEnvelope<ModelWithSimplePropertiesInheritanceandOveridden>.TypeInfo, "Objects"];
+
+        Assert.That(rootAttr, Is.Not.Null);
+        Assert.That(rootAttr.XmlElements, Has.Count.EqualTo(1));
+
+        var xmlElem = rootAttr.XmlElements[0];
+        Assert.That(xmlElem!.ElementName, Is.EqualTo(modelNameUppper));
+
+        var envelope = ModelWithSimplePropertiesInheritanceandOveridden.GetRequestEnvelope();
+        var tdlMsg = envelope.Body.Desc.TDL.TDLMessage;
+
+        Assert.That(tdlMsg.Report, Has.Count.EqualTo(1));
+        var report1 = tdlMsg.Report[0];
+        Assert.Multiple(() =>
+        {
+            Assert.That(report1.Name, Is.EqualTo(reportName));
+            Assert.That(report1.FormName, Is.EqualTo(reportName));
+        });
+        Assert.That(tdlMsg.Form, Has.Count.EqualTo(1));
+        var form1 = tdlMsg.Form[0];
+        Assert.Multiple(() =>
+        {
+            Assert.That(form1.Name, Is.EqualTo(reportName));
+            Assert.That(form1.PartName, Is.EqualTo(reportName));
+        });
+        Assert.Multiple(() =>
+        {
+            Assert.That(tdlMsg.Part, Has.Count.EqualTo(1));
+            Assert.That(tdlMsg.Form, Has.Count.EqualTo(1));
+            Assert.That(tdlMsg.Field, Has.Count.EqualTo(3));
+            Assert.That(tdlMsg.Collection, Has.Count.EqualTo(1));
+        });
+    }
+
+}
+[ImplementTallyRequestableObject]
+[TDLCollection(Type = "Ledger")]
+partial class ModelWithSimpleProperties
+{
+    [XmlElement(ElementName = "NAME")]
+    public string Name { get; set; }
+
+    [XmlElement(ElementName = "PARENT")]
+    public string Parent { get; set; }
+}
+
+[TDLCollection(Type = "Ledger")]
+
+[ImplementTallyRequestableObject]
+partial class ModelWithSimplePropertiesandInheritance : ModelWithSimpleProperties
+{
+    [XmlElement(ElementName = "ISBILLWISEON")]
+    public bool IsBillWise { get; set; }
+}
+
+[ImplementTallyRequestableObject]
+[TDLCollection(Type = "Ledger")]
+partial class ModelWithSimplePropertiesInheritanceandOveridden : ModelWithSimpleProperties
+{
+
+    [XmlElement(ElementName = "OVERIDDENNAME")]
+    public new string Name { get; set; }
+
+    [XmlElement(ElementName = "ISBILLWISEON")]
+    public bool IsBillWise { get; set; }
+}
