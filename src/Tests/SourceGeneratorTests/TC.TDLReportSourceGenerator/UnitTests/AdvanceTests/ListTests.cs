@@ -270,8 +270,6 @@ public partial class Voucher
     public string VoucherTypeName { get; set; }
     public string VoucherNumber { get; set; }
 
-       
-       
     [XmlElement(ElementName = ""ALLILEDGERENTRIES.LIST"", Type = typeof(LedgerEntry))]
     [XmlElement(ElementName = ""LEDGERENTRIES.LIST"", Type = typeof(ELedgerEntry))]
     public List<LedgerEntry> LedgerEntries { get; set; }
@@ -279,12 +277,12 @@ public partial class Voucher
 [TDLCollection(CollectionName = ""AllLedgerEntries"", ExplodeCondition = ""$$NUMITEMS:AllLedgerEntries>0"")]
 public class LedgerEntry
 {  
-        public string LedgerName { get; set; }
+    public string LedgerName { get; set; }
 }
 [TDLCollection(CollectionName = ""LedgerEntries"", ExplodeCondition = ""$$NUMITEMS:LedgerEntries>0"")]
 public class ELedgerEntry : LedgerEntry
 {
-
+    public string NewProp { get; set; }
 }
 ";
         await VerifyTDLReportV2.VerifyGeneratorAsync(src,
@@ -300,12 +298,14 @@ partial class Voucher : global::TallyConnector.Core.Models.Interfaces.ITallyRequ
     const string VoucherTypeName_PPEC_FieldName = ""VoucherTypeName_PPEC"";
     const string VoucherNumber_VW4Y_FieldName = ""VoucherNumber_VW4Y"";
     const string LedgerName_YBOB_FieldName = ""LedgerName_YBOB"";
+    const string NewProp_LUEW_FieldName = ""NewProp_LUEW"";
     const string LedgerEntries_OO83_PartName = ""LedgerEntries_OO83"";
+    const string LedgerEntries_SLOU_PartName = ""LedgerEntries_SLOU"";
     const string ReportName = ""Voucher_IEQM"";
     const string CollectionName = ""VouchersCollection_IEQM"";
     const string XMLTag = ""VOUCHER"";
     const int SimpleFieldsCount = 3;
-    const int ComplexFieldsCount = 1;
+    const int ComplexFieldsCount = 2;
     public static global::TallyConnector.Core.Models.Request.RequestEnvelope GetRequestEnvelope()
     {
         var reqEnvelope = new global::TallyConnector.Core.Models.Request.RequestEnvelope(global::TallyConnector.Core.Models.Request.HType.Data, ReportName);
@@ -339,7 +339,7 @@ partial class Voucher : global::TallyConnector.Core.Models.Interfaces.ITallyRequ
     public static global::TallyConnector.Core.Models.Request.Part[] GetTDLParts()
     {
         var parts = new global::TallyConnector.Core.Models.Request.Part[ComplexFieldsCount];
-        parts[0] = new(LedgerEntries_OO83_PartName, ""LedgerEntries"");
+        parts[0] = new(LedgerEntries_OO83_PartName, ""AllLedgerEntries"");
         return parts;
     }
 
@@ -347,14 +347,15 @@ partial class Voucher : global::TallyConnector.Core.Models.Interfaces.ITallyRequ
     {
         return new(ReportName, [VoucherTypeName_PPEC_FieldName,VoucherNumber_VW4Y_FieldName], XMLTag)
         {
-            Explode = [$""{LedgerEntries_OO83_PartName}:YES""]
+            Explode = [$""{LedgerEntries_OO83_PartName}:{string.Format(""$$NUMITEMS:AllLedgerEntries>0"", ""LedgerEntries"")}"", $""{LedgerEntries_SLOU_PartName}:{string.Format(""$$NUMITEMS:AllLedgerEntries>0"", ""LedgerEntries"")}""]
         };
     }
 
     public static global::TallyConnector.Core.Models.Request.Line[] GetTDLLines()
     {
         var _lines = new global::TallyConnector.Core.Models.Request.Line[ComplexFieldsCount];
-        _lines[0] = new(LedgerEntries_OO83_PartName, [LedgerName_YBOB_FieldName], ""LedgerEntries"");
+        _lines[0] = new(LedgerEntries_OO83_PartName, [LedgerName_YBOB_FieldName], ""ALLILEDGERENTRIES.LIST"");
+        _lines[1] = new(LedgerEntries_SLOU_PartName, [LedgerName_YBOB_FieldName,NewProp_LUEW_FieldName], ""LEDGERENTRIES.LIST"");
         return _lines;
     }
 
@@ -364,6 +365,7 @@ partial class Voucher : global::TallyConnector.Core.Models.Interfaces.ITallyRequ
         _fields[0] = new(VoucherTypeName_PPEC_FieldName, ""VOUCHERTYPENAME"", ""$VoucherTypeName"");
         _fields[1] = new(VoucherNumber_VW4Y_FieldName, ""VOUCHERNUMBER"", ""$VoucherNumber"");
         _fields[2] = new(LedgerName_YBOB_FieldName, ""LEDGERNAME"", ""$LedgerName"");
+        _fields[3] = new(NewProp_LUEW_FieldName, ""NEWPROP"", ""$NewProp"");
         return _fields;
     }
 
@@ -376,9 +378,9 @@ partial class Voucher : global::TallyConnector.Core.Models.Interfaces.ITallyRequ
 
     internal static string[] GetFetchList()
     {
-        return[""VoucherTypeName"", ""VoucherNumber"", ""LedgerName""];
+        return[""VoucherTypeName"", ""VoucherNumber"", ""AllLedgerEntries.LedgerName"", ""LedgerEntries.LedgerName,LedgerEntries.NewProp""];
     }
 }"));
     }
-
+    
 }

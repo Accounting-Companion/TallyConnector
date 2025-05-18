@@ -33,12 +33,11 @@ public class PropertyAttributesTransformer
         }
 
         // Setting defaults
-
         if (propertyData.XMLData.Count == 1 && propertyData.DefaultXMLData == null)
         {
             propertyData.DefaultXMLData = propertyData.XMLData[0];
+            propertyData.XMLData.RemoveAt(0);
         }
-
         propertyData.TDLFieldData.FetchText ??= propertyData.DefaultXMLData?.XmlTag ?? propertyData.Name;
         propertyData.TDLFieldData.Set ??= $"${propertyData.DefaultXMLData?.XmlTag ?? propertyData.Name}";
     }

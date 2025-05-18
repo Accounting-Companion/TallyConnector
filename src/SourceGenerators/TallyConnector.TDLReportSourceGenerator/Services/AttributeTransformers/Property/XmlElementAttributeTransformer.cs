@@ -47,15 +47,20 @@ public class XmlElementAttributeTransformer : AbstractPropertyAttributeTransform
         {
             return;
         }
-        propertyData.XMLData.Add(xMLData);
-        
+
+
         if (xMLData.Symbol == null)
         {
+            propertyData.XMLData.Add(xMLData);
             return;
         }
         if (propertyData.PropertyOriginalType.HasFullyQualifiedMetadataName(xMLData.Symbol.GetClassMetaName()))
         {
             propertyData.DefaultXMLData = xMLData;
+            return;
         }
+
+        propertyData.XMLData.Add(xMLData);
+
     }
 }

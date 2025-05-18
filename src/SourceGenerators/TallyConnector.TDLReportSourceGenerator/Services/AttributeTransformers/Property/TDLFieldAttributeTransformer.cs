@@ -55,5 +55,6 @@ public class TDLFieldAttributeTransformer : AbstractPropertyAttributeTransformer
         }
 
         propertyData.TDLFieldData = fieldData;
+     
     }
 }

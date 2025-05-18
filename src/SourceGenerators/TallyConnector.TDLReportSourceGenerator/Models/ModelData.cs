@@ -76,6 +76,7 @@ public class PropertyData
     public string? ListXMLTag { get; internal set; }
     public string? CollectionPrefix { get; internal set; }
     public ModelData ModelData { get; }
+    public bool IsTallyComplexObject { get; private set; }
 
     internal void SetFieldName(string parentClassName) => _fieldSuffix = Utils.GenerateUniqueNameSuffix($"{parentClassName}\0{Name}");
 
@@ -121,6 +122,7 @@ public class PropertyData
         {
             IsEnum = true;
         }
+        IsTallyComplexObject = type.CheckInterface(TallyComplexObjectInterfaceName);
         return type;
     }
 
@@ -144,6 +146,8 @@ public class XMLData
     public ModelData? ModelData { get; set; }
     public bool IsAttribute { get; set; }
     public bool Exclude { get; internal set; }
+    public string? FieldName { get; internal set; }
+    public string? CollectionPrefix { get; internal set; }
 }
 
 public class PropertyTDLFieldData

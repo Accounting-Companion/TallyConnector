@@ -100,6 +100,16 @@ public static class Utils
                                                                              visited);
                 allProperties.AddRange(directProperties);
                 allProperties.AddRange(GetAllProperties(directProperties,visited));
+                foreach (var xMLData in property.XMLData)
+                {
+                    if (xMLData.ModelData != null && visited.Add(xMLData.ModelData.FullName))
+                    {
+                        List<PropertyData> innerdirectProperties = GetAllDirectProperties(xMLData.ModelData,
+                                                                             visited);
+                        allProperties.AddRange(innerdirectProperties);
+                        allProperties.AddRange(GetAllProperties(innerdirectProperties, visited));
+                    }
+                }
             }
         }
         return allProperties;
