@@ -1,4 +1,5 @@
-﻿using TallyConnector.Core.Models;
+﻿using TallyConnector.Core;
+using TallyConnector.Core.Models;
 using TallyConnector.Models.Base;
 using TallyConnector.Models.Base.Masters;
 using TallyConnector.Models.TallyPrime.V6.Masters;
@@ -10,7 +11,7 @@ namespace TallyConnector.Tests.Services;
 public class BaseTallyServiceTests
 
 {
-    BaseTallyService TallyService;
+    private readonly BaseTallyService TallyService;
     public BaseTallyServiceTests()
     {
         TallyService = new();

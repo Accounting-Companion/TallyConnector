@@ -134,6 +134,9 @@ public static class Constants
     public const string GetBooleanFromLogicFieldFunctionName = "TC_GetBooleanFromLogicField";
     public const string GetTransformDateToXSDFunctionName = "TC_TransformDateToXSD";
 
+    public const string GetBooleanFromLogicFieldMethodName = $"{TallyConnectorNameSpace}.Constants.DefaultFunctions.GetBoolFunction";
+    public const string GetTransformDateToXSDMethodName = $"{TallyConnectorNameSpace}.Constants.DefaultFunctions.GetDateFunction";
+
 
     public const string StartActivityMethodName = "StartActivity";
 

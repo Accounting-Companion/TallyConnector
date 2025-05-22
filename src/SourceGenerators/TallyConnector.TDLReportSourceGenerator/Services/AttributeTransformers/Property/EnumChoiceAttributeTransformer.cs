@@ -2,49 +2,47 @@
 
 namespace TallyConnector.TDLReportSourceGenerator.Services.AttributeTransformers.Property;
 
-public class XmlArrayAttributeTransformer : AbstractPropertyAttributeTransformer
+public class EnumChoiceAttributeTransformer : AbstractPropertyAttributeTransformer
 {
     public override void TransformAsync(PropertyData propertyData, AttributeData attributeData)
     {
-        XMLData? xMLData = null;
+        propertyData.DefaultXMLData ??= new();
+
+        string? choice =null;
         if (attributeData.ConstructorArguments != null && attributeData.ConstructorArguments.Length > 0)
         {
             var constructorArguments = attributeData.ConstructorArguments;
-            xMLData ??= new();
             for (int i = 0; i < constructorArguments.Length; i++)
             {
                 switch (i)
                 {
                     case 0:
-                        xMLData.XmlTag = constructorArguments.First().Value?.ToString();
+                        choice = constructorArguments.First().Value?.ToString();
                         break;
                     default:
                         break;
                 }
             }
         }
+
+        string[] versions = [];
         if (attributeData.NamedArguments != null && attributeData.NamedArguments.Length > 0)
         {
             var namedArguments = attributeData.NamedArguments;
-            xMLData ??= new();
             foreach (var namedArgument in namedArguments)
             {
                 switch (namedArgument.Key)
                 {
-                    case "ElementName":
-                        xMLData.XmlTag = (string)namedArgument.Value.Value!;
+                    case "Choice":
+                        choice = (string)namedArgument.Value.Value!;
                         break;
-                    case "Type":
-                        xMLData.Symbol = (INamedTypeSymbol)namedArgument.Value.Value!;
+                    case "Versions":
+                        versions = [.. namedArgument.Value.Values.Select(c => (string)c.Value!)];
                         break;
                 }
             }
 
         }
-        if (xMLData == null)
-        {
-            return;
-        }
-        propertyData.ListXMLTag = xMLData.XmlTag;
+        propertyData.DefaultXMLData.EnumChoices.Add(new (choice ?? propertyData.Name, versions));
     }
 }

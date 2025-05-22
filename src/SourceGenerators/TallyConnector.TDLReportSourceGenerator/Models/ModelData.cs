@@ -12,6 +12,7 @@ public class ModelData
         Name = symbol.Name;
         Namespace = symbol.ContainingNamespace.ToString();
         IsRequestableObjectInterface = true;
+        IsEnum = Symbol.TypeKind == TypeKind.Enum;
     }
 
     public BaseModelData? BaseData { get; set; }
@@ -27,9 +28,12 @@ public class ModelData
     /// this will be false we  fetch class not by attribute (TallyRequestableObjectInterface) but from base or complex properties
     /// </summary>
     public bool IsRequestableObjectInterface { get; set; }
+    public bool IsEnum { get; }
     public int ComplexPropertiesCount { get; internal set; }
     public TDLCollectionData? TDLCollectionData { get; internal set; }
     public string? XMLTag { get; internal set; }
+    public int ENumPropertiesCount { get; internal set; }
+    public HashSet<string> DefaultTDLFunctions { get; internal set; } = [];
 }
 public class BaseModelData
 {
@@ -139,7 +143,7 @@ public class XMLData
 {
     public string? XmlTag { get; set; }
 
-    //public List<EnumChoiceData> EnumChoices { get; set; } = [];
+    public List<Execute.EnumChoiceData> EnumChoices { get; set; } = [];
 
     public INamedTypeSymbol? Symbol { get; set; }
 

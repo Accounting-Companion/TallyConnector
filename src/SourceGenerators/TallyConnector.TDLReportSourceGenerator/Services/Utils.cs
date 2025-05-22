@@ -121,7 +121,7 @@ public static class Utils
     {
         List<PropertyData> properties = [];
         visited ??= [];
-        
+        if (modelData.IsEnum) return properties;
         for (BaseModelData? currentSymbol = modelData.BaseData; currentSymbol != null && currentSymbol.ModelData != null; currentSymbol = currentSymbol.ModelData.BaseData)
         {
             if (visited.Add(currentSymbol.ModelData.FullName))
@@ -134,4 +134,13 @@ public static class Utils
         return properties;
     }
 
+
+    public static void CopyFrom(this HashSet<string> dest,HashSet<string> src)
+    {
+        foreach (var item in src)
+        {
+            dest.Add(item);
+        }
+    }
 }
+

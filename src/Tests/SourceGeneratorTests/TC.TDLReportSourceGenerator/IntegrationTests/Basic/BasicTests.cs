@@ -1,4 +1,5 @@
 ﻿using System.Xml.Serialization;
+using TallyConnector.TDLReportSourceGenerator;
 
 namespace IntegrationTests.Basic;
 
@@ -118,7 +119,7 @@ public class BasicTestsWithSimpleProperties
             Assert.That(tdlMsg.Collection, Has.Count.EqualTo(1));
         });
     }
-    
+
     [Test]
     public void VerifyBasicClassWithInheritance()
     {
@@ -138,7 +139,7 @@ public class BasicTestsWithSimpleProperties
         var baseFieldPrefix = $"{baseAssemblyName}\0{baseFullName}";
         var fieldPrefix = $"{assemblyName}\0{FullName}";
 
-        
+
 
         string fieldName1 = $"Name_{Utils.GenerateUniqueNameSuffix($"{baseFieldPrefix}\0Name")}";
         string fieldName2 = $"Parent_{Utils.GenerateUniqueNameSuffix($"{baseFieldPrefix}\0Parent")}";
@@ -191,7 +192,7 @@ public class BasicTestsWithSimpleProperties
         {
             Assert.That(tdlfield3.Name,
                             Is.EqualTo(fieldName3));
-            Assert.That(tdlfield3.Set, Is.EqualTo("$ISBILLWISEON"));
+            Assert.That(tdlfield3.Set, Is.EqualTo($"$${Constants.GetBooleanFromLogicFieldFunctionName}:$ISBILLWISEON"));
 
             Assert.That(tdlfield3.XMLTag, Is.EqualTo("ISBILLWISEON"));
         });
@@ -213,7 +214,7 @@ public class BasicTestsWithSimpleProperties
         Assert.Multiple(() =>
         {
             Assert.That(mainLine.Name, Is.EqualTo(reportName));
-            Assert.That(mainLine.Fields, Is.EqualTo(new string[] { fieldName1, fieldName2 ,fieldName3}).AsCollection);
+            Assert.That(mainLine.Fields, Is.EqualTo(new string[] { fieldName1, fieldName2, fieldName3 }).AsCollection);
             Assert.That(mainLine.XMLTag, Is.EqualTo(modelNameUppper));
         });
 
@@ -279,7 +280,7 @@ public class BasicTestsWithSimpleProperties
         string reportNameSuffix = Utils.GenerateUniqueNameSuffix(fieldPrefix);
         string reportName = $"{modelName}_{reportNameSuffix}";
         string colName = $"{modelName}sCollection_{reportNameSuffix}";
-        string[] fetchList = [ "PARENT", "OVERIDDENNAME", "ISBILLWISEON"];
+        string[] fetchList = ["PARENT", "OVERIDDENNAME", "ISBILLWISEON"];
 
         Assert.That(ModelWithSimplePropertiesInheritanceandOveridden.GetFetchList(), Is.EqualTo(fetchList).AsCollection);
 
@@ -318,14 +319,12 @@ public class BasicTestsWithSimpleProperties
             Assert.That(tdlfield2.XMLTag, Is.EqualTo("OVERIDDENNAME"));
         });
 
-        
-
         var tdlfield3 = tdlFields[2];
         Assert.Multiple(() =>
         {
             Assert.That(tdlfield3.Name,
                             Is.EqualTo(fieldName3));
-            Assert.That(tdlfield3.Set, Is.EqualTo("$ISBILLWISEON"));
+            Assert.That(tdlfield3.Set, Is.EqualTo($"$${Constants.GetBooleanFromLogicFieldFunctionName}:$ISBILLWISEON"));
 
             Assert.That(tdlfield3.XMLTag, Is.EqualTo("ISBILLWISEON"));
         });
@@ -353,12 +352,19 @@ public class BasicTestsWithSimpleProperties
 
         var xmlAttributeOverrides = ModelWithSimplePropertiesInheritanceandOveridden.GetXMLAttributeOverides();
         var rootAttr = xmlAttributeOverrides[ReportResponseEnvelope<ModelWithSimplePropertiesInheritanceandOveridden>.TypeInfo, "Objects"];
-
+        
         Assert.That(rootAttr, Is.Not.Null);
         Assert.That(rootAttr.XmlElements, Has.Count.EqualTo(1));
 
         var xmlElem = rootAttr.XmlElements[0];
         Assert.That(xmlElem!.ElementName, Is.EqualTo(modelNameUppper));
+
+        var overridenAttr = xmlAttributeOverrides[typeof(ModelWithSimpleProperties), "Name"];
+        Assert.Multiple(() =>
+        {
+            Assert.That(overridenAttr, Is.Not.Null);
+            Assert.That(overridenAttr.XmlIgnore, Is.True);
+        });
 
         var envelope = ModelWithSimplePropertiesInheritanceandOveridden.GetRequestEnvelope();
         var tdlMsg = envelope.Body.Desc.TDL.TDLMessage;

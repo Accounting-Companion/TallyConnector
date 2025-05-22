@@ -53,6 +53,7 @@ public class LedgGSTRegDetail
 ";
         await VerifyTDLReportV2.VerifyGeneratorAsync(src,
             ("UnitTests.TestBasic.Ledger.cs", @"using TallyConnector.Core.Extensions;
+using static TallyConnector.Core.Constants;
 
 #nullable enable
 namespace UnitTests.TestBasic;
@@ -82,6 +83,7 @@ partial class Ledger : global::TallyConnector.Core.Models.Interfaces.ITallyReque
         tdlMsg.Line = [GetMainTDLLine(), ..GetTDLLines()];
         tdlMsg.Field = [..GetTDLFields()];
         tdlMsg.Collection = [..GetTDLCollections()];
+        tdlMsg.Functions = [TallyConnector.Core.Constants.DefaultFunctions.GetDateFunction()];
         return reqEnvelope;
     }
 
@@ -129,7 +131,7 @@ partial class Ledger : global::TallyConnector.Core.Models.Interfaces.ITallyReque
         var _fields = new global::TallyConnector.Core.Models.Request.Field[SimpleFieldsCount];
         _fields[0] = new(Name_39DV_FieldName, ""NAME"", ""$Name"");
         _fields[1] = new(Parent_DR40_FieldName, ""PARENT"", ""$Parent"");
-        _fields[2] = new(ApplicableFrom_JWGQ_FieldName, ""APPLICABLEFROM"", ""$APPLICABLEFROM"");
+        _fields[2] = new(ApplicableFrom_JWGQ_FieldName, ""APPLICABLEFROM"", ""$$TC_TransformDateToXSD:$APPLICABLEFROM"");
         _fields[3] = new(State_JGLV_FieldName, ""STATE"", ""$STATE"");
         _fields[4] = new(PlaceOfSupply_SKQX_FieldName, ""PLACEOFSUPPLY"", ""$PLACEOFSUPPLY"");
         return _fields;

@@ -1,8 +1,4 @@
-﻿using Microsoft.CodeAnalysis;
-using System.Linq;
-using System.Threading.Tasks;
-using TallyConnector.TDLReportSourceGenerator.Models;
-using TallyConnector.TDLReportSourceGenerator.Services.AttributeTransformers;
+﻿using TallyConnector.TDLReportSourceGenerator.Models;
 using TallyConnector.TDLReportSourceGenerator.Services.AttributeTransformers.Class;
 using TallyConnector.TDLReportSourceGenerator.Services.AttributeTransformers.Property;
 
@@ -19,8 +15,8 @@ public class TDLReportTransformer
     }
 
     public async Task TransformAsync(INamedTypeSymbol symbol,
-                                                CancellationToken token,
-                                                HashSet<string>? uniqueComplexChilds = null)
+                                     CancellationToken token,
+                                     HashSet<string>? uniqueComplexChilds = null)
     {
         _symbolsCache = [];
         ModelData modelData = await TransformModelDataAsync(symbol, uniqueComplexChilds, token: token);
@@ -74,7 +70,7 @@ public class TDLReportTransformer
                                                     string? collectionPrefix = null,
                                                     CancellationToken token = default)
     {
-        if (baseType == null || baseType.HasFullyQualifiedMetadataName("object"))
+        if (baseType == null || modelData.Symbol.TypeKind == TypeKind.Enum || baseType.HasFullyQualifiedMetadataName("object"))
         {
             return;
         }
@@ -100,6 +96,9 @@ public class TDLReportTransformer
         modelData.BaseData.ModelData = baseModelData;
         modelData.ComplexPropertiesCount += baseModelData.ComplexPropertiesCount;
         modelData.SimplePropertiesCount += baseModelData.SimplePropertiesCount;
+        modelData.ENumPropertiesCount += baseModelData.ENumPropertiesCount;
+        modelData.DefaultTDLFunctions.CopyFrom(baseModelData.DefaultTDLFunctions);
+        
         //await TransformMembers(modelData, baseType, complexProperties, token: token);
         //await TransformBaseSymbolDataAsync(modelData, baseType.BaseType, complexProperties, token);
 
@@ -117,7 +116,10 @@ public class TDLReportTransformer
         {
             if (member.DeclaredAccessibility != Accessibility.Public || member.Kind != SymbolKind.Property)
             {
-                continue;
+                if (!modelData.IsEnum || member.Kind != SymbolKind.Field)
+                {
+                    continue;
+                }
             }
             PropertyData propertyData = TransformMember(member, modelData);
             propertyData.SetFieldName($"{_assembly.Name}\0{modelData.FullName}");
@@ -133,6 +135,10 @@ public class TDLReportTransformer
                 {
                     modelData.ComplexPropertiesCount++;
                 }
+                if (propertyData.IsEnum && !modelData.IsEnum)
+                {
+                    await TransformEnumSymbolData(modelData, propertyData, complexProperties, token);
+                }
             }
             if (modelData.BaseData?.ModelData?.Properties.TryGetValue(propertyData.Name, out var overridenProp) ?? false)
             {
@@ -147,11 +153,37 @@ public class TDLReportTransformer
                     modelData.SimplePropertiesCount--;
                 }
             }
-
-
-
             modelData.Properties[propertyData.Name] = propertyData;
         }
+    }
+
+    private async Task TransformEnumSymbolData(ModelData modelData,
+                                               PropertyData propertyData,
+                                               HashSet<string> complexProperties,
+                                               CancellationToken token)
+    {
+        var propertyType = propertyData.PropertyOriginalType;
+        var fullName = propertyType.GetClassMetaName();
+        var isAlreadyIncluded = complexProperties.Contains(fullName);
+        propertyData.Exclude = isAlreadyIncluded;
+        complexProperties.Add(fullName);
+
+        if (_symbolsCache.TryGetValue(fullName, out ModelData ComplexPropertyModelData))
+        {
+
+        }
+        else
+        {
+            
+            ComplexPropertyModelData = await TransformModelDataAsync(propertyType,
+                                                                     complexProperties,
+                                                                     propertyData.CollectionPrefix,
+                                                                     false,
+                                                                     token);
+            modelData.ENumPropertiesCount++;
+            modelData.ENumPropertiesCount += ComplexPropertyModelData.ENumPropertiesCount;
+        }
+        propertyData.OriginalModelData = ComplexPropertyModelData;
     }
 
     private async Task TransformComplexProperySymbolDataAsync(ModelData modelData,
@@ -186,23 +218,24 @@ public class TDLReportTransformer
             }
         }
         complexProperties.Add(fullName);
-        ModelData ComplexPropertyModelData;
-        if (_symbolsCache.TryGetValue(fullName, out var ExistingmodelData))
+        if (_symbolsCache.TryGetValue(fullName, out ModelData ComplexPropertyModelData))
         {
-            ComplexPropertyModelData = ExistingmodelData;
-            modelData.ComplexPropertiesCount += ExistingmodelData.ComplexPropertiesCount;
+            modelData.ComplexPropertiesCount += ComplexPropertyModelData.ComplexPropertiesCount;
             //modelData.SimplePropertiesCount += ExistingmodelData.SimplePropertiesCount;
         }
         else
         {
             ComplexPropertyModelData = await TransformModelDataAsync(propertyType,
-                                                                               complexProperties,
-                                                                               propertyData.CollectionPrefix,
-                                                                               AddMainSymbolCollection,
-                                                                               token);
+                                                                     complexProperties,
+                                                                     propertyData.CollectionPrefix,
+                                                                     AddMainSymbolCollection,
+                                                                     token);
 
             modelData.ComplexPropertiesCount += ComplexPropertyModelData.ComplexPropertiesCount;
             modelData.SimplePropertiesCount += ComplexPropertyModelData.SimplePropertiesCount;
+            modelData.ENumPropertiesCount += ComplexPropertyModelData.ENumPropertiesCount;
+            modelData.DefaultTDLFunctions.CopyFrom(ComplexPropertyModelData.DefaultTDLFunctions);
+            
         }
         //await TransformMembers(ComplexPropertyModelData, propertyType, complexProperties, propertyData.CollectionPrefix, token);
 
@@ -225,8 +258,7 @@ public class TDLReportTransformer
             {
                 continue;
             }
-            ModelData xmlModelData;
-            if (_symbolsCache.TryGetValue(xMLData.Symbol.GetClassMetaName(), out xmlModelData))
+            if (_symbolsCache.TryGetValue(xMLData.Symbol.GetClassMetaName(), out ModelData xmlModelData))
             {
                 modelData.ComplexPropertiesCount += xmlModelData.ComplexPropertiesCount;
                 //modelData.SimplePropertiesCount += ExistingmodelData.SimplePropertiesCount;
@@ -274,6 +306,24 @@ public class TDLReportTransformer
     {
         PropertyData propertyData = new(member, modelData);
         PropertyAttributesTransformer.TransformAsync(propertyData, member.GetAttributes());
+        if (propertyData.IsComplex || modelData.IsEnum || propertyData.PropertyOriginalType.TypeKind == TypeKind.Enum)
+        {
+            return propertyData;
+        }
+
+        switch (propertyData.PropertyOriginalType.SpecialType)
+        {
+            case SpecialType.System_Boolean:
+                modelData.DefaultTDLFunctions.Add(GetBooleanFromLogicFieldMethodName);
+                propertyData.TDLFieldData!.Set = $"$${GetBooleanFromLogicFieldFunctionName}:{propertyData.TDLFieldData!.Set}";
+                break;
+            case SpecialType.System_DateTime:
+                modelData.DefaultTDLFunctions.Add(GetTransformDateToXSDMethodName);
+                propertyData.TDLFieldData!.Set = $"$${GetTransformDateToXSDFunctionName}:{propertyData.TDLFieldData!.Set}";
+                break;
+            default:
+                break;
+        }
         return propertyData;
     }
 

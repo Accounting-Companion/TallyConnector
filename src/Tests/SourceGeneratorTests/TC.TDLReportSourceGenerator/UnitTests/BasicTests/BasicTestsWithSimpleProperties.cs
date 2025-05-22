@@ -133,6 +133,7 @@ public partial class Ledger : LedgerBase
         await VerifyTDLReportV2.VerifyGeneratorAsync(src,
             [
             ("UnitTests.TestBasic.Ledger.cs", @"using TallyConnector.Core.Extensions;
+using static TallyConnector.Core.Constants;
 
 #nullable enable
 namespace UnitTests.TestBasic;
@@ -159,6 +160,7 @@ partial class Ledger : global::TallyConnector.Core.Models.Interfaces.ITallyReque
         tdlMsg.Line = [GetMainTDLLine(), ..GetTDLLines()];
         tdlMsg.Field = [..GetTDLFields()];
         tdlMsg.Collection = [..GetTDLCollections()];
+        tdlMsg.Functions = [TallyConnector.Core.Constants.DefaultFunctions.GetBoolFunction()];
         return reqEnvelope;
     }
 
@@ -199,7 +201,7 @@ partial class Ledger : global::TallyConnector.Core.Models.Interfaces.ITallyReque
         var _fields = new global::TallyConnector.Core.Models.Request.Field[SimpleFieldsCount];
         _fields[0] = new(Name_VO4U_FieldName, ""NAME"", ""$NAME"");
         _fields[1] = new(Parent_V6LJ_FieldName, ""PARENT"", ""$PARENT"");
-        _fields[2] = new(IsBillWise_PTST_FieldName, ""ISBILLWISEON"", ""$ISBILLWISEON"");
+        _fields[2] = new(IsBillWise_PTST_FieldName, ""ISBILLWISEON"", ""$$TC_GetBooleanFromLogicField:$ISBILLWISEON"");
         return _fields;
     }
 
@@ -252,6 +254,7 @@ public partial class Ledger : LedgerBase
         await VerifyTDLReportV2.VerifyGeneratorAsync(src,
             [
             ("UnitTests.TestBasic.Ledger.cs", @"using TallyConnector.Core.Extensions;
+using static TallyConnector.Core.Constants;
 
 #nullable enable
 namespace UnitTests.TestBasic;
@@ -278,6 +281,7 @@ partial class Ledger : global::TallyConnector.Core.Models.Interfaces.ITallyReque
         tdlMsg.Line = [GetMainTDLLine(), ..GetTDLLines()];
         tdlMsg.Field = [..GetTDLFields()];
         tdlMsg.Collection = [..GetTDLCollections()];
+        tdlMsg.Functions = [TallyConnector.Core.Constants.DefaultFunctions.GetBoolFunction()];
         return reqEnvelope;
     }
 
@@ -319,7 +323,7 @@ partial class Ledger : global::TallyConnector.Core.Models.Interfaces.ITallyReque
         var _fields = new global::TallyConnector.Core.Models.Request.Field[SimpleFieldsCount];
         _fields[0] = new(Parent_V6LJ_FieldName, ""PARENT"", ""$PARENT"");
         _fields[1] = new(Name_39DV_FieldName, ""OVERIDDENNAME"", ""$OVERIDDENNAME"");
-        _fields[2] = new(IsBillWise_PTST_FieldName, ""ISBILLWISEON"", ""$ISBILLWISEON"");
+        _fields[2] = new(IsBillWise_PTST_FieldName, ""ISBILLWISEON"", ""$$TC_GetBooleanFromLogicField:$ISBILLWISEON"");
         return _fields;
     }
 

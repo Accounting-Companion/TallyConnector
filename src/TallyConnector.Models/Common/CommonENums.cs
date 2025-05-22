@@ -1,4 +1,6 @@
-﻿namespace TallyConnector.Models.Common;
+﻿using System.Runtime.Serialization;
+
+namespace TallyConnector.Models.Common;
 
 
 

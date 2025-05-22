@@ -32,6 +32,55 @@ public static class Constants
 
     public const string GetBooleanFromLogicFieldFunctionName = "TC_GetBooleanFromLogicField";
     public const string TransformDateFunctionName = "TC_TransformDateToXSD";
+
+    public static class DefaultFunctions
+    {
+
+        public static TDLFunction GetBoolFunction()
+        {
+            return new TDLFunction(Constants.GetBooleanFromLogicFieldFunctionName)
+            {
+                Parameters = ["val : Logical : None"],
+                Returns = "String",
+                Actions = [
+                "000 :   If  : $$ISEmpty:##val",
+                "001 :Return :\"false\"",
+                "002 : Else    :",
+                "003 : If  :  ##val ",
+                "004 :Return :\"true\"",
+                "005 : Else    :",
+                "006 :Return : \"false\"",
+                "007 : End If",
+                "008 : End If",
+            ]
+            };
+        }
+        public static TDLFunction GetDateFunction()
+        {
+            return new TDLFunction(Constants.TransformDateFunctionName)
+            {
+                Parameters = ["ParamInputDate   : Date"],
+                Variables = [
+                "ParamSeparator        : String : \"-\"",
+                "TempVarYear           : String",
+                "TempVarMonth          : String",
+                "TempVarDate           : String",
+            ],
+                Returns = "String",
+                Actions = [
+                "01  : If        : NOT $$IsEmpty:##ParamInputDate",
+                "02  :   Set     : TempVarYear       : $$Zerofill:($$YearofDate:##ParamInputDate):4",
+                "03  :   Set     : TempVarMonth      : $$Zerofill:($$MonthofDate:##ParamInputDate):2",
+                "04  :   Set     : TempVarDate       : $$Zerofill:($$DayofDate:##ParamInputDate):2",
+                "05  :   Return  : $$String:##TempVarYear + $$String:##ParamSeparator + $$String:##TempVarMonth + $$String:##ParamSeparator + $$String:##TempVarDate",
+                "06  : End If",
+                "07  : Return    : \"\""
+            ],
+
+            };
+        }
+    }
+
     public static class SupportedVersions
     {
         public static class TallyPrime

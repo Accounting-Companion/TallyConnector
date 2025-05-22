@@ -10,7 +10,8 @@ public class PropertyAttributesTransformer
         { XMLArrayAttributeName,new XmlArrayAttributeTransformer() },
         { XMLArrayItemAttributeName,new XmlElementAttributeTransformer() },
         { TDLFieldAttributeName,new TDLFieldAttributeTransformer() },
-        { TDLCollectionAttributeName,new PropertyCollectionAttributeTransformer() }
+        { TDLCollectionAttributeName,new PropertyCollectionAttributeTransformer() },
+        { EnumChoiceAttributeName,new EnumChoiceAttributeTransformer() },
     };
     /// <summary>
     /// Propogates propertyData properties based on attributes to property

@@ -63,8 +63,14 @@ public class TDLReportGenerator
                 .WithBaseList(BaseList(SingletonSeparatedList<BaseTypeSyntax>(SimpleBaseType(GetGlobalNameforType(Constants.Models.Interfaces.TallyRequestableObjectInterfaceFullName)))));
         }
 
+        List<UsingDirectiveSyntax> usings = [UsingDirective(IdentifierName(ExtensionsNameSpace))];
+        if (_modelData.DefaultTDLFunctions.Count > 0)
+        {
+            usings.Add(UsingDirective(IdentifierName("TallyConnector.Core.Constants"))
+                .WithStaticKeyword(Token(SyntaxKind.StaticKeyword)));
+        }
         var unit = CompilationUnit()
-          .WithUsings(List([UsingDirective(IdentifierName(ExtensionsNameSpace))]))
+          .WithUsings(List(usings))
           .WithMembers(List(new MemberDeclarationSyntax[]
           {
                 FileScopedNamespaceDeclaration(IdentifierName(_modelData.Namespace))
@@ -95,11 +101,11 @@ public class TDLReportGenerator
         foreach (var property in _allComplexProperties)
         {
             members.Add(CreateConstStringVar(GetPartNameVariableName(property), property.FieldName));
-            if(property.XMLData.Count > 0)
+            if (property.XMLData.Count > 0)
             {
                 foreach (var xMLData in property.XMLData)
                 {
-                    members.Add(CreateConstStringVar(GetPartNameVariableName(xMLData), xMLData.FieldName!));                    
+                    members.Add(CreateConstStringVar(GetPartNameVariableName(xMLData), xMLData.FieldName!));
                 }
             }
         }
@@ -122,7 +128,10 @@ public class TDLReportGenerator
         members.Add(CreateGetFieldsMethod());
         members.Add(GenerateGetCollectionsMethodSyntax());
         members.Add(GenerateGetFetchListMethodSyntax());
-
+        if (_modelData.ENumPropertiesCount > 0)
+        {
+            members.Add(CreateGetNameSetMethod());
+        }
         return members;
     }
 
@@ -158,6 +167,15 @@ public class TDLReportGenerator
         statements.Add(CreateAssignFromMethodStatement(tdlMsgVariableName, "Line", [string.Format(GetTDLLinesMethodName, "")], [string.Format(GetMainTDLLineMethodName, "")]));
         statements.Add(CreateAssignFromMethodStatement(tdlMsgVariableName, "Field", [string.Format(GetTDLFieldsMethodName, "")]));
         statements.Add(CreateAssignFromMethodStatement(tdlMsgVariableName, "Collection", [string.Format(GetTDLCollectionsMethodName, "")]));
+
+        if (_modelData.ENumPropertiesCount > 0)
+        {
+            statements.Add(CreateAssignFromMethodStatement(tdlMsgVariableName, "NameSet", [string.Format(GetTDLNameSetsMethodName, "")]));
+        }
+        if (_modelData.DefaultTDLFunctions.Count > 0)
+        {
+            statements.Add(CreateAssignFromMethodStatement(tdlMsgVariableName, "Functions", [], _modelData.DefaultTDLFunctions.ToList()));
+        }
         statements.Add(ReturnStatement(IdentifierName(envelopeVariableName)));
         var methodDeclarationSyntax = MethodDeclaration(GetGlobalNameforType(RequestEnvelopeFullTypeName),
                                                         Identifier(string.Format(GetRequestEnvelopeMethodName, "")))
@@ -165,6 +183,9 @@ public class TDLReportGenerator
             .WithBody(Block(statements));
         return methodDeclarationSyntax;
     }
+
+
+
     private MemberDeclarationSyntax GenerateGetXmlAttributeOverridesMethodSyntax()
     {
         var xmlAttributeOverridesVarName = "xmlAttributeOverrides";
@@ -357,7 +378,7 @@ public class TDLReportGenerator
                                                              explodes,
                                                              GetPartNameVariableName(xMLData),
                                                              complexProperty.TDLCollectionData?.ExplodeCondition);
-                            
+
                         }
                     }
                     intializerArgs = [
@@ -391,13 +412,13 @@ public class TDLReportGenerator
                                              string linesVariableName,
                                              ref int counter)
     {
-       
-        foreach (var data in complexProperty.XMLData) 
+
+        foreach (var data in complexProperty.XMLData)
         {
             List<SyntaxNodeOrToken> innerArgs = [];
             List<SyntaxNodeOrToken>? innerIntializerArgs = null;
             innerArgs.SafeAddArgument(IdentifierName(GetPartNameVariableName(data)));
-            
+
             var simplePropertyVarNames = data.ModelData?.GetAllDirectProperties().Where(c => !c.IsComplex && !c.IsList && !c.IsAttribute).Select(c => GetFieldNameVariableName(c)).ToList();
             List<SyntaxNodeOrToken> collectionArgs = [];
             if (simplePropertyVarNames?.Count == 0)
@@ -447,7 +468,7 @@ public class TDLReportGenerator
                                                      explodes,
                                                      GetPartNameVariableName(xMLData),
                                                      complexProperty.TDLCollectionData?.ExplodeCondition);
-                    
+
                 }
             }
 
@@ -472,7 +493,10 @@ public class TDLReportGenerator
         return methodDeclarationSyntax;
 
     }
-    void AddExplodeArgForComplexChild(string name, List<SyntaxNodeOrToken> explodes, string partName, string? explodeCondition)
+    void AddExplodeArgForComplexChild(string name,
+                                      List<SyntaxNodeOrToken> explodes,
+                                      string partName,
+                                      string? explodeCondition)
     {
 
         string text = ":YES";
@@ -497,12 +521,12 @@ public class TDLReportGenerator
         InterpolatedStringExpressionSyntax interpolatedStringExpressionSyntax = InterpolatedStringExpression(Token(SyntaxKind.InterpolatedStringStartToken))
             .WithContents(List(nodes));
         explodes.SafeAdd(ExpressionElement(interpolatedStringExpressionSyntax));
-        
+
     }
     private MethodDeclarationSyntax GenerateMainPartMethodSyntax(string CollectionNameArgName,
-                                             string partNameArgName,
-                                             string XmlTagArgName,
-                                             string PartsVariableName)
+                                                                 string partNameArgName,
+                                                                 string XmlTagArgName,
+                                                                 string PartsVariableName)
     {
         List<StatementSyntax> statements = [];
 
@@ -556,13 +580,30 @@ public class TDLReportGenerator
         foreach (var property in _allSimpleProperties)
         {
             if (property.IsOveridden) continue;
-            if (property.Exclude) continue;
+            //if (property.Exclude) continue;
             string name = GetFieldNameVariableName(property);
             List<SyntaxNodeOrToken> constructerArgs = [];
+            List<SyntaxNodeOrToken>? intializerArgs = null;
             constructerArgs.SafeAddArgument(IdentifierName(name));
             constructerArgs.SafeAddArgument(CreateStringLiteral(property.DefaultXMLData?.XmlTag ?? property.Name.ToUpper()));
-            constructerArgs.SafeAddArgument(CreateStringLiteral(property.TDLFieldData?.Set ?? ""));
-            var expressionStatementSyntax = GetArrayAssignmentExppressionImplicit(FieldsVariableName, counter, constructerArgs);
+            if (property.IsEnum)
+            {
+                constructerArgs.SafeAddArgument(CreateStringLiteral($"$$NameGetValue:{property.TDLFieldData?.Set}:{GetNameSetName(property)}"));
+               
+            }
+            else
+            {
+                constructerArgs.SafeAddArgument(CreateStringLiteral(property.TDLFieldData?.Set ?? ""));
+            }
+            if (property.IsNullable || property.IsEnum)
+            {
+                intializerArgs ??= [];
+                intializerArgs.SafeAdd(AssignmentExpression(SyntaxKind.SimpleAssignmentExpression,
+                                     IdentifierName("Invisible"),
+                                     CreateStringLiteral("$$ISEmpty:$$value")));
+            }
+
+            var expressionStatementSyntax = GetArrayAssignmentExppressionImplicit(FieldsVariableName, counter, constructerArgs, intializerArgs);
             statements.Add(expressionStatementSyntax);
             counter++;
         }
@@ -635,15 +676,15 @@ public class TDLReportGenerator
             {
                 continue;
             }
-            
-            AddFetchListofComplexProperties(nodesAndTokens,property.OriginalModelData, property.CollectionPrefix);
+
+            AddFetchListofComplexProperties(nodesAndTokens, property.OriginalModelData, property.CollectionPrefix);
             foreach (var xMLData in property.XMLData)
             {
-                if(xMLData.ModelData == null)
+                if (xMLData.ModelData == null)
                 {
                     continue;
                 }
-                AddFetchListofComplexProperties(nodesAndTokens,xMLData.ModelData, xMLData.CollectionPrefix);
+                AddFetchListofComplexProperties(nodesAndTokens, xMLData.ModelData, xMLData.CollectionPrefix);
             }
         }
 
@@ -686,7 +727,56 @@ public class TDLReportGenerator
         }
     }
 
-    private ExpressionStatementSyntax CreateReportAndFormAsssignStatement(string tdlMsgVariableName, string name)
+    private MemberDeclarationSyntax CreateGetNameSetMethod()
+    {
+        const string varName = "namesets";
+        List<StatementSyntax> statements = [];
+        if (_modelData.ENumPropertiesCount == 0)
+        {
+            statements.Add(ReturnStatement(CollectionExpression()));
+        }
+        else
+        {
+            statements.Add(CreateVarArrayWithCount(TDLNameSetFullTypeName, varName, _modelData.ENumPropertiesCount));
+            int counter = 0;
+            foreach (var simpleProperty in _allSimpleProperties)
+            {
+                if (!simpleProperty.IsEnum || simpleProperty.Exclude)
+                {
+                    continue;
+                }
+                List<SyntaxNodeOrToken> args = [];
+                List<SyntaxNodeOrToken> intializerArgs = [];
+                var items = simpleProperty.OriginalModelData?.Properties.Values.SelectMany(c => c.DefaultXMLData?.EnumChoices
+                .Where(choice => !string.IsNullOrWhiteSpace(choice.Choice)).Select(ch => $"{ch.Choice}:\"{c.Name}\"")).Select(c => ExpressionElement(CreateStringLiteral(c)));
+                intializerArgs.SafeAdd(AssignmentExpression(SyntaxKind.SimpleAssignmentExpression,
+                          IdentifierName("List"),
+                          CollectionExpression(SeparatedList<CollectionElementSyntax>(items))));
+                args.SafeAddArgument(CreateStringLiteral(GetNameSetName(simpleProperty)));
+                statements.Add(CreateArrayAssignmentwithExpression(varName, counter, CreateImplicitObjectExpression(args, intializerArgs)));
+                counter++;
+            }
+            statements.Add(ReturnStatement(IdentifierName(varName)));
+        }
+
+        var methodDeclarationSyntax = MethodDeclaration(CreateEmptyArrayType(TDLNameSetFullTypeName),
+                                                        Identifier(string.Format(GetTDLNameSetsMethodName, "")))
+            .WithModifiers(TokenList([Token(SyntaxKind.PublicKeyword), Token(SyntaxKind.StaticKeyword)]))
+            .WithBody(Block(statements));
+        return methodDeclarationSyntax;
+
+
+    }
+    private string GetNameSetName(PropertyData simpleProperty)
+    {
+        if (simpleProperty.OriginalModelData is null)
+        {
+            return string.Empty;
+        }
+        return $"{simpleProperty.OriginalModelData.Name}_{Utils.GenerateUniqueNameSuffix(simpleProperty.OriginalModelData.FullName)}";
+    }
+    private ExpressionStatementSyntax CreateReportAndFormAsssignStatement(string tdlMsgVariableName,
+                                                                          string name)
     {
         return ExpressionStatement(AssignmentExpression(SyntaxKind.SimpleAssignmentExpression,
                                                         MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression,
@@ -705,7 +795,8 @@ public class TDLReportGenerator
 
     private StatementSyntax CreateAssignFromMethodStatement(string varName,
                                                             string propName,
-                                                            List<string> methodNames, List<string>? singleReturnMethodNames = null)
+                                                            List<string> methodNames,
+                                                            List<string>? singleReturnMethodNames = null)
     {
         List<SyntaxNodeOrToken> nodes = [];
         if (singleReturnMethodNames != null)
@@ -748,14 +839,16 @@ public class TDLReportGenerator
 
     }
     private static ExpressionStatementSyntax GetArrayAssignmentExppressionImplicit(string FieldsVariableName,
-                                                                           int index,
-                                                                           List<SyntaxNodeOrToken> constructorArgs,
-                                                                           List<SyntaxNodeOrToken>? intializerArgs = null)
+                                                                                   int index,
+                                                                                   List<SyntaxNodeOrToken> constructorArgs,
+                                                                                   List<SyntaxNodeOrToken>? intializerArgs = null)
     {
         ExpressionSyntax implicitObjectCreationExpressionSyntax = CreateImplicitObjectExpression(constructorArgs, intializerArgs);
         return CreateArrayAssignmentwithExpression(FieldsVariableName, index, implicitObjectCreationExpressionSyntax);
     }
-    private static ExpressionStatementSyntax CreateArrayAssignmentwithExpression(string FieldsVariableName, int index, ExpressionSyntax expression)
+    private static ExpressionStatementSyntax CreateArrayAssignmentwithExpression(string FieldsVariableName,
+                                                                                 int index,
+                                                                                 ExpressionSyntax expression)
     {
         return ExpressionStatement(AssignmentExpression(SyntaxKind.SimpleAssignmentExpression,
                                                                  ElementAccessExpression(IdentifierName(FieldsVariableName))
@@ -767,7 +860,8 @@ public class TDLReportGenerator
                                                                  ));
     }
 
-    private static ImplicitObjectCreationExpressionSyntax CreateImplicitObjectExpression(List<SyntaxNodeOrToken> constructorArgs, List<SyntaxNodeOrToken>? intializerArgs = null)
+    private static ImplicitObjectCreationExpressionSyntax CreateImplicitObjectExpression(List<SyntaxNodeOrToken> constructorArgs,
+                                                                                         List<SyntaxNodeOrToken>? intializerArgs = null)
     {
         var implicitObjectCreationExpressionSyntax = ImplicitObjectCreationExpression().WithArgumentList(ArgumentList(SeparatedList<ArgumentSyntax>(constructorArgs)));
         if (intializerArgs != null)
@@ -781,7 +875,9 @@ public class TDLReportGenerator
     }
 
 
-    internal LocalDeclarationStatementSyntax CreateVarArrayWithCountVariable(string typeName, string varName, string countVariableName)
+    internal LocalDeclarationStatementSyntax CreateVarArrayWithCountVariable(string typeName,
+                                                                             string varName,
+                                                                             string countVariableName)
     {
 
         return CreateVarInsideMethodWithExpression(varName, ArrayCreationExpression(CreateArrayTypewithCountVariable(typeName, countVariableName)));
