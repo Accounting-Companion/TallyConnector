@@ -1,5 +1,4 @@
-﻿using TallyConnector.Core.Attributes.SourceGenerator;
-using TallyConnector.Models.Base.Masters;
+﻿using TallyConnector.Models.Base.Masters;
 
 namespace TallyConnector.Models.TallyPrime.V6.Masters;
 [XmlType(AnonymousType = true)]

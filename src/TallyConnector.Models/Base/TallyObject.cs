@@ -1,5 +1,4 @@
-﻿using TallyConnector.Core.Attributes.SourceGenerator;
-using TallyConnector.Core.Models;
+﻿using TallyConnector.Core.Models;
 
 namespace TallyConnector.Models.Base;
 public partial class BaseTallyObject : IBaseTallyObject

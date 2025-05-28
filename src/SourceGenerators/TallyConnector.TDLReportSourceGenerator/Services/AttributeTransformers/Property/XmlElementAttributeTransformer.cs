@@ -1,6 +1,4 @@
-﻿
-using TallyConnector.TDLReportSourceGenerator.Extensions.Symbols;
-using TallyConnector.TDLReportSourceGenerator.Models;
+﻿using TallyConnector.TDLReportSourceGenerator.Models;
 
 namespace TallyConnector.TDLReportSourceGenerator.Services.AttributeTransformers.Property;
 public class XmlElementAttributeTransformer : AbstractPropertyAttributeTransformer

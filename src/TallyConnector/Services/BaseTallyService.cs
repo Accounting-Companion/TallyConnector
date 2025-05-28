@@ -1,6 +1,7 @@
 ﻿using System.Diagnostics;
 using System.Globalization;
 using TallyConnector.Core;
+using TallyConnector.Core.Models.Interfaces;
 using TallyConnector.Core.Models.Response;
 
 namespace TallyConnector.Services;
@@ -36,7 +37,7 @@ public partial class BaseTallyService : IBaseTallyService
             return _licenseInfo;
         }
     }
-    protected BaseCompany? Company { get; set; }
+    protected ICompany? Company { get; set; }
 
 #if NET7_0_OR_GREATER
     private static readonly System.Text.RegularExpressions.Regex _xmlTextRegex = GetXmlTextRegex();
@@ -207,7 +208,7 @@ public partial class BaseTallyService : IBaseTallyService
 
 
     /// <inheritdoc/>
-    public void SetCompany(Company company)
+    public void SetCompany(ICompany company)
     {
         Company = company;
     }

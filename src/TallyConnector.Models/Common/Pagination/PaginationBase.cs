@@ -1,6 +1,6 @@
 ﻿namespace TallyConnector.Models.Common.Pagination;
 
-public class PaginationBase
+public class PaginationBase : IPaginationBase
 {
     public PaginationBase()
     {

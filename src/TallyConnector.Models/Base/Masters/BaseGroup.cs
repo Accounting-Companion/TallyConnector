@@ -5,7 +5,7 @@ namespace TallyConnector.Models.Base.Masters;
 [TDLCollection(Type = "Group")]
 [XmlRoot("GROUP")]
 [XmlType(AnonymousType = true)]
-public class BaseGroup : BaseAliasedMasterObject
+public class BaseGroup : BaseAliasedMasterObject,Core.Models.Interfaces.Masters.IBaseGroup
 {
 
     /// <summary>

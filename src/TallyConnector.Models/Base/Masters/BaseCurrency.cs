@@ -1,6 +1,4 @@
-﻿using TallyConnector.Core.Attributes.SourceGenerator;
-
-namespace TallyConnector.Models.Base.Masters;
+﻿namespace TallyConnector.Models.Base.Masters;
 
 [ImplementTallyRequestableObject]
 [TDLCollection(Type ="Currency")]

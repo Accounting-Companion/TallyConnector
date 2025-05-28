@@ -1,5 +1,4 @@
-﻿using TallyConnector.Core.Attributes;
-using TallyConnector.Models.Common;
+﻿using TallyConnector.Models.Common;
 using TallyConnector.Models.TallyPrime.V6.Masters;
 
 namespace TallyConnector.Services.TallyPrime.V6;

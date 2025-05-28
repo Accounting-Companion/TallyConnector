@@ -4,7 +4,7 @@
 /// </summary>
 [XmlRoot(ElementName = "COMPANY")]
 [TDLFunctionsMethodName(nameof(TC_BaseCompanyFunctions))]
-public class BaseCompany : IBaseObject
+public class BaseCompany : IBaseCompany
 {
     private const string CleanCompanyNumberFunctionName = "TC_GetCleanedCompanyNumber";
 
@@ -54,7 +54,9 @@ public class BaseCompany : IBaseObject
 
 
 [XmlRoot(ElementName = "COMPANY")]
-public class Company : BaseCompany,ICompany
+[XmlType(AnonymousType = true)]
+[ImplementTallyRequestableObject]
+public partial class Company : BaseCompany,ICompany
 {
 
     [XmlElement(ElementName = "BOOKSFROM")]
@@ -62,7 +64,7 @@ public class Company : BaseCompany,ICompany
 
     [XmlElement(ElementName = "GUID")]
     [Column(TypeName = $"nvarchar({Constants.GUIDLength})")]
-    public string? GUID { get; set; }
+    public string GUID { get; set; }
 
     [XmlElement(ElementName = "BASICCOMPANYFORMALNAME")]
     [Column(TypeName = $"nvarchar({Constants.MaxNameLength})")]
@@ -144,12 +146,6 @@ public class Company : BaseCompany,ICompany
 
 }
 
-public interface ICompany
-{
-    string? GUID { get; set; }
-
-    string CompNum { get; set; }
-}
 
 [XmlRoot(ElementName = "COMPANYONDISK")]
 public class CompanyOnDisk : BaseCompany, IBaseObject

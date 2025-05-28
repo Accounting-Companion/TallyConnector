@@ -9,7 +9,8 @@ public class BaseStatistics : IBaseObject
 }
 
 [TDLCollection(CollectionName = "STATObjects", Exclude = true)]
-public class MasterStatistics : BaseStatistics
+[ImplementTallyRequestableObject]
+public partial class MasterStatistics : BaseStatistics
 {
     [XmlElement(ElementName = "NAME")]
     public TallyObjectType Name { get; set; }

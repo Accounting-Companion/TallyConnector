@@ -1,10 +1,5 @@
-﻿using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.Diagnostics;
-using System;
-using System.Collections.Generic;
+﻿using Microsoft.CodeAnalysis.Diagnostics;
 using System.Collections.Immutable;
-using System.Data;
-using System.Text;
 
 namespace TallyConnector.TDLReportSourceGenerator.Analyzer;
 

@@ -32,7 +32,7 @@ public interface IBaseTallyService
     /// you can also overide company by mentioning in request options in Request
     /// </summary>
     /// <param name="company">instance of company</param>
-    void SetCompany(Company company);
+    void SetCompany(ICompany company);
 
 
     /// <summary>

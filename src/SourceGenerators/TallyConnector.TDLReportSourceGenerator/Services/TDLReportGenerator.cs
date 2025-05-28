@@ -1,9 +1,4 @@
-﻿using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
-using System.Collections.Immutable;
-using System.Drawing;
-using System.Reflection;
-using System.Xml.Linq;
+﻿using System.Collections.Immutable;
 using TallyConnector.TDLReportSourceGenerator.Models;
 
 namespace TallyConnector.TDLReportSourceGenerator.Services;
@@ -111,7 +106,7 @@ public class TDLReportGenerator
         }
 
         members.Add(CreateConstStringVar(_reportVarName, $"{_modelData.Name}_{_uniqueNameSuffix}"));
-        members.Add(CreateConstStringVar(_collectionVariableName, $"{_modelData.Name}sCollection_{_uniqueNameSuffix}"));
+        members.Add(CreateConstStringVar(_collectionVariableName, _modelData.TDLCollectionData?.CollectionName ?? $"{_modelData.Name}sCollection_{_uniqueNameSuffix}"));
         members.Add(CreateConstStringVar(_xmlTagVariableName, _modelData.XMLTag!));
 
 
@@ -126,7 +121,10 @@ public class TDLReportGenerator
 
         members.AddRange(CreateGetLinesMethods());
         members.Add(CreateGetFieldsMethod());
-        members.Add(GenerateGetCollectionsMethodSyntax());
+        if (!(_modelData.TDLCollectionData?.Exclude ?? false))
+        {
+            members.Add(GenerateGetCollectionsMethodSyntax());
+        }
         members.Add(GenerateGetFetchListMethodSyntax());
         if (_modelData.ENumPropertiesCount > 0)
         {
@@ -166,8 +164,10 @@ public class TDLReportGenerator
 
         statements.Add(CreateAssignFromMethodStatement(tdlMsgVariableName, "Line", [string.Format(GetTDLLinesMethodName, "")], [string.Format(GetMainTDLLineMethodName, "")]));
         statements.Add(CreateAssignFromMethodStatement(tdlMsgVariableName, "Field", [string.Format(GetTDLFieldsMethodName, "")]));
-        statements.Add(CreateAssignFromMethodStatement(tdlMsgVariableName, "Collection", [string.Format(GetTDLCollectionsMethodName, "")]));
-
+        if (!(_modelData.TDLCollectionData?.Exclude ?? false))
+        {
+            statements.Add(CreateAssignFromMethodStatement(tdlMsgVariableName, "Collection", [string.Format(GetTDLCollectionsMethodName, "")]));
+        }
         if (_modelData.ENumPropertiesCount > 0)
         {
             statements.Add(CreateAssignFromMethodStatement(tdlMsgVariableName, "NameSet", [string.Format(GetTDLNameSetsMethodName, "")]));
@@ -589,7 +589,7 @@ public class TDLReportGenerator
             if (property.IsEnum)
             {
                 constructerArgs.SafeAddArgument(CreateStringLiteral($"$$NameGetValue:{property.TDLFieldData?.Set}:{GetNameSetName(property)}"));
-               
+
             }
             else
             {
