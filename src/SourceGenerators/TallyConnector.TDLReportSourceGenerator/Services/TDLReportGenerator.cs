@@ -124,8 +124,9 @@ public class TDLReportGenerator
         if (!(_modelData.TDLCollectionData?.Exclude ?? false))
         {
             members.Add(GenerateGetCollectionsMethodSyntax());
+            members.Add(GenerateGetFetchListMethodSyntax());
         }
-        members.Add(GenerateGetFetchListMethodSyntax());
+       
         if (_modelData.ENumPropertiesCount > 0)
         {
             members.Add(CreateGetNameSetMethod());
@@ -172,9 +173,9 @@ public class TDLReportGenerator
         {
             statements.Add(CreateAssignFromMethodStatement(tdlMsgVariableName, "NameSet", [string.Format(GetTDLNameSetsMethodName, "")]));
         }
-        if (_modelData.DefaultTDLFunctions.Count > 0)
+        if (_modelData.DefaultTDLFunctions.Count > 0 || _modelData.TDLFunctions.Count > 0)
         {
-            statements.Add(CreateAssignFromMethodStatement(tdlMsgVariableName, "Functions", [], _modelData.DefaultTDLFunctions.ToList()));
+            statements.Add(CreateAssignFromMethodStatement(tdlMsgVariableName, "Functions", [.. _modelData.TDLFunctions], [.. _modelData.DefaultTDLFunctions, ]));
         }
         statements.Add(ReturnStatement(IdentifierName(envelopeVariableName)));
         var methodDeclarationSyntax = MethodDeclaration(GetGlobalNameforType(RequestEnvelopeFullTypeName),

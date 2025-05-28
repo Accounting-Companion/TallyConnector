@@ -7,7 +7,8 @@ public class ClassAttributesTransformer
     private static readonly Dictionary<string, ClassPropertyAttributeTransformer> _classattributeTransformers = new()
     {
         {TDLCollectionAttributeName,new ClassCollectionAttributeTransformer() },
-        {XmlRootAttributeName,new XMLRootAttributeTransformer() }
+        {XmlRootAttributeName,new XMLRootAttributeTransformer() },
+        {TDLFunctionsMethodNameAttributeName,new FunctionNameExtractor(c=>c.TDLFunctions) },
     };
 
     /// <summary>

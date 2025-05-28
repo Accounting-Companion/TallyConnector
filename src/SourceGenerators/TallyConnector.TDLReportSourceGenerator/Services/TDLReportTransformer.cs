@@ -98,6 +98,7 @@ public class TDLReportTransformer
         modelData.SimplePropertiesCount += baseModelData.SimplePropertiesCount;
         modelData.ENumPropertiesCount += baseModelData.ENumPropertiesCount;
         modelData.DefaultTDLFunctions.CopyFrom(baseModelData.DefaultTDLFunctions);
+        modelData.TDLFunctions.CopyFrom(baseModelData.TDLFunctions);
         
         //await TransformMembers(modelData, baseType, complexProperties, token: token);
         //await TransformBaseSymbolDataAsync(modelData, baseType.BaseType, complexProperties, token);
@@ -235,6 +236,7 @@ public class TDLReportTransformer
             modelData.SimplePropertiesCount += ComplexPropertyModelData.SimplePropertiesCount;
             modelData.ENumPropertiesCount += ComplexPropertyModelData.ENumPropertiesCount;
             modelData.DefaultTDLFunctions.CopyFrom(ComplexPropertyModelData.DefaultTDLFunctions);
+            modelData.TDLFunctions.CopyFrom(ComplexPropertyModelData.TDLFunctions);
             
         }
         //await TransformMembers(ComplexPropertyModelData, propertyType, complexProperties, propertyData.CollectionPrefix, token);

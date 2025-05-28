@@ -34,6 +34,7 @@ public class ModelData
     public string? XMLTag { get; internal set; }
     public int ENumPropertiesCount { get; internal set; }
     public HashSet<string> DefaultTDLFunctions { get; internal set; } = [];
+    public HashSet<string> TDLFunctions { get; internal set; } = [];
 }
 public class BaseModelData
 {
