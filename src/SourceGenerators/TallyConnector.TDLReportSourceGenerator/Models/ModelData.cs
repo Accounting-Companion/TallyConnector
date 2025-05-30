@@ -147,7 +147,7 @@ public class XMLData
 {
     public string? XmlTag { get; set; }
 
-    public List<Execute.EnumChoiceData> EnumChoices { get; set; } = [];
+    public List<EnumChoiceData> EnumChoices { get; set; } = [];
 
     public INamedTypeSymbol? Symbol { get; set; }
 
@@ -157,7 +157,18 @@ public class XMLData
     public string? FieldName { get; internal set; }
     public string? CollectionPrefix { get; internal set; }
 }
+public class EnumChoiceData
+{
+    public EnumChoiceData(string choice, string[]? versions = null)
+    {
+        Choice = choice;
+        Versions = versions ?? [];
+    }
 
+    public string Choice { get; }
+
+    public string[] Versions { get; }
+}
 public class PropertyTDLFieldData
 {
     public string Set { get; internal set; }

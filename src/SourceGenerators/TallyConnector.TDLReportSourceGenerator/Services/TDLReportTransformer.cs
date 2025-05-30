@@ -21,7 +21,6 @@ public class TDLReportTransformer
         _symbolsCache = [];
         ModelData modelData = await TransformModelDataAsync(symbol, uniqueComplexChilds, token: token);
         _symbolsToGenerate.Add(modelData);
-
     }
 
     private async Task<ModelData> TransformModelDataAsync(INamedTypeSymbol symbol,

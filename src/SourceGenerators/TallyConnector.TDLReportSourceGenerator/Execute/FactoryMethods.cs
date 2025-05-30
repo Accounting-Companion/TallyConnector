@@ -4,37 +4,13 @@ namespace TallyConnector.TDLReportSourceGenerator.Execute;
 public static class FactoryMethods
 {
     public const string CancellationTokenArgName = "token";
-    internal static bool CheckSymbolHasProperty(SymbolData symbol, string name)
-    {
-        bool hasProperty = symbol.Children.ContainsKey(name);
-        if (symbol.BaseSymbolData == null)
-        {
-            return hasProperty;
-        }
-        else
-        {
-            return hasProperty || CheckSymbolHasProperty(symbol.BaseSymbolData.SymbolData, name);
-        }
-
-    }
+   
     internal static ExpressionSyntax GetEmptyStringSyntax() => MemberAccessExpression(
                                                       SyntaxKind.SimpleMemberAccessExpression,
                                                       PredefinedType(
                                                           Token(SyntaxKind.StringKeyword)),
                                                       IdentifierName("Empty"));
-    internal static ChildSymbolData GetPropertyWithName(SymbolData symbol, string name)
-    {
-        symbol.Children.TryGetValue(name, out var property);
-        if (symbol.BaseSymbolData == null)
-        {
-            return property;
-        }
-        else
-        {
-            return property ?? GetPropertyWithName(symbol.BaseSymbolData.SymbolData, name);
-        }
-
-    }
+    
     internal static AliasQualifiedNameSyntax GetGlobalNameforType(string typeName)
     {
         return AliasQualifiedName(IdentifierName(Token(SyntaxKind.GlobalKeyword)),
@@ -104,9 +80,6 @@ public static class FactoryMethods
             .WithInitializer(EqualsValueClause(expressionSyntax))
             ));
     }
-    internal static string GetReportResponseEnvelopeName(SymbolData item)
-    {
-        return $"{item.MainSymbol.Name}ReportResponseEnvelopeFor{item.TypeName}";
-    }
+   
 
 }
