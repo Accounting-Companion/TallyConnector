@@ -41,7 +41,7 @@ public partial class Ledger
 public class LedgGSTRegDetail
 {
     [XmlElement(""APPLICABLEFROM"")]
-    public DateTime ApplicableFrom { get; set; }
+    public DateOnly ApplicableFrom { get; set; }
 
     [XmlElement(""STATE"")]
     public string State { get; set; }

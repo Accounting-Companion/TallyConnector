@@ -53,6 +53,14 @@ public class BaseLedger : BaseAliasedMasterObject
     [TDLCollection(CollectionName = "LEDGSTREGDETAILS", ExplodeCondition = "$$NUMITEMS:LEDGSTREGDETAILS>0")]
     public List<LedgerGSTRegistrationDetail> GSTRegistrationDetails { get; set; }
 
+    [XmlElement(ElementName = "GSTDETAILS.LIST")]
+    [TDLCollection(CollectionName = "GSTDETAILS", ExplodeCondition = "$$NUMITEMS:GSTDETAILS>0")]
+    public List<GSTDetail> GSTDetail { get; set; }
+
+    [XmlElement(ElementName = "HSNDETAILS.LIST")]
+    [TDLCollection(CollectionName = "HSNDETAILS", ExplodeCondition = "$$NUMITEMS:HSNDETAILS>0")]
+    public List<HSNDetail> HSNDetails { get; set; }
+
 
     public override string ToString()
     {

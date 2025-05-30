@@ -1,7 +1,7 @@
 ﻿using System.Collections.ObjectModel;
 using System.IO;
 using TallyConnector.Core.Models;
-using TallyConnector.Core.Models.TallyPrime.V4.Masters;
+using TallyConnector.Models.TallyPrime.V4.Masters;
 using TallyConnector.Core.Models.Request;
 using TallyConnector.Services;
 using TallyConnector.Models.Common;
@@ -29,7 +29,7 @@ public partial class DashBoardViewModel : BaseViewModel
     [RelayCommand]
     public async Task OnLoaded()
     {
-        LastAlterIdsRoot lastAlterIdsRoot = await _baseTallyService.GetLastAlterIdsAsync();
+       // LastAlterIdsRoot lastAlterIdsRoot = await _baseTallyService.GetLastAlterIdsAsync();
         SelectedCompanyName = await _baseTallyService.GetActiveSimpleCompanyNameAsync();
        // CompanyList = new(await _baseTallyService.GetCompaniesAsync());
        // //var license = await _baseTallyService.GetLicenseInfoAsync();
