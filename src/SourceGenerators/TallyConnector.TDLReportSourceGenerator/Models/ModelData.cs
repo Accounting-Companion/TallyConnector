@@ -13,6 +13,7 @@ public class ModelData
         Namespace = symbol.ContainingNamespace.ToString();
         IsRequestableObjectInterface = true;
         IsEnum = Symbol.TypeKind == TypeKind.Enum;
+        IsTallyComplexObject = symbol.CheckInterface(TallyComplexObjectInterfaceName);
     }
 
     public BaseModelData? BaseData { get; set; }
@@ -29,6 +30,7 @@ public class ModelData
     /// </summary>
     public bool IsRequestableObjectInterface { get; set; }
     public bool IsEnum { get; }
+    public bool IsTallyComplexObject { get; private set; }
     public int ComplexPropertiesCount { get; internal set; }
     public TDLCollectionData? TDLCollectionData { get; internal set; }
     public string? XMLTag { get; internal set; }
@@ -57,6 +59,7 @@ public class PropertyData
         Name = member.Name;
         ModelData = modelData;
         PropertyOriginalType = GetChildType();
+        IsTallyComplexObject = PropertyOriginalType.CheckInterface(TallyComplexObjectInterfaceName);
         IsComplex = (PropertyOriginalType.SpecialType is SpecialType.None && !DefaultSimpleTypes.Contains(PropertyOriginalType.GetClassMetaName())) && PropertyOriginalType.TypeKind is not TypeKind.Enum;
     }
     public string Name { get; set; }
@@ -127,7 +130,7 @@ public class PropertyData
         {
             IsEnum = true;
         }
-        IsTallyComplexObject = type.CheckInterface(TallyComplexObjectInterfaceName);
+
         return type;
     }
 

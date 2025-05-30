@@ -1,5 +1,4 @@
-﻿using TallyConnector.Core.Models.TallyComplexObjects;
-using TallyConnector.Models.Common;
+﻿using TallyConnector.Models.Common;
 
 namespace TallyConnector.Models.Base.Masters;
 
@@ -21,6 +20,7 @@ public class BaseLedger : BaseAliasedMasterObject
 
     [XmlElement(ElementName = "OPENINGBALANCE")]
     public TallyAmountField? OpeningBalance { get; set; }
+
 
     [XmlElement(ElementName = "CURRENCY")]
     public string? Currency { get; set; }

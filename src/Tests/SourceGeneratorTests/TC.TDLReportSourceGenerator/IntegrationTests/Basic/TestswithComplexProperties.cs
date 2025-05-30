@@ -199,5 +199,6 @@ public class ComplexPropertyModel
     public string State { get; set; }
 
     [XmlElement("PLACEOFSUPPLY")]
+
     public string PlaceOfSupply { get; set; }
 }

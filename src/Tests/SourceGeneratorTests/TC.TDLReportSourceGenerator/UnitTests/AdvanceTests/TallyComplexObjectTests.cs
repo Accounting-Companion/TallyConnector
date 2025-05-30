@@ -4,55 +4,39 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace UnitTests.BasicTests;
-[TestClass]
-public class TestsWithComplexProperties
-{
-    public TestsWithComplexProperties()
-    {
-       
-    }
+namespace UnitTests.AdvanceTests;
 
+[TestClass]
+public class TallyComplexObjectTests
+{
     [TestMethod]
-    public async Task VerifyBasicClasswithComplexPropertyWithnonPartialWithNoInheritance()
+    public async Task TestComplexProperty()
     {
         var src = @"
 
 using TallyConnector.Core.Attributes.SourceGenerator;
 using TallyConnector.Core.Attributes;
+using System.Collections.Generic;
 using System.Xml;
 using System.Xml.Serialization;
-using System.Collections.Generic;
-using System;
+using TallyConnector.Core.Models.TallyComplexObjects;
 namespace UnitTests.TestBasic;
 
 [ImplementTallyRequestableObject]
 [TDLCollection(Type = ""Ledger"")]
 public partial class Ledger
 {
+    [XmlElement(ElementName = ""NAME"")]
     public string Name { get; set; }
+    [XmlElement(ElementName = ""PARENT"")]
     public string Parent { get; set; }
 
-   [XmlElement(ElementName = ""LEDGSTREGDETAILS.LIST"")]
-    [TDLCollection(CollectionName = ""LEDGSTREGDETAILS"", ExplodeCondition = ""$$NUMITEMS:LEDGSTREGDETAILS>0"")]
-    public List<LedgGSTRegDetail> GSTRegistrationDetails { get; set; }
+    [XmlElement(ElementName = ""OPENINGBALANCE"")]
+    public TallyAmountField OpeningBalance { get; set; }
 }
-
-public class LedgGSTRegDetail
-{
-    [XmlElement(""APPLICABLEFROM"")]
-    public DateTime ApplicableFrom { get; set; }
-
-    [XmlElement(""STATE"")]
-    public string State { get; set; }
-
-    [XmlElement(""PLACEOFSUPPLY"")]
-    public string PlaceOfSupply { get; set; }
-}
-
 ";
         await VerifyTDLReportV2.VerifyGeneratorAsync(src,
-            ("UnitTests.TestBasic.Ledger.cs", @"using TallyConnector.Core.Extensions;
+           ("UnitTests.TestBasic.Ledger.cs", @"using TallyConnector.Core.Extensions;
 using static TallyConnector.Core.Constants;
 
 #nullable enable
@@ -64,14 +48,17 @@ partial class Ledger : global::TallyConnector.Core.Models.Interfaces.ITallyReque
 {
     const string Name_39DV_FieldName = ""Name_39DV"";
     const string Parent_DR40_FieldName = ""Parent_DR40"";
-    const string ApplicableFrom_JWGQ_FieldName = ""ApplicableFrom_JWGQ"";
-    const string State_JGLV_FieldName = ""State_JGLV"";
-    const string PlaceOfSupply_SKQX_FieldName = ""PlaceOfSupply_SKQX"";
-    const string GSTRegistrationDetails_UPZF_PartName = ""GSTRegistrationDetails_UPZF"";
+    const string Amount_MSOZ_FieldName = ""Amount_MSOZ"";
+    const string Currency_HDWD_FieldName = ""Currency_HDWD"";
+    const string ForexAmount_LRH3_FieldName = ""ForexAmount_LRH3"";
+    const string ForexCurrency_AQUH_FieldName = ""ForexCurrency_AQUH"";
+    const string RateOfExchange_HQDQ_FieldName = ""RateOfExchange_HQDQ"";
+    const string IsDebit_FSR4_FieldName = ""IsDebit_FSR4"";
+    const string OpeningBalance_2OQW_PartName = ""OpeningBalance_2OQW"";
     const string ReportName = ""Ledger_BUL5"";
     const string CollectionName = ""LedgersCollection_BUL5"";
     const string XMLTag = ""LEDGER"";
-    const int SimpleFieldsCount = 5;
+    const int SimpleFieldsCount = 8;
     const int ComplexFieldsCount = 1;
     public static global::TallyConnector.Core.Models.Request.RequestEnvelope GetRequestEnvelope()
     {
@@ -83,7 +70,7 @@ partial class Ledger : global::TallyConnector.Core.Models.Interfaces.ITallyReque
         tdlMsg.Line = [GetMainTDLLine(), ..GetTDLLines()];
         tdlMsg.Field = [..GetTDLFields()];
         tdlMsg.Collection = [..GetTDLCollections()];
-        tdlMsg.Functions = [TallyConnector.Core.Constants.DefaultFunctions.GetDateFunction()];
+        tdlMsg.Functions = [TallyConnector.Core.Constants.DefaultFunctions.GetBoolFunction()];
         return reqEnvelope;
     }
 
@@ -107,7 +94,7 @@ partial class Ledger : global::TallyConnector.Core.Models.Interfaces.ITallyReque
     public static global::TallyConnector.Core.Models.Request.Part[] GetTDLParts()
     {
         var parts = new global::TallyConnector.Core.Models.Request.Part[ComplexFieldsCount];
-        parts[0] = new(GSTRegistrationDetails_UPZF_PartName, ""LEDGSTREGDETAILS"");
+        parts[0] = new(OpeningBalance_2OQW_PartName, null);
         return parts;
     }
 
@@ -115,25 +102,50 @@ partial class Ledger : global::TallyConnector.Core.Models.Interfaces.ITallyReque
     {
         return new(ReportName, [Name_39DV_FieldName,Parent_DR40_FieldName], XMLTag)
         {
-            Explode = [$""{GSTRegistrationDetails_UPZF_PartName}:{string.Format(""$$NUMITEMS:LEDGSTREGDETAILS>0"", ""GSTRegistrationDetails"")}""]
+            Explode = [$""{OpeningBalance_2OQW_PartName}:{string.Format(""NOT $$IsEmpty:{0}"", ""OpeningBalance"")}""]
         };
     }
 
     public static global::TallyConnector.Core.Models.Request.Line[] GetTDLLines()
     {
         var _lines = new global::TallyConnector.Core.Models.Request.Line[ComplexFieldsCount];
-        _lines[0] = new(GSTRegistrationDetails_UPZF_PartName, [ApplicableFrom_JWGQ_FieldName,State_JGLV_FieldName,PlaceOfSupply_SKQX_FieldName], ""LEDGSTREGDETAILS.LIST"");
+        _lines[0] = new(OpeningBalance_2OQW_PartName, [Amount_MSOZ_FieldName,Currency_HDWD_FieldName,ForexAmount_LRH3_FieldName,ForexCurrency_AQUH_FieldName,RateOfExchange_HQDQ_FieldName,IsDebit_FSR4_FieldName], ""OPENINGBALANCE"")
+        {
+            Local = [$""Field:{Amount_MSOZ_FieldName}:Set:$$BaseValue:$OPENINGBALANCE"", $""Field:{Currency_HDWD_FieldName}:Set:$CurrencyName:Company:##SVCurrentCompany"", $""Field:{ForexAmount_LRH3_FieldName}:Set:$$ForexValue:$OPENINGBALANCE"", $""Field:{ForexCurrency_AQUH_FieldName}:Set:$FOREXSYMBOL"", $""Field:{RateOfExchange_HQDQ_FieldName}:Set:$$RatexValue:$OPENINGBALANCE"", $""Field:{IsDebit_FSR4_FieldName}:Set:$$TC_GetBooleanFromLogicField:$$IsDebit:$OPENINGBALANCE""]
+        };
         return _lines;
     }
 
     public static global::TallyConnector.Core.Models.Request.Field[] GetTDLFields()
     {
         var _fields = new global::TallyConnector.Core.Models.Request.Field[SimpleFieldsCount];
-        _fields[0] = new(Name_39DV_FieldName, ""NAME"", ""$Name"");
-        _fields[1] = new(Parent_DR40_FieldName, ""PARENT"", ""$Parent"");
-        _fields[2] = new(ApplicableFrom_JWGQ_FieldName, ""APPLICABLEFROM"", ""$$TC_TransformDateToXSD:$APPLICABLEFROM"");
-        _fields[3] = new(State_JGLV_FieldName, ""STATE"", ""$STATE"");
-        _fields[4] = new(PlaceOfSupply_SKQX_FieldName, ""PLACEOFSUPPLY"", ""$PLACEOFSUPPLY"");
+        _fields[0] = new(Name_39DV_FieldName, ""NAME"", ""$NAME"");
+        _fields[1] = new(Parent_DR40_FieldName, ""PARENT"", ""$PARENT"");
+        _fields[2] = new(Amount_MSOZ_FieldName, ""AMOUNT"")
+        {
+            Type = ""Number""
+        };
+        _fields[3] = new(Currency_HDWD_FieldName, ""CURRENCY"")
+        {
+            Invisible = ""$$ISEmpty:$$value""
+        };
+        _fields[4] = new(ForexAmount_LRH3_FieldName, ""FOREXAMOUNT"")
+        {
+            Type = ""Number"",
+            Invisible = ""$$Value=#Amount_C0LF""
+        };
+        _fields[5] = new(ForexCurrency_AQUH_FieldName, ""FOREXSYMBOL"")
+        {
+            Type = ""Amount : Rate"",
+            Format = ""Forex,Currency"",
+            Invisible = ""#ForexAmount_MT3L=#Amount_C0LF""
+        };
+        _fields[6] = new(RateOfExchange_HQDQ_FieldName, ""RATEOFEXCHANGE"")
+        {
+            Type = ""Number"",
+            Invisible = ""$$Value=1""
+        };
+        _fields[7] = new(IsDebit_FSR4_FieldName, ""ISDEBIT"");
         return _fields;
     }
 
@@ -146,12 +158,8 @@ partial class Ledger : global::TallyConnector.Core.Models.Interfaces.ITallyReque
 
     public static string[] GetFetchList()
     {
-        return[""Name"", ""Parent"", ""LEDGSTREGDETAILS.APPLICABLEFROM,LEDGSTREGDETAILS.STATE,LEDGSTREGDETAILS.PLACEOFSUPPLY""];
+        return[""NAME"", ""PARENT"", ""OPENINGBALANCE""];
     }
 }"));
     }
-
-    
-
-
 }

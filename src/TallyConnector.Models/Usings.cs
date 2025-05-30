@@ -6,4 +6,5 @@ global using TallyConnector.Core.Attributes;
 global using TallyConnector.Core.Models.Interfaces;
 global using TallyConnector.Core.Models.Request;
 global using TallyConnector.Core.Attributes.SourceGenerator;
+global using TallyConnector.Core.Models.TallyComplexObjects;
 global using static TallyConnector.Core.Constants;

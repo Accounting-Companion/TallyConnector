@@ -96,8 +96,8 @@ public static class Utils
                 List<PropertyData> directProperties = GetAllDirectProperties(property.OriginalModelData,
                                                                              visited);
                 allProperties.AddRange(directProperties);
-                allProperties.AddRange(GetAllProperties(directProperties,visited));
-                
+                allProperties.AddRange(GetAllProperties(directProperties, visited));
+
             }
             foreach (var xMLData in property.XMLData)
             {
@@ -126,18 +126,35 @@ public static class Utils
                 properties.AddRange(GetAllDirectProperties(currentSymbol.ModelData, visited));
             }
         }
-        
+
         properties.AddRange(modelData.Properties.Values);
         return properties;
     }
 
 
-    public static void CopyFrom(this HashSet<string> dest,HashSet<string> src)
+    public static void CopyFrom(this HashSet<string> dest, HashSet<string> src)
     {
         foreach (var item in src)
         {
             dest.Add(item);
         }
+    }
+
+    public static void AddText(this List<InterpolatedStringContentSyntax> interpolatedStringContentSyntaxes, string text)
+    {
+        interpolatedStringContentSyntaxes.Add(InterpolatedStringText()
+                                        .WithTextToken(
+                                            Token(
+                                                TriviaList(),
+                                                SyntaxKind.InterpolatedStringTextToken,
+                                                text,
+                                                text,
+                                                TriviaList())));
+    }
+    public static void AddIdentifier(this List<InterpolatedStringContentSyntax> interpolatedStringContentSyntaxes, string identifier)
+    {
+        interpolatedStringContentSyntaxes.Add(Interpolation(
+                                            IdentifierName(identifier)));
     }
 }
 

@@ -127,7 +127,6 @@ public class TDLReportTransformer
             if (propertyData.IsComplex)
             {
                 await TransformComplexProperySymbolDataAsync(modelData, propertyData, complexProperties, collectionPrefix, token);
-
             }
             else
             {
