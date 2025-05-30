@@ -21,37 +21,35 @@ public class BaseLedger : BaseAliasedMasterObject
     [XmlElement(ElementName = "OPENINGBALANCE")]
     public TallyAmountField? OpeningBalance { get; set; }
 
-
     [XmlElement(ElementName = "CURRENCY")]
     public string? Currency { get; set; }
 
     [XmlElement(ElementName = "TAXTYPE")]
-    public TaxType TaxType { get; set; }
+    public TaxType? TaxType { get; set; }
 
     [XmlElement(ElementName = "GSTTYPE")]
-    public GSTTaxType GSTTaxType { get; set; }
+    public GSTTaxType? GSTTaxType { get; set; }
 
     [XmlElement(ElementName = "RATEOFTAXCALCULATION")]
     public float? RateofTax { get; set; }
 
     [XmlElement(ElementName = "APPROPRIATEFOR")]
-    public AdAllocType AppropriateFor { get; set; }
+    public AdAllocType? AppropriateFor { get; set; }
 
     [XmlElement(ElementName = "ISBILLWISEON")]
-    public bool IsBillWise { get; set; }
+    public bool? IsBillWise { get; set; }
 
     [XmlElement(ElementName = "ISCOSTCENTRESON")]
-    public bool IsCostCentresOn { get; set; }
+    public bool? IsCostCentresOn { get; set; }
 
     [XmlElement(ElementName = "ISINTERESTON")]
-    public bool IsInterestOn { get; set; }
+    public bool? IsInterestOn { get; set; }
 
     [XmlElement(ElementName = "ISCREDITDAYSCHKON")]
-    public bool IsCreditCheck { get; set; }
+    public bool? IsCreditCheck { get; set; }
 
     [XmlElement(ElementName = "CREDITLIMIT")]
     public string? CreditLimit { get; set; }
-
 
     [XmlElement(ElementName = "EMAIL")]
     public string? EMail { get; set; }
@@ -65,36 +63,52 @@ public class BaseLedger : BaseAliasedMasterObject
     [XmlElement(ElementName = "INCOMETAXNUMBER")]
     public string? PANNumber { get; set; }
 
+    [XmlElement(ElementName = "GSTTYPEOFSUPPLY")]
+    public GSTTypeOfSupply? GSTTypeOfSupply { get; set; }
+
     [XmlElement(ElementName = "CONTACTDETAILS.LIST")]
     [TDLCollection(CollectionName = "CONTACTDETAILS", ExplodeCondition = "$$NUMITEMS:CONTACTDETAILS>0")]
-    public List<ContactDetail> ContactDetails { get; set; }
+    public List<ContactDetail>? ContactDetails { get; set; }
 
     [XmlElement(ElementName = "LEDMULTIADDRESSLIST.LIST")]
     [TDLCollection(CollectionName = "LEDMULTIADDRESSLIST", ExplodeCondition = "$$NUMITEMS:LEDMULTIADDRESSLIST>0")]
-    public List<MultiAddress> Addresses { get; set; }
+    public List<MultiAddress>? Addresses { get; set; }
 
 
     [XmlElement(ElementName = "LEDMAILINGDETAILS.LIST")]
     [TDLCollection(CollectionName = "LEDMAILINGDETAILS", ExplodeCondition = "$$NUMITEMS:LEDMAILINGDETAILS>0")]
-    public List<MailingDetail> MailingDetails { get; set; }
+    public List<MailingDetail>? MailingDetails { get; set; }
 
     [XmlElement(ElementName = "LEDGSTREGDETAILS.LIST")]
     [TDLCollection(CollectionName = "LEDGSTREGDETAILS", ExplodeCondition = "$$NUMITEMS:LEDGSTREGDETAILS>0")]
-    public List<LedgerGSTRegistrationDetail> GSTRegistrationDetails { get; set; }
+    public List<LedgerGSTRegistrationDetail>? GSTRegistrationDetails { get; set; }
 
     [XmlElement(ElementName = "GSTDETAILS.LIST")]
     [TDLCollection(CollectionName = "GSTDETAILS", ExplodeCondition = "$$NUMITEMS:GSTDETAILS>0")]
-    public List<GSTDetail> GSTDetail { get; set; }
+    public List<GSTDetail>? GSTDetail { get; set; }
 
     [XmlElement(ElementName = "HSNDETAILS.LIST")]
     [TDLCollection(CollectionName = "HSNDETAILS", ExplodeCondition = "$$NUMITEMS:HSNDETAILS>0")]
-    public List<HSNDetail> HSNDetails { get; set; }
+    public List<HSNDetail>? HSNDetails { get; set; }
 
 
+    [XmlElement(ElementName = "UPDATEDDATETIME")]
+    [IgnoreForCreateDTO]
+    public DateTime? UpdatedAt { get; set; }
     public override string ToString()
     {
         return $"Ledger - {base.ToString()}";
     }
+}
+
+public enum GSTTypeOfSupply
+{ 
+    [EnumXMLChoice(Choice ="Goods")]
+    Goods,
+    [EnumXMLChoice(Choice ="Services")]
+    Services,
+    [EnumXMLChoice(Choice ="Capital Goods")]
+    CapitalGoods
 }
 
 public class MailingDetail
