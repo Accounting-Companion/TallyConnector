@@ -10,13 +10,12 @@ public class TallyPrimeServiceV6Tests
     public TallyPrimeServiceV6Tests()
     {
         primeService = new TallyPrimeService();
+        //primeService.SetupTallyService("http://localhost", 9001);
     }
     [Test]
     public async Task TestGetLedgerAsync()
     {
         var ledgers = await primeService.GetObjectsAsync<Ledger>();
         
-        
-        //Assert.That(JsonSerializer.Serialize(new DateOnly(2022, 03, 31)), Is.EqualTo("2022-03-31"));
     }
 }

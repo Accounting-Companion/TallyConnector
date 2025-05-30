@@ -274,7 +274,7 @@ public class LedgerGSTRegistrationDetail
 
 public class HSNDetail
 {
-    [XmlElement("APPLICABLEFROM",DataType ="Date")]
+    [XmlElement("APPLICABLEFROM")]
     public DateTime ApplicableFrom { get; set; }
 
     [XmlElement("HSN")]

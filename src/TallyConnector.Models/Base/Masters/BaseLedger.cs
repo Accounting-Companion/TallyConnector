@@ -40,6 +40,35 @@ public class BaseLedger : BaseAliasedMasterObject
     [XmlElement(ElementName = "ISBILLWISEON")]
     public bool IsBillWise { get; set; }
 
+    [XmlElement(ElementName = "ISCOSTCENTRESON")]
+    public bool IsCostCentresOn { get; set; }
+
+    [XmlElement(ElementName = "ISINTERESTON")]
+    public bool IsInterestOn { get; set; }
+
+    [XmlElement(ElementName = "ISCREDITDAYSCHKON")]
+    public bool IsCreditCheck { get; set; }
+
+    [XmlElement(ElementName = "CREDITLIMIT")]
+    public string? CreditLimit { get; set; }
+
+
+    [XmlElement(ElementName = "EMAIL")]
+    public string? EMail { get; set; }
+
+    [XmlElement(ElementName = "EMAILCC")]
+    public string? EMailCC { get; set; }
+
+    [XmlElement(ElementName = "WEBSITE")]
+    public string? Website { get; set; }
+
+    [XmlElement(ElementName = "INCOMETAXNUMBER")]
+    public string? PANNumber { get; set; }
+
+    [XmlElement(ElementName = "CONTACTDETAILS.LIST")]
+    [TDLCollection(CollectionName = "CONTACTDETAILS", ExplodeCondition = "$$NUMITEMS:CONTACTDETAILS>0")]
+    public List<ContactDetail> ContactDetails { get; set; }
+
     [XmlElement(ElementName = "LEDMULTIADDRESSLIST.LIST")]
     [TDLCollection(CollectionName = "LEDMULTIADDRESSLIST", ExplodeCondition = "$$NUMITEMS:LEDMULTIADDRESSLIST>0")]
     public List<MultiAddress> Addresses { get; set; }
@@ -75,7 +104,7 @@ public class MailingDetail
     [XmlArray(ElementName = "ADDRESS.LIST")]
     [XmlArrayItem(ElementName = "ADDRESS")]
     [TDLCollection(CollectionName = "ADDRESS")]
-    public List<string> AdressLines { get; set; } 
+    public List<string> AdressLines { get; set; }
 
     [XmlElement("APPLICABLEFROM")]
     public DateTime ApplicableFrom { get; set; }
@@ -91,4 +120,19 @@ public class MailingDetail
 
     [XmlElement("PINCODE")]
     public string? PINCode { get; set; }
+}
+
+public class ContactDetail
+{
+    [XmlElement("COUNTRYISDCODE")]
+    public string CountryISOCode { get; set; }
+
+    [XmlElement("ISDEFAULTWHATSAPPNUM")]
+    public bool IsDefaultWhatsAppNumber { get; set; }
+
+    [XmlElement("NAME")]
+    public string Name { get; set; }
+
+    [XmlElement("PHONENUMBER")]
+    public string PhoneNumber { get; set; }
 }
