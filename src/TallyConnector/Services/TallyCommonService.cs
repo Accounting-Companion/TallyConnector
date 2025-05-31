@@ -190,7 +190,12 @@ public class TallyCommonService : ITallyCommonService
         };
     }
 
-    public async Task<List<T>> GetObjectsAsync<T>(RequestOptions options, CancellationToken token = default) where T : ITallyRequestableObject, IBaseObject
+    public Task<LicenseInfo> GetLicenseInfoAsync() => _baseHandler.GetLicenseInfoAsync();
+
+    public Task<string> GetActiveSimpleCompanyNameAsync() => _baseHandler.GetActiveSimpleCompanyNameAsync();
+    
+    /// <inheritdoc/>
+    public async Task<List<T>> GetObjectsAsync<T>(BaseRequestOptions? options=null, CancellationToken token = default) where T : ITallyRequestableObject, IBaseObject
     {
         var reqEnvelope = T.GetRequestEnvelope();
         reqEnvelope.PopulateOptions(options);
@@ -200,7 +205,9 @@ public class TallyCommonService : ITallyCommonService
         var respEnv = XMLToObject.GetObjfromXml<ReportResponseEnvelope<T>>(resp.Response!, T.GetXMLAttributeOverides());
         return respEnv.Objects;
     }
-    public async Task<PaginatedResponse<T>> GetObjectsAsync<T>(PaginatedRequestOptions? options = null, CancellationToken token = default) where T : ITallyRequestableObject, IBaseObject
+
+    /// <inheritdoc/>
+    public async Task<PaginatedResponse<T>> GetObjectsAsync<T>(PaginatedRequestOptions options, CancellationToken token = default) where T : ITallyRequestableObject, IBaseObject
     {
         var reqEnvelope = T.GetRequestEnvelope();
         reqEnvelope.PopulateOptions(options);

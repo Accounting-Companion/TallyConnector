@@ -16,11 +16,11 @@
 	 
 	  <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.0" />
 	 
-	  <PackageReference Include="MaterialDesignThemes" Version="5.1.0" />
-	  <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="9.0.0" />
-	  <PackageReference Include="Microsoft.Extensions.Hosting" Version="9.0.0" />
+	  <PackageReference Include="MaterialDesignThemes" Version="5.2.1" />
+	  <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="9.0.5" />
+	  <PackageReference Include="Microsoft.Extensions.Hosting" Version="9.0.5" />
 	  <PackageReference Include="Serilog.Extensions.Hosting" Version="9.0.0" />
-	  <PackageReference Include="Serilog.Sinks.File" Version="6.0.0" />
+	  <PackageReference Include="Serilog.Sinks.File" Version="7.0.0" />
 	</ItemGroup>
 	<ItemGroup>
 	

@@ -22,7 +22,8 @@ public partial class MasterStatistics : BaseStatistics
 }
 
 [TDLCollection(CollectionName = "STATVchType", Exclude = true)]
-public class VoucherStatistics : BaseStatistics
+[ImplementTallyRequestableObject]
+public partial class VoucherStatistics : BaseStatistics
 {
     [XmlElement(ElementName = "NAME")]
     public string Name { get; set; } = null!;

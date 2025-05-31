@@ -3,15 +3,13 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             xmlns:local="clr-namespace:DemoDesktopApp.Views"
+             xmlns:local="clr-namespace:DemoDesktopApp.Views" xmlns:behaviours="http://schemas.microsoft.com/xaml/behaviors"
+             xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes" 
+             xmlns:viewmodels="clr-namespace:DemoDesktopApp.ViewModels"
+             xmlns:helpers="clr-namespace:DemoDesktopApp.Views.Helpers" 
+             d:DataContext="{d:DesignInstance Type=viewmodels:DashBoardViewModel}"
              mc:Ignorable="d" 
-             xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
-             xmlns:root="clr-namespace:DemoDesktopApp"
-               xmlns:behaviours="http://schemas.microsoft.com/xaml/behaviors"
-             xmlns:Viewmodels="clr-namespace:DemoDesktopApp.ViewModels"
-             d:DataContext="{d:DesignInstance Type=Viewmodels:DashBoardViewModel}"
-             MinHeight="{x:Static root:Constants.Height}"
-             MinWidth="{x:Static root:Constants.Width}">
+             d:DesignHeight="450" d:DesignWidth="800">
     <behaviours:Interaction.Triggers>
         <behaviours:EventTrigger EventName="Loaded">
             <behaviours:InvokeCommandAction Command="{Binding LoadedCommand}"/>
@@ -19,77 +17,39 @@
     </behaviours:Interaction.Triggers>
     <Grid>
         <Grid.RowDefinitions>
-            <RowDefinition Height="70"/>
-            <RowDefinition Height="10"/>
             <RowDefinition Height="auto"/>
+            <RowDefinition/>
         </Grid.RowDefinitions>
-        <ComboBox HorizontalAlignment="Right" Width="400"
-                  Background="White" BorderBrush="Beige" SelectedValuePath="Name" SelectedValue="{Binding SelectedCompanyName}"
-                  Margin="50,0" Style="{StaticResource MaterialDesignOutlinedComboBox}"
-                  VerticalAlignment="Center" VerticalContentAlignment="Center"
-                  ItemsSource="{Binding CompanyList}"/>
 
-        <Grid Grid.Row="2">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition/>
-                <ColumnDefinition Width="30"/>
-                <ColumnDefinition/>
-                <ColumnDefinition Width="20"/>
-            </Grid.ColumnDefinitions>
+        <materialDesign:Card >
             <Grid>
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="50"/>
-                    <RowDefinition/>
-                </Grid.RowDefinitions>
-                <TextBlock HorizontalAlignment="Center"  FontSize="20"
-                           Foreground="White" Text="Master Statistics" FontWeight="Bold"/>
-                <ScrollViewer Grid.Row="1" Height="600" VerticalScrollBarVisibility="Visible">
-                    <ItemsControl ItemsSource="{Binding MasterStats}">
-                        <ItemsControl.ItemTemplate>
-                            <DataTemplate>
-                                <materialDesign:Card Padding="8" Margin="20,5">
-                                    <Grid>
-                                        <Grid.ColumnDefinitions>
-                                            <ColumnDefinition/>
-                                            <ColumnDefinition/>
-                                        </Grid.ColumnDefinitions>
-                                        <TextBlock HorizontalAlignment="Left" Text="{Binding Name}"/>
-                                        <TextBlock Grid.Column="1" HorizontalAlignment="Right" Text="{Binding Count}"/>
-                                    </Grid>
-                                </materialDesign:Card>
-                            </DataTemplate>
-                        </ItemsControl.ItemTemplate>
-                    </ItemsControl>
-                </ScrollViewer>
+                <TextBlock Margin="0,10" HorizontalAlignment="Center" VerticalAlignment="Top" FontWeight="Bold" FontSize="20" Text="Tally Info"/>
+                <WrapPanel Margin="0,40,0,0">
+                    <helpers:InfoTile Title="Application Path"  Value="{Binding LicenseInfo.ApplicationPath}"/>
+                    <helpers:InfoTile Title="Data Path"  Value="{Binding LicenseInfo.DataPath}"/>
+                    <helpers:InfoTile Title="AccountId"  Value="{Binding LicenseInfo.AccountId}"/>
+                    <helpers:InfoTile Title="AdminMailId"  Value="{Binding LicenseInfo.AdminMailId}"/>
+                    <helpers:InfoTile Title="IsAdmin"  Value="{Binding LicenseInfo.IsAdmin}"/>
+                    <helpers:InfoTile Title="IsEducationalMode"  Value="{Binding LicenseInfo.IsEducationalMode}"/>
+                    <helpers:InfoTile Title="IsGold"  Value="{Binding LicenseInfo.IsGold}"/>
+                    <helpers:InfoTile Title="IsIndian"  Value="{Binding LicenseInfo.IsIndian}"/>
+                    <helpers:InfoTile Title="IsLicenseClientMode"  Value="{Binding LicenseInfo.IsLicenseClientMode}"/>
+                    <helpers:InfoTile Title="IsRemoteAccessMode"  Value="{Binding LicenseInfo.IsRemoteAccessMode}"/>
+                    <helpers:InfoTile Title="IsSilver"  Value="{Binding LicenseInfo.IsSilver}"/>
+                    <helpers:InfoTile Title="IsTallyPrime"  Value="{Binding LicenseInfo.IsTallyPrime}"/>
+                    <helpers:InfoTile Title="IsTallyPrimeEditLog"  Value="{Binding LicenseInfo.IsTallyPrimeEditLog}"/>
+                    <helpers:InfoTile Title="IsTallyPrimeServer"  Value="{Binding LicenseInfo.IsTallyPrimeServer}"/>
+                    <helpers:InfoTile Title="PlanName"  Value="{Binding LicenseInfo.PlanName}"/>
+                    <helpers:InfoTile Title="RemoteSerialNumber"  Value="{Binding LicenseInfo.RemoteSerialNumber}"/>
+                    <helpers:InfoTile Title="SerialNumber"  Value="{Binding LicenseInfo.SerialNumber}"/>
+                    <helpers:InfoTile Title="TallyShortVersion"  Value="{Binding LicenseInfo.TallyShortVersion}"/>
+                    
+                    <helpers:InfoTile Title="UserLevel"  Value="{Binding LicenseInfo.UserLevel}"/>
+                    <helpers:InfoTile Title="UserName"  Value="{Binding LicenseInfo.UserName}"/>
+                    <helpers:InfoTile Title="TallyVersion"  Value="{Binding LicenseInfo.TallyVersion}"/>
+                </WrapPanel>
             </Grid>
-            <Grid  Grid.Column="2">
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="50"/>
-                    <RowDefinition/>
-                </Grid.RowDefinitions>
-                <TextBlock HorizontalAlignment="Center" 
-                           FontSize="20"
-                           Foreground="White" Text="Voucher Statistics" FontWeight="Bold"/>
-                <ScrollViewer  Height="600"  Grid.Row="1">
-                    <ItemsControl ItemsSource="{Binding VoucherStats}">
-                        <ItemsControl.ItemTemplate>
-                            <DataTemplate>
-                                <materialDesign:Card Padding="8" Margin="20,5">
-                                    <Grid>
-                                        <Grid.ColumnDefinitions>
-                                            <ColumnDefinition/>
-                                            <ColumnDefinition/>
-                                        </Grid.ColumnDefinitions>
-                                        <TextBlock HorizontalAlignment="Left" Text="{Binding Name}"/>
-                                        <TextBlock Grid.Column="1" HorizontalAlignment="Right" Text="{Binding Count}"/>
-                                    </Grid>
-                                </materialDesign:Card>
-                            </DataTemplate>
-                        </ItemsControl.ItemTemplate>
-                    </ItemsControl>
-                </ScrollViewer>
-            </Grid>
-        </Grid>
+        </materialDesign:Card>
 
     </Grid>
 </UserControl>

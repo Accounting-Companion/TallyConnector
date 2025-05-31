@@ -4,7 +4,6 @@ public static class RequestOptionsExtensions
     public static RequestOptions ToRequestOptions(this PaginatedRequestOptions? paginatedRequestOptions, int defaultPaginationCount=1000)
     {
         RequestOptions requestOptions = new();
-        requestOptions.XMLAttributeOverrides = paginatedRequestOptions?.XMLAttributeOverrides;
         requestOptions.Filters = paginatedRequestOptions?.Filters;
         requestOptions.FromDate = paginatedRequestOptions?.FromDate;
         requestOptions.ToDate = paginatedRequestOptions?.ToDate;

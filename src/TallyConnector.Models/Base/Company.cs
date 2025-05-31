@@ -1,9 +1,12 @@
-﻿namespace TallyConnector.Core.Models;
+﻿using TallyConnector.Core;
+
+namespace TallyConnector.Models.Base;
 /// <summary>
 /// Base Model for Company
 /// </summary>
 [XmlRoot(ElementName = "COMPANY")]
 [TDLFunctionsMethodName(nameof(TC_BaseCompanyFunctions))]
+[TDLCollection(Type = "Ledger")]
 public class BaseCompany : IBaseCompany
 {
     private const string CleanCompanyNumberFunctionName = "TC_GetCleanedCompanyNumber";
@@ -12,7 +15,7 @@ public class BaseCompany : IBaseCompany
     /// Name of Company
     /// </summary>
     [XmlElement(ElementName = "NAME")]
-    [Column(TypeName = $"nvarchar({Constants.MaxNameLength})")]
+    [Column(TypeName = $"nvarchar({MaxNameLength})")]
     public string? Name { get; set; }
 
     [XmlElement(ElementName = "TC_STARTINGFROM")]
@@ -55,8 +58,7 @@ public class BaseCompany : IBaseCompany
 
 [XmlRoot(ElementName = "COMPANY")]
 [XmlType(AnonymousType = true)]
-[ImplementTallyRequestableObject]
-public partial class Company : BaseCompany,ICompany
+public partial class Company : BaseCompany, ICompany
 {
 
     [XmlElement(ElementName = "BOOKSFROM")]

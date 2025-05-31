@@ -171,7 +171,7 @@ public partial class BaseTallyService : IBaseTallyService
                 $"IsTallyPrimeServer:$$TC_GetBooleanFromLogicField:$$IsProdTallyServer",
             ])];
         var reqXml = reqEnvelope.GetXML();
-        var respXml = await SendRequestAsync(reqXml, reqType, token);
+        var respXml = await SendRequestAsync(reqXml, reqType, token).ConfigureAwait(false);
         var XMLAttributeOverrides = new XmlAttributeOverrides();
         var XMLAttributes = new XmlAttributes();
         XMLAttributes.XmlElements.Add(new(objectName.ToUpper()));
@@ -238,7 +238,7 @@ public partial class BaseTallyService : IBaseTallyService
         try
         {
             Activity.Current?.AddEvent(new ActivityEvent("Sending Request"));
-            HttpResponseMessage tallyResponse = await _httpClient.SendAsync(requestMessage, token);
+            HttpResponseMessage tallyResponse = await _httpClient.SendAsync(requestMessage, token).ConfigureAwait(false);
             Activity.Current?.AddEvent(new ActivityEvent("Received Response"));
 #if NET48
             var resXml = CleanResponseXML(await tallyResponse.Content.ReadAsStringAsync());

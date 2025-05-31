@@ -5,10 +5,52 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:DemoDesktopApp.Controls"
              xmlns:root="clr-namespace:DemoDesktopApp"
-             xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+             xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes" xmlns:converters="clr-namespace:DemoDesktopApp.Converters"
              mc:Ignorable="d" 
-             Width="{x:Static root:Constants.MenuWidth}" Background="{x:Static root:Constants.MenuBackground}">
+             Width="{x:Static root:Constants.MenuWidth}" 
+             Background="{x:Static root:Constants.MenuBackground}">
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <converters:ViewTypeBoolConverter  x:Key="ViewTypeBoolConverter" />
+        </ResourceDictionary>
+    </UserControl.Resources>
     <Grid>
-            
+        <ItemsControl ItemsSource="{x:Static root:Constants.MenuItems}">
+            <ItemsControl.ItemTemplate>
+                <DataTemplate >
+                    <Grid>
+                        <Button materialDesign:ButtonAssist.CornerRadius="20">
+                            <Button.Content>
+                                <Grid>
+                                    <TextBlock Text="{Binding Name}"/>
+                                </Grid>
+                            </Button.Content>
+                            <Button.Style>
+                                <Style TargetType="Button" BasedOn="{StaticResource MaterialDesignFlatDarkButton}" >
+                                    <Setter Property="Padding" Value="0"/>
+                                    <Setter Property="Margin" Value="10"/>
+                                    <Setter Property="BorderBrush" Value="White"/>
+                                    <Setter Property="Foreground" Value="White"/>
+                                    <Style.Triggers>
+                                        <DataTrigger  Value="true">
+                                            <DataTrigger.Binding>
+                                                <MultiBinding  Converter="{StaticResource ViewTypeBoolConverter}">
+                                                    <Binding Path="DataContext.NavigationState.ViewType" RelativeSource="{RelativeSource AncestorType=ItemsControl,AncestorLevel=1}"/>
+                                                    <Binding  Path="ViewType"/>
+                                                </MultiBinding>
+                                            </DataTrigger.Binding>
+                                            <DataTrigger.Setters>
+                                                <Setter Property="Background" Value="White"/>
+                                                <Setter Property="Foreground" Value="Black"/>
+                                            </DataTrigger.Setters>
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </Button.Style>
+                        </Button>
+                    </Grid>
+                </DataTemplate>
+            </ItemsControl.ItemTemplate>
+        </ItemsControl>
     </Grid>
 </UserControl>

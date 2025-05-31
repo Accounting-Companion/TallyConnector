@@ -2,7 +2,12 @@
 public class BaseRequestOptions
 {
     public string? Company { get; set; }
-    public XmlAttributeOverrides? XMLAttributeOverrides { get; set; }
+
+    public BaseRequestOptions SetCompany(string Company)
+    {
+        this.Company = Company;
+        return this;
+    }
 }
 public class PostRequestOptions : BaseRequestOptions
 {
@@ -13,6 +18,26 @@ public class DateFilterRequestOptions : BaseRequestOptions
 {
     public DateTime? FromDate { get; set; }
     public DateTime? ToDate { get; set; }
+
+    public new DateFilterRequestOptions SetCompany(string Company)
+    {
+        this.Company = Company;
+        return this;
+    }
+
+    public DateFilterRequestOptions From(DateTime fromDate)
+    {
+        this.FromDate = fromDate;
+        return this;
+    }
+
+    public DateFilterRequestOptions To(DateTime toDate)
+    {
+        this.ToDate = toDate;
+        return this;
+    }
+
+
 }
 public class AutoColumnReportPeriodRequestOptions : DateFilterRequestOptions
 {
@@ -28,6 +53,12 @@ public class RequestOptions : DateFilterRequestOptions
     public string? Childof { get; set; }
     public string? CollectionType { get; set; }
     public YesNo? BelongsTo { get; set; }
+
+    public new RequestOptions SetCompany(string Company)
+    {
+        this.Company = Company;
+        return this;
+    }
 }
 
 public class PaginatedRequestOptions : RequestOptions

@@ -13,6 +13,8 @@ public interface ITallyObject : IBaseTallyObject
 /// </summary>
 public interface IBaseTallyService
 {
+    LicenseInfo LicenseInfo { get; }
+
     /// <summary>
     /// Coonfigure Tally Url and port
     /// </summary>
