@@ -1,7 +1,4 @@
-﻿using System.Collections.ObjectModel;
-using TallyConnector.Core.Models;
-using TallyConnector.Models.Common;
-using TallyConnector.Models.TallyPrime.V6;
+﻿using TallyConnector.Core.Models;
 
 namespace DemoDesktopApp.ViewModels;
 public partial class DashBoardViewModel : BaseViewModel

@@ -1,7 +1,5 @@
-﻿using TallyConnector.Models.Base.Masters;
+﻿namespace TallyConnector.Models.TallyPrime.V4.Masters;
 
-namespace TallyConnector.Models.TallyPrime.V4.Masters;
-
-public class Currency : BaseCurrency
+public class Currency :  Base.Masters.Currency
 {
 }

@@ -1,9 +1,5 @@
 ﻿using System.Collections.ObjectModel;
-using System.IO;
-using TallyConnector.Core.Models;
-using TallyConnector.Models.TallyPrime.V4.Masters;
 using TallyConnector.Core.Models.Request;
-using TallyConnector.Services;
 using TallyConnector.Models.Common;
 using TallyConnector.Services.TallyPrime.V6;
 using TallyConnector.Models.TallyPrime.V6;
@@ -40,14 +36,14 @@ public partial class V6View : BaseViewModel
         //     RecordsPerPage = 1000,
         //     Filters = [new("vch_Filter", "$VOUCHERTYPENAME = 'SALES' AND $$NUMITEMS:ALLINVENTORYENTRIES>0")]
         // };
-        // TallyService tallyService = new();
+        // TallyService _tallyService = new();
 
-        // TallyConnector.Core.Models.Common.Pagination.PaginatedResponse<Voucher> paginatedResponse = await tallyService.GetVouchersAsync();
+        // TallyConnector.Core.Models.Common.Pagination.PaginatedResponse<Voucher> paginatedResponse = await _tallyService.GetVouchersAsync();
         // List<Voucher>? data = paginatedResponse.Data;
-        // var objs = await tallyService.GetVouchersAsync(requestOptions);
+        // var objs = await _tallyService.GetVouchersAsync(requestOptions);
 
         // List<LedgerDTO> objects = [new LedgerDTO() { OldName = "Test Ledger from new connecotr", Group = "Sundry Debtors", Action = TallyConnector.Core.Models.Common.Action.Alter }];
-        //// var postResults = await tallyService.PostObjectsAsync(objs.Data.Select(c=>(VoucherDTO)c));
+        //// var postResults = await _tallyService.PostObjectsAsync(objs.Data.Select(c=>(VoucherDTO)c));
         // var envp = new global::TallyConnector.Core.Models.PostRequestEnvelope<global::TallyConnector.Services.Models.TallyServicePostRequestEnvelopeMessage>(global::TallyConnector.Core.Models.Request.RequestType.Import, global::TallyConnector.Core.Models.Request.HType.Data, "AllMasters");
         // var msg = new global::TallyConnector.Services.Models.TallyServicePostRequestEnvelopeMessage();
         // msg.Vouchers = objs.Data.Select(c => (VoucherDTO)c).ToList();

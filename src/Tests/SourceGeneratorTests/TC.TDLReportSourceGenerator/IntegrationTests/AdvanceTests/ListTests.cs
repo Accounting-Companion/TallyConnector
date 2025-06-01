@@ -1,6 +1,4 @@
-﻿using IntegrationTests.Basic;
-using System.Net;
-using System.Xml.Serialization;
+﻿using System.Xml.Serialization;
 
 namespace IntegrationTests.AdvanceTests;
 public class ListTests

@@ -5,9 +5,9 @@ namespace TallyConnector.Models.Base.Masters;
 [TDLCollection(Type = "Ledger")]
 [XmlRoot("LEDGER")]
 [XmlType(AnonymousType = true)]
-public class BaseLedger : BaseAliasedMasterObject
+public class Ledger : BaseAliasedMasterObject
 {
-    public BaseLedger()
+    public Ledger()
     {
 
     }

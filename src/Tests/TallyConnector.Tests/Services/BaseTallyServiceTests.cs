@@ -1,10 +1,4 @@
-﻿using TallyConnector.Core;
-using TallyConnector.Core.Models;
-using TallyConnector.Models.Base;
-using TallyConnector.Models.Base.Masters;
-using TallyConnector.Models.TallyPrime.V6.Masters;
-using TallyConnector.Services;
-using TallyConnector.Services.TallyPrime.V6;
+﻿using TallyConnector.Services;
 
 namespace TallyConnector.Tests.Services;
 
@@ -28,7 +22,7 @@ public class BaseTallyServiceTests
     public async Task TestAutoColStats()
     {
         TallyCommonService  tallyCommonService = new TallyCommonService();
-        var objects =await tallyCommonService.GetObjectsAsync<Ledger>(new());
+        var objects =await tallyCommonService.GetObjectsAsync<Models.TallyPrime.V6.Masters.Ledger>(new());
        // await new TallyPrimeService().GetGroupsAsync();
         //await TallyService.(new TallyConnector.Core.Models.Request.AutoColumnReportPeriodRequestOptions());
     }

@@ -1,6 +1,4 @@
-﻿using TallyConnector.TDLReportSourceGenerator.Models;
-
-namespace TallyConnector.TDLReportSourceGenerator.Execute;
+﻿namespace TallyConnector.TDLReportSourceGenerator.Execute;
 public static class FactoryMethods
 {
     public const string CancellationTokenArgName = "token";

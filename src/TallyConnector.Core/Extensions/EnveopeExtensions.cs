@@ -7,9 +7,22 @@ public static class EnveopeExtensions
     {
         if (requestOptions != null)
         {
-            var sv = requestEnvelope.Body.Desc.StaticVariables ??= new();
-            sv.SVCompany = requestOptions.Company;
+            
+            switch (requestOptions)
+            {
+                case RequestOptions options:
+                    PopulateOptions(requestEnvelope, options);
+                    break;
+                case DateFilterRequestOptions options:
+                    PopulateOptions(requestEnvelope, options);
+                    break;
+                default:
+                    var sv = requestEnvelope.Body.Desc.StaticVariables ??= new();
+                    sv.SVCompany = requestOptions.Company;
+                    break;
+            }
         }
+
         return requestEnvelope;
     }
     public static RequestEnvelope PopulateOptions(this RequestEnvelope requestEnvelope, DateFilterRequestOptions? requestOptions)

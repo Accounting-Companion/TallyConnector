@@ -1,4 +1,7 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using DemoDesktopApp.ViewModels.Prime;
+using DemoDesktopApp.ViewModels.Prime.v6;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using TallyConnector.Core.Models;
 using TallyConnector.Services;
 
@@ -19,6 +22,10 @@ public static partial class ServiceExtensions
 
         services.AddSingleton<ViewModelFactory>();
         services.AddViewModels();
+
+        services.AddTransient<AbstractDataFetcherViewModel, StockItemsViewModel>();
+
+        services.AddTransient<AbstractDataFetcherViewModel, LedgerViewModel>();
         return services;
     }
 }

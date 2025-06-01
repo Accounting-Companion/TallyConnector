@@ -1,6 +1,4 @@
-﻿using System.Xml.Serialization;
-
-namespace UnitTests.AdvanceTests;
+﻿namespace UnitTests.AdvanceTests;
 [TestClass]
 public class CutomFunctionAttributeTests
 {

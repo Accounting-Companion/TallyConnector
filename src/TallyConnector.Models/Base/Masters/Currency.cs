@@ -2,7 +2,7 @@
 
 [ImplementTallyRequestableObject]
 [TDLCollection(Type ="Currency")]
-public partial class BaseCurrency : BaseMasterObject
+public partial class Currency : BaseMasterObject
 {
     [XmlElement(ElementName = "ORIGINALNAME")]
     public new string Name { get; set; } = null!;

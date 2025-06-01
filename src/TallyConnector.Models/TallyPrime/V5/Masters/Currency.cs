@@ -1,7 +1,9 @@
-﻿using TallyConnector.Models.Base.Masters;
+﻿namespace TallyConnector.Models.TallyPrime.V5.Masters;
 
-namespace TallyConnector.Models.TallyPrime.V5.Masters;
-
-public class Currency : BaseCurrency
+[XmlType(AnonymousType = true)]
+[XmlRoot("CURRENCY")]
+[ImplementTallyRequestableObject]
+public partial class Currency : Base.Masters.Currency
 {
 }
+

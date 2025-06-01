@@ -44,6 +44,18 @@
                                                 <Setter Property="Foreground" Value="Black"/>
                                             </DataTrigger.Setters>
                                         </DataTrigger>
+                                        <DataTrigger  Value="false">
+                                            <DataTrigger.Binding>
+                                                <MultiBinding  Converter="{StaticResource ViewTypeBoolConverter}">
+                                                    <Binding Path="DataContext.NavigationState.ViewType" RelativeSource="{RelativeSource AncestorType=ItemsControl,AncestorLevel=1}"/>
+                                                    <Binding  Path="ViewType"/>
+                                                </MultiBinding>
+                                            </DataTrigger.Binding>
+                                            <DataTrigger.Setters>
+                                                <Setter Property="Command" Value="{Binding DataContext.NavigationState.NavigateCommand, RelativeSource={RelativeSource AncestorType=ItemsControl,AncestorLevel=1}}"/>
+                                                <Setter Property="CommandParameter" Value="{Binding ViewType}"/>
+                                            </DataTrigger.Setters>
+                                        </DataTrigger>
                                     </Style.Triggers>
                                 </Style>
                             </Button.Style>

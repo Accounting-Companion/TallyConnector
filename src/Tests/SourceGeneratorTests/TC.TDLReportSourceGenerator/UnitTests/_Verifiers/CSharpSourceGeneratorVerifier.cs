@@ -1,6 +1,4 @@
-﻿using Microsoft.Testing.Platform.Logging;
-
-namespace TC.TDLReportSourceGenerator.Tests.Verifiers;
+﻿namespace TC.TDLReportSourceGenerator.Tests.Verifiers;
 internal static partial class CSharpSourceGeneratorVerifier<TSourceGenerator>
     where TSourceGenerator : IIncrementalGenerator, new()
 {

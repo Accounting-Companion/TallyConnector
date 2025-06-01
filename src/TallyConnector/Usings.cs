@@ -4,7 +4,6 @@ global using System.Net;
 global using System.Text;
 global using System.Xml;
 global using System.Xml.Serialization;
-global using TallyConnector.Core.Attributes;
 global using TallyConnector.Core.Attributes.SourceGenerator;
 global using TallyConnector.Core.Exceptions;
 global using TallyConnector.Core.Models;

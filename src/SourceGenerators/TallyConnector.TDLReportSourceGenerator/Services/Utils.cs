@@ -1,5 +1,6 @@
 ﻿using System.Security.Cryptography;
 using System.Text;
+using System.Text.RegularExpressions;
 using TallyConnector.TDLReportSourceGenerator.Models;
 
 namespace TallyConnector.TDLReportSourceGenerator.Services;
@@ -147,7 +148,7 @@ public static class Utils
                                             Token(
                                                 TriviaList(),
                                                 SyntaxKind.InterpolatedStringTextToken,
-                                                text,
+                                                text.Replace("\"", "\\\""),
                                                 text,
                                                 TriviaList())));
     }

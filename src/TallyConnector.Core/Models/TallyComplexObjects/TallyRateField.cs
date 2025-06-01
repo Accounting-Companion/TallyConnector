@@ -6,7 +6,7 @@ namespace TallyConnector.Core.Models.TallyComplexObjects;
 [DebuggerDisplay("{ToString(),nq}")]
 public class TallyRateField : ITallyComplexObject, IBaseObject
 {
-    [TDLField(TallyType = "Rate : Price")]
+    [TDLField(TallyType = "Rate : Price",Set ="{0}")]
     [XmlElement(ElementName = "BASERATE")]
     [Column(TypeName = "decimal(20,4)")]
     public decimal Rate { get; set; }
@@ -16,7 +16,7 @@ public class TallyRateField : ITallyComplexObject, IBaseObject
     [XmlElement(ElementName = "FOREXRATE")]
     public decimal? ForexRate { get; set; }
 
-    [TDLField(TallyType = "Rate : Unit Symbol")]
+    [TDLField(TallyType = "Rate : Unit Symbol", Set = "{0}")]
     [XmlElement(ElementName = "UNIT")]
     public string Unit { get; set; } = null!;
 

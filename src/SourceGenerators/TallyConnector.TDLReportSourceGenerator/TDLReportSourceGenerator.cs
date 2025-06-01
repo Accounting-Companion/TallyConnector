@@ -44,22 +44,29 @@ public class TDLReportSourceGeneratorV2 : IIncrementalGenerator
                          ImmutableArray<INamedTypeSymbol> modelSymbols,
                          Compilation compilation)
     {
-        var token = context.CancellationToken;
-        var assembly = compilation.Assembly;
-
-        TDLReportTransformer tDLReportTransformer = new(assembly);
-        foreach (var modelSymbol in modelSymbols)
+        try
         {
-            token.ThrowIfCancellationRequested();
-            await tDLReportTransformer.TransformAsync(modelSymbol, token);
+            var token = context.CancellationToken;
+            var assembly = compilation.Assembly;
+
+            TDLReportTransformer tDLReportTransformer = new(assembly);
+            foreach (var modelSymbol in modelSymbols)
+            {
+                token.ThrowIfCancellationRequested();
+                await tDLReportTransformer.TransformAsync(modelSymbol, token);
+            }
+
+            var modelDataList = tDLReportTransformer.GetTransformedData();
+            foreach (var modelData in modelDataList)
+            {
+                var tDLReportSourceGenerator = new TDLReportGenerator(modelData);
+                string code = tDLReportSourceGenerator.Generate(token);
+                context.AddSource($"{modelData.FullName}", code);
+            }
         }
-
-        var modelDataList = tDLReportTransformer.GetTransformedData();
-        foreach (var modelData in modelDataList)
+        catch (Exception ex)
         {
-            var tDLReportSourceGenerator = new TDLReportGenerator(modelData);
-            string code = tDLReportSourceGenerator.Generate(token);
-            context.AddSource($"{modelData.FullName}", code);
+            //throw;
         }
     }
 

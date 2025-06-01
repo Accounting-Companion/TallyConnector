@@ -1,0 +1,23 @@
+﻿<UserControl x:Class="DemoDesktopApp.Views.ReadDataView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:DemoDesktopApp.Views"
+             xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes" 
+             xmlns:v6="clr-namespace:DemoDesktopApp.ViewModels.Prime.v6" 
+             d:DataContext="{d:DesignInstance Type=v6:ReadDataViewModel}"
+             mc:Ignorable="d" 
+            Width="auto" Height="auto">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="60"/>
+            <RowDefinition/>
+        </Grid.RowDefinitions>
+        <ComboBox Height="52" Width="300" Style="{StaticResource MaterialDesignOutlinedComboBox }" 
+                  Background="White" BorderBrush="Green" HorizontalAlignment="Left"
+                  ItemsSource="{Binding ObjectTypes}"
+                  materialDesign:HintAssist.Hint="Object Type" SelectedItem="{Binding ObjectType}"/>
+        <DataGrid Grid.Row="1" ItemsSource="{Binding CurrentViewModel.DataView}" CanUserAddRows="False"/>
+    </Grid>
+</UserControl>

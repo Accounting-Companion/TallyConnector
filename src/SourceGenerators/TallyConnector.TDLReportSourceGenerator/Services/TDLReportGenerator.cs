@@ -477,7 +477,7 @@ public class TDLReportGenerator
             List<SyntaxNodeOrToken> explodes = [];
             foreach (var complexProperty in _complexProperties)
             {
-                AddExplodeArgForComplexChild(complexProperty.Name,
+                AddExplodeArgForComplexChild(complexProperty.TDLFieldData?.Set ?? complexProperty.Name,
                                              explodes,
                                              GetPartNameVariableName(complexProperty),
                                              complexProperty.TDLCollectionData?.ExplodeCondition);
