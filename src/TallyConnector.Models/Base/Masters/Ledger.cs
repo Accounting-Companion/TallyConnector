@@ -85,7 +85,7 @@ public class Ledger : BaseAliasedMasterObject
 
     [XmlElement(ElementName = "GSTDETAILS.LIST")]
     [TDLCollection(CollectionName = "GSTDETAILS", ExplodeCondition = "$$NUMITEMS:GSTDETAILS>0")]
-    public List<GSTDetail>? GSTDetail { get; set; }
+    public List<GSTDetail>? GSTDetails { get; set; }
 
     [XmlElement(ElementName = "HSNDETAILS.LIST")]
     [TDLCollection(CollectionName = "HSNDETAILS", ExplodeCondition = "$$NUMITEMS:HSNDETAILS>0")]

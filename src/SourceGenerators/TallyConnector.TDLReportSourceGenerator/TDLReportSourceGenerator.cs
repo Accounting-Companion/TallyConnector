@@ -4,7 +4,7 @@ namespace TallyConnector.TDLReportSourceGenerator;
 
 
 [Generator(LanguageNames.CSharp)]
-public class TDLReportSourceGeneratorV2 : IIncrementalGenerator
+public class TDLReportSourceGenerator : IIncrementalGenerator
 {
     public void Initialize(IncrementalGeneratorInitializationContext context)
     {
@@ -34,6 +34,7 @@ public class TDLReportSourceGeneratorV2 : IIncrementalGenerator
 
     private INamedTypeSymbol Transform(GeneratorAttributeSyntaxContext context, CancellationToken token)
     {
+        
         var symbol = (INamedTypeSymbol)context.TargetSymbol;
         return symbol;
     }

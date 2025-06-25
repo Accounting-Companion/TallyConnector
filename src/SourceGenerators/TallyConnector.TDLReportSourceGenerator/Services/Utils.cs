@@ -1,6 +1,5 @@
 ﻿using System.Security.Cryptography;
 using System.Text;
-using System.Text.RegularExpressions;
 using TallyConnector.TDLReportSourceGenerator.Models;
 
 namespace TallyConnector.TDLReportSourceGenerator.Services;
@@ -115,7 +114,7 @@ public static class Utils
     }
 
     public static List<PropertyData> GetAllDirectProperties(this ModelData modelData,
-                                                            HashSet<string>? visited = null)
+                                                            HashSet<string>? visited = null, bool includeOverriden = false)
     {
         List<PropertyData> properties = [];
         visited ??= [];
@@ -128,7 +127,7 @@ public static class Utils
             }
         }
 
-        properties.AddRange(modelData.Properties.Values);
+        properties.AddRange(modelData.Properties.Values.Where(c => includeOverriden || !c.IsOveridden));
         return properties;
     }
 

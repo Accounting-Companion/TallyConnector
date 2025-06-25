@@ -1,4 +1,5 @@
-﻿namespace DemoDesktopApp.ViewModels.Prime.v6;
+﻿
+namespace DemoDesktopApp.ViewModels.Prime.v6;
 public partial class ReadDataViewModel : BaseViewModel
 {
 
@@ -6,6 +7,10 @@ public partial class ReadDataViewModel : BaseViewModel
 
     [ObservableProperty]
     private HashSet<string> _objectTypes;
+
+
+    [ObservableProperty]
+    private bool _isPaginated;
 
     [ObservableProperty]
     private string _objectType;
@@ -22,8 +27,16 @@ public partial class ReadDataViewModel : BaseViewModel
     }
     partial void OnCurrentViewModelChanged(AbstractDataFetcherViewModel value)
     {
-        value.FetchData().ConfigureAwait(false);
+        FetchData();
+
     }
+
+    private async Task FetchData()
+    {
+        
+        await CurrentViewModel.FetchData().ConfigureAwait(false);
+    }
+
     partial void OnObjectTypeChanged(string value)
     {
         CurrentViewModel = viewModels[value];

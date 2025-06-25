@@ -1,5 +1,7 @@
 ﻿using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 namespace TallyConnector.Core.Models.TallyComplexObjects;
 
 [TDLCollection(ExplodeCondition = "NOT $$IsEmpty:{0}")]
@@ -48,14 +50,27 @@ public class TallyAmountField : ITallyComplexObject, IBaseObject
 
     public override string ToString()
     {
+        
         if (ForexAmount != null)
         {
-            return $"{ForexCurrency}{ForexAmount?.ToString(CultureInfo.InvariantCulture)} @ {RateOfExchange?.ToString(CultureInfo.InvariantCulture)}/{ForexCurrency} = {Currency} {Amount}";
+            return $"{ForexCurrency}{ForexAmount?.ToString(CultureInfo.InvariantCulture)} @ {RateOfExchange?.ToString(CultureInfo.InvariantCulture)}/{ForexCurrency} = {Currency} {Amount.ToString(CultureInfo.InvariantCulture)}";
         }
         if (IsDebit)
         {
             return (Amount * -1).ToString(CultureInfo.InvariantCulture);
         }
         return Amount.ToString(CultureInfo.InvariantCulture);
+    }
+    public string ToString([StringSyntax(StringSyntaxAttribute.NumericFormat)] string? format)
+    {
+        if (ForexAmount != null)
+        {
+            return $"{ForexCurrency}{ForexAmount?.ToString(format,CultureInfo.InvariantCulture)} @ {RateOfExchange?.ToString(format, CultureInfo.InvariantCulture)}/{ForexCurrency} = {Currency} {Amount.ToString(format,CultureInfo.InvariantCulture)}";
+        }
+        if (IsDebit)
+        {
+            return (Amount * -1).ToString(format, CultureInfo.InvariantCulture);
+        }
+        return Amount.ToString(format,CultureInfo.InvariantCulture);
     }
 }

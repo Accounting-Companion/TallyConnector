@@ -1,5 +1,8 @@
 ﻿namespace TallyConnector.Models.TallyPrime.V6.Masters;
-public class CostCentre
+[XmlRoot(ElementName = "COSTCENTRE")]
+[XmlType(AnonymousType = true)]
+[ImplementTallyRequestableObject]
+public partial class CostCentre:Base.Masters.CostCentre
 {
 
 }

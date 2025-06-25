@@ -4,6 +4,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:DemoDesktopApp.Views"
+             xmlns:extensions="clr-namespace:DemoDesktopApp.Extensions"
              xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes" 
              xmlns:v6="clr-namespace:DemoDesktopApp.ViewModels.Prime.v6" 
              d:DataContext="{d:DesignInstance Type=v6:ReadDataViewModel}"
@@ -18,6 +19,10 @@
                   Background="White" BorderBrush="Green" HorizontalAlignment="Left"
                   ItemsSource="{Binding ObjectTypes}"
                   materialDesign:HintAssist.Hint="Object Type" SelectedItem="{Binding ObjectType}"/>
-        <DataGrid Grid.Row="1" ItemsSource="{Binding CurrentViewModel.DataView}" CanUserAddRows="False"/>
+        <DataGrid Grid.Row="1" IsReadOnly="True" FrozenColumnCount="2"
+                  ItemsSource="{Binding CurrentViewModel.DataView}"
+                  Style="{StaticResource MaterialDesignDataGrid}"
+                  CanUserAddRows="False" extensions:DataGridExtensions.EnableAutoNesting="True"
+                 />
     </Grid>
 </UserControl>

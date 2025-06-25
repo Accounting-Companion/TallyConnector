@@ -53,6 +53,10 @@ public static class EnveopeExtensions
                 collection.Filters = requestOptions.Filters?.Select(c => c.FilterName!).ToList();
                 collection.Childof = requestOptions.Childof;
                 collection.BelongsTo = requestOptions.BelongsTo ?? YesNo.None;
+                if (!string.IsNullOrWhiteSpace(requestOptions.CollectionType))
+                {
+                    collection.Type = requestOptions.CollectionType;
+                }
             }
 
             if (requestOptions.Filters != null && requestOptions.Filters.Count > 0)

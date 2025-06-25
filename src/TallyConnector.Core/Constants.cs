@@ -38,7 +38,7 @@ public static class Constants
 
         public static TDLFunction GetBoolFunction()
         {
-            return new TDLFunction(Constants.GetBooleanFromLogicFieldFunctionName)
+            return new TDLFunction(GetBooleanFromLogicFieldFunctionName)
             {
                 Parameters = ["val : Logical : None"],
                 Returns = "String",
@@ -57,7 +57,7 @@ public static class Constants
         }
         public static TDLFunction GetDateFunction()
         {
-            return new TDLFunction(Constants.TransformDateFunctionName)
+            return new TDLFunction(TransformDateFunctionName)
             {
                 Parameters = ["ParamInputDate   : Date"],
                 Variables = [

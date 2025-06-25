@@ -1,6 +1,4 @@
 ﻿using System.ComponentModel;
-using System.Windows.Data;
-using TallyConnector.Models.Base;
 
 namespace DemoDesktopApp.ViewModels.Prime;
 public abstract partial class AbstractDataFetcherViewModel : BaseViewModel
@@ -12,7 +10,7 @@ public abstract partial class AbstractDataFetcherViewModel : BaseViewModel
     private ICollectionView _dataView;
     public AbstractDataFetcherViewModel()
     {
-        DataView = CollectionViewSource.GetDefaultView(new List<BaseTallyObject>());
+       // DataView = CollectionViewSource.GetDefaultView();
     }
 
     public abstract Task FetchData();

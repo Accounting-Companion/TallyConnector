@@ -4,5 +4,4 @@
 [ImplementTallyRequestableObject]
 public partial  class Group : Base.Masters.Group
 {
-
 }

@@ -65,19 +65,19 @@ public partial class Company : BaseCompany, ICompany
     public DateTime BooksFrom { get; set; }
 
     [XmlElement(ElementName = "GUID")]
-    [Column(TypeName = $"nvarchar({Constants.GUIDLength})")]
+    [Column(TypeName = $"nvarchar({GUIDLength})")]
     public string GUID { get; set; }
 
     [XmlElement(ElementName = "BASICCOMPANYFORMALNAME")]
-    [Column(TypeName = $"nvarchar({Constants.MaxNameLength})")]
+    [Column(TypeName = $"nvarchar({MaxNameLength})")]
     public string? FormalName { get; set; }
 
     [XmlElement(ElementName = "STATENAME")]
-    [Column(TypeName = $"nvarchar({Constants.MaxNameLength})")]
+    [Column(TypeName = $"nvarchar({MaxNameLength})")]
     public string? State { get; set; }
 
     [XmlElement(ElementName = "COUNTRYNAME")]
-    [Column(TypeName = $"nvarchar({Constants.MaxNameLength})")]
+    [Column(TypeName = $"nvarchar({MaxNameLength})")]
     public string? Country { get; set; }
 
     [XmlElement(ElementName = "PINCODE")]

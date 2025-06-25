@@ -1,7 +1,8 @@
 ﻿namespace TallyConnector.Models.TallyPrime.V6.Masters;
-[XmlRoot(ElementName = "COSTCATEGORY")]
+
+[XmlRoot(ElementName = "VOUCHERTYPE")]
 [XmlType(AnonymousType = true)]
 [ImplementTallyRequestableObject]
-public partial class CostCategory : Base.Masters.CostCategory
+public partial class VoucherType : Base.Masters.VoucherType
 {
 }

@@ -12,6 +12,7 @@ public class PropertyAttributesTransformer
         { TDLFieldAttributeName,new TDLFieldAttributeTransformer() },
         { TDLCollectionAttributeName,new PropertyCollectionAttributeTransformer() },
         { EnumChoiceAttributeName,new EnumChoiceAttributeTransformer() },
+        { XMLEnumAttributeName,new XMLEnumAttributeTransformer() },
     };
     /// <summary>
     /// Propogates propertyData properties based on attributes to property

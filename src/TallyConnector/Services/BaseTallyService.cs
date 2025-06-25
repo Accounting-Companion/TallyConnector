@@ -333,7 +333,7 @@ public partial class BaseTallyService : IBaseTallyService
                 {
                     return innerText;
                 }
-                var AsciiCode = System.Convert.ToUInt32(innerText, 16);
+                var AsciiCode = Convert.ToUInt32(innerText, 16);
                 return AsciiCode.ToString();
             });
             return v;
