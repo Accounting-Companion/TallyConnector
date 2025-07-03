@@ -1,6 +1,4 @@
-﻿using TallyConnector.Core.Models;
-
-namespace TallyConnector.Core;
+﻿namespace TallyConnector.Core;
 public static class Constants
 {
     // Source - "DEFTDL:src\..\..\tdl.core\src\..\..\tdl.template\src\formula\formula.tdl"

@@ -45,7 +45,7 @@ public class LedgGSTRegDetail
 }
 
 ";
-        await VerifyTDLReportV2.VerifyGeneratorAsync(src,
+        await VerifyTDLReport.VerifyGeneratorAsync(src,
             ("UnitTests.TestBasic.Ledger.cs", @"using TallyConnector.Core.Extensions;
 using static TallyConnector.Core.Constants;
 
@@ -109,7 +109,7 @@ partial class Ledger : global::TallyConnector.Core.Models.Interfaces.ITallyReque
     {
         return new(ReportName, [Name_39DV_FieldName,Parent_DR40_FieldName], XMLTag)
         {
-            Explode = [$""{GSTRegistrationDetails_UPZF_PartName}:{string.Format(""$$NUMITEMS:LEDGSTREGDETAILS>0"", ""GSTRegistrationDetails"")}""]
+            Explode = [$""{GSTRegistrationDetails_UPZF_PartName}:{string.Format(""$$NUMITEMS:LEDGSTREGDETAILS>0"", ""$LEDGSTREGDETAILS.LIST"")}""]
         };
     }
 

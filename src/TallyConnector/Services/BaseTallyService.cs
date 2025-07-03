@@ -14,7 +14,7 @@ public partial class BaseTallyService : IBaseTallyService
     private int _port;
 
     private string _baseURL;
-    private string FullURL => _baseURL + ":" + _port;
+    private string FullURL => _baseURL + ":" + _port; 
 
     protected readonly ILogger _logger;
 

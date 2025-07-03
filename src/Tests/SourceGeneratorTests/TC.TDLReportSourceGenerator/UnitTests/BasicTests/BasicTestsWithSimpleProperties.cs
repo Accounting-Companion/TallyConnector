@@ -21,7 +21,7 @@ public partial class Ledger
     public string Parent { get; set; }
 }
 ";
-        await VerifyTDLReportV2.VerifyGeneratorAsync(src,
+        await VerifyTDLReport.VerifyGeneratorAsync(src,
             ("UnitTests.TestBasic.Ledger.cs", @"using TallyConnector.Core.Extensions;
 
 #nullable enable
@@ -130,7 +130,7 @@ public partial class Ledger : LedgerBase
     public bool IsBillWise { get; set; }
 }
 ";
-        await VerifyTDLReportV2.VerifyGeneratorAsync(src,
+        await VerifyTDLReport.VerifyGeneratorAsync(src,
             [
             ("UnitTests.TestBasic.Ledger.cs", @"using TallyConnector.Core.Extensions;
 using static TallyConnector.Core.Constants;
@@ -251,7 +251,7 @@ public partial class Ledger : LedgerBase
     public bool IsBillWise { get; set; }
 }
 ";
-        await VerifyTDLReportV2.VerifyGeneratorAsync(src,
+        await VerifyTDLReport.VerifyGeneratorAsync(src,
             [
             ("UnitTests.TestBasic.Ledger.cs", @"using TallyConnector.Core.Extensions;
 using static TallyConnector.Core.Constants;

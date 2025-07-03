@@ -21,7 +21,7 @@ public partial class Ledger
     public List<string> Address { get; set; }
 }
 ";
-         await VerifyTDLReportV2.VerifyGeneratorAsync(src,
+         await VerifyTDLReport.VerifyGeneratorAsync(src,
             ("UnitTests.TestBasic.Ledger.cs", @"using TallyConnector.Core.Extensions;
 
 #nullable enable
@@ -142,7 +142,7 @@ public class Multiaddress
     public List<string> AddressLines { get; set; }
 }
 ";
-         await VerifyTDLReportV2.VerifyGeneratorAsync(src,
+         await VerifyTDLReport.VerifyGeneratorAsync(src,
             ("UnitTests.TestBasic.Ledger.cs", @"using TallyConnector.Core.Extensions;
 
 #nullable enable
@@ -255,6 +255,7 @@ using TallyConnector.Core.Attributes;
 using System.Collections.Generic;
 using System.Xml;
 using System.Xml.Serialization;
+using TallyConnector.Core.Models.TallyComplexObjects;
 namespace UnitTests.TestBasic;
 
 [ImplementTallyRequestableObject]
@@ -272,6 +273,8 @@ public partial class Voucher
 public class LedgerEntry
 {  
     public string LedgerName { get; set; }
+
+
 }
 [TDLCollection(CollectionName = ""LedgerEntries"", ExplodeCondition = ""$$NUMITEMS:LedgerEntries>0"")]
 public class ELedgerEntry : LedgerEntry
@@ -279,7 +282,7 @@ public class ELedgerEntry : LedgerEntry
     public string NewProp { get; set; }
 }
 ";
-        await VerifyTDLReportV2.VerifyGeneratorAsync(src,
+        await VerifyTDLReport.VerifyGeneratorAsync(src,
            ("UnitTests.TestBasic.Voucher.cs", @"using TallyConnector.Core.Extensions;
 
 #nullable enable
@@ -342,7 +345,7 @@ partial class Voucher : global::TallyConnector.Core.Models.Interfaces.ITallyRequ
     {
         return new(ReportName, [VoucherTypeName_PPEC_FieldName,VoucherNumber_VW4Y_FieldName], XMLTag)
         {
-            Explode = [$""{LedgerEntries_OO83_PartName}:{string.Format(""$$NUMITEMS:AllLedgerEntries>0"", ""LedgerEntries"")}"", $""{LedgerEntries_SLOU_PartName}:{string.Format(""$$NUMITEMS:AllLedgerEntries>0"", ""LedgerEntries"")}""]
+            Explode = [$""{LedgerEntries_OO83_PartName}:{string.Format(""$$NUMITEMS:AllLedgerEntries>0"", ""$ALLILEDGERENTRIES.LIST"")}"", $""{LedgerEntries_SLOU_PartName}:{string.Format(""$$NUMITEMS:LedgerEntries>0"", ""LedgerEntries"")}""]
         };
     }
 
@@ -425,7 +428,7 @@ public class ELedgerEntry : LedgerEntry
     public string NewProp { get; set; }
 }
 ";
-        await VerifyTDLReportV2.VerifyGeneratorAsync(src,
+        await VerifyTDLReport.VerifyGeneratorAsync(src,
            ("UnitTests.TestBasic.Voucher.cs", @"using TallyConnector.Core.Extensions;
 
 #nullable enable
@@ -493,7 +496,7 @@ partial class Voucher : global::TallyConnector.Core.Models.Interfaces.ITallyRequ
     {
         return new(ReportName, [VoucherTypeName_PPEC_FieldName,VoucherNumber_VW4Y_FieldName], XMLTag)
         {
-            Explode = [$""{LedgerEntries_OO83_PartName}:{string.Format(""$$NUMITEMS:AllLedgerEntries>0"", ""LedgerEntries"")}"", $""{LedgerEntries_SLOU_PartName}:{string.Format(""$$NUMITEMS:AllLedgerEntries>0"", ""LedgerEntries"")}"", $""{InventoryEntry_OVLF_PartName}:{string.Format(""$$NUMITEMS:INVENTORYALLOCATIONS>0"", ""InventoryEntry"")}""]
+            Explode = [$""{LedgerEntries_OO83_PartName}:{string.Format(""$$NUMITEMS:AllLedgerEntries>0"", ""$ALLILEDGERENTRIES.LIST"")}"", $""{LedgerEntries_SLOU_PartName}:{string.Format(""$$NUMITEMS:LedgerEntries>0"", ""LedgerEntries"")}"", $""{InventoryEntry_OVLF_PartName}:{string.Format(""$$NUMITEMS:INVENTORYALLOCATIONS>0"", ""$InventoryEntry"")}""]
         };
     }
 
@@ -504,7 +507,7 @@ partial class Voucher : global::TallyConnector.Core.Models.Interfaces.ITallyRequ
         _lines[1] = new(LedgerEntries_SLOU_PartName, [LedgerName_YBOB_FieldName,NewProp_LUEW_FieldName], ""LEDGERENTRIES.LIST"");
         _lines[2] = new(InventoryEntry_OVLF_PartName, [StockItemName_DU48_FieldName], ""InventoryEntry"")
         {
-            Explode = [$""{AccountingEntries_7ZOG_PartName}:{string.Format(""$$NUMITEMS:ACCOUNTINGALLOCATIONS>0"", ""AccountingEntries"")}""]
+            Explode = [$""{AccountingEntries_7ZOG_PartName}:{string.Format(""$$NUMITEMS:ACCOUNTINGALLOCATIONS>0"", ""$AccountingEntries"")}""]
         };
         _lines[3] = new(AccountingEntries_7ZOG_PartName, [LedgerName_YBOB_FieldName,NewProp_LUEW_FieldName], ""AccountingEntries"");
         return _lines;

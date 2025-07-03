@@ -29,7 +29,7 @@ public partial class Ledger
     public TallyAmountField OpeningBalance { get; set; }
 }
 ";
-        await VerifyTDLReportV2.VerifyGeneratorAsync(src,
+        await VerifyTDLReport.VerifyGeneratorAsync(src,
            ("UnitTests.TestBasic.Ledger.cs", @"using TallyConnector.Core.Extensions;
 using static TallyConnector.Core.Constants;
 
@@ -96,7 +96,7 @@ partial class Ledger : global::TallyConnector.Core.Models.Interfaces.ITallyReque
     {
         return new(ReportName, [Name_39DV_FieldName,Parent_DR40_FieldName], XMLTag)
         {
-            Explode = [$""{OpeningBalance_2OQW_PartName}:{string.Format(""NOT $$IsEmpty:{0}"", ""OpeningBalance"")}""]
+            Explode = [$""{OpeningBalance_2OQW_PartName}:{string.Format(""NOT $$IsEmpty:{0}"", ""$OPENINGBALANCE"")}""]
         };
     }
 

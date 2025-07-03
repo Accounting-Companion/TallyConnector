@@ -2,13 +2,13 @@
 public static class FactoryMethods
 {
     public const string CancellationTokenArgName = "token";
-   
+
     internal static ExpressionSyntax GetEmptyStringSyntax() => MemberAccessExpression(
                                                       SyntaxKind.SimpleMemberAccessExpression,
                                                       PredefinedType(
                                                           Token(SyntaxKind.StringKeyword)),
                                                       IdentifierName("Empty"));
-    
+
     internal static AliasQualifiedNameSyntax GetGlobalNameforType(string typeName)
     {
         return AliasQualifiedName(IdentifierName(Token(SyntaxKind.GlobalKeyword)),
@@ -17,7 +17,7 @@ public static class FactoryMethods
     internal static LiteralExpressionSyntax CreateStringLiteral(string name)
     {
         return LiteralExpression(SyntaxKind.StringLiteralExpression, Literal(name));
-    }    
+    }
     internal static LiteralExpressionSyntax CreateNullLiteral()
     {
         return LiteralExpression(SyntaxKind.NullLiteralExpression);
@@ -61,7 +61,16 @@ public static class FactoryMethods
             CreateVariableDeclaration(varName, expressionSyntax));
         return varSyntax;
     }
+    internal static FieldDeclarationSyntax CreateConstStringVar(string varName, string varText)
+    {
+        TypeSyntax strSyntax = PredefinedType(Token(SyntaxKind.StringKeyword));
 
+        VariableDeclarationSyntax variableDeclarationSyntax = CreateVariableDelaration(strSyntax,
+                                                                                       varName,
+                                                                                       LiteralExpression(SyntaxKind.StringLiteralExpression, Literal(varText)));
+
+        return FieldDeclaration(variableDeclarationSyntax);
+    }
     internal static VariableDeclarationSyntax CreateVariableDeclaration(string varName, ExpressionSyntax expressionSyntax)
     {
         IdentifierNameSyntax varSyntax = IdentifierName(Identifier(TriviaList(),
@@ -78,6 +87,18 @@ public static class FactoryMethods
             .WithInitializer(EqualsValueClause(expressionSyntax))
             ));
     }
-   
 
+    internal static ImplicitObjectCreationExpressionSyntax CreateImplicitObjectExpression(List<SyntaxNodeOrToken> constructorArgs,
+                                                                                         List<SyntaxNodeOrToken>? intializerArgs = null)
+    {
+        var implicitObjectCreationExpressionSyntax = ImplicitObjectCreationExpression().WithArgumentList(ArgumentList(SeparatedList<ArgumentSyntax>(constructorArgs)));
+        if (intializerArgs != null)
+        {
+            implicitObjectCreationExpressionSyntax = implicitObjectCreationExpressionSyntax
+                .WithInitializer(InitializerExpression(SyntaxKind.ObjectInitializerExpression,
+                                                       SeparatedList<ExpressionSyntax>(intializerArgs)));
+        }
+
+        return implicitObjectCreationExpressionSyntax;
+    }
 }

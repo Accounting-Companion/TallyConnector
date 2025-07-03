@@ -953,19 +953,7 @@ public class TDLReportGenerator
                                                                  ));
     }
 
-    private static ImplicitObjectCreationExpressionSyntax CreateImplicitObjectExpression(List<SyntaxNodeOrToken> constructorArgs,
-                                                                                         List<SyntaxNodeOrToken>? intializerArgs = null)
-    {
-        var implicitObjectCreationExpressionSyntax = ImplicitObjectCreationExpression().WithArgumentList(ArgumentList(SeparatedList<ArgumentSyntax>(constructorArgs)));
-        if (intializerArgs != null)
-        {
-            implicitObjectCreationExpressionSyntax = implicitObjectCreationExpressionSyntax
-                .WithInitializer(InitializerExpression(SyntaxKind.ObjectInitializerExpression,
-                                                       SeparatedList<ExpressionSyntax>(intializerArgs)));
-        }
-
-        return implicitObjectCreationExpressionSyntax;
-    }
+    
 
 
     internal LocalDeclarationStatementSyntax CreateVarArrayWithCountVariable(string typeName,

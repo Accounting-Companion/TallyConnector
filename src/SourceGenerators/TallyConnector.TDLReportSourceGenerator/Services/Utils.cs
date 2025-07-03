@@ -1,4 +1,5 @@
-﻿using System.Security.Cryptography;
+﻿using System.ComponentModel;
+using System.Security.Cryptography;
 using System.Text;
 using TallyConnector.TDLReportSourceGenerator.Models;
 
@@ -114,7 +115,8 @@ public static class Utils
     }
 
     public static List<PropertyData> GetAllDirectProperties(this ModelData modelData,
-                                                            HashSet<string>? visited = null, bool includeOverriden = false)
+                                                            HashSet<string>? visited = null,
+                                                            bool includeOverriden = false)
     {
         List<PropertyData> properties = [];
         visited ??= [];
@@ -140,6 +142,12 @@ public static class Utils
         }
     }
 
+    public static ClassPropertyData? GetOveriddenProperty(this ClassData classData, string propName)
+    {
+        if (classData.BaseData == null) return null;
+        if (classData.BaseData.Members.TryGetValue(propName, out var member)) return member;
+        return classData.BaseData.GetOveriddenProperty(propName);
+    }
     public static void AddText(this List<InterpolatedStringContentSyntax> interpolatedStringContentSyntaxes, string text)
     {
         interpolatedStringContentSyntaxes.Add(InterpolatedStringText()
@@ -155,6 +163,68 @@ public static class Utils
     {
         interpolatedStringContentSyntaxes.Add(Interpolation(
                                             IdentifierName(identifier)));
+    }
+    public static HashSet<string> GetUniqueMemberNames(this ClassData modelData, HashSet<string>? visited = null)
+    {
+        List<string> properties = [];
+        visited ??= [];
+
+        for (ClassData? currentSymbol = modelData; currentSymbol != null; currentSymbol = currentSymbol.BaseData)
+        {
+            if (visited.Add(currentSymbol.FullName))
+            {
+                properties.InsertRange(0, currentSymbol.Members.Values.Where(c => !c.IsComplex).Select(c => c.Name));
+            }
+        }
+        return [.. properties];
+    }
+    public static List<ClassPropertyData> GetClassMembers(this ClassData modelData, HashSet<string>? visited = null)
+    {
+        List<ClassPropertyData> properties = [];
+        visited ??= [];
+
+        for (ClassData? currentSymbol = modelData; currentSymbol != null; currentSymbol = currentSymbol.BaseData)
+        {
+            if (visited.Add(currentSymbol.FullName))
+            {
+                var allProps = currentSymbol.Members.Values;
+                foreach (var item in allProps.Where(c => c.IsComplex))
+                {
+                    if (item.ClassData == null)
+                    {
+                        continue;
+                    }
+                    properties.InsertRange(0, item.ClassData.GetClassMembers(visited));
+                }
+                ;
+                properties.InsertRange(0, allProps);
+            }
+        }
+        return [.. properties];
+    }
+    public static void AppendDict(this Dictionary<string, UniqueMember> src,
+                                  Dictionary<string, ClassPropertyData> src2,
+                                  string prefixPath = "")
+    {
+        foreach (var item in src2)
+        {
+            src[item.Key] = new(prefixPath, item.Value);
+        }
+    }
+    public static void AppendDict(this Dictionary<string, UniqueMember> src,
+                                  Dictionary<string, UniqueMember> src2)
+    {
+        foreach (var item in src2)
+        {
+            src[item.Key] = item.Value;
+        }
+    }
+    public static void RemoveDict(this Dictionary<string, UniqueMember> src, IEnumerable<string> keys)
+    {
+        foreach (var item in keys)
+        {
+            src.Remove(item);
+        }
     }
 }
 

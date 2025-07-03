@@ -4,7 +4,7 @@ using System.Globalization;
 using static System.Runtime.InteropServices.JavaScript.JSType;
 namespace TallyConnector.Core.Models.TallyComplexObjects;
 
-[TDLCollection(ExplodeCondition = "NOT $$IsEmpty:{0}")]
+
 [DebuggerDisplay("{ToString(),nq}")]
 public class TallyAmountField : ITallyComplexObject, IBaseObject
 {

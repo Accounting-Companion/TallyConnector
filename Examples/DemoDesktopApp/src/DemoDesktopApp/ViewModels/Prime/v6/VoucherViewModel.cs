@@ -19,9 +19,17 @@ public partial class VoucherViewModel : AbstractDataFetcherViewModel
     {
         var options = new RequestOptions();
 
-        var data = await _tallyService.GetVouchersAsync(options).ConfigureAwait(false);
-        DataView = CollectionViewSource.GetDefaultView(data);
-        DataView.Refresh();
+        try
+        {
+            var data = await _tallyService.GetVouchersAsync(options).ConfigureAwait(false);
+            DataView = CollectionViewSource.GetDefaultView(data);
+            DataView.Refresh();
+        }
+        catch (Exception ex)
+        {
+
+            throw;
+        }
     }
     public override async Task FetchPaginatedData()
     {

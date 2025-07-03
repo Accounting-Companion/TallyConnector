@@ -1,13 +1,14 @@
 ﻿using System.Collections.Immutable;
+using System.Diagnostics;
 using TallyConnector.TDLReportSourceGenerator.Services;
 namespace TallyConnector.TDLReportSourceGenerator;
 
-
 [Generator(LanguageNames.CSharp)]
-public class TDLReportSourceGenerator : IIncrementalGenerator
+public class ModelMetaGenerator : IIncrementalGenerator
 {
     public void Initialize(IncrementalGeneratorInitializationContext context)
     {
+        //Debugger.Launch();
         IncrementalValueProvider<string> rootNameSpace = context.AnalyzerConfigOptionsProvider
             .Select(static (provider, _) =>
             {
@@ -15,7 +16,7 @@ public class TDLReportSourceGenerator : IIncrementalGenerator
                 return rootNamespace ?? string.Empty;
             });
 
-        var modelsData = context.SyntaxProvider.ForAttributeWithMetadataName(Attributes.SourceGenerator.ImplementTallyRequestableObjectAttribute,
+        var modelsData = context.SyntaxProvider.ForAttributeWithMetadataName(Attributes.Abstractions.GenerateMetaAttributeName,
                                                                              SyntaxPredicate,
                                                                              Transform).Collect();
 
@@ -50,19 +51,23 @@ public class TDLReportSourceGenerator : IIncrementalGenerator
             var token = context.CancellationToken;
             var assembly = compilation.Assembly;
 
-            TDLReportTransformer tDLReportTransformer = new(assembly);
+            ModelTransformer tDLReportTransformer = ModelTransformer.Instance;
             foreach (var modelSymbol in modelSymbols)
             {
                 token.ThrowIfCancellationRequested();
-                await tDLReportTransformer.TransformAsync(modelSymbol, token);
+                await tDLReportTransformer.TransformAsync(modelSymbol, token: token);
             }
-
-            var modelDataList = tDLReportTransformer.GetTransformedData();
+            var modelDataList = tDLReportTransformer.GetSymbols();
             foreach (var modelData in modelDataList)
             {
-                var tDLReportSourceGenerator = new TDLReportGenerator(modelData);
-                string code = tDLReportSourceGenerator.Generate(token);
-                context.AddSource($"{modelData.FullName}", code);
+                new MetaDataGenerator(modelData, context, token)
+                    .GenerateMeta()
+                    .GenerateMetaField();
+                if (modelData.GenerateITallyRequestableObectAttribute)
+                {
+                    new TDLEnvelopeGenerator(modelData, context, token)
+                    .Generate();
+                }
             }
         }
         catch (Exception ex)
@@ -70,6 +75,5 @@ public class TDLReportSourceGenerator : IIncrementalGenerator
             //throw;
         }
     }
-
-
 }
+

@@ -54,7 +54,9 @@ public static class Constants
     public const string TallyConnectorPaginationNameSpace = $"TallyConnector.Models.Common.Pagination";
     public const string ReportResponseEnvelopeClassName = "ReportResponseEnvelope";
     public const string FieldFullTypeName = $"{TallyConnectorRequestModelsNameSpace}.Field";
-    public const string PartFullTypeName = $"{TallyConnectorRequestModelsNameSpace}.Part";
+    public const string PartTypeName = "Part";
+    public const string PartFullTypeName = $"{TallyConnectorRequestModelsNameSpace}.{PartTypeName}";
+   
     public const string LineFullTypeName = $"{TallyConnectorRequestModelsNameSpace}.Line";
     public const string CollectionFullTypeName = $"{TallyConnectorRequestModelsNameSpace}.Collection";
     public const string TDLFunctionFullTypeName = $"{TallyConnectorRequestModelsNameSpace}.TDLFunction";
@@ -144,11 +146,11 @@ public static class Constants
 
     public const string SimpleFieldsCountFieldName = "SimpleFieldsCount";
     public const string ComplexFieldsCountFieldName = "ComplexFieldsCount";
-    
+
     public static List<string> DefaultSimpleTypes = [DateOnlyType];
 
 
-    
+
     public class Models
     {
 
@@ -159,7 +161,12 @@ public static class Constants
 
 
         }
-
+        public class Abstractions
+        {
+            public const string PREFIX = "TallyConnector.Abstractions.Models";
+            public const string MetaObjectypeName = $"MetaObject";
+            public const string PropertyMetaDataTypeName = $"PropertyMetaData";
+        }
         public class Response
         {
             public const string PREFIX = $"{TallyConnectorModelsNameSpace}.Response";
@@ -176,6 +183,33 @@ public static class Constants
             public const string ImplementTallyRequestableObjectAttribute = $"{PREFIX}.ImplementTallyRequestableObjectAttribute";
 
         }
+        public class Abstractions
+        {
+            public const string PREFIX = "TallyConnector.Abstractions.Attributes";
+            public const string GenerateMetaAttributeName = $"{PREFIX}.GenerateMetaAttribute";
+            public const string GenerateITallyRequestableObectAttributeeName = $"{PREFIX}.GenerateITallyRequestableObectAttribute";
 
+        }
+
+    }
+
+    public class Meta
+    {
+        public const string IdentifierNameVarName = "IdentifierName";
+        public const string InstanceVarName = "Instance";
+        public const string ReportVarName = "TDLReportName";
+        public const string CollectionVarName = "TDLDefaultCollectionName";
+        public const string ObjectTypeVarName = "TallyObjectType";
+
+        public const string PartVarName = "Part";
+
+        public const string XMLTagVarName = "XMLTag";
+
+        public class Parameters
+        {
+            public const string Name = "name";
+            public const string XMLTag = "xmlTag";
+            public const string PathPrefix = "pathPrefix";
+        }
     }
 }

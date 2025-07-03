@@ -35,7 +35,7 @@ namespace TallyConnector.Core.Models.Temp
 
 
 }";
-        await VerifyTDLReportV2.VerifyGeneratorAsync(src, [
+        await VerifyTDLReport.VerifyGeneratorAsync(src, [
             ("TallyConnector.Core.Models.Temp.TLedger.cs",@"using TallyConnector.Core.Extensions;
 
 #nullable enable

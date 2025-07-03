@@ -1,4 +1,6 @@
-﻿namespace TallyConnector.Core.Models.Request;
+﻿using TallyConnector.Abstractions.Models;
+
+namespace TallyConnector.Core.Models.Request;
 [XmlRoot(ElementName = "ENVELOPE")]
 public class RequestEnvelope : PostRequestEnvelope<string>
 {
@@ -484,6 +486,24 @@ public class Field : BaseTDLClass
 
     [XmlElement(ElementName = "INVISIBLE")]
     public string? Invisible { get; set; }
+
+    public static implicit operator Field(PropertyMetaData meta)
+    {
+        Field field = new(meta.Name, meta.XMLTag, meta.Set);
+        if (meta.TDLType != null)
+        {
+            field.Type = meta.TDLType;
+        }
+        if (meta.Format != null)
+        {
+            field.Format = meta.Format;
+        }
+        if (meta.Invisible != null)
+        {
+            field.Invisible = meta.Invisible;
+        }
+        return field;
+    }
 }
 
 

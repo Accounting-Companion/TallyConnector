@@ -6,5 +6,6 @@ global using Microsoft.CodeAnalysis.Text;
 global using Microsoft.CodeAnalysis.CSharp;
 global using Microsoft.CodeAnalysis.CSharp.Testing;
 global using System.Collections.Immutable;
-global using VerifyTDLReportV2 = TC.TDLReportSourceGenerator.Tests.Verifiers.CSharpSourceGeneratorVerifier<TallyConnector.TDLReportSourceGenerator.TDLReportSourceGeneratorV2>;
+global using VerifyTDLReport = TC.TDLReportSourceGenerator.Tests.Verifiers.CSharpSourceGeneratorVerifier<TallyConnector.TDLReportSourceGenerator.TDLReportSourceGenerator>;
+global using VerifyModelMetaGenerator = TC.TDLReportSourceGenerator.Tests.Verifiers.CSharpSourceGeneratorVerifier<TallyConnector.TDLReportSourceGenerator.ModelMetaGenerator>;
 

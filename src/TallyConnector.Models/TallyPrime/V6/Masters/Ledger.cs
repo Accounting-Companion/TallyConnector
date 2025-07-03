@@ -1,4 +1,6 @@
-﻿namespace TallyConnector.Models.TallyPrime.V6.Masters;
+﻿using TallyConnector.Abstractions.Models;
+
+namespace TallyConnector.Models.TallyPrime.V6.Masters;
 
 [XmlType(AnonymousType = true)]
 [XmlRoot("LEDGER")]

@@ -54,7 +54,7 @@ internal static partial class CSharpSourceGeneratorVerifier<TSourceGenerator>
         
         //test.TestState.AdditionalReferences.Add(typeof(ILogger).Assembly);
         //test.TestState.AdditionalReferences.Add(typeof(Ledger).Assembly);
-        //test.TestState.AdditionalReferences.Add(typeof(TallyConnector.Services.TallyCommonService).Assembly);
+        test.TestState.AdditionalReferences.Add(typeof(TallyConnector.Abstractions.Attributes.GenerateMetaAttribute).Assembly);
         test.TestState.AdditionalReferences.Add(typeof(TallyConnector.Core.Constants).Assembly);
         foreach ((string filename, string content) in generatedSources)
         {

@@ -1,48 +1,55 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-  <PropertyGroup>
-    <TargetFramework>net8.0</TargetFramework>
-    <ImplicitUsings>enable</ImplicitUsings>
-    <Nullable>enable</Nullable>
+	<PropertyGroup>
+		<TargetFramework>net8.0</TargetFramework>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<Nullable>enable</Nullable>
 
-    <IsPackable>false</IsPackable>
-    <IsTestProject>true</IsTestProject>
-	  <EmitCompilerGeneratedFiles>true</EmitCompilerGeneratedFiles>
-	  <CompilerGeneratedFilesOutputPath>Generated</CompilerGeneratedFilesOutputPath>
-  </PropertyGroup>
+		<IsPackable>false</IsPackable>
+		<IsTestProject>true</IsTestProject>
+		<EmitCompilerGeneratedFiles>true</EmitCompilerGeneratedFiles>
+		<CompilerGeneratedFilesOutputPath>Generated</CompilerGeneratedFilesOutputPath>
+	</PropertyGroup>
 
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-    <WarningLevel>9999</WarningLevel>
-  </PropertyGroup>
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+		<WarningLevel>9999</WarningLevel>
+	</PropertyGroup>
 
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
-    <WarningLevel>9999</WarningLevel>
-  </PropertyGroup>
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+		<WarningLevel>9999</WarningLevel>
+	</PropertyGroup>
 
 
-
-  <ItemGroup>
-	  <Compile Remove="Generated\**\*" />
-  </ItemGroup>
 
 	<ItemGroup>
-	  <PackageReference Include="coverlet.collector" Version="6.0.4">
-		  <PrivateAssets>all</PrivateAssets>
-		  <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-	  </PackageReference>
-	  <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.13.0" />
-	  <PackageReference Include="NUnit" Version="4.3.2" />
-	  <PackageReference Include="NUnit.Analyzers" Version="4.7.0">
-		  <PrivateAssets>all</PrivateAssets>
-		  <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-	  </PackageReference>
-	  <PackageReference Include="NUnit3TestAdapter" Version="5.0.0" />
-  </ItemGroup>
+		<Compile Remove="Generated\**\*" />
+	</ItemGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\..\..\..\SourceGenerators\TallyConnector.TDLReportSourceGenerator\TallyConnector.TDLReportSourceGenerator.csproj" OutputItemType="Analyzer" />
-    <ProjectReference Include="..\..\..\..\TallyConnector.Core\TallyConnector.Core.csproj" />
+	<ItemGroup>
+		<PackageReference Include="coverlet.collector" Version="6.0.4">
+			<PrivateAssets>all</PrivateAssets>
+			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+		</PackageReference>
+		<PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.13.0" />
+		<PackageReference Include="NUnit" Version="4.3.2" />
+		<PackageReference Include="NUnit.Analyzers" Version="4.7.0">
+			<PrivateAssets>all</PrivateAssets>
+			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+		</PackageReference>
+		<PackageReference Include="NUnit3TestAdapter" Version="5.0.0" />
+	</ItemGroup>
 
-  </ItemGroup>
+	<ItemGroup>
+
+		
+		<ProjectReference Include="..\..\..\..\SourceGenerators\TallyConnector.TDLReportSourceGenerator\TallyConnector.TDLReportSourceGenerator.csproj"  OutputItemType="Analyzer" >
+			<PrivateAssets>all</PrivateAssets>
+			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+		</ProjectReference>
+
+		
+		<ProjectReference Include="..\..\..\..\TallyConnector.Core\TallyConnector.Core.csproj" />
+
+	</ItemGroup>
 
 </Project>

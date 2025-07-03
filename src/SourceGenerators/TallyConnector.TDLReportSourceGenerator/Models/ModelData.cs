@@ -25,6 +25,8 @@ public class ModelData
     public string Name { get; }
     public string Namespace { get; }
     public int SimplePropertiesCount { get; internal set; }
+
+    public int OveriddenSimplePropertiesCount { get; internal set; }
     /// <summary>
     /// this will be false we  fetch class not by attribute (TallyRequestableObjectInterface) but from base or complex properties
     /// </summary>
@@ -32,11 +34,17 @@ public class ModelData
     public bool IsEnum { get; }
     public bool IsTallyComplexObject { get; private set; }
     public int ComplexPropertiesCount { get; internal set; }
+    public int OveriddenComplexPropertiesCount { get; internal set; }
     public TDLCollectionData? TDLCollectionData { get; internal set; }
     public string? XMLTag { get; internal set; }
     public int ENumPropertiesCount { get; internal set; }
     public HashSet<string> DefaultTDLFunctions { get; internal set; } = [];
     public HashSet<string> TDLFunctions { get; internal set; } = [];
+
+    public override string ToString()
+    {
+        return $"ModelData : {FullName}";
+    }
 }
 public class BaseModelData
 {

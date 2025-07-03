@@ -72,7 +72,7 @@ public class EnumTests
         }
 
                     ";
-        await VerifyTDLReportV2.VerifyGeneratorAsync(src, [
+        await VerifyTDLReport.VerifyGeneratorAsync(src, [
             ("TallyConnector.Core.Models.Temp.TLedger.cs",@"using TallyConnector.Core.Extensions;
 
 #nullable enable
@@ -135,7 +135,7 @@ partial class TLedger : global::TallyConnector.Core.Models.Interfaces.ITallyRequ
     {
         return new(ReportName, [Name_9QSD_FieldName], XMLTag)
         {
-            Explode = [$""{Addresses_MUJR_PartName}:{string.Format(""$$NUMITEMS:LEDMULTIADDRESSLIST>0"", ""Addresses"")}"", $""{GSTRegistrationDetails_DVBQ_PartName}:{string.Format(""$$NUMITEMS:LEDGSTREGDETAILS>0"", ""GSTRegistrationDetails"")}""]
+            Explode = [$""{Addresses_MUJR_PartName}:{string.Format(""$$NUMITEMS:LEDMULTIADDRESSLIST>0"", ""$LEDMULTIADDRESSLIST.LIST"")}"", $""{GSTRegistrationDetails_DVBQ_PartName}:{string.Format(""$$NUMITEMS:LEDGSTREGDETAILS>0"", ""$LEDGSTREGDETAILS.LIST"")}""]
         };
     }
 

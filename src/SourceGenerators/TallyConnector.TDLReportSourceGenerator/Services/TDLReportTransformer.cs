@@ -28,7 +28,7 @@ public class TDLReportTransformer
                                                           string? collectionPrefix = null,
                                                           bool addMainSymbolCollection = false,
                                                           CancellationToken token = default)
-        {
+    {
         var fullName = symbol.GetClassMetaName();
         _symbolsCache.TryGetValue(fullName, out var ExistingmodelData);
         if (ExistingmodelData != null)
@@ -86,7 +86,7 @@ public class TDLReportTransformer
         {
             modelData.BaseData.ModelData = ExistingmodelData;
             modelData.ComplexPropertiesCount += ExistingmodelData.ComplexPropertiesCount;
-            //modelData.SimplePropertiesCount += ExistingmodelData.SimplePropertiesCount;
+            //_modelData.SimplePropertiesCount += ExistingmodelData.SimplePropertiesCount;
             return;
         }
         var baseModelData = await TransformModelDataAsync(baseType, complexProperties, collectionPrefix, false, token);
@@ -100,8 +100,8 @@ public class TDLReportTransformer
         modelData.DefaultTDLFunctions.CopyFrom(baseModelData.DefaultTDLFunctions);
         modelData.TDLFunctions.CopyFrom(baseModelData.TDLFunctions);
 
-        //await TransformMembers(modelData, baseType, complexProperties, token: token);
-        //await TransformBaseSymbolDataAsync(modelData, baseType.BaseType, complexProperties, token);
+        //await TransformMembers(_modelData, baseType, complexProperties, token: token);
+        //await TransformBaseSymbolDataAsync(_modelData, baseType.BaseType, complexProperties, token);
 
     }
 
@@ -149,10 +149,10 @@ public class TDLReportTransformer
                 {
                     modelData.ComplexPropertiesCount--;
                     modelData.ComplexPropertiesCount -= overridenProp.OriginalModelData?.ComplexPropertiesCount ?? 0;
-                    //modelData.ComplexPropertiesCount -= overridenProp.OriginalModelData?.OveriddenComplexPropertiesCount ?? 0;
-                    //modelData.SimplePropertiesCount -= overridenProp.OriginalModelData?.SimplePropertiesCount ?? 0;
-                    // modelData.SimplePropertiesCount -= overridenProp.OriginalModelData?.OveriddenSimplePropertiesCount ?? 0;
-                    
+                    //_modelData.ComplexPropertiesCount -= overridenProp.OriginalModelData?.OveriddenComplexPropertiesCount ?? 0;
+                    //_modelData.SimplePropertiesCount -= overridenProp.OriginalModelData?.SimplePropertiesCount ?? 0;
+                    // _modelData.SimplePropertiesCount -= overridenProp.OriginalModelData?.OveriddenSimplePropertiesCount ?? 0;
+
                     modelData.OveriddenComplexPropertiesCount++;
                 }
                 else
@@ -244,7 +244,7 @@ public class TDLReportTransformer
         if (_symbolsCache.TryGetValue(fullName, out ModelData ComplexPropertyModelData))
         {
             modelData.ComplexPropertiesCount += ComplexPropertyModelData.ComplexPropertiesCount;
-            //modelData.SimplePropertiesCount += ExistingmodelData.SimplePropertiesCount;
+            //_modelData.SimplePropertiesCount += ExistingmodelData.SimplePropertiesCount;
         }
         else
         {
@@ -285,7 +285,7 @@ public class TDLReportTransformer
             if (_symbolsCache.TryGetValue(xMLData.Symbol.GetClassMetaName(), out ModelData xmlModelData))
             {
                 modelData.ComplexPropertiesCount += xmlModelData.ComplexPropertiesCount;
-                //modelData.SimplePropertiesCount += ExistingmodelData.SimplePropertiesCount;
+                //_modelData.SimplePropertiesCount += ExistingmodelData.SimplePropertiesCount;
             }
             else
             {
@@ -319,7 +319,7 @@ public class TDLReportTransformer
             //await TransformMembers(xMLData.ModelData, xMLData.Symbol, complexProperties, collectionPrefix, token);
             //if (!SymbolEqualityComparer.Default.Equals(xMLData.Symbol, propertyData.PropertyOriginalType))
             //{
-            //    modelData.ComplexPropertiesCount++;
+            //    _modelData.ComplexPropertiesCount++;
             //}
         }
 
@@ -363,7 +363,7 @@ public class TDLReportTransformer
     //    }
 
 
-    //private async Task TransformBaseSymbolDataAsync_Old(ModelData modelData,
+    //private async Task TransformBaseSymbolDataAsync_Old(ModelData _modelData,
     //                                                INamedTypeSymbol? baseType,
     //                                                HashSet<string> uniqueComplexChilds,
     //                                                CancellationToken token)
@@ -377,32 +377,32 @@ public class TDLReportTransformer
     //    var isMarkedPartial = baseType.DeclaringSyntaxReferences.Any(c => c.GetSyntax() is ClassDeclarationSyntax classDeclaration && classDeclaration.HasPartialKeyword());
 
     //    bool IsTallyRequestableObject = isRequestableObjectInterface || isMarkedPartial;
-    //    modelData.BaseData = new(baseType.GetClassMetaName(), baseType.Name)
+    //    _modelData.BaseData = new(baseType.GetClassMetaName(), baseType.Name)
     //    {
     //        // IsTallyRequestableObject = IsTallyRequestableObject
     //    };
     //    if (!IsTallyRequestableObject)
     //    {
-    //        await TransformMembers(modelData, baseType, uniqueComplexChilds, token: token);
+    //        await TransformMembers(_modelData, baseType, uniqueComplexChilds, token: token);
     //        return;
     //    }
     //    bool isSameAssembly = SymbolEqualityComparer.Default.Equals(baseType.ContainingAssembly, _assembly);
     //    if (!isSameAssembly)
     //    {
     //        // Todo : Handle this when base class is from not same assembly we need to acess simple properties count and save
-    //        //modelData.SimplePropertiesCount = 2;
-    //        modelData.SimplePropertiesCount += ExtractCountFromField(baseType, SimpleFieldsCountFieldName);
-    //        modelData.ComplexPropertiesCount += ExtractCountFromField(baseType, ComplexFieldsCountFieldName);
+    //        //_modelData.SimplePropertiesCount = 2;
+    //        _modelData.SimplePropertiesCount += ExtractCountFromField(baseType, SimpleFieldsCountFieldName);
+    //        _modelData.ComplexPropertiesCount += ExtractCountFromField(baseType, ComplexFieldsCountFieldName);
     //        return;
     //    }
     //    ModelData baseModelData = await TransformAsync(baseType, token);
     //    baseModelData.IsRequestableObjectInterface = isRequestableObjectInterface;
-    //    modelData.BaseData.ModelData = baseModelData;
-    //    modelData.SimplePropertiesCount += modelData.BaseData.ModelData.SimplePropertiesCount;
-    //    modelData.ComplexPropertiesCount += modelData.BaseData.ModelData.ComplexPropertiesCount;
+    //    _modelData.BaseData.ModelData = baseModelData;
+    //    _modelData.SimplePropertiesCount += _modelData.BaseData.ModelData.SimplePropertiesCount;
+    //    _modelData.ComplexPropertiesCount += _modelData.BaseData.ModelData.ComplexPropertiesCount;
 
     //}
-    //private async Task TransformComplexProperySymbolDataAsync_Old(ModelData modelData,
+    //private async Task TransformComplexProperySymbolDataAsync_Old(ModelData _modelData,
     //                                               PropertyData propertyData,
     //                                               HashSet<string> complexProperties,
     //                                               CancellationToken token)
@@ -416,22 +416,22 @@ public class TDLReportTransformer
     //    //spropertyData.IsTallyRequestableObject = IsTallyRequestableObject;
     //    if (!IsTallyRequestableObject)
     //    {
-    //        await TransformMembers(modelData, propertyType, complexProperties, token: token);
+    //        await TransformMembers(_modelData, propertyType, complexProperties, token: token);
     //        return;
     //    }
-    //    modelData.ComplexPropertiesCount++;
+    //    _modelData.ComplexPropertiesCount++;
     //    bool isSameAssembly = SymbolEqualityComparer.Default.Equals(propertyType.ContainingAssembly, _assembly);
     //    if (!isSameAssembly)
     //    {
     //        // Todo : Handle this when  class is from not same assembly we need to acess  properties count and save
-    //        //modelData.SimplePropertiesCount = 2;
-    //        modelData.SimplePropertiesCount += ExtractCountFromField(propertyType, SimpleFieldsCountFieldName);
-    //        modelData.ComplexPropertiesCount += ExtractCountFromField(propertyType, ComplexFieldsCountFieldName);
+    //        //_modelData.SimplePropertiesCount = 2;
+    //        _modelData.SimplePropertiesCount += ExtractCountFromField(propertyType, SimpleFieldsCountFieldName);
+    //        _modelData.ComplexPropertiesCount += ExtractCountFromField(propertyType, ComplexFieldsCountFieldName);
     //        return;
     //    }
     //    ModelData propertyModelData = await TransformAsync(propertyType, token);
-    //    modelData.SimplePropertiesCount += propertyModelData.SimplePropertiesCount;
-    //    modelData.ComplexPropertiesCount += propertyModelData.ComplexPropertiesCount;
+    //    _modelData.SimplePropertiesCount += propertyModelData.SimplePropertiesCount;
+    //    _modelData.ComplexPropertiesCount += propertyModelData.ComplexPropertiesCount;
     //    propertyData.OriginalModelData = propertyModelData;
     //}
 

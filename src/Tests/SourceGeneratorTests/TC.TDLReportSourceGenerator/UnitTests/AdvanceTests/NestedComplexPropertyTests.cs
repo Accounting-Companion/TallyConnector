@@ -37,7 +37,7 @@ public class Multiaddress
     public List<string> AddressLines { get; set; }
 }
 ";
-        await VerifyTDLReportV2.VerifyGeneratorAsync(src,
+        await VerifyTDLReport.VerifyGeneratorAsync(src,
            ("UnitTests.TestBasic.Ledger.cs", @"using TallyConnector.Core.Extensions;
 
 #nullable enable
@@ -146,8 +146,253 @@ partial class Ledger : global::TallyConnector.Core.Models.Interfaces.ITallyReque
 }"));
     }
 
-    public async Task TestcomplexPropertiesRepeated()
+    [TestMethod]
+    public async Task OverridenPropertyFromBaseBaseClass()
     {
+        var src = @"
 
+using TallyConnector.Core.Attributes.SourceGenerator;
+using TallyConnector.Core.Attributes;
+using System.Collections.Generic;
+using System.Xml;
+using System.Xml.Serialization;
+namespace UnitTests.TestBasic;
+
+[ImplementTallyRequestableObject]
+[TDLCollection(Type = ""Ledger"")]
+public partial class Ledger : Base1
+{
+[XmlElement(ElementName = ""NAME"")]
+    public new string Name { get; set; }
+
+
+    public string Parent { get; set; }
+}
+public class Base1:Base2
+{
+
+}
+public class Base2
+{ 
+[XmlElement(ElementName = ""NAME"")]
+    public string Name { get; set; }
+}
+";
+        await VerifyTDLReport.VerifyGeneratorAsync(src,
+           ("UnitTests.TestBasic.Ledger.cs", @"using TallyConnector.Core.Extensions;
+
+#nullable enable
+namespace UnitTests.TestBasic;
+/*
+* Generated based on UnitTests.TestBasic.Ledger
+*/
+partial class Ledger : global::TallyConnector.Core.Models.Interfaces.ITallyRequestableObject
+{
+    const string Name_39DV_FieldName = ""Name_39DV"";
+    const string Parent_DR40_FieldName = ""Parent_DR40"";
+    const string ReportName = ""Ledger_BUL5"";
+    const string CollectionName = ""LedgersCollection_BUL5"";
+    const string XMLTag = ""LEDGER"";
+    const int SimpleFieldsCount = 2;
+    const int ComplexFieldsCount = 0;
+    public static global::TallyConnector.Core.Models.Request.RequestEnvelope GetRequestEnvelope()
+    {
+        var reqEnvelope = new global::TallyConnector.Core.Models.Request.RequestEnvelope(global::TallyConnector.Core.Models.Request.HType.Data, ReportName);
+        var tdlMsg = reqEnvelope.Body.Desc.TDL.TDLMessage;
+        tdlMsg.Report = [new(ReportName)];
+        tdlMsg.Form = [new(ReportName)];
+        tdlMsg.Part = [GetMainTDLPart(), ..GetTDLParts()];
+        tdlMsg.Line = [GetMainTDLLine(), ..GetTDLLines()];
+        tdlMsg.Field = [..GetTDLFields()];
+        tdlMsg.Collection = [..GetTDLCollections()];
+        return reqEnvelope;
+    }
+
+    public static global::System.Xml.Serialization.XmlAttributeOverrides GetXMLAttributeOverides()
+    {
+        var xmlAttributeOverrides = new global::System.Xml.Serialization.XmlAttributeOverrides();
+        var XmlAttributes = new global::System.Xml.Serialization.XmlAttributes();
+        XmlAttributes.XmlElements.Add(new(XMLTag));
+        xmlAttributeOverrides.Add(TallyConnector.Core.Models.Response.ReportResponseEnvelope<global::UnitTests.TestBasic.Ledger>.TypeInfo, ""Objects"", XmlAttributes);
+        xmlAttributeOverrides.Add(typeof(global::UnitTests.TestBasic.Base2), ""Name"", new global::System.Xml.Serialization.XmlAttributes() { XmlIgnore = true });
+        return xmlAttributeOverrides;
+    }
+
+    public static global::TallyConnector.Core.Models.Request.Part GetMainTDLPart(string partName = ReportName, string? collectionName = CollectionName, string? xmlTag = null)
+    {
+        return new(partName, collectionName, partName)
+        {
+            XMLTag = xmlTag
+        };
+    }
+
+    public static global::TallyConnector.Core.Models.Request.Part[] GetTDLParts()
+    {
+        return[];
+    }
+
+    public static global::TallyConnector.Core.Models.Request.Line GetMainTDLLine()
+    {
+        return new(ReportName, [Name_39DV_FieldName,Parent_DR40_FieldName], XMLTag);
+    }
+
+    public static global::TallyConnector.Core.Models.Request.Line[] GetTDLLines()
+    {
+        return[];
+    }
+
+    public static global::TallyConnector.Core.Models.Request.Field[] GetTDLFields()
+    {
+        var _fields = new global::TallyConnector.Core.Models.Request.Field[SimpleFieldsCount];
+        _fields[0] = new(Name_39DV_FieldName, ""NAME"", ""$NAME"");
+        _fields[1] = new(Parent_DR40_FieldName, ""PARENT"", ""$Parent"");
+        return _fields;
+    }
+
+    public static global::TallyConnector.Core.Models.Request.Collection[] GetTDLCollections()
+    {
+        var collections = new global::TallyConnector.Core.Models.Request.Collection[1];
+        collections[0] = new(CollectionName, ""Ledger"", nativeFields: [..GetFetchList()]);
+        return collections;
+    }
+
+    public static string[] GetFetchList()
+    {
+        return[""NAME"", ""Parent""];
+    }
+}"));
+    }
+    [TestMethod]
+    public async Task OverridenComplexPropertyFromBaseBaseClass()
+    {
+        var src = @"
+
+using TallyConnector.Core.Attributes.SourceGenerator;
+using TallyConnector.Core.Attributes;
+using System.Collections.Generic;
+using System.Xml;
+using System.Xml.Serialization;
+namespace UnitTests.TestBasic;
+
+[ImplementTallyRequestableObject]
+[TDLCollection(Type = ""Ledger"")]
+public partial class Ledger : Base1
+{
+
+    [XmlElement(ElementName = ""NAME"")]
+    public new ComplexPropertyOveridden Name { get; set; }
+
+
+    public string Parent { get; set; }
+}
+public class Base1:Base2
+{
+
+}
+public class Base2
+{ 
+[XmlElement(ElementName = ""NAME"")]
+    public ComplexProperty Name { get; set; }
+}
+public class ComplexPropertyOveridden : ComplexProperty
+{
+    [XmlElement(ElementName = ""ADRESS"")]
+    public new string ADRESS { get; set; }
+}
+public class ComplexProperty
+{
+
+[XmlElement(ElementName = ""ADRESS_Base"")]
+    public GSTDetail ADRESS { get; set; }
+}
+public class GSTDetail
+{
+[XmlElement(ElementName = ""SRC"")]
+public string Src {get;set;}
+}
+";
+        await VerifyTDLReport.VerifyGeneratorAsync(src,
+           ("UnitTests.TestBasic.Ledger.cs", @"using TallyConnector.Core.Extensions;
+
+#nullable enable
+namespace UnitTests.TestBasic;
+/*
+* Generated based on UnitTests.TestBasic.Ledger
+*/
+partial class Ledger : global::TallyConnector.Core.Models.Interfaces.ITallyRequestableObject
+{
+    const string Name_39DV_FieldName = ""Name_39DV"";
+    const string Parent_DR40_FieldName = ""Parent_DR40"";
+    const string ReportName = ""Ledger_BUL5"";
+    const string CollectionName = ""LedgersCollection_BUL5"";
+    const string XMLTag = ""LEDGER"";
+    const int SimpleFieldsCount = 2;
+    const int ComplexFieldsCount = 0;
+    public static global::TallyConnector.Core.Models.Request.RequestEnvelope GetRequestEnvelope()
+    {
+        var reqEnvelope = new global::TallyConnector.Core.Models.Request.RequestEnvelope(global::TallyConnector.Core.Models.Request.HType.Data, ReportName);
+        var tdlMsg = reqEnvelope.Body.Desc.TDL.TDLMessage;
+        tdlMsg.Report = [new(ReportName)];
+        tdlMsg.Form = [new(ReportName)];
+        tdlMsg.Part = [GetMainTDLPart(), ..GetTDLParts()];
+        tdlMsg.Line = [GetMainTDLLine(), ..GetTDLLines()];
+        tdlMsg.Field = [..GetTDLFields()];
+        tdlMsg.Collection = [..GetTDLCollections()];
+        return reqEnvelope;
+    }
+
+    public static global::System.Xml.Serialization.XmlAttributeOverrides GetXMLAttributeOverides()
+    {
+        var xmlAttributeOverrides = new global::System.Xml.Serialization.XmlAttributeOverrides();
+        var XmlAttributes = new global::System.Xml.Serialization.XmlAttributes();
+        XmlAttributes.XmlElements.Add(new(XMLTag));
+        xmlAttributeOverrides.Add(TallyConnector.Core.Models.Response.ReportResponseEnvelope<global::UnitTests.TestBasic.Ledger>.TypeInfo, ""Objects"", XmlAttributes);
+        xmlAttributeOverrides.Add(typeof(global::UnitTests.TestBasic.Base2), ""Name"", new global::System.Xml.Serialization.XmlAttributes() { XmlIgnore = true });
+        return xmlAttributeOverrides;
+    }
+
+    public static global::TallyConnector.Core.Models.Request.Part GetMainTDLPart(string partName = ReportName, string? collectionName = CollectionName, string? xmlTag = null)
+    {
+        return new(partName, collectionName, partName)
+        {
+            XMLTag = xmlTag
+        };
+    }
+
+    public static global::TallyConnector.Core.Models.Request.Part[] GetTDLParts()
+    {
+        return[];
+    }
+
+    public static global::TallyConnector.Core.Models.Request.Line GetMainTDLLine()
+    {
+        return new(ReportName, [Name_39DV_FieldName,Parent_DR40_FieldName], XMLTag);
+    }
+
+    public static global::TallyConnector.Core.Models.Request.Line[] GetTDLLines()
+    {
+        return[];
+    }
+
+    public static global::TallyConnector.Core.Models.Request.Field[] GetTDLFields()
+    {
+        var _fields = new global::TallyConnector.Core.Models.Request.Field[SimpleFieldsCount];
+        _fields[0] = new(Name_39DV_FieldName, ""NAME"", ""$NAME"");
+        _fields[1] = new(Parent_DR40_FieldName, ""PARENT"", ""$Parent"");
+        return _fields;
+    }
+
+    public static global::TallyConnector.Core.Models.Request.Collection[] GetTDLCollections()
+    {
+        var collections = new global::TallyConnector.Core.Models.Request.Collection[1];
+        collections[0] = new(CollectionName, ""Ledger"", nativeFields: [..GetFetchList()]);
+        return collections;
+    }
+
+    public static string[] GetFetchList()
+    {
+        return[""NAME"", ""Parent""];
+    }
+}"));
     }
 }

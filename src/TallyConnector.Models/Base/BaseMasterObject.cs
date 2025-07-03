@@ -3,17 +3,15 @@
 namespace TallyConnector.Models.Base;
 
 
-public class BaseMasterObject : TallyObject, IBaseMasterObject
+public partial class BaseMasterObject : TallyObject, IBaseMasterObject
 {
-
-
     [XmlElement(ElementName = "NAME")]
     [Required]
     [Column(TypeName = $"nvarchar({MaxNameLength})")]
     public string Name { get; set; } = null!;
 }
 
-public class BaseAliasedMasterObject : BaseMasterObject
+public partial class BaseAliasedMasterObject : BaseMasterObject
 
 {
     [Column(TypeName = $"nvarchar({MaxNameLength})")]

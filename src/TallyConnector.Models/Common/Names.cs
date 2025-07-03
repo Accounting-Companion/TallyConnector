@@ -1,8 +1,11 @@
-﻿namespace TallyConnector.Models.Common;
+﻿using TallyConnector.Abstractions.Attributes;
+
+namespace TallyConnector.Models.Common;
 
 [XmlRoot(ElementName = "LANGUAGENAME.LIST")]
 [TDLCollection(CollectionName = "LanguageName")]
-public class LanguageNameList
+[GenerateMeta]
+public partial class LanguageNameList
 {
     public LanguageNameList()
     {
