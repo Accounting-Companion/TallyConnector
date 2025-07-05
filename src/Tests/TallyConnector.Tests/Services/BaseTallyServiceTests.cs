@@ -22,7 +22,7 @@ public class BaseTallyServiceTests
     public async Task TestAutoColStats()
     {
         TallyCommonService  tallyCommonService = new TallyCommonService();
-        var objects =await tallyCommonService.GetObjectsAsync<Models.TallyPrime.V6.Masters.Ledger>(new());
+       // var objects =await tallyCommonService.GetObjectsAsync<Models.TallyPrime.V6.Masters.Ledger>(new());
        // await new TallyPrimeService().GetGroupsAsync();
         //await TallyService.(new TallyConnector.Core.Models.Request.AutoColumnReportPeriodRequestOptions());
     }

@@ -3,7 +3,7 @@
 namespace TallyConnector.TDLReportSourceGenerator.Services.AttributeTransformers.Class;
 internal class XMLRootAttributeTransformer : ClassPropertyAttributeTransformer
 {
-    public override void TransformAsync(ModelData data, AttributeData attributeData)
+    public override void TransformAsync(ClassData data, AttributeData attributeData)
     {
         XMLData? xMLData = null;
         if (attributeData.ConstructorArguments != null && attributeData.ConstructorArguments.Length > 0)

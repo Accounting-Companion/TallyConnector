@@ -40,7 +40,8 @@ public class TDLEnvelopeGenerator
                 {
                     classDeclarationSyntax
                     .WithMembers(List(GetClassMembers()))
-                }))
+                     .WithBaseList(BaseList(SingletonSeparatedList<BaseTypeSyntax>(SimpleBaseType(GetGlobalNameforType(Constants.Models.Interfaces.TallyRequestableObjectInterfaceFullName)))))
+    }))
           })).NormalizeWhitespace().ToFullString();
         context.AddSource($"Envelope.{_modelData.Name}_{_modelData.Namespace}.g.cs", unit);
     }
@@ -49,6 +50,7 @@ public class TDLEnvelopeGenerator
     {
         List<MemberDeclarationSyntax> members = [];
         members.Add(GetReqEnvelopeMethod());
+        members.Add(GenerateGetXmlAttributeOverridesMethodSyntax());
         return members;
     }
 
@@ -66,7 +68,7 @@ public class TDLEnvelopeGenerator
             {
                 Argument(MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression,GetGlobalNameforType(HeaderTypeEnumName),IdentifierName("Data"))),
                 Token(SyntaxKind.CommaToken),
-                Argument(IdentifierName("Meta.TDLReportName"))
+                Argument(IdentifierName(Meta.IdentifierPropPath))
             })))));
         // ctreate var for TDLMessage
         statements.Add(CreateVarInsideMethodWithExpression(tdlMsgVariableName,
@@ -77,7 +79,19 @@ public class TDLEnvelopeGenerator
         statements.Add(CreateReportAndFormAsssignStatement(tdlMsgVariableName, "Report"));
         statements.Add(CreateReportAndFormAsssignStatement(tdlMsgVariableName, "Form"));
 
+        statements.Add(CreateAssignFromPropertyStatement(tdlMsgVariableName, "Part", [Meta.AllPartsPropPath], [Meta.TDLDefaultPartPropPath]));
 
+        statements.Add(CreateAssignFromPropertyStatement(tdlMsgVariableName, "Line", [Meta.AllLinesPropPath], [Meta.TDLDefaultLinePropPath]));
+
+        statements.Add(CreateAssignFromPropertyStatement(tdlMsgVariableName, "Field", [Meta.FieldsPropPath]));
+
+        statements.Add(CreateAssignFromPropertyStatement(tdlMsgVariableName, "Collection", [], [Meta.DefaultCollectionPropPath]));
+
+
+        statements.Add(CreateAssignFromMethodStatement(tdlMsgVariableName, "Functions", [], [.. _modelData.DefaultTDLFunctions]));
+
+
+        statements.Add(CreateAssignFromPropertyStatement(tdlMsgVariableName, "NameSet", [Meta.NameSetsPropPath] ));
         statements.Add(ReturnStatement(IdentifierName(envelopeVariableName)));
 
         var methodDeclarationSyntax = MethodDeclaration(GetGlobalNameforType(RequestEnvelopeFullTypeName),
@@ -99,8 +113,130 @@ public class TDLEnvelopeGenerator
                                                             ExpressionElement(ImplicitObjectCreationExpression()
                                                             .WithArgumentList(   ArgumentList(SeparatedList<ArgumentSyntax>( new SyntaxNodeOrToken[]
                                                             {
-                                                                 Argument(IdentifierName("Meta.TDLReportName")),
+                                                                 Argument(IdentifierName($"Meta.{Meta.IdentifierNameVarName}")),
                                                             }))))
                                                         }))));
+    }
+
+
+    private StatementSyntax CreateAssignFromPropertyStatement(string varName,
+                                                            string propName,
+                                                            List<string> propNames,
+                                                            List<string>? singleReturnMethodNames = null)
+    {
+        List<SyntaxNodeOrToken> nodes = [];
+        if (singleReturnMethodNames != null)
+        {
+            foreach (var methodName in singleReturnMethodNames)
+            {
+                Utils.SafeAdd(nodes, ExpressionElement(IdentifierName(methodName)));
+            }
+        }
+        for (int i = 0; i < propNames.Count; i++)
+        {
+            var methodName = propNames[i];
+            Utils.SafeAdd(nodes, SpreadElement((IdentifierName(methodName))));
+        }
+
+        return ExpressionStatement(AssignmentExpression(SyntaxKind.SimpleAssignmentExpression, MemberAccessExpression(
+                                    SyntaxKind.SimpleMemberAccessExpression,
+                                    IdentifierName(varName),
+                                    IdentifierName(propName)),
+                                    CollectionExpression(SeparatedList<CollectionElementSyntax>(nodes))));
+    }
+
+    private StatementSyntax CreateAssignFromMethodStatement(string varName,
+                                                            string propName,
+                                                            List<string> propNames,
+                                                            List<string>? singleReturnMethodNames = null)
+    {
+        List<SyntaxNodeOrToken> nodes = [];
+        if (singleReturnMethodNames != null)
+        {
+            foreach (var methodName in singleReturnMethodNames)
+            {
+                Utils.SafeAdd(nodes, ExpressionElement(InvocationExpression(IdentifierName(methodName))));
+            }
+        }
+        for (int i = 0; i < propNames.Count; i++)
+        {
+            var methodName = propNames[i];
+            Utils.SafeAdd(nodes, SpreadElement(InvocationExpression(IdentifierName(methodName))));
+        }
+
+        return ExpressionStatement(AssignmentExpression(SyntaxKind.SimpleAssignmentExpression, MemberAccessExpression(
+                                    SyntaxKind.SimpleMemberAccessExpression,
+                                    IdentifierName(varName),
+                                    IdentifierName(propName)),
+                                    CollectionExpression(SeparatedList<CollectionElementSyntax>(nodes))));
+    }
+
+
+    private MemberDeclarationSyntax GenerateGetXmlAttributeOverridesMethodSyntax()
+    {
+        var xmlAttributeOverridesVarName = "xmlAttributeOverrides";
+        List<StatementSyntax> statements = [];
+        statements.Add(CreateVarInsideMethodWithExpression(xmlAttributeOverridesVarName, ObjectCreationExpression(GetGlobalNameforType(XmlAttributeOverridesClassName)).WithArgumentList(ArgumentList())));
+
+
+        HashSet<string> typeNames = [];
+        const string _varAttrs = "XmlAttributes";
+        statements.Add(CreateVarInsideMethodWithExpression(_varAttrs, ObjectCreationExpression(GetGlobalNameforType(XmlAttributesClassName)).WithArgumentList(ArgumentList())));
+        statements.Add(ExpressionStatement(InvocationExpression(MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression, IdentifierName(_varAttrs), IdentifierName("XmlElements.Add")))
+            .WithArgumentList(ArgumentList(
+                            SeparatedList<ArgumentSyntax>(new SyntaxNodeOrToken[]
+                            {
+                                Argument(CreateImplicitObjectExpression([Argument( IdentifierName("Meta.XMLTag"))]))
+                            })))));
+
+        statements.Add(ExpressionStatement(InvocationExpression(MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression,
+                                                                                       IdentifierName(xmlAttributeOverridesVarName),
+                                                                                       IdentifierName("Add")))
+            .WithArgumentList(ArgumentList(
+                                SeparatedList<ArgumentSyntax>(new SyntaxNodeOrToken[]
+                                {
+                                         Argument(MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression,
+                                         GenericName(Identifier(Constants.Models.Response.ReportResponseEnvelopeClassName))
+                                         .WithTypeArgumentList(TypeArgumentList(SingletonSeparatedList<TypeSyntax>(GetGlobalNameforType( _modelData.FullName)))),
+                                         IdentifierName("TypeInfo"))),
+                                          Token(SyntaxKind.CommaToken),
+                                         Argument(CreateStringLiteral("Objects")),
+                                          Token(SyntaxKind.CommaToken),
+                                         Argument(IdentifierName(_varAttrs)
+                                         ),
+                                })))));
+
+
+        void AddExpressionForOverridenChild(PropertyData data)
+        {
+
+            statements.Add(ExpressionStatement(InvocationExpression(MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression, IdentifierName(xmlAttributeOverridesVarName), IdentifierName("Add")))
+            .WithArgumentList(ArgumentList(
+                                SeparatedList<ArgumentSyntax>(new SyntaxNodeOrToken[]
+                                {
+                                         Argument(TypeOfExpression(GetGlobalNameforType(data.ModelData.FullName))),
+                                          Token(SyntaxKind.CommaToken),
+                                         Argument(CreateStringLiteral(data.Name)),
+                                          Token(SyntaxKind.CommaToken),
+                                         Argument(ObjectCreationExpression(GetGlobalNameforType(XmlAttributesClassName))
+                                         .WithArgumentList(ArgumentList())
+                                         .WithInitializer(InitializerExpression(
+                                                        SyntaxKind.ObjectInitializerExpression,
+                                                        SingletonSeparatedList<ExpressionSyntax>(
+                                                            AssignmentExpression(
+                                                                SyntaxKind.SimpleAssignmentExpression,
+                                                                IdentifierName("XmlIgnore"),
+                                                                LiteralExpression(
+                                                                    SyntaxKind.TrueLiteralExpression)))))),
+                                })))));
+        }
+
+        statements.Add(ReturnStatement(IdentifierName(xmlAttributeOverridesVarName)));
+        var methodDeclarationSyntax = MethodDeclaration(GetGlobalNameforType(XmlAttributeOverridesClassName),
+                                                       Identifier(string.Format(GetXMLAttributeOveridesMethodName, "")))
+           .WithModifiers(TokenList([Token(SyntaxKind.PublicKeyword), Token(SyntaxKind.StaticKeyword)]))
+           .WithParameterList(ParameterList())
+           .WithBody(Block(statements));
+        return methodDeclarationSyntax;
     }
 }

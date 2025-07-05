@@ -2,7 +2,7 @@
 [XmlRoot(ElementName = "UNIT")]
 [XmlType(AnonymousType = true)]
 [TDLCollection(Type = "Unit")]
-public class Unit : BaseMasterObject
+public partial class Unit : BaseMasterObject
 {
     [XmlElement(ElementName = "ORIGINALNAME")]
     public new string Name { get; set; }

@@ -1,5 +1,4 @@
 ﻿using System.Collections.Immutable;
-using System.Diagnostics;
 using TallyConnector.TDLReportSourceGenerator.Services;
 namespace TallyConnector.TDLReportSourceGenerator;
 
@@ -8,7 +7,7 @@ public class ModelMetaGenerator : IIncrementalGenerator
 {
     public void Initialize(IncrementalGeneratorInitializationContext context)
     {
-        //Debugger.Launch();
+        //System.Diagnostics.Debugger.Launch();
         IncrementalValueProvider<string> rootNameSpace = context.AnalyzerConfigOptionsProvider
             .Select(static (provider, _) =>
             {
@@ -29,6 +28,10 @@ public class ModelMetaGenerator : IIncrementalGenerator
         if (node is ClassDeclarationSyntax classDeclaration)
         {
             return classDeclaration.HasPartialKeyword();
+        }
+        if (node is EnumDeclarationSyntax enumDeclaration)
+        {
+            return true;
         }
         return false;
     }
@@ -60,10 +63,18 @@ public class ModelMetaGenerator : IIncrementalGenerator
             var modelDataList = tDLReportTransformer.GetSymbols();
             foreach (var modelData in modelDataList)
             {
+                if (modelData.Symbol.CheckInterface(Constants.Models.Abstractions.IMetaGeneratedFullTypeName))
+                {
+                    continue;
+                }
+                if (modelData.Symbol.ContainingAssembly.MetadataName != assembly.MetadataName)
+                {
+                    continue;
+                }
                 new MetaDataGenerator(modelData, context, token)
                     .GenerateMeta()
                     .GenerateMetaField();
-                if (modelData.GenerateITallyRequestableObectAttribute)
+                if (modelData.GenerateITallyRequestableObject)
                 {
                     new TDLEnvelopeGenerator(modelData, context, token)
                     .Generate();

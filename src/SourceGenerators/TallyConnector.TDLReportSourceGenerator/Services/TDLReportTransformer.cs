@@ -18,7 +18,6 @@ public class TDLReportTransformer
                                      CancellationToken token,
                                      HashSet<string>? uniqueComplexChilds = null)
     {
-        _symbolsCache = [];
         ModelData modelData = await TransformModelDataAsync(symbol, uniqueComplexChilds, token: token);
         _symbolsToGenerate.Add(modelData);
     }
@@ -41,7 +40,7 @@ public class TDLReportTransformer
 
         await TransformBaseSymbolDataAsync(modelData, symbol.BaseType, uniqueComplexChilds, collectionPrefix, token);
 
-        ClassAttributesTransformer.TransformAsync(modelData, symbol.GetAttributes());
+       // ClassAttributesTransformer.TransformAsync(modelData, symbol.GetAttributes());
         if (addMainSymbolCollection)
         {
             string? collectionName = modelData.TDLCollectionData?.CollectionName;
@@ -329,7 +328,7 @@ public class TDLReportTransformer
     private PropertyData TransformMember(ISymbol member, ModelData modelData)
     {
         PropertyData propertyData = new(member, modelData);
-        PropertyAttributesTransformer.TransformAsync(propertyData, member.GetAttributes());
+       // PropertyAttributesTransformer.TransformAsync(propertyData, member.GetAttributes());
         if (propertyData.IsComplex || modelData.IsEnum || propertyData.PropertyOriginalType.TypeKind == TypeKind.Enum)
         {
             return propertyData;

@@ -3,7 +3,8 @@
 namespace TallyConnector.Core.Models.TallyComplexObjects;
 [TDLCollection(ExplodeCondition = "NOT $$IsEmpty:{0}")]
 [MaptoDTO<DueDateDTO>]
-public class DueDate : ITallyComplexObject, IBaseObject
+[GenerateMeta]
+public partial class DueDate : ITallyComplexObject, IBaseObject
 {
     [TDLField(Set = "$$string:{0}:UniversalDate")]
     [XmlElement(ElementName = "DUEONDATE")]

@@ -10,12 +10,12 @@ public class PropertyCollectionAttributeTransformer : AbstractPropertyAttributeT
 
     }
 
-    public override void TransformAsync(PropertyData data, AttributeData attributeData)
+    public override void TransformAsync(ClassPropertyData data, AttributeData attributeData)
     {
         var collectionData = _transformer.Transform(attributeData);
         data.TDLCollectionData = collectionData;
 
-        //if (data.TDLCollectionData == null && data)
+        //if (data.TDLCollectionData == null && data.)
         //{
         //    data.TDLCollectionData = data.BaseData.ModelData.TDLCollectionData;
         //}

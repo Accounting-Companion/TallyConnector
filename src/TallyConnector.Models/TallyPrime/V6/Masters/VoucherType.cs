@@ -2,7 +2,8 @@
 
 [XmlRoot(ElementName = "VOUCHERTYPE")]
 [XmlType(AnonymousType = true)]
-[ImplementTallyRequestableObject]
+[GenerateITallyRequestableObect]
+[GenerateMeta]
 public partial class VoucherType : Base.Masters.VoucherType
 {
 }

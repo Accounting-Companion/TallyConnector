@@ -5,7 +5,7 @@ namespace TallyConnector.Models.Base.Masters;
 [TDLCollection(Type = "Ledger")]
 [XmlRoot("LEDGER")]
 [XmlType(AnonymousType = true)]
-public class Ledger : BaseAliasedMasterObject
+public partial class Ledger : BaseAliasedMasterObject
 {
     public Ledger()
     {
@@ -19,6 +19,7 @@ public class Ledger : BaseAliasedMasterObject
     public string? Group { get; set; }
 
     [XmlElement(ElementName = "OPENINGBALANCE")]
+    [TDLCollection(ExplodeCondition = "$$ISEMPTY:$OPENINGBALANCE")]
     public TallyAmountField? OpeningBalance { get; set; }
 
     [XmlElement(ElementName = "CURRENCY")]
@@ -101,7 +102,7 @@ public class Ledger : BaseAliasedMasterObject
     }
 }
 
-public enum GSTTypeOfSupply
+public  enum GSTTypeOfSupply
 { 
     [EnumXMLChoice(Choice ="Goods")]
     Goods,
@@ -111,7 +112,7 @@ public enum GSTTypeOfSupply
     CapitalGoods
 }
 
-public class MailingDetail
+public partial class MailingDetail
 
 
 {
@@ -136,7 +137,7 @@ public class MailingDetail
     public string? PINCode { get; set; }
 }
 
-public class ContactDetail
+public partial class ContactDetail
 {
     [XmlElement("COUNTRYISDCODE")]
     public string CountryISOCode { get; set; }

@@ -1,7 +1,7 @@
 ﻿namespace TallyConnector.Models.Base.Masters;
 
-[ImplementTallyRequestableObject]
 [TDLCollection(Type ="Currency")]
+[GenerateMeta]
 public partial class Currency : BaseMasterObject
 {
     [XmlElement(ElementName = "ORIGINALNAME")]

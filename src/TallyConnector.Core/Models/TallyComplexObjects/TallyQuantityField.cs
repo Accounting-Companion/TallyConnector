@@ -1,6 +1,7 @@
 ﻿namespace TallyConnector.Core.Models.TallyComplexObjects;
 [TDLCollection(ExplodeCondition = "NOT $$IsEmpty:{0}")]
-public class TallyQuantityField : ITallyComplexObject, IBaseObject
+[GenerateMeta]
+public partial class TallyQuantityField : ITallyComplexObject, IBaseObject
 {
     [TDLField(TallyType = "Quantity : UnitSymbol", Set = "{0}")]
     [XmlElement(ElementName = "UNIT")]

@@ -2,7 +2,7 @@
 
 [XmlRoot(ElementName = "STOCKCATEGORY")]
 [XmlType(AnonymousType = true)]
-public class StockCategory : BaseAliasedMasterObject
+public partial class StockCategory : BaseAliasedMasterObject
 {
     [XmlElement(ElementName = "PARENT")]
     public string? Parent { get; set; }

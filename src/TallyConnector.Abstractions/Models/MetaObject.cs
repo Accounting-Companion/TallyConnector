@@ -8,6 +8,10 @@ public abstract class MetaObject
     {
         _pathPrefix = pathPrefix;
     }
+    protected string GeneratePath(string suffix)
+    {
+        return string.IsNullOrEmpty(_pathPrefix) ? suffix : $"{_pathPrefix}.{suffix}";
+    }
 }
 public class Condition
 {

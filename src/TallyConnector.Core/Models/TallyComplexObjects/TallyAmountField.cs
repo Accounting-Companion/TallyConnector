@@ -1,12 +1,13 @@
 ﻿using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
-using static System.Runtime.InteropServices.JavaScript.JSType;
+using TallyConnector.Abstractions.Attributes;
 namespace TallyConnector.Core.Models.TallyComplexObjects;
 
 
 [DebuggerDisplay("{ToString(),nq}")]
-public class TallyAmountField : ITallyComplexObject, IBaseObject
+[GenerateMeta]
+public partial class TallyAmountField : ITallyComplexObject, IBaseObject
 {
     public TallyAmountField()
     {

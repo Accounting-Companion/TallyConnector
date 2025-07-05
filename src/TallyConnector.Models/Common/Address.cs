@@ -2,7 +2,7 @@
 
 
 [XmlRoot(ElementName = "LEDMULTIADDRESSLIST")]
-public class MultiAddress
+public partial class MultiAddress
 {
 
     public MultiAddress()
@@ -98,7 +98,7 @@ public class MultiAddress
 
 }
 [XmlRoot(ElementName = "EXCISEJURISDICTIONDETAILS.LIST")]
-public class ExciseJurisdiction
+public partial class ExciseJurisdiction
 {
     [XmlElement(ElementName = "APPLICABLEFROM")]
     public DateTime? ApplicableFrom { get; set; }

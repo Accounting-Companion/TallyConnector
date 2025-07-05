@@ -7,7 +7,7 @@ namespace TallyConnector.Models.Base;
 [XmlRoot(ElementName = "COMPANY")]
 [TDLFunctionsMethodName(nameof(TC_BaseCompanyFunctions))]
 [TDLCollection(Type = "Ledger")]
-public class BaseCompany : IBaseCompany
+public partial class BaseCompany : IBaseCompany
 {
     private const string CleanCompanyNumberFunctionName = "TC_GetCleanedCompanyNumber";
 
@@ -107,6 +107,12 @@ public partial class Company : BaseCompany, ICompany
 
     [XmlElement(ElementName = "TANREGNO")]
     public string? TANRegNumber { get; set; }
+
+    [XmlElement(ElementName = "INCOMETAXNUMBER")]
+    public string? PAN { get; set; }
+
+    [XmlElement(ElementName = "CORPORATEIDENTITYNO")]
+    public string? CIN { get; set; }
 
     [XmlElement(ElementName = "TDSDEDUCTORTYPE")]
     public string? TDSDeductorType { get; set; }

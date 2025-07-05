@@ -4,7 +4,8 @@ namespace TallyConnector.Core.Models.TallyComplexObjects;
 
 [TDLCollection(ExplodeCondition = "NOT $$IsEmpty:{0}")]
 [DebuggerDisplay("{ToString(),nq}")]
-public class TallyRateField : ITallyComplexObject, IBaseObject
+[GenerateMeta]
+public partial class TallyRateField : ITallyComplexObject, IBaseObject
 {
     [TDLField(TallyType = "Rate : Price",Set ="{0}")]
     [XmlElement(ElementName = "BASERATE")]

@@ -4,7 +4,7 @@ namespace TallyConnector.TDLReportSourceGenerator.Services.AttributeTransformers
 
 public class EnumChoiceAttributeTransformer : AbstractPropertyAttributeTransformer
 {
-    public override void TransformAsync(PropertyData propertyData, AttributeData attributeData)
+    public override void TransformAsync(ClassPropertyData propertyData, AttributeData attributeData)
     {
         propertyData.DefaultXMLData ??= new();
 
@@ -48,7 +48,7 @@ public class EnumChoiceAttributeTransformer : AbstractPropertyAttributeTransform
 }
 public class XMLEnumAttributeTransformer : AbstractPropertyAttributeTransformer
 {
-    public override void TransformAsync(PropertyData propertyData, AttributeData attributeData)
+    public override void TransformAsync(ClassPropertyData propertyData, AttributeData attributeData)
     {
         propertyData.DefaultXMLData ??= new();
 

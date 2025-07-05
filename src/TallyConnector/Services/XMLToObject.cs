@@ -91,8 +91,8 @@ public static class XMLToObject
         catch (Exception ex)
         {
             Logger?.LogError(ex.Message);
-            Logger?.LogError("Error - {errs}", GetInnerError(ex).Reverse().Take(2));
-            throw ex;
+            Logger?.LogError("Error - {errs}", GetInnerError(ex)?.Reverse().Take(2));
+            throw ;
         }
 
     }

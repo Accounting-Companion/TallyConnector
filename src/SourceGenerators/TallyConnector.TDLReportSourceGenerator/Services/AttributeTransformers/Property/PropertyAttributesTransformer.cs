@@ -19,7 +19,7 @@ public class PropertyAttributesTransformer
     /// </summary>
     /// <param name="propertyData"></param>
     /// <param name="memberAttributes"></param>
-    internal static void TransformAsync(PropertyData propertyData, ImmutableArray<AttributeData> memberAttributes)
+    internal static void TransformAsync(ClassPropertyData propertyData, ImmutableArray<AttributeData> memberAttributes)
     {
         foreach (var memberAttribute in memberAttributes)
         {

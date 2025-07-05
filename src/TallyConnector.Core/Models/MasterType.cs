@@ -1,5 +1,5 @@
 ﻿namespace TallyConnector.Core.Models;
-
+[GenerateMeta]
 public enum TallyObjectType
 {
     [EnumXMLChoice("Currencies")]

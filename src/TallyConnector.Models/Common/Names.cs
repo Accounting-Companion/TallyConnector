@@ -9,13 +9,13 @@ public partial class LanguageNameList
 {
     public LanguageNameList()
     {
-        NameList = [];
+        Names = [];
     }
 
     [XmlArray(ElementName = "NAME.LIST")]
     [XmlArrayItem(ElementName = "NAME")]
     [TDLCollection(CollectionName = "Name")]
-    public List<string> NameList { get; set; }
+    public List<string> Names { get; set; }
 
     [XmlElement(ElementName = "LANGUAGEID")]
     public int LanguageId { get; set; }

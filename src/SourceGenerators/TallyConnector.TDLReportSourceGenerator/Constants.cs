@@ -56,8 +56,10 @@ public static class Constants
     public const string FieldFullTypeName = $"{TallyConnectorRequestModelsNameSpace}.Field";
     public const string PartTypeName = "Part";
     public const string PartFullTypeName = $"{TallyConnectorRequestModelsNameSpace}.{PartTypeName}";
-   
-    public const string LineFullTypeName = $"{TallyConnectorRequestModelsNameSpace}.Line";
+
+    public const string LineTypeName = $"Line";
+
+    public const string LineFullTypeName = $"{TallyConnectorRequestModelsNameSpace}.{LineTypeName}";
     public const string CollectionFullTypeName = $"{TallyConnectorRequestModelsNameSpace}.Collection";
     public const string TDLFunctionFullTypeName = $"{TallyConnectorRequestModelsNameSpace}.TDLFunction";
     public const string FilterFullTypeName = $"{TallyConnectorModelsNameSpace}.Filter";
@@ -166,6 +168,8 @@ public static class Constants
             public const string PREFIX = "TallyConnector.Abstractions.Models";
             public const string MetaObjectypeName = $"MetaObject";
             public const string PropertyMetaDataTypeName = $"PropertyMetaData";
+            public const string IMetaGeneratedTypeName = $"IMetaGenerated";
+            public const string IMetaGeneratedFullTypeName = $"{PREFIX}.IMetaGenerated";
         }
         public class Response
         {
@@ -195,15 +199,44 @@ public static class Constants
 
     public class Meta
     {
+        public const string Name = "Meta";
+
         public const string IdentifierNameVarName = "IdentifierName";
         public const string InstanceVarName = "Instance";
         public const string ReportVarName = "TDLReportName";
-        public const string CollectionVarName = "TDLDefaultCollectionName";
+        public const string CollectionNameVarName = "TDLDefaultCollectionName";
+        public const string TDLDefaultPartVarName = "TDLDefaultPart";
+        public const string TDLDefaultLineVarName = "TDLDefaultLine";
         public const string ObjectTypeVarName = "TallyObjectType";
 
         public const string PartVarName = "Part";
 
         public const string XMLTagVarName = "XMLTag";
+
+        public const string AllPartsVarName = "AllParts";
+        public const string AllLinesVarName = "AllLines";
+        public const string FieldsVarName = "Fields";
+        public const string FieldNamesVarName = "FieldNames";
+        public const string AllFetchTextVarName = "AllFetchList";
+        public const string DefaultCollectionVarName = "DefaultCollection";
+        public const string ExplodesVarName = "Explodes";
+        public const string NameSetsVarName = "NameSets";
+
+        public const string AllPartsPropPath = $"{Name}.{AllPartsVarName}";
+        public const string AllLinesPropPath = $"{Name}.{AllLinesVarName}";
+        public const string FieldsPropPath = $"{Name}.{FieldsVarName}";
+        public const string CollectionNamePropPath = $"{Name}.{CollectionNameVarName}";
+        public const string ObjectTypePropPath = $"{Name}.{ObjectTypeVarName}";
+        public const string AllFetchTextPropPath = $"{Name}.{AllFetchTextVarName}";
+        public const string DefaultCollectionPropPath = $"{Name}.{DefaultCollectionVarName}";
+
+        public const string TDLDefaultLinePropPath = $"{Name}.{TDLDefaultLineVarName}";
+        public const string TDLDefaultPartPropPath = $"{Name}.{TDLDefaultPartVarName}";
+
+        public const string IdentifierPropPath = $"{Name}.{IdentifierNameVarName}";
+
+        public const string NameSetsPropPath = $"{Name}.{NameSetsVarName}";
+
 
         public class Parameters
         {

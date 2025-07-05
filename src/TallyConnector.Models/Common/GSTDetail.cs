@@ -4,7 +4,7 @@
 /// Contains GST Details of StockItem , Ledgers ..etc.,
 /// </summary>
 [XmlRoot(ElementName = "GSTDETAILS.LIST")]
-public class GSTDetail
+public partial class GSTDetail
 {
     [XmlElement(ElementName = "APPLICABLEFROM")]
     public DateTime? ApplicableFrom { get; set; }
@@ -46,17 +46,13 @@ public class GSTDetail
     [XmlElement(ElementName = "INCLUDEEXPFORSLABCALC")]
     public bool? IncludeExpForSlabCalc { get; set; }
 
-    [XmlElement(ElementName = "STATEWISEDETAILS.LIST")]
-    public List<StateWiseDetail>? StateWiseDetails { get; set; }
+    //[XmlElement(ElementName = "STATEWISEDETAILS.LIST")]
+    //public List<StateWiseDetail>? StateWiseDetails { get; set; }
 
-    public bool IsNull()
-    {
-        return false;
-    }
 }
 
 [XmlRoot(ElementName = "STATEWISEDETAILS.LIST")]
-public class StateWiseDetail
+public partial class StateWiseDetail
 {
     [XmlElement(ElementName = "STATENAME")]
     public string? StateName { get; set; }
@@ -68,7 +64,7 @@ public class StateWiseDetail
 }
 
 [XmlRoot(ElementName = "RATEDETAILS.LIST")]
-public class GSTRateDetail
+public partial class GSTRateDetail
 {
     [XmlElement(ElementName = "GSTRATEDUTYHEAD")]
     public string? DutyHead { get; set; }
@@ -238,7 +234,7 @@ public enum GSTTaxabilityType
 /// GST Registration details of party ledgers
 /// </summary>
 [XmlRoot(ElementName = "LEDGSTREGDETAILS.LIST")]
-public class LedgerGSTRegistrationDetail
+public partial class LedgerGSTRegistrationDetail
 {
     [XmlElement("APPLICABLEFROM")]
     public DateTime ApplicableFrom { get; set; }
@@ -272,7 +268,7 @@ public class LedgerGSTRegistrationDetail
 }
 
 
-public class HSNDetail
+public partial class HSNDetail
 {
     [XmlElement("APPLICABLEFROM")]
     public DateTime ApplicableFrom { get; set; }

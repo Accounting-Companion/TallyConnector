@@ -5,7 +5,7 @@ namespace TallyConnector.Models.Base;
 [XmlRoot(ElementName = "VOUCHER")]
 [XmlType(AnonymousType = true)]
 [TDLCollection(Type = "Voucher")]
-public class Voucher : BaseTallyObject
+public partial class Voucher : BaseTallyObject
 {
     [XmlElement(ElementName = "DATE")]
     public DateTime Date { get; set; }
@@ -257,7 +257,7 @@ public class Voucher : BaseTallyObject
         return $"Voucher - {VoucherType}_{VoucherNumber}_{Date.ToShortDateString()}";
     }
 }
-public class BaseInventoryEntry
+public partial class BaseInventoryEntry
 {
     [XmlArray("BASICUSERDESCRIPTION.LIST")]
     [XmlArrayItem(ElementName = "BASICUSERDESCRIPTION")]
@@ -296,7 +296,7 @@ public class BaseInventoryEntry
 
 [XmlRoot(ElementName = "ALLINVENTORYENTRIES.LIST")]
 [TDLCollection(CollectionName = "ALLINVENTORYENTRIES", ExplodeCondition = $"$PERSISTEDVIEW =$$SysName:{Core.Constants.Voucher.ViewType.InvoiceVoucherView}")]
-public class AllInventoryAllocations : BaseInventoryEntry
+public partial class AllInventoryAllocations : BaseInventoryEntry
 {
     [XmlElement(ElementName = "ACCOUNTINGALLOCATIONS.LIST")]
     [TDLCollection(CollectionName = "ACCOUNTINGALLOCATIONS")]
@@ -305,10 +305,10 @@ public class AllInventoryAllocations : BaseInventoryEntry
 
 [XmlRoot(ElementName = "INVENTORYENTRIES.LIST")]
 [TDLCollection(CollectionName = "INVENTORYENTRIES", ExplodeCondition = $"$PERSISTEDVIEW =$$SysName:{Core.Constants.Voucher.ViewType.MfgJournalVoucherView}")]
-public class InventoryEntries : AllInventoryAllocations
+public partial class InventoryEntries : AllInventoryAllocations
 {
 }
-public class BaseLedgerEntry
+public partial class BaseLedgerEntry
 {
     public BaseLedgerEntry()
     {
@@ -335,7 +335,7 @@ public class BaseLedgerEntry
 }
 [XmlRoot(ElementName = "ALLLEDGERENTRIES.LIST")]
 [TDLCollection(CollectionName = "ALLLEDGERENTRIES", ExplodeCondition = $"$PERSISTEDVIEW =$$SysName:{TallyConnector.Core.Constants.Voucher.ViewType.AccountingVoucherView}")]
-public class AllLedgerEntry : BaseLedgerEntry
+public partial class AllLedgerEntry : BaseLedgerEntry
 {
     [XmlElement(ElementName = "ADDLALLOCTYPE")]
     public AdAllocType AdAllocType { get; set; }
@@ -348,18 +348,18 @@ public class AllLedgerEntry : BaseLedgerEntry
 }
 [XmlRoot(ElementName = "LEDGERENTRIES.LIST")]
 [TDLCollection(CollectionName = "LEDGERENTRIES", ExplodeCondition = $"$PERSISTEDVIEW =$$SysName:{Core.Constants.Voucher.ViewType.InvoiceVoucherView}")]
-public class LedgerEntry : AllLedgerEntry
+public partial class LedgerEntry : AllLedgerEntry
 {
 
 }
 [XmlRoot(ElementName = "INVOICEDELNOTES.LIST")]
-public class DeliveryNotes
+public partial class DeliveryNotes
 {
     [XmlElement(ElementName = "BASICSHIPPINGDATE")]
     public DateTime? ShippingDate { get; set; }
 
     [XmlElement(ElementName = "BASICSHIPDELIVERYNOTE")]
-    public string? DeliveryNote { get; set; }
+    public string DeliveryNote { get; set; }
 }
 /// <summary>
 /// <para>Voucher ViewTypes avavailable in Tally</para>

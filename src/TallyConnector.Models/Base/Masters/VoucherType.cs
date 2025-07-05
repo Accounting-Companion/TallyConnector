@@ -4,7 +4,7 @@ namespace TallyConnector.Models.Base.Masters;
 
 [XmlRoot(ElementName = "VOUCHERTYPE")]
 [XmlType(AnonymousType = true)]
-public class VoucherType : BaseAliasedMasterObject
+public partial class VoucherType : BaseAliasedMasterObject
 {
     [XmlElement(ElementName = "PARENT")]
     public string Parent { get; set; }
@@ -78,7 +78,7 @@ public class VoucherType : BaseAliasedMasterObject
     [XmlElement(ElementName = "CANDELETE")]
     public bool? CanDelete { get; set; }
 }
-public class VoucherClass
+public partial class VoucherClass
 {
     [XmlElement(ElementName = "CLASSNAME")]
     public string ClassName { get; set; }
@@ -168,7 +168,7 @@ public class VoucherClass
     public List<DefaultAllocforItem>? StockEntries { get; set; }
 
 }
-public class VoucherClassLedger
+public partial class VoucherClassLedger
 {
     [XmlElement(ElementName = "NAME")]
     public string Name { get; set; }
@@ -199,7 +199,7 @@ public class VoucherClassLedger
     public decimal? Roundlimit { get; set; }
 }
 
-public class DefaultAllocforItem
+public partial class DefaultAllocforItem
 {
     [XmlElement(ElementName = "STOCKITEMNAME")]
     public string StockItemName { get; set; }

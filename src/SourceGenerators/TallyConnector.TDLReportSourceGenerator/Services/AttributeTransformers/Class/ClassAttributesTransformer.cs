@@ -16,7 +16,7 @@ public class ClassAttributesTransformer
     /// </summary>
     /// <param name="data"></param>
     /// <param name="memberAttributes"></param>
-    internal static void TransformAsync(ModelData data, ImmutableArray<AttributeData> memberAttributes)
+    internal static void TransformAsync(ClassData data, ImmutableArray<AttributeData> memberAttributes)
     {
         foreach (var memberAttribute in memberAttributes)
         {
@@ -33,5 +33,5 @@ public class ClassAttributesTransformer
 
 public abstract class ClassPropertyAttributeTransformer
 {
-    public abstract void TransformAsync(ModelData data, AttributeData attributeData);
+    public abstract void TransformAsync(ClassData data, AttributeData attributeData);
 }

@@ -1,7 +1,7 @@
 ﻿using TallyConnector.Core.Models;
 
 namespace TallyConnector.Models.Common;
-public class BaseStatistics : IBaseObject
+public partial class BaseStatistics : IBaseObject
 {
     [XmlElement(ElementName = "COUNT")]
     [TDLField(Set = "if $$ISEMPTY:$StatVal then 0 else $StatVal")]
@@ -9,7 +9,8 @@ public class BaseStatistics : IBaseObject
 }
 
 [TDLCollection(CollectionName = "STATObjects", Exclude = true)]
-[ImplementTallyRequestableObject]
+[GenerateITallyRequestableObect]
+[GenerateMeta]
 public partial class MasterStatistics : BaseStatistics
 {
     [XmlElement(ElementName = "NAME")]
@@ -22,7 +23,8 @@ public partial class MasterStatistics : BaseStatistics
 }
 
 [TDLCollection(CollectionName = "STATVchType", Exclude = true)]
-[ImplementTallyRequestableObject]
+[GenerateITallyRequestableObect]
+[GenerateMeta]
 public partial class VoucherStatistics : BaseStatistics
 {
     [XmlElement(ElementName = "NAME")]

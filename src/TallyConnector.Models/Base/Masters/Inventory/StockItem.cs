@@ -3,7 +3,7 @@
 namespace TallyConnector.Models.Base.Masters.Inventory;
 [XmlRoot(ElementName = "STOCKITEM")]
 [XmlType(AnonymousType = true)]
-public class StockItem : BaseAliasedMasterObject
+public partial class StockItem : BaseAliasedMasterObject
 {
     [XmlElement(ElementName = "PARENT")]
     public string? StockGroup { get; set; }

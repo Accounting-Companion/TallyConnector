@@ -4,7 +4,7 @@ using TallyConnector.TDLReportSourceGenerator.Models;
 namespace TallyConnector.TDLReportSourceGenerator.Services.AttributeTransformers.Property;
 public class TDLFieldAttributeTransformer : AbstractPropertyAttributeTransformer
 {
-    public override void TransformAsync(PropertyData propertyData, AttributeData attributeData)
+    public override void TransformAsync(ClassPropertyData propertyData, AttributeData attributeData)
     {
         PropertyTDLFieldData? fieldData = null;
         if (attributeData.ConstructorArguments != null && attributeData.ConstructorArguments.Length > 0)

@@ -23,8 +23,8 @@
 		<!--<VersionSuffix>rc</VersionSuffix>-->
 		<GeneratePackageOnBuild>True</GeneratePackageOnBuild>
 		<!--<GenerateDocumentationFile>True</GenerateDocumentationFile>-->
-		<!--<EmitCompilerGeneratedFiles>true</EmitCompilerGeneratedFiles>
-	<CompilerGeneratedFilesOutputPath>Generated</CompilerGeneratedFilesOutputPath>-->
+		<EmitCompilerGeneratedFiles>true</EmitCompilerGeneratedFiles>
+	<CompilerGeneratedFilesOutputPath>Generated</CompilerGeneratedFilesOutputPath>
 	</PropertyGroup>
 
 
@@ -41,6 +41,7 @@
 	  <Folder Include="Models\Meta\" />
 	</ItemGroup>
 	<ItemGroup>
+	  <ProjectReference Include="..\SourceGenerators\TallyConnector.TDLReportSourceGenerator\TallyConnector.TDLReportSourceGenerator.csproj"  OutputItemType="Analyzer" />
 	  <ProjectReference Include="..\TallyConnector.Abstractions\TallyConnector.Abstractions.csproj" />
 	</ItemGroup>
 

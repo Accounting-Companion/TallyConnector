@@ -3,7 +3,7 @@ using TallyConnector.TDLReportSourceGenerator.Services;
 using TallyConnector.TDLReportSourceGenerator.Services.AttributeTransformers.Common;
 
 namespace TallyConnector.TDLReportSourceGenerator.Models;
-public class ModelData
+public class ModelData : IClassAttributeTranfomable
 {
     public ModelData(INamedTypeSymbol symbol)
     {

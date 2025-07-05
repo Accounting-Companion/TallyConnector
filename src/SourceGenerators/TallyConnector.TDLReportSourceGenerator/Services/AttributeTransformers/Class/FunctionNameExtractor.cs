@@ -3,14 +3,14 @@
 namespace TallyConnector.TDLReportSourceGenerator.Services.AttributeTransformers.Class;
 public class FunctionNameExtractor : ClassPropertyAttributeTransformer
 {
-    private readonly Func<ModelData, HashSet<string>> selector;
+    private readonly Func<ClassData, HashSet<string>> selector;
 
-    public FunctionNameExtractor(Func<ModelData, HashSet<string>> selector)
+    public FunctionNameExtractor(Func<ClassData, HashSet<string>> selector)
     {
         this.selector = selector;
     }
 
-    public override void TransformAsync(ModelData data, AttributeData attributeData)
+    public override void TransformAsync(ClassData data, AttributeData attributeData)
     {
         string? functionName = null;
         if (attributeData.ConstructorArguments != null && attributeData.ConstructorArguments.Length > 0)

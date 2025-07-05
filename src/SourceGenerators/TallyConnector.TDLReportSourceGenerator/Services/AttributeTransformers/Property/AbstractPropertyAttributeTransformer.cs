@@ -2,5 +2,5 @@
 
 public abstract class AbstractPropertyAttributeTransformer
 {
-    public abstract void TransformAsync(Models.PropertyData propertyData, AttributeData attributeData);
+    public abstract void TransformAsync(ClassPropertyData propertyData, AttributeData attributeData);
 }

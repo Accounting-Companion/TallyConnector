@@ -1,4 +1,10 @@
-﻿namespace TallyConnector.TDLReportSourceGenerator.Services;
+﻿using Microsoft.CodeAnalysis;
+using TallyConnector.TDLReportSourceGenerator.Models;
+using TallyConnector.TDLReportSourceGenerator.Services.AttributeTransformers.Class;
+using TallyConnector.TDLReportSourceGenerator.Services.AttributeTransformers.Common;
+using TallyConnector.TDLReportSourceGenerator.Services.AttributeTransformers.Property;
+
+namespace TallyConnector.TDLReportSourceGenerator.Services;
 public class ModelTransformer
 {
     private Dictionary<string, ClassData> _symbolsCache = [];
@@ -13,7 +19,7 @@ public class ModelTransformer
                                   CancellationToken token = default)
     {
         ClassData modelData = await TransformClassSymbolAsync(symbol, token: token);
-        modelData.GenerateITallyRequestableObectAttribute = modelData.Symbol
+        modelData.GenerateITallyRequestableObject = modelData.Symbol
             .GetAttributes()
             .Any(c => c.HasFullyQualifiedMetadataName(Attributes.Abstractions.GenerateITallyRequestableObectAttributeeName));
     }
@@ -26,11 +32,13 @@ public class ModelTransformer
             return classData;
         }
         classData = new ClassData(symbol);
+        ClassAttributesTransformer.TransformAsync(classData, symbol.GetAttributes());
         _symbolsCache[classData.FullName] = classData;
         if (symbol.BaseType != null && !classData.IsEnum && !symbol.BaseType.HasFullyQualifiedMetadataName("object"))
         {
             classData.BaseData = await TransformClassSymbolAsync(symbol.BaseType, prefixPath, token);
             classData.AllUniqueMembers.AppendDict(classData.BaseData.AllUniqueMembers);
+            classData.DefaultTDLFunctions.CopyFrom(classData.BaseData.DefaultTDLFunctions);
         }
         await TransformMembers(classData, prefixPath, token);
         var values = classData.Members.Values;
@@ -47,6 +55,10 @@ public class ModelTransformer
         var members = classData.Symbol.GetMembers();
         foreach (var member in members)
         {
+            if (member.IsStatic && !classData.IsEnum)
+            {
+                continue;
+            }
             if (member.DeclaredAccessibility != Accessibility.Public || member.Kind != SymbolKind.Property)
             {
                 if (!classData.IsEnum || member.Kind != SymbolKind.Field)
@@ -54,14 +66,28 @@ public class ModelTransformer
                     continue;
                 }
             }
+
             ClassPropertyData propertyData = TransformMember(member, classData);
             if (propertyData.IsComplex)
             {
-                propertyData.ClassData = await TransformClassSymbolAsync(propertyData.PropertyOriginalType, $"{prefixPath}",
+                string PropertyprefixPath = $"{prefixPath}{propertyData.Name}.";
+                propertyData.ClassData = await TransformClassSymbolAsync(propertyData.PropertyOriginalType, PropertyprefixPath,
                                                                          token);
+
+                classData.AllUniqueMembers.AppendDict(propertyData.ClassData.AllUniqueMembers);
                 classData.AllUniqueMembers
                     .AppendDict(propertyData.ClassData.Members.Values
                     .ToDictionary(c => c.UniqueName, c => c), $"{prefixPath}{propertyData.Name}.");
+                
+                classData.DefaultTDLFunctions.CopyFrom(propertyData.ClassData.DefaultTDLFunctions);
+
+                propertyData.TDLCollectionData ??= propertyData.ClassData.TDLCollectionData;
+            }
+            if (propertyData.IsEnum && !classData.IsEnum)
+            {
+                propertyData.ClassData = await TransformClassSymbolAsync(propertyData.PropertyOriginalType, $"{prefixPath}",
+                                                                         token);
+
             }
             if (propertyData.IsOverridenProperty && propertyData.OverridenProperty != null)
             {
@@ -84,6 +110,22 @@ public class ModelTransformer
     private ClassPropertyData TransformMember(ISymbol member, ClassData classData)
     {
         var propData = new ClassPropertyData(member, classData);
+        PropertyAttributesTransformer.TransformAsync(propData, member.GetAttributes());
+
+        switch (propData.PropertyOriginalType.SpecialType)
+        {
+            case SpecialType.System_Boolean:
+                classData.DefaultTDLFunctions.Add(GetBooleanFromLogicFieldMethodName);
+                propData.TDLFieldData!.Set = $"$${GetBooleanFromLogicFieldFunctionName}:{propData.TDLFieldData!.Set}";
+                break;
+            case SpecialType.System_DateTime:
+                classData.DefaultTDLFunctions.Add(GetTransformDateToXSDMethodName);
+                propData.TDLFieldData!.Set = $"$${GetTransformDateToXSDFunctionName}:{propData.TDLFieldData!.Set}";
+                break;
+            default:
+                break;
+        }
+
         return propData;
     }
 
@@ -93,33 +135,48 @@ public class ModelTransformer
     }
 }
 
-public class ClassData
+public class ClassData : IClassAttributeTranfomable
 {
     public ClassData(INamedTypeSymbol symbol)
     {
         Symbol = symbol;
         IsEnum = Symbol.TypeKind == TypeKind.Enum;
+        IsTallyComplexObject = symbol.CheckInterface(TallyComplexObjectInterfaceName);
     }
 
     public ClassData? BaseData { get; set; }
     public INamedTypeSymbol Symbol { get; }
     public bool IsEnum { get; private set; }
+    public bool IsTallyComplexObject { get; }
     public string FullName { get => Symbol.GetClassMetaName(); }
     public string Name { get => Symbol.Name; }
     public string MetaName { get => $"{Name}Meta"; }
     public string Namespace { get => Symbol.ContainingNamespace.ToString(); }
 
-    public bool GenerateITallyRequestableObectAttribute { get; set; }
+    public bool GenerateITallyRequestableObject { get; set; }
     public Dictionary<string, ClassPropertyData> Members { get; } = [];
     public Dictionary<string, UniqueMember> AllUniqueMembers { get; } = [];
     public HashSet<string> DefaultTDLFunctions { get; internal set; } = [];
     public HashSet<string> TDLFunctions { get; internal set; } = [];
+    public string XMLTag { get; internal set; }
+    public TDLCollectionData? TDLCollectionData { get; internal set; }
 
     public override string ToString()
     {
         return $"ClassData : {FullName}";
     }
 }
+
+public interface IClassAttributeTranfomable
+{
+    //  Dictionary<string, UniqueMember> AllUniqueMembers { get; }
+    HashSet<string> DefaultTDLFunctions { get; }
+    HashSet<string> TDLFunctions { get; }
+    string XMLTag { get; }
+    TDLCollectionData? TDLCollectionData { get; }
+    string Name { get; }
+}
+
 public class ClassPropertyData
 {
     public ClassPropertyData(ISymbol member, ClassData classData)
@@ -132,8 +189,7 @@ public class ClassPropertyData
         IsComplex = (PropertyOriginalType.SpecialType is SpecialType.None && !DefaultSimpleTypes.Contains(PropertyOriginalType.GetClassMetaName())) && PropertyOriginalType.TypeKind is not TypeKind.Enum;
         OverridenProperty = classData.GetOveriddenProperty(Name);
         IsOverridenProperty = OverridenProperty != null;
-
-
+        IsTallyComplexObject = PropertyOriginalType.CheckInterface(TallyComplexObjectInterfaceName);
     }
 
     public ISymbol MemberSymbol { get; }
@@ -144,11 +200,16 @@ public class ClassPropertyData
     public bool IsList { get; private set; }
     public bool IsNullable { get; private set; }
     public bool IsEnum { get; private set; }
-    public string? XMLTag { get; private set; }
     public ClassData? ClassData { get; internal set; }
     public ClassData ParentData { get; internal set; }
     public bool IsOverridenProperty { get; }
+    public bool IsTallyComplexObject { get; }
     public ClassPropertyData? OverridenProperty { get; }
+    public PropertyTDLFieldData? TDLFieldData { get; internal set; }
+    public List<XMLData> XMLData { get; internal set; } = [];
+    public XMLData? DefaultXMLData { get; internal set; }
+    public string? ListXMLTag { get; internal set; }
+    public TDLCollectionData? TDLCollectionData { get; internal set; }
 
     private INamedTypeSymbol GetChildType()
     {
@@ -190,7 +251,6 @@ public class ClassPropertyData
         {
             IsEnum = true;
         }
-
         return type;
     }
 }

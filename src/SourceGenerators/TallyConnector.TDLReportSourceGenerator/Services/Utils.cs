@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel;
+using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
 using TallyConnector.TDLReportSourceGenerator.Models;
@@ -173,10 +174,38 @@ public static class Utils
         {
             if (visited.Add(currentSymbol.FullName))
             {
-                properties.InsertRange(0, currentSymbol.Members.Values.Where(c => !c.IsComplex).Select(c => c.Name));
+                properties.InsertRange(0, currentSymbol.Members.Values.Where(c => !(c.IsComplex || c.IsList)).Select(c => c.Name));
             }
         }
         return [.. properties];
+    }
+    public static Dictionary<string, ClassPropertyData> GetUniqueSimpleMembers(this ClassData modelData, HashSet<string>? visited = null)
+    {
+        List<ClassPropertyData> properties = [];
+        visited ??= [];
+
+        for (ClassData? currentSymbol = modelData; currentSymbol != null; currentSymbol = currentSymbol.BaseData)
+        {
+            if (visited.Add(currentSymbol.FullName))
+            {
+                properties.InsertRange(0, currentSymbol.Members.Values.Where(c => !c.IsComplex));
+            }
+        }
+        return properties.ToDict(c => c.Name);
+    }
+    public static Dictionary<string, ClassPropertyData> GetUniqueComplexMembers(this ClassData modelData, HashSet<string>? visited = null)
+    {
+        List<ClassPropertyData> properties = [];
+        visited ??= [];
+
+        for (ClassData? currentSymbol = modelData; currentSymbol != null; currentSymbol = currentSymbol.BaseData)
+        {
+            if (visited.Add(currentSymbol.FullName))
+            {
+                properties.InsertRange(0, currentSymbol.Members.Values.Where(c => c.IsComplex || c.IsList));
+            }
+        }
+        return properties.ToDict(c => c.Name);
     }
     public static List<ClassPropertyData> GetClassMembers(this ClassData modelData, HashSet<string>? visited = null)
     {
@@ -210,6 +239,16 @@ public static class Utils
         {
             src[item.Key] = new(prefixPath, item.Value);
         }
+    }
+    public static Dictionary<string, ClassPropertyData> ToDict(this IEnumerable<ClassPropertyData> src2, Func<ClassPropertyData, string>? selector = null)
+    {
+        selector ??= c => c.UniqueName;
+        Dictionary<string, ClassPropertyData> src = [];
+        foreach (var item in src2)
+        {
+            src[selector(item)] = item;
+        }
+        return src;
     }
     public static void AppendDict(this Dictionary<string, UniqueMember> src,
                                   Dictionary<string, UniqueMember> src2)

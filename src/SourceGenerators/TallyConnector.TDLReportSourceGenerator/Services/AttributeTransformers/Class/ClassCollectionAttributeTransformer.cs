@@ -10,13 +10,13 @@ public class ClassCollectionAttributeTransformer : ClassPropertyAttributeTransfo
 
     }
 
-    public override void TransformAsync(ModelData data, AttributeData attributeData)
+    public override void TransformAsync(ClassData data, AttributeData attributeData)
     {
         var collectionData = _transformer.Transform(attributeData);
         data.TDLCollectionData = collectionData;
-        if (data.TDLCollectionData == null && data.BaseData?.ModelData?.TDLCollectionData != null)
+        if (data.TDLCollectionData == null && data.BaseData?.TDLCollectionData != null)
         {
-            data.TDLCollectionData = data.BaseData.ModelData.TDLCollectionData;
+            data.TDLCollectionData = data.BaseData.TDLCollectionData;
         }
     }
 }
