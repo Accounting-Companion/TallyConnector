@@ -17,7 +17,7 @@ public class PropertyMetaData
     public PropertyMetaData(string name,
                             string xMLTag,
                             string set,
-                            string fetchText,
+                            string? fetchText,
                             string? invisible = null,
                             string? tDLType = null,
                             string? format = null)
@@ -34,7 +34,7 @@ public class PropertyMetaData
     public string Name { get; set; }
     public string XMLTag { get; set; }
     public string Set { get; set; }
-    public string FetchText { get; set; }
+    public string? FetchText { get; set; }
 
     public string? Invisible { get; set; }
 

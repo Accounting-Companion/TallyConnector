@@ -183,7 +183,7 @@ public class BasicMetaModelMet : TallyConnector.Abstractions.Models.MetaObject
     {
     }
 
-    public new string TDLReportName = "BasicMetaModel_D5EZ";
+    public string TDLReportName = "BasicMetaModel_D5EZ";
     public TallyConnector.Abstractions.Models.PropertyMetaData Name => new("NAME_AQT4", "NAME");
 
     public List<TallyConnector.Abstractions.Models.PropertyMetaData> Fields => [Name];

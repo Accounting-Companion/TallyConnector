@@ -19,7 +19,7 @@ public partial class Ledger : BaseAliasedMasterObject
     public string? Group { get; set; }
 
     [XmlElement(ElementName = "OPENINGBALANCE")]
-    [TDLCollection(ExplodeCondition = "$$ISEMPTY:$OPENINGBALANCE")]
+    [TDLCollection(ExplodeCondition = "NOT $$ISEMPTY:$OPENINGBALANCE")]
     public TallyAmountField? OpeningBalance { get; set; }
 
     [XmlElement(ElementName = "CURRENCY")]

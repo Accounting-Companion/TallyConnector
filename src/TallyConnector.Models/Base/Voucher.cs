@@ -17,7 +17,7 @@ public partial class Voucher : BaseTallyObject
     public DateTime? ReferenceDate { get; set; }
 
     [XmlElement(ElementName = "REFERENCE")]
-    [TDLField(FetchText = "adsfdgfhjhkj", ExcludeInFetch = true)]
+    [TDLField(FetchText = "REFERENCE", ExcludeInFetch = true)]
     public string? Reference { get; set; }
 
     [XmlElement(ElementName = "VOUCHERTYPENAME")]
@@ -350,6 +350,7 @@ public partial class AllLedgerEntry : BaseLedgerEntry
 [TDLCollection(CollectionName = "LEDGERENTRIES", ExplodeCondition = $"$PERSISTEDVIEW =$$SysName:{Core.Constants.Voucher.ViewType.InvoiceVoucherView}")]
 public partial class LedgerEntry : AllLedgerEntry
 {
+    public string? LedgerEntryProp { get; set; }
 
 }
 [XmlRoot(ElementName = "INVOICEDELNOTES.LIST")]

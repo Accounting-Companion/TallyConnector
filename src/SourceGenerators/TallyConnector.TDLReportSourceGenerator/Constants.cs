@@ -25,6 +25,7 @@ public static class Constants
     public const string XmlAttributesClassName = "System.Xml.Serialization.XmlAttributes";
     public const string CollectionsNameSpace = "System.Collections.Generic";
     public const string ListClassName = "List";
+    public const string DictionaryClassName = "Dictionary";
     public const string IEnumerableClassName = "IEnumerable";
 
     public const string IEnumerableInterfaceName = "System.Collections.IEnumerable";
@@ -196,10 +197,25 @@ public static class Constants
         }
 
     }
+    public class MultiXMLMeta
+    {
+        public const string MetasVarName = "_metas";
+        public const string OriginalPrefixVarName = "_orgPrefix";
 
+
+        public const string GeneratePathMethodName = "GenerateMultiXMLPath";
+
+        public class Parameters
+        {
+            public const string OriginalPrefix = "orgPrefix";
+        }
+    }
     public class Meta
     {
         public const string Name = "Meta";
+
+
+        public const string PathPrefixVarName = "_pathPrefix";
 
         public const string IdentifierNameVarName = "IdentifierName";
         public const string InstanceVarName = "Instance";

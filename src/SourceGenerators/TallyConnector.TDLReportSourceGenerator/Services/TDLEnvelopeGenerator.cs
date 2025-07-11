@@ -207,30 +207,7 @@ public class TDLEnvelopeGenerator
                                 })))));
 
 
-        void AddExpressionForOverridenChild(PropertyData data)
-        {
-
-            statements.Add(ExpressionStatement(InvocationExpression(MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression, IdentifierName(xmlAttributeOverridesVarName), IdentifierName("Add")))
-            .WithArgumentList(ArgumentList(
-                                SeparatedList<ArgumentSyntax>(new SyntaxNodeOrToken[]
-                                {
-                                         Argument(TypeOfExpression(GetGlobalNameforType(data.ModelData.FullName))),
-                                          Token(SyntaxKind.CommaToken),
-                                         Argument(CreateStringLiteral(data.Name)),
-                                          Token(SyntaxKind.CommaToken),
-                                         Argument(ObjectCreationExpression(GetGlobalNameforType(XmlAttributesClassName))
-                                         .WithArgumentList(ArgumentList())
-                                         .WithInitializer(InitializerExpression(
-                                                        SyntaxKind.ObjectInitializerExpression,
-                                                        SingletonSeparatedList<ExpressionSyntax>(
-                                                            AssignmentExpression(
-                                                                SyntaxKind.SimpleAssignmentExpression,
-                                                                IdentifierName("XmlIgnore"),
-                                                                LiteralExpression(
-                                                                    SyntaxKind.TrueLiteralExpression)))))),
-                                })))));
-        }
-
+      
         statements.Add(ReturnStatement(IdentifierName(xmlAttributeOverridesVarName)));
         var methodDeclarationSyntax = MethodDeclaration(GetGlobalNameforType(XmlAttributeOverridesClassName),
                                                        Identifier(string.Format(GetXMLAttributeOveridesMethodName, "")))

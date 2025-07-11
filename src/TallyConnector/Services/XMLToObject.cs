@@ -83,7 +83,7 @@ public static class XMLToObject
                 }
             }
 
-            TallyXMLParsingException tallyXMLParsingException = new(ExceptionMessage, ex, XMLPart, internalErrors.Reverse());
+            TallyXMLParsingException tallyXMLParsingException = new(ExceptionMessage, ex, XMLPart, internalErrors?.Reverse());
             Logger?.LogError(tallyXMLParsingException.Message);
             Logger?.LogError("Error - {errs}", tallyXMLParsingException.ExceptionTrace);
             throw tallyXMLParsingException;

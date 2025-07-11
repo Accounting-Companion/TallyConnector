@@ -29,12 +29,12 @@ public partial class TallyAmountField : ITallyComplexObject, IBaseObject
     [XmlElement(ElementName = "CURRENCY")]
     public string? Currency { get; set; }
 
-    [TDLField(TallyType = "Number", Set = "$$ForexValue:{0}", Invisible = $"$$Value=#Amount_C0LF")]
+    [TDLField(TallyType = "Number", Set = "$$ForexValue:{0}", Invisible = $"$$Value=#AMOUNT_PWS0")]
     [Column(TypeName = "decimal(20,4)")]
     [XmlElement(ElementName = "FOREXAMOUNT")]
     public decimal? ForexAmount { get; set; }
 
-    [TDLField(TallyType = "Amount : Rate", Invisible = $"#ForexAmount_MT3L=#Amount_C0LF", Format = "Forex,Currency")]
+    [TDLField(TallyType = "Amount : Rate", Invisible = $"#ForexAmount_MT3L=#AMOUNT_PWS0", Format = "Forex,Currency")]
     [XmlElement(ElementName = "FOREXSYMBOL")]
     public string? ForexCurrency { get; set; }
 

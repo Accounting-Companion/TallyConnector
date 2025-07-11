@@ -17,7 +17,7 @@ public class PropertyCollectionAttributeTransformer : AbstractPropertyAttributeT
 
         //if (data.TDLCollectionData == null && data.)
         //{
-        //    data.TDLCollectionData = data.BaseData.ModelData.TDLCollectionData;
+        //    data.TDLCollectionData = data.BaseData.ClassData.TDLCollectionData;
         //}
     }
 }

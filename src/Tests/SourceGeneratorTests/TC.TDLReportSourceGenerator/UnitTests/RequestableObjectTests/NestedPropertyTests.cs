@@ -13,7 +13,7 @@ using TallyConnector.Abstractions.Attributes;
 using System.Collections.Generic;
 namespace UnitTests.TestBasic;
 
-[GenerateMeta]
+
 public partial class LanguageNameList
 {
     public LanguageNameList()
