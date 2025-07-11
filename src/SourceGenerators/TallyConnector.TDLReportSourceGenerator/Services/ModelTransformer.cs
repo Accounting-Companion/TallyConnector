@@ -1,5 +1,4 @@
-﻿using Microsoft.CodeAnalysis;
-using TallyConnector.TDLReportSourceGenerator.Models;
+﻿using TallyConnector.TDLReportSourceGenerator.Models;
 using TallyConnector.TDLReportSourceGenerator.Services.AttributeTransformers.Class;
 using TallyConnector.TDLReportSourceGenerator.Services.AttributeTransformers.Common;
 using TallyConnector.TDLReportSourceGenerator.Services.AttributeTransformers.Property;
@@ -37,14 +36,19 @@ public class ModelTransformer
         if (symbol.BaseType != null && !classData.IsEnum && !symbol.BaseType.HasFullyQualifiedMetadataName("object"))
         {
             classData.BaseData = await TransformClassSymbolAsync(symbol.BaseType, prefixPath, token);
+
             classData.AllUniqueMembers.AppendDict(classData.BaseData.AllUniqueMembers);
+            classData.AllDirectMembers.AppendDict(classData.BaseData.AllDirectMembers);
+            classData.AllMembers.AppendDict(classData.BaseData.AllMembers, prefixPath);
             classData.DefaultTDLFunctions.CopyFrom(classData.BaseData.DefaultTDLFunctions);
         }
         await TransformMembers(classData, prefixPath, token);
         var values = classData.Members.Values;
 
         classData.AllUniqueMembers.AppendDict(values.ToDictionary(c => c.UniqueName, c => c), prefixPath);
+        classData.AllDirectMembers.AppendDict(classData.Members);
 
+        classData.AllMembers.AppendDict(classData.AllDirectMembers, prefixPath);
         return classData;
     }
     private async Task TransformMembers(ClassData classData,
@@ -73,15 +77,29 @@ public class ModelTransformer
                 string PropertyprefixPath = $"{prefixPath}{propertyData.Name}.";
                 propertyData.ClassData = await TransformClassSymbolAsync(propertyData.PropertyOriginalType, PropertyprefixPath,
                                                                          token);
-
+                classData.AllMembers.AppendDict(propertyData.ClassData.AllMembers,PropertyprefixPath);
                 classData.AllUniqueMembers.AppendDict(propertyData.ClassData.AllUniqueMembers);
                 classData.AllUniqueMembers
                     .AppendDict(propertyData.ClassData.Members.Values
-                    .ToDictionary(c => c.UniqueName, c => c), $"{prefixPath}{propertyData.Name}.");
-                
+                    .ToDictionary(c => c.UniqueName, c => c), PropertyprefixPath);
+
                 classData.DefaultTDLFunctions.CopyFrom(propertyData.ClassData.DefaultTDLFunctions);
 
                 propertyData.TDLCollectionData ??= propertyData.ClassData.TDLCollectionData;
+                foreach (var xMLData in propertyData.XMLData)
+                {
+                    if (xMLData.Symbol == null) continue;
+                    xMLData.ClassData = await TransformClassSymbolAsync(xMLData.Symbol,
+                                                                        $"{PropertyprefixPath}{xMLData.Symbol.Name}.",
+                                                                        token);
+                    xMLData.FieldName = $"{propertyData.Name}_{Utils.GenerateUniqueNameSuffix($"{xMLData.ClassData.FullName}_{propertyData.ClassData.FullName}_{propertyData.Name}")}";
+                    classData.AllUniqueMembers.AppendDict(xMLData.ClassData.AllUniqueMembers);
+                    classData.AllUniqueMembers
+                        .AppendDict(xMLData.ClassData.Members.Values
+                        .ToDictionary(c => c.UniqueName, c => c), $"{PropertyprefixPath}{xMLData.Symbol.Name}.");
+
+                }
+
             }
             if (propertyData.IsEnum && !classData.IsEnum)
             {
@@ -160,6 +178,8 @@ public class ClassData : IClassAttributeTranfomable
     public HashSet<string> TDLFunctions { get; internal set; } = [];
     public string XMLTag { get; internal set; }
     public TDLCollectionData? TDLCollectionData { get; internal set; }
+    public Dictionary<string, ClassPropertyData> AllDirectMembers { get; internal set; } = [];
+    public Dictionary<string, ClassPropertyData> AllMembers { get; internal set; } = [];
 
     public override string ToString()
     {

@@ -78,7 +78,7 @@ public class MetaDataGenerator
 
         if (!_modelData.GenerateITallyRequestableObject)
         {
-            members.Add(GetSecondConstructor());
+            members.Add(GetSecondConstructor(_modelData.BaseData != null, _modelData.MetaName));
         }
         if (_modelData.BaseData == null)
         {
@@ -101,7 +101,6 @@ public class MetaDataGenerator
         {
             modifiers.Add(Token(SyntaxKind.NewKeyword));
         }
-
         members.Add(FieldDeclaration(CreateVariableDelaration(PredefinedType(Token(SyntaxKind.StringKeyword)),
                                                               Meta.CollectionNameVarName,
                                                               _modelData.IsTallyComplexObject ? CreateNullLiteral() : CreateStringLiteral(_modelData.GenerateITallyRequestableObject ? $"{_modelData.Name}Coll_{_suffix}" : _modelData.Name.ToUpper())))
@@ -120,18 +119,15 @@ public class MetaDataGenerator
                 .WithModifiers(TokenList(requestableObjectmodifiers)));
 
         }
-
         if (_modelData.BaseData != null &&
             !SymbolEqualityComparer.Default.Equals(_modelData.BaseData.Symbol.ContainingAssembly, _modelData.Symbol.ContainingAssembly))
         {
             AddMembersAsProperties(_modelData.BaseData.Members);
         }
-
-
         AddMembersAsProperties(_modelData.Members);
 
         HandleDirectProperties(members, modifiers);
-   
+
         if (_modelData.GenerateITallyRequestableObject)
         {
             AddITallyRequestableRequiredMembers(members, requestableObjectmodifiers);
@@ -157,19 +153,27 @@ public class MetaDataGenerator
 
             if (val.IsComplex)
             {
-                AddPartAndLine(val);
+                AddPartAndLine(val, members);
                 if (val.ClassData == null) return;
                 typeName = val.ClassData.MetaName;
+                if (val.XMLData.Count > 0)
+                {
+                    typeName = GetMultiXMLDataMetaClassName(val);
+                    GenerateMultiXMLMetaData(val, _context, _token, members);
+                    arguments.SafeAdd(Argument(IdentifierName(Meta.PathPrefixVarName))
+                        .WithNameColon(NameColon(IdentifierName(MultiXMLMeta.Parameters.OriginalPrefix))));
 
+                }
                 string path = $"{val.TDLCollectionData?.CollectionName ?? val.Name.ToUpper()}";
                 arguments.SafeAdd(Argument(InvocationExpression(IdentifierName("GeneratePath"))
-                    .WithArgumentList(ArgumentList([Argument(CreateStringLiteral(path))]))).WithNameColon(NameColon(IdentifierName(Meta.Parameters.PathPrefix))));
+                    .WithArgumentList(ArgumentList([Argument(CreateStringLiteral(path))])))
+                    .WithNameColon(NameColon(IdentifierName(Meta.Parameters.PathPrefix))));
             }
             else
             {
                 if (val.IsList)
                 {
-                    AddPartAndLine(val);
+                    AddPartAndLine(val, members);
                 }
                 arguments.SafeAddArgument(CreateStringLiteral(val.DefaultXMLData?.XmlTag ?? val.Name.ToUpper()));
 
@@ -222,92 +226,94 @@ public class MetaDataGenerator
                     .WithModifiers(TokenList(tokens))
                     .WithSemicolonToken(Token(SyntaxKind.SemicolonToken)));
         }
+    }
 
-
-        void AddPartAndLine(ClassPropertyData propertyData)
+    private static void AddPartAndLine(ClassPropertyData propertyData,
+                                       List<MemberDeclarationSyntax> members,
+                                       bool isMultiXML = false,
+                                       XMLData? xmlData = null)
+    {
+        var name = isMultiXML ? $"{propertyData.Name}.{xmlData!.ClassData!.Name}" : propertyData.Name;
+        List<SyntaxToken> partModifiers =
+              [
+                  Token(SyntaxKind.PublicKeyword)
+              ];
+        if (propertyData.IsOverridenProperty)
         {
-            var name = propertyData.Name;
-            List<SyntaxToken> partModifiers =
-                  [
-                      Token(SyntaxKind.PublicKeyword)
-                  ];
-            if (propertyData.IsOverridenProperty)
-            {
-                partModifiers.Add(Token(SyntaxKind.NewKeyword));
-            }
-            List<SyntaxNodeOrToken> constructorArgs = [];
-            List<SyntaxNodeOrToken>? IntializerArgs = null;
+            partModifiers.Add(Token(SyntaxKind.NewKeyword));
+        }
+        List<SyntaxNodeOrToken> constructorArgs = [];
+        List<SyntaxNodeOrToken>? IntializerArgs = null;
 
-            List<SyntaxNodeOrToken> lineConstructorArgs = [];
-            List<SyntaxNodeOrToken>? lineIntializerArgs = null;
-            string LineOrPartName = $"{name}.{(propertyData.IsComplex ? Meta.IdentifierNameVarName : "Name")}";
-            constructorArgs.SafeAddArgument(IdentifierName(LineOrPartName));
-            lineConstructorArgs.SafeAddArgument(IdentifierName(LineOrPartName));
+        List<SyntaxNodeOrToken> lineConstructorArgs = [];
+        List<SyntaxNodeOrToken>? lineIntializerArgs = null;
+        string LineOrPartName = $"{name}.{(propertyData.IsComplex ? Meta.IdentifierNameVarName : "Name")}";
+        constructorArgs.SafeAddArgument(IdentifierName(LineOrPartName));
+        lineConstructorArgs.SafeAddArgument(IdentifierName(LineOrPartName));
 
-            if (propertyData.IsComplex)
-            {
-                lineConstructorArgs.SafeAddArgument(IdentifierName($"{name}.{Meta.FieldNamesVarName}"));
-                lineConstructorArgs.SafeAddArgument(CreateStringLiteral(propertyData.DefaultXMLData?.XmlTag ?? name.ToUpper()));
+        if (propertyData.IsComplex)
+        {
+            lineConstructorArgs.SafeAddArgument(IdentifierName($"{name}.{Meta.FieldNamesVarName}"));
+            lineConstructorArgs.SafeAddArgument(CreateStringLiteral((isMultiXML ? xmlData?.XmlTag : propertyData.DefaultXMLData?.XmlTag) ?? name.ToUpper()));
 
 
-                lineIntializerArgs ??= [];
-                lineIntializerArgs.SafeAdd(AssignmentExpression(SyntaxKind.SimpleAssignmentExpression, IdentifierName("Explode"), IdentifierName($"{name}.{Meta.ExplodesVarName}")));
-
-            }
-            else
-            {
-                lineConstructorArgs.SafeAddArgument(CollectionExpression(SeparatedList<CollectionElementSyntax>(new SyntaxNodeOrToken[]
-                {
-                    ExpressionElement(IdentifierName($"{name}.Name")),
-                })));
-            }
-            if (propertyData.TDLCollectionData?.CollectionName != null)
-            {
-                constructorArgs.SafeAddArgument(CreateStringLiteral(propertyData.TDLCollectionData.CollectionName));
-            }
-            else
-            {
-                constructorArgs.SafeAddArgument(IdentifierName($"{name}.{Meta.CollectionNameVarName}"));
-            }
-            if (propertyData.IsList)
-            {
-                if (propertyData.ListXMLTag != null)
-                {
-                    IntializerArgs ??= [];
-                    IntializerArgs.SafeAdd(AssignmentExpression(SyntaxKind.SimpleAssignmentExpression, IdentifierName("XMLTag"), CreateStringLiteral(propertyData.ListXMLTag)));
-                }
-            }
-            if (propertyData.IsTallyComplexObject)
-            {
-                lineIntializerArgs ??= [];
-                List<SyntaxNodeOrToken> LocalCollectionArgs = [];
-                foreach (var tallySimpleProperty in propertyData.ClassData!.Members.Values)
-                {
-                    List<InterpolatedStringContentSyntax> interpolatedStringContentSyntaxes = [];
-                    interpolatedStringContentSyntaxes.AddText("Field:");
-                    interpolatedStringContentSyntaxes.AddIdentifier($"{propertyData.Name}.{tallySimpleProperty.Name}.Name");
-                    interpolatedStringContentSyntaxes.AddText(":Set:");
-                    interpolatedStringContentSyntaxes.AddText(string.Format(tallySimpleProperty.TDLFieldData!.Set, propertyData.TDLFieldData!.Set));
-                    var syntax = InterpolatedStringExpression(
-                           Token(SyntaxKind.InterpolatedStringStartToken)).WithContents(List(interpolatedStringContentSyntaxes));
-                    LocalCollectionArgs.SafeAddExpressionElement(syntax);
-                }
-                lineIntializerArgs.SafeAdd(AssignmentExpression(SyntaxKind.SimpleAssignmentExpression, IdentifierName("Local"), CollectionExpression(
-                                                            SeparatedList<CollectionElementSyntax>(LocalCollectionArgs))));
-            }
-            members.Add(PropertyDeclaration(IdentifierName(PartTypeName),
-                                             $"{name}Part")
-                 .WithExpressionBody(ArrowExpressionClause(CreateImplicitObjectExpression(constructorArgs, IntializerArgs)))
-                 .WithModifiers(TokenList(partModifiers))
-                 .WithSemicolonToken(Token(SyntaxKind.SemicolonToken)));
-
-            members.Add(PropertyDeclaration(IdentifierName(LineTypeName),
-                                            $"{name}Line")
-                .WithExpressionBody(ArrowExpressionClause(CreateImplicitObjectExpression(lineConstructorArgs, lineIntializerArgs)))
-                .WithModifiers(TokenList(partModifiers))
-                .WithSemicolonToken(Token(SyntaxKind.SemicolonToken)));
+            lineIntializerArgs ??= [];
+            lineIntializerArgs.SafeAdd(AssignmentExpression(SyntaxKind.SimpleAssignmentExpression, IdentifierName("Explode"), IdentifierName($"{name}.{Meta.ExplodesVarName}")));
 
         }
+        else
+        {
+            lineConstructorArgs.SafeAddArgument(CollectionExpression(SeparatedList<CollectionElementSyntax>(new SyntaxNodeOrToken[]
+            {
+                    ExpressionElement(IdentifierName($"{name}.Name")),
+            })));
+        }
+        if (propertyData.TDLCollectionData?.CollectionName != null || isMultiXML && xmlData!.ClassData!.TDLCollectionData?.CollectionName != null)
+        {
+            constructorArgs.SafeAddArgument(isMultiXML ? CreateStringLiteral(xmlData!.ClassData!.TDLCollectionData!.CollectionName!) : CreateStringLiteral(propertyData.TDLCollectionData!.CollectionName!));
+        }
+        else
+        {
+            constructorArgs.SafeAddArgument(IdentifierName($"{name}.{Meta.CollectionNameVarName}"));
+        }
+        if (propertyData.IsList)
+        {
+            if (propertyData.ListXMLTag != null)
+            {
+                IntializerArgs ??= [];
+                IntializerArgs.SafeAdd(AssignmentExpression(SyntaxKind.SimpleAssignmentExpression, IdentifierName("XMLTag"), CreateStringLiteral(propertyData.ListXMLTag)));
+            }
+        }
+        if (propertyData.IsTallyComplexObject)
+        {
+            lineIntializerArgs ??= [];
+            List<SyntaxNodeOrToken> LocalCollectionArgs = [];
+            foreach (var tallySimpleProperty in propertyData.ClassData!.Members.Values)
+            {
+                List<InterpolatedStringContentSyntax> interpolatedStringContentSyntaxes = [];
+                interpolatedStringContentSyntaxes.AddText("Field:");
+                interpolatedStringContentSyntaxes.AddIdentifier($"{propertyData.Name}.{tallySimpleProperty.Name}.Name");
+                interpolatedStringContentSyntaxes.AddText(":Set:");
+                interpolatedStringContentSyntaxes.AddText(string.Format(tallySimpleProperty.TDLFieldData!.Set, propertyData.TDLFieldData!.Set));
+                var syntax = InterpolatedStringExpression(
+                       Token(SyntaxKind.InterpolatedStringStartToken)).WithContents(List(interpolatedStringContentSyntaxes));
+                LocalCollectionArgs.SafeAddExpressionElement(syntax);
+            }
+            lineIntializerArgs.SafeAdd(AssignmentExpression(SyntaxKind.SimpleAssignmentExpression, IdentifierName("Local"), CollectionExpression(
+                                                        SeparatedList<CollectionElementSyntax>(LocalCollectionArgs))));
+        }
+        members.Add(PropertyDeclaration(IdentifierName(PartTypeName),
+                                         $"{name.Replace(".", "")}Part")
+             .WithExpressionBody(ArrowExpressionClause(CreateImplicitObjectExpression(constructorArgs, IntializerArgs)))
+             .WithModifiers(TokenList(partModifiers))
+             .WithSemicolonToken(Token(SyntaxKind.SemicolonToken)));
+
+        members.Add(PropertyDeclaration(IdentifierName(LineTypeName),
+                                        $"{name.Replace(".", "")}Line")
+            .WithExpressionBody(ArrowExpressionClause(CreateImplicitObjectExpression(lineConstructorArgs, lineIntializerArgs)))
+            .WithModifiers(TokenList(partModifiers))
+            .WithSemicolonToken(Token(SyntaxKind.SemicolonToken)));
+
     }
 
 
@@ -404,12 +410,14 @@ public class MetaDataGenerator
         return mainConstructorSyntax;
     }
 
-    private ConstructorDeclarationSyntax GetSecondConstructor()
+    private ConstructorDeclarationSyntax GetSecondConstructor(bool addBaseArgs,
+                                                              string constructorIdentifier,
+                                                              bool isInvokedFromMultiXML = false)
     {
         List<SyntaxNodeOrToken> contructorArgs = [];
         List<SyntaxNodeOrToken> baseArgs = [];
         List<StatementSyntax> constructorBodyMembers = [];
-        if (_modelData.BaseData != null)
+        if (addBaseArgs)
         {
             baseArgs.SafeAddArgument(IdentifierName(Meta.Parameters.Name));
             baseArgs.SafeAddArgument(IdentifierName(Meta.Parameters.XMLTag));
@@ -427,7 +435,14 @@ public class MetaDataGenerator
         contructorArgs.SafeAdd(Parameter(Identifier(Meta.Parameters.XMLTag))
             .WithType(NullableType(PredefinedType(Token(SyntaxKind.StringKeyword))))
             .WithDefault(EqualsValueClause(LiteralExpression(SyntaxKind.NullLiteralExpression))));
+        if (isInvokedFromMultiXML)
+        {
+            contructorArgs.SafeAdd(Parameter(Identifier(MultiXMLMeta.Parameters.OriginalPrefix))
+                .WithType(NullableType(PredefinedType(Token(SyntaxKind.StringKeyword))))
+                .WithDefault(EqualsValueClause(LiteralExpression(SyntaxKind.NullLiteralExpression))));
 
+            constructorBodyMembers.Add(ExpressionStatement(AssignmentExpression(SyntaxKind.SimpleAssignmentExpression, IdentifierName(Constants.MultiXMLMeta.OriginalPrefixVarName), IdentifierName(MultiXMLMeta.Parameters.OriginalPrefix))));
+        }
         contructorArgs.SafeAdd(Parameter(Identifier(Meta.Parameters.PathPrefix))
                                     .WithType(
                                         PredefinedType(
@@ -436,7 +451,7 @@ public class MetaDataGenerator
                                         EqualsValueClause(
                                               CreateStringLiteral(""))));
 
-        ConstructorDeclarationSyntax secondConstructor = ConstructorDeclaration(Identifier(_modelData.MetaName)).WithModifiers(TokenList(Token(SyntaxKind.PublicKeyword)))
+        ConstructorDeclarationSyntax secondConstructor = ConstructorDeclaration(Identifier(constructorIdentifier)).WithModifiers(TokenList(Token(SyntaxKind.PublicKeyword)))
          .WithParameterList(
                             ParameterList(
                                 SeparatedList<ParameterSyntax>(contructorArgs)))
@@ -449,94 +464,81 @@ public class MetaDataGenerator
         return secondConstructor;
     }
 
-    private void HandleDirectProperties(List<MemberDeclarationSyntax> members, List<SyntaxToken> modifiers)
+    private void HandleDirectProperties(List<MemberDeclarationSyntax> members,
+                                        List<SyntaxToken> modifiers)
     {
-        HandleDirectSimpleProperties(members, modifiers);
-        HandleDirectComplexProperties(members, modifiers);
-    }
+        var directMembers = _modelData.AllDirectMembers.Values;
+        var complexMembers = directMembers.Where(c => c.IsComplex || c.IsList);
+        var simpleMembers = directMembers.Where(c => !c.IsComplex);
 
-
-    private void HandleDirectComplexProperties(List<MemberDeclarationSyntax> members, List<SyntaxToken> modifiers)
-    {
-        var uniqueComlexFields = _modelData.GetUniqueComplexMembers();
         List<SyntaxNodeOrToken> explodeExpressions = [];
-        foreach (var field in uniqueComlexFields)
-        {
-            string text = ":YES";
-            ClassPropertyData prop = field.Value;
-            List<InterpolatedStringContentSyntax> nodes =
-                [
-                    Interpolation(IdentifierName($"{prop.Name}.{(prop.IsComplex ? Meta.IdentifierNameVarName:"Name" )}")),
-                        //InterpolatedStringText()
-                        //.WithTextToken(Token(TriviaList(), SyntaxKind.InterpolatedStringTextToken, path, path, TriviaList()))
-                    ];
-            var explodeCondition = prop?.TDLCollectionData?.ExplodeCondition;
-            if (explodeCondition == null)
-            {
-                nodes.Add(InterpolatedStringText()
-                    .WithTextToken(Token(TriviaList(), SyntaxKind.InterpolatedStringTextToken, text, text, TriviaList())));
-            }
-            else
-            {
-                text = $":{explodeCondition}";
-                nodes.Add(InterpolatedStringText()
-                    .WithTextToken(Token(TriviaList(), SyntaxKind.InterpolatedStringTextToken, text, text, TriviaList())));
-                // nodes.Add(Interpolation(CreateFormatExpression(explodeCondition, name)));
-            }
-            InterpolatedStringExpressionSyntax interpolatedStringExpressionSyntax = InterpolatedStringExpression(Token(SyntaxKind.InterpolatedStringStartToken))
-          .WithContents(List(nodes));
-            explodeExpressions.SafeAddExpressionElement(interpolatedStringExpressionSyntax);
-        }
-        members.Add(PropertyDeclaration(GenericName(
-                               Identifier("List"))
-                           .WithTypeArgumentList(
-                               TypeArgumentList(
-                                   SingletonSeparatedList<TypeSyntax>(
-                                       PredefinedType(
-                                           Token(SyntaxKind.StringKeyword))))), Identifier(Meta.ExplodesVarName))
-       .WithExpressionBody(ArrowExpressionClause(CollectionExpression(SeparatedList<CollectionElementSyntax>(explodeExpressions))))
-       .WithModifiers(TokenList(modifiers))
-       .WithSemicolonToken(Token(SyntaxKind.SemicolonToken)));
-    }
-
-    private void HandleDirectSimpleProperties(List<MemberDeclarationSyntax> members, List<SyntaxToken> modifiers)
-    {
-        var uniqueSimpleFields = _modelData.GetUniqueSimpleMembers();
         List<SyntaxNodeOrToken> fieldNameExpressions = [];
         List<SyntaxNodeOrToken> fetchTextExpressions = [];
-        foreach (var simpleField in uniqueSimpleFields)
-        {
-            var simpleProp = simpleField.Value;
-            if (!simpleProp.IsList)
-            {
-                fieldNameExpressions.SafeAddExpressionElement(MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression,
-                                                                          IdentifierName(simpleProp.Name),
-                                                                          IdentifierName("Name")));
-            }
-            if (!_modelData.IsTallyComplexObject)
-            {
-                fetchTextExpressions.SafeAddExpressionElement(MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression,
-                                                                          IdentifierName(simpleProp.Name),
-                                                                          IdentifierName("FetchText")));
-            }
-
-
-        }
-
         if (_modelData.IsTallyComplexObject)
         {
             fetchTextExpressions.SafeAddExpressionElement(IdentifierName("_pathPrefix"));
         }
+        foreach (var member in directMembers)
+        {
+            var prop = member;
+            if (member.IsComplex)
+            {
+                AddExplodes(Meta.IdentifierNameVarName, member.Name, member.TDLCollectionData?.ExplodeCondition, member.TDLFieldData?.Set);
+                fetchTextExpressions.SafeAdd(SpreadElement(MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression,
+                                                                                  IdentifierName(prop.Name),
+                                                                                  IdentifierName("FetchText"))));
+                foreach (var xMLData in member.XMLData)
+                {
+                    if (xMLData.ClassData == null) continue;
+                    ClassData classData = xMLData.ClassData;
+                    AddExplodes(Meta.IdentifierNameVarName, $"{member.Name}.{classData.Name}", classData.TDLCollectionData?.ExplodeCondition);
+
+                }
+            }
+            else
+            {
+                if (member.IsList)
+                {
+                    AddExplodes("Name", member.Name, member.TDLCollectionData?.ExplodeCondition, member.TDLFieldData?.Set);
+                }
+                else
+                {
+                    fieldNameExpressions.SafeAddExpressionElement(MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression,
+                                                                            IdentifierName(prop.Name),
+                                                                            IdentifierName("Name")));
+
+
+                }
+                if (!_modelData.IsTallyComplexObject)
+                {
+                    fetchTextExpressions.SafeAddExpressionElement(MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression,
+                                                                               IdentifierName(prop.Name),
+                                                                               IdentifierName("FetchText")));
+                }
+            }
+
+        }
         members.Add(PropertyDeclaration(GenericName(
-                                    Identifier("List"))
-                                .WithTypeArgumentList(
-                                    TypeArgumentList(
-                                        SingletonSeparatedList<TypeSyntax>(
-                                            PredefinedType(
-                                                Token(SyntaxKind.StringKeyword))))), Identifier(Meta.FieldNamesVarName))
-            .WithExpressionBody(ArrowExpressionClause(CollectionExpression(SeparatedList<CollectionElementSyntax>(fieldNameExpressions))))
-            .WithModifiers(TokenList(modifiers))
-            .WithSemicolonToken(Token(SyntaxKind.SemicolonToken)));
+                                   Identifier("List"))
+                               .WithTypeArgumentList(
+                                   TypeArgumentList(
+                                       SingletonSeparatedList<TypeSyntax>(
+                                           PredefinedType(
+                                               Token(SyntaxKind.StringKeyword))))), Identifier(Meta.ExplodesVarName))
+           .WithExpressionBody(ArrowExpressionClause(CollectionExpression(SeparatedList<CollectionElementSyntax>(explodeExpressions))))
+           .WithModifiers(TokenList(modifiers))
+           .WithSemicolonToken(Token(SyntaxKind.SemicolonToken)));
+
+        members.Add(PropertyDeclaration(GenericName(
+                                     Identifier("List"))
+                                 .WithTypeArgumentList(
+                                     TypeArgumentList(
+                                         SingletonSeparatedList<TypeSyntax>(
+                                             PredefinedType(
+                                                 Token(SyntaxKind.StringKeyword))))), Identifier(Meta.FieldNamesVarName))
+             .WithExpressionBody(ArrowExpressionClause(CollectionExpression(SeparatedList<CollectionElementSyntax>(fieldNameExpressions))))
+             .WithModifiers(TokenList(modifiers))
+             .WithSemicolonToken(Token(SyntaxKind.SemicolonToken)));
         members.Add(PropertyDeclaration(GenericName(
                                     Identifier("List"))
                                 .WithTypeArgumentList(
@@ -547,16 +549,160 @@ public class MetaDataGenerator
             .WithExpressionBody(ArrowExpressionClause(CollectionExpression(SeparatedList<CollectionElementSyntax>(fetchTextExpressions))))
             .WithModifiers(TokenList(modifiers))
             .WithSemicolonToken(Token(SyntaxKind.SemicolonToken)));
+
+        //HandleDirectSimpleProperties(members, modifiers);
+        //HandleDirectComplexProperties(members, modifiers);
+
+        void HandleDirectComplexProperties(List<MemberDeclarationSyntax> members, List<SyntaxToken> modifiers)
+        {
+            List<SyntaxNodeOrToken> explodeExpressions = [];
+            foreach (var field in complexMembers)
+            {
+                string text = ":YES";
+                ClassPropertyData prop = field;
+                List<InterpolatedStringContentSyntax> nodes =
+                    [
+                        Interpolation(IdentifierName($"{prop.Name}.{(prop.IsComplex ? Meta.IdentifierNameVarName:"Name" )}")),
+                        //InterpolatedStringText()
+                        //.WithTextToken(Token(TriviaList(), SyntaxKind.InterpolatedStringTextToken, path, path, TriviaList()))
+                    ];
+                var explodeCondition = prop.TDLCollectionData?.ExplodeCondition;
+                if (explodeCondition == null)
+                {
+                    nodes.Add(InterpolatedStringText()
+                        .WithTextToken(Token(TriviaList(), SyntaxKind.InterpolatedStringTextToken, text, text, TriviaList())));
+                }
+                else
+                {
+                    text = $":{string.Format(explodeCondition, prop.TDLFieldData?.Set ?? prop.Name)}";
+                    nodes.Add(InterpolatedStringText()
+                        .WithTextToken(Token(TriviaList(), SyntaxKind.InterpolatedStringTextToken, text, text, TriviaList())));
+                    // nodes.Add(Interpolation(CreateFormatExpression(explodeCondition, varname)));
+                }
+                InterpolatedStringExpressionSyntax interpolatedStringExpressionSyntax = InterpolatedStringExpression(Token(SyntaxKind.InterpolatedStringStartToken))
+              .WithContents(List(nodes));
+                explodeExpressions.SafeAddExpressionElement(interpolatedStringExpressionSyntax);
+            }
+            members.Add(PropertyDeclaration(GenericName(
+                                   Identifier("List"))
+                               .WithTypeArgumentList(
+                                   TypeArgumentList(
+                                       SingletonSeparatedList<TypeSyntax>(
+                                           PredefinedType(
+                                               Token(SyntaxKind.StringKeyword))))), Identifier(Meta.ExplodesVarName))
+           .WithExpressionBody(ArrowExpressionClause(CollectionExpression(SeparatedList<CollectionElementSyntax>(explodeExpressions))))
+           .WithModifiers(TokenList(modifiers))
+           .WithSemicolonToken(Token(SyntaxKind.SemicolonToken)));
+        }
+
+        void HandleDirectSimpleProperties(List<MemberDeclarationSyntax> members,
+                                          List<SyntaxToken> modifiers)
+        {
+            List<SyntaxNodeOrToken> fieldNameExpressions = [];
+            List<SyntaxNodeOrToken> fetchTextExpressions = [];
+            foreach (var simpleProp in simpleMembers)
+            {
+                //var prop = simpleField.Value;
+                if (!simpleProp.IsList)
+                {
+                    fieldNameExpressions.SafeAddExpressionElement(MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression,
+                                                                              IdentifierName(simpleProp.Name),
+                                                                              IdentifierName("Name")));
+                }
+                if (!_modelData.IsTallyComplexObject)
+                {
+                    fetchTextExpressions.SafeAddExpressionElement(MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression,
+                                                                              IdentifierName(simpleProp.Name),
+                                                                              IdentifierName("FetchText")));
+                }
+
+            }
+
+            if (_modelData.IsTallyComplexObject)
+            {
+                fetchTextExpressions.SafeAddExpressionElement(IdentifierName("_pathPrefix"));
+            }
+            members.Add(PropertyDeclaration(GenericName(
+                                        Identifier("List"))
+                                    .WithTypeArgumentList(
+                                        TypeArgumentList(
+                                            SingletonSeparatedList<TypeSyntax>(
+                                                PredefinedType(
+                                                    Token(SyntaxKind.StringKeyword))))), Identifier(Meta.FieldNamesVarName))
+                .WithExpressionBody(ArrowExpressionClause(CollectionExpression(SeparatedList<CollectionElementSyntax>(fieldNameExpressions))))
+                .WithModifiers(TokenList(modifiers))
+                .WithSemicolonToken(Token(SyntaxKind.SemicolonToken)));
+            members.Add(PropertyDeclaration(GenericName(
+                                        Identifier("List"))
+                                    .WithTypeArgumentList(
+                                        TypeArgumentList(
+                                            SingletonSeparatedList<TypeSyntax>(
+                                                PredefinedType(
+                                                    Token(SyntaxKind.StringKeyword))))), Identifier("FetchText"))
+                .WithExpressionBody(ArrowExpressionClause(CollectionExpression(SeparatedList<CollectionElementSyntax>(fetchTextExpressions))))
+                .WithModifiers(TokenList(modifiers))
+                .WithSemicolonToken(Token(SyntaxKind.SemicolonToken)));
+        }
+
+        void AddExplodes(string idetifierVarName, string name, string? explodeCondition, string? set = null)
+        {
+            string text = ":YES";
+
+            List<InterpolatedStringContentSyntax> nodes =
+                [
+                    Interpolation(IdentifierName($"{name}.{idetifierVarName}")),
+                        //InterpolatedStringText()
+                        //.WithTextToken(Token(TriviaList(), SyntaxKind.InterpolatedStringTextToken, path, path, TriviaList()))
+                    ];
+            if (explodeCondition == null)
+            {
+                nodes.Add(InterpolatedStringText()
+                    .WithTextToken(Token(TriviaList(), SyntaxKind.InterpolatedStringTextToken, text, text, TriviaList())));
+            }
+            else
+            {
+                text = $":{string.Format(explodeCondition, set ?? name)}";
+                nodes.Add(InterpolatedStringText()
+                    .WithTextToken(Token(TriviaList(), SyntaxKind.InterpolatedStringTextToken, text, text, TriviaList())));
+                // nodes.Add(Interpolation(CreateFormatExpression(explodeCondition, varname)));
+            }
+            InterpolatedStringExpressionSyntax interpolatedStringExpressionSyntax = InterpolatedStringExpression(Token(SyntaxKind.InterpolatedStringStartToken))
+          .WithContents(List(nodes));
+            explodeExpressions.SafeAddExpressionElement(interpolatedStringExpressionSyntax);
+        }
     }
 
-    private void AddITallyRequestableRequiredMembers(List<MemberDeclarationSyntax> members, List<SyntaxToken> modifiers)
-    {
-        AddMembersRelatedToAllMembersForRequestableObjectMeta(members, modifiers);
 
+
+    private void AddITallyRequestableRequiredMembers(List<MemberDeclarationSyntax> members,
+                                                     List<SyntaxToken> modifiers)
+    {
+        AddMembersRelatedToAllUniqueMembersForRequestableObjectMeta(members, modifiers);
+        AddMembersRelatedToAllMembersForRequestableObjectMeta(members, modifiers);
         AddDefaultMembersForRequestableObjectMeta(members, modifiers);
     }
-
-    private void AddMembersRelatedToAllMembersForRequestableObjectMeta(List<MemberDeclarationSyntax> members, List<SyntaxToken> modifiers)
+    private void AddMembersRelatedToAllMembersForRequestableObjectMeta(List<MemberDeclarationSyntax> members,
+                                                                   List<SyntaxToken> modifiers)
+    {
+        //List<SyntaxNodeOrToken> allFetchExpressions = [SpreadElement(IdentifierName($"FetchText"))];
+        //foreach (var item in _modelData.AllMembers)
+        //{
+        //    if (!item.Value.IsComplex) continue;
+        //    allFetchExpressions.SafeAdd(SpreadElement(IdentifierName($"{item.Key}.FetchText")));
+        //}
+        //members.Add(PropertyDeclaration(GenericName(
+        //                       Identifier("List"))
+        //                   .WithTypeArgumentList(
+        //                       TypeArgumentList(
+        //                           SingletonSeparatedList<TypeSyntax>(
+        //                               PredefinedType(Token(SyntaxKind.StringKeyword))))),
+        //                               Identifier("AllFetchList_new"))
+        //   .WithModifiers(TokenList(modifiers))
+        //   .WithExpressionBody(ArrowExpressionClause(CollectionExpression(SeparatedList<CollectionElementSyntax>(allFetchExpressions))))
+        //   .WithSemicolonToken(Token(SyntaxKind.SemicolonToken)));
+    }
+    private void AddMembersRelatedToAllUniqueMembersForRequestableObjectMeta(List<MemberDeclarationSyntax> members,
+                                                                       List<SyntaxToken> modifiers)
     {
         var allMembers = _modelData.AllUniqueMembers.Values;
         List<SyntaxNodeOrToken> fieldExpressions = [];
@@ -572,16 +718,26 @@ public class MetaDataGenerator
             var name = propertyData.Name;
             if (propertyData.IsComplex || propertyData.IsList)
             {
-                PartExpressions.SafeAddExpressionElement(IdentifierName($"{field.Path}{name}Part"));
-                LineExpressions.SafeAddExpressionElement(IdentifierName($"{field.Path}{name}Line"));
-                if (propertyData.IsComplex)
+                AddToExprresions(name);
+                foreach (var XMLData in propertyData.XMLData)
                 {
-                    allFetchExpressions.SafeAdd(SpreadElement(IdentifierName($"{field.Path}{name}.FetchText")));
+                    if (XMLData.ClassData == null) continue;
+                    AddToExprresions($"{name}.{XMLData.ClassData.Name}", true);
                 }
-                else
+                void AddToExprresions(string varname, bool removedot = false)
                 {
-                    fieldExpressions.SafeAddExpressionElement(IdentifierName($"{field.Path}{name}"));
+                    PartExpressions.SafeAddExpressionElement(IdentifierName($"{field.Path}{(removedot ? varname.Replace(".", "") : varname)}Part"));
+                    LineExpressions.SafeAddExpressionElement(IdentifierName($"{field.Path}{(removedot ? varname.Replace(".", "") : varname)}Line"));
+                    if (!propertyData.IsComplex)
+                    {
+                        fieldExpressions.SafeAddExpressionElement(IdentifierName($"{field.Path}{varname}"));
+                    }
+                    else
+                    {
+                        allFetchExpressions.SafeAdd(SpreadElement(IdentifierName($"{field.Path}{varname}.FetchText")));
+                    }
                 }
+
 
                 continue;
             }
@@ -643,7 +799,8 @@ public class MetaDataGenerator
            .WithSemicolonToken(Token(SyntaxKind.SemicolonToken)));
     }
 
-    private static void AddDefaultMembersForRequestableObjectMeta(List<MemberDeclarationSyntax> members, List<SyntaxToken> modifiers)
+    private static void AddDefaultMembersForRequestableObjectMeta(List<MemberDeclarationSyntax> members,
+                                                                  List<SyntaxToken> modifiers)
     {
         List<SyntaxNodeOrToken> partConstructorArgs = [];
         partConstructorArgs.SafeAddArgument(IdentifierName(Meta.IdentifierNameVarName));
@@ -672,7 +829,7 @@ public class MetaDataGenerator
         List<SyntaxNodeOrToken> collectionConstructorArgs = [];
         collectionConstructorArgs.SafeAddArgument(IdentifierName(Meta.CollectionNameVarName));
         collectionConstructorArgs.SafeAddArgument(IdentifierName(Meta.ObjectTypeVarName));
-        collectionConstructorArgs.SafeAdd(Argument(IdentifierName(Meta.AllFetchTextVarName)).WithNameColon(NameColon(IdentifierName("nativeFields"))));
+        collectionConstructorArgs.SafeAdd(Argument(IdentifierName("FetchText")).WithNameColon(NameColon(IdentifierName("nativeFields"))));
         members.Add(PropertyDeclaration(GetGlobalNameforType(CollectionFullTypeName),
                                         Identifier(Meta.DefaultCollectionVarName))
             .WithModifiers(TokenList(modifiers))
@@ -725,6 +882,154 @@ public class MetaDataGenerator
                 }))
           })).NormalizeWhitespace().ToFullString();
         _context.AddSource($"{_modelData.Name}_{_modelData.Namespace}.g.cs", unit);
+    }
+
+    private void GenerateMultiXMLMetaData(ClassPropertyData val,
+                                          SourceProductionContext context,
+                                          CancellationToken token,
+                                          List<MemberDeclarationSyntax> mainMembers)
+    {
+
+        var className = GetMultiXMLDataMetaClassName(val);
+        List<UsingDirectiveSyntax> usings = [UsingDirective(IdentifierName(ExtensionsNameSpace))];
+        ClassDeclarationSyntax classDeclarationSyntax = ClassDeclaration(className)
+                .WithModifiers(TokenList([Token(
+                            TriviaList(
+                                Comment($@"/*
+* Generated based on Property {_modelData.FullName}.{val.Name}
+*/")),
+                            SyntaxKind.PublicKeyword,
+                            TriviaList())]));
+
+        var unit = CompilationUnit()
+          .WithUsings(List(usings))
+          .WithMembers(List(new MemberDeclarationSyntax[]
+          {
+                FileScopedNamespaceDeclaration(IdentifierName($"{_modelData.Namespace}.Meta"))
+                .WithNamespaceKeyword(Token(TriviaList(Trivia(NullableDirectiveTrivia(Token(SyntaxKind.EnableKeyword),true))),
+                                            SyntaxKind.NamespaceKeyword,
+                                            TriviaList()))
+                .WithMembers(List(new MemberDeclarationSyntax[]
+                {
+                    classDeclarationSyntax
+                    .WithMembers(List(GetMultiXMLMetaClassMembers()))
+                    .WithBaseList(BaseList(SingletonSeparatedList<BaseTypeSyntax>(SimpleBaseType(GetGlobalNameforType($"{val.ClassData!.Namespace}.Meta.{val.ClassData.Name}Meta")))))
+                }))
+          })).NormalizeWhitespace().ToFullString();
+        _context.AddSource($"MultiXMLMeta.{_modelData.Name}.{val.Name}_{_modelData.Namespace}.g.cs", unit);
+
+        IEnumerable<MemberDeclarationSyntax> GetMultiXMLMetaClassMembers()
+        {
+            List<MemberDeclarationSyntax> members = [];
+            members.Add(FieldDeclaration(VariableDeclaration(PredefinedType(Token(SyntaxKind.StringKeyword)))
+                .WithVariables(SingletonSeparatedList<VariableDeclaratorSyntax>(
+                                        VariableDeclarator(
+                                            Identifier(MultiXMLMeta.OriginalPrefixVarName))))));
+            members.Add(GetSecondConstructor(true, className, true));
+            List<SyntaxNodeOrToken> fetchTextExpressions = [];
+            fetchTextExpressions.SafeAdd(SpreadElement(IdentifierName("base.FetchText")));
+            foreach (var xMLData in val.XMLData)
+            {
+                token.ThrowIfCancellationRequested();
+                if (xMLData.Symbol == null || xMLData.ClassData == null) continue;
+                AddPartAndLine(val, mainMembers, true, xMLData);
+                List<SyntaxNodeOrToken> constructorArgs = [];
+                constructorArgs.SafeAddArgument(CreateStringLiteral(xMLData.FieldName!));
+                constructorArgs.SafeAdd(Argument(InvocationExpression(IdentifierName(MultiXMLMeta.GeneratePathMethodName))
+                    .WithArgumentList(ArgumentList(SeparatedList([Argument(CreateStringLiteral(xMLData.ClassData.TDLCollectionData!.CollectionName!))]))))
+                    .WithNameColon(NameColon(IdentifierName(Meta.Parameters.PathPrefix))));
+
+                members.Add(PropertyDeclaration(GetGlobalNameforType($"{xMLData.ClassData.Namespace}.Meta.{xMLData.ClassData.MetaName}"), xMLData.ClassData.Name)
+                    .WithModifiers(TokenList(Token(SyntaxKind.PublicKeyword)))
+                    .WithExpressionBody(ArrowExpressionClause(CreateImplicitObjectExpression(constructorArgs)))
+                    .WithSemicolonToken(Token(SyntaxKind.SemicolonToken)));
+
+                fetchTextExpressions.SafeAdd(SpreadElement(IdentifierName($"{xMLData.ClassData.Name}.FetchText")));
+            }
+            members.Add(PropertyDeclaration(QualifiedName(GetGlobalNameforType(Constants.CollectionsNameSpace), GenericName(ListClassName)
+                .WithTypeArgumentList(TypeArgumentList(SeparatedList<TypeSyntax>(new SyntaxNodeOrToken[]{
+                                                        PredefinedType(
+                                                            Token(SyntaxKind.StringKeyword)) })))), "FetchText")
+                 .WithModifiers(TokenList([Token(SyntaxKind.PublicKeyword), (Token(SyntaxKind.NewKeyword))]))
+                 .WithExpressionBody(ArrowExpressionClause(CollectionExpression(SeparatedList<CollectionElementSyntax>(fetchTextExpressions))))
+                 .WithSemicolonToken(Token(SyntaxKind.SemicolonToken)));
+            members.Add(MethodDeclaration(PredefinedType(Token(SyntaxKind.StringKeyword)),
+                                          Identifier(MultiXMLMeta.GeneratePathMethodName))
+                           .WithParameterList(
+                                ParameterList(
+                                    SingletonSeparatedList<ParameterSyntax>(
+                                        Parameter(
+                                            Identifier("suffix"))
+                                        .WithType(
+                                            PredefinedType(
+                                                Token(SyntaxKind.StringKeyword))))))
+                             .WithBody(
+                                Block(
+                                    SingletonList<StatementSyntax>(
+                                        ReturnStatement(
+                                            ConditionalExpression(
+                                                InvocationExpression(
+                                                    MemberAccessExpression(
+                                                        SyntaxKind.SimpleMemberAccessExpression,
+                                                        PredefinedType(
+                                                            Token(SyntaxKind.StringKeyword)),
+                                                        IdentifierName("IsNullOrEmpty")))
+                                                .WithArgumentList(
+                                                    ArgumentList(
+                                                        SingletonSeparatedList<ArgumentSyntax>(
+                                                            Argument(
+                                                                IdentifierName(MultiXMLMeta.OriginalPrefixVarName))))),
+                                                IdentifierName("suffix"),
+                                                InterpolatedStringExpression(
+                                                    Token(SyntaxKind.InterpolatedStringStartToken))
+                                                .WithContents(
+                                                    List<InterpolatedStringContentSyntax>(
+                                                        [
+                                                            Interpolation(
+                                                                IdentifierName(MultiXMLMeta.OriginalPrefixVarName)),
+                                                            InterpolatedStringText()
+                                                            .WithTextToken(
+                                                                Token(
+                                                                    TriviaList(),
+                                                                    SyntaxKind.InterpolatedStringTextToken,
+                                                                    ".",
+                                                                    ".",
+                                                                    TriviaList())),
+                                                            Interpolation(
+                                                                IdentifierName("suffix"))])))))))
+                           );
+
+
+
+            //List<SyntaxNodeOrToken> dictIntializerArgs = [];
+            //List<SyntaxNodeOrToken> intializerArgs = [];
+
+            //intializerArgs.SafeAdd(InitializerExpression(SyntaxKind.ComplexElementInitializerExpression,
+            //                                              SeparatedList<ExpressionSyntax>(new SyntaxNodeOrToken[]
+            //                                              {
+            //                                                  CreateStringLiteral(val.ClassData!.FullName),
+            //                                                  Token(SyntaxKind.CommaToken),
+            //                                                 IdentifierName("this")
+            //                                              })));
+
+            //mainMembers.Add(PropertyDeclaration(QualifiedName(GetGlobalNameforType(CollectionsNameSpace),
+            //   GenericName(DictionaryClassName)
+            //   .WithTypeArgumentList(TypeArgumentList(SeparatedList<TypeSyntax>(new SyntaxNodeOrToken[]{
+            //                                            PredefinedType(
+            //                                                Token(SyntaxKind.StringKeyword)),
+            //                                            Token(SyntaxKind.CommaToken),
+            //                                            GetGlobalNameforType($"{val.ClassData!.Namespace}.Meta.{val.ClassData.MetaName}")})
+            //   ))), Identifier(Constants.MultiXMLMeta.MetasVarName))
+            //   .WithExpressionBody(ArrowExpressionClause(CreateImplicitObjectExpression([], intializerArgs)))
+            //   .WithSemicolonToken(Token(SyntaxKind.SemicolonToken)));
+
+            return members;
+        }
+    }
+
+    private string GetMultiXMLDataMetaClassName(ClassPropertyData val)
+    {
+        return $"{_modelData!.Name}{val.Name}MultiXMLMeta";
     }
 
 

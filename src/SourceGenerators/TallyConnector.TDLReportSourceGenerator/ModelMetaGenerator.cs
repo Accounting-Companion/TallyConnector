@@ -7,7 +7,10 @@ public class ModelMetaGenerator : IIncrementalGenerator
 {
     public void Initialize(IncrementalGeneratorInitializationContext context)
     {
-        //System.Diagnostics.Debugger.Launch();
+        //if (!System.Diagnostics.Debugger.IsAttached)
+        //{
+        //    System.Diagnostics.Debugger.Launch();
+        //}
         IncrementalValueProvider<string> rootNameSpace = context.AnalyzerConfigOptionsProvider
             .Select(static (provider, _) =>
             {
