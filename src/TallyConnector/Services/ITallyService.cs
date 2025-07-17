@@ -83,19 +83,19 @@ public interface ITallyService : IBaseTallyService
 //     */
 //    #region Bulk GetPaginated - Methods 
 
-//    /// <inheritdoc cref="GetCurrenciesAsync(RequestOptions,CancellationToken)" />
+//    /// <inheritdoc cref="GetCurrenciesAsync(RequestOptionsBuilder,CancellationToken)" />
 //    Task<PaginatedResponse<CurrencyType>?> GetCurrenciesAsync<CurrencyType>(PaginatedRequestOptions ReqOptions, CancellationToken token = default) where CurrencyType : Currency;
 
-//    /// <inheritdoc cref="GetCurrenciesAsync(RequestOptions,CancellationToken)" />
+//    /// <inheritdoc cref="GetCurrenciesAsync(RequestOptionsBuilder,CancellationToken)" />
 //    Task<PaginatedResponse<Currency>?> GetCurrenciesAsync(PaginatedRequestOptions ReqOptions, CancellationToken token = default);
 
-//    /// <inheritdoc cref="GetGroupsAsync(RequestOptions,CancellationToken)" />
+//    /// <inheritdoc cref="GetGroupsAsync(RequestOptionsBuilder,CancellationToken)" />
 //    Task<PaginatedResponse<GroupType>?> GetGroupsAsync<GroupType>(PaginatedRequestOptions ReqOptions, CancellationToken token = default) where GroupType : Group;
 
-//    /// <inheritdoc cref="GetGroupsAsync(RequestOptions,CancellationToken)" />
+//    /// <inheritdoc cref="GetGroupsAsync(RequestOptionsBuilder,CancellationToken)" />
 //    Task<PaginatedResponse<Group>?> GetGroupsAsync(PaginatedRequestOptions ReqOptions, CancellationToken token = default);
 
-//    /// <inheritdoc cref="GetLedgersAsync(RequestOptions,CancellationToken)" />
+//    /// <inheritdoc cref="GetLedgersAsync(RequestOptionsBuilder,CancellationToken)" />
 //    Task<PaginatedResponse<LedgerType>?> GetLedgersAsync<LedgerType>(PaginatedRequestOptions ReqOptions, CancellationToken token = default) where LedgerType : Ledger;
 
 //    /// <summary>
@@ -105,26 +105,26 @@ public interface ITallyService : IBaseTallyService
 //    /// <returns></returns>
 //    Task<PaginatedResponse<Ledger>?> GetLedgersAsync(PaginatedRequestOptions ReqOptions, CancellationToken token = default);
 
-//    /// <inheritdoc cref="GetVoucherTypesAsync(RequestOptions,CancellationToken)" />
+//    /// <inheritdoc cref="GetVoucherTypesAsync(RequestOptionsBuilder,CancellationToken)" />
 //    Task<PaginatedResponse<VChTypeType>?> GetVoucherTypesAsync<VChTypeType>(PaginatedRequestOptions ReqOptions, CancellationToken token = default) where VChTypeType : VoucherType;
 
-//    /// <inheritdoc cref="GetVoucherTypesAsync(RequestOptions,CancellationToken)" />
+//    /// <inheritdoc cref="GetVoucherTypesAsync(RequestOptionsBuilder,CancellationToken)" />
 //    Task<PaginatedResponse<VoucherType>?> GetVoucherTypesAsync(PaginatedRequestOptions ReqOptions, CancellationToken token = default);
-//    /// <inheritdoc cref="GetCostCategoriesAsync(RequestOptions,CancellationToken)" />
+//    /// <inheritdoc cref="GetCostCategoriesAsync(RequestOptionsBuilder,CancellationToken)" />
 //    Task<PaginatedResponse<CostCategoryType>?> GetCostCategoriesAsync<CostCategoryType>(PaginatedRequestOptions ReqOptions, CancellationToken token = default) where CostCategoryType : CostCategory;
-//    /// <inheritdoc cref="GetCostCategoriesAsync(RequestOptions,CancellationToken)" />
+//    /// <inheritdoc cref="GetCostCategoriesAsync(RequestOptionsBuilder,CancellationToken)" />
 //    Task<PaginatedResponse<CostCategory>?> GetCostCategoriesAsync(PaginatedRequestOptions ReqOptions, CancellationToken token = default);
 
-//    /// <inheritdoc cref="GetCostCentersAsync(RequestOptions,CancellationToken)" />
+//    /// <inheritdoc cref="GetCostCentersAsync(RequestOptionsBuilder,CancellationToken)" />
 //    Task<PaginatedResponse<CostCentreType>?> GetCostCentersAsync<CostCentreType>(PaginatedRequestOptions ReqOptions, CancellationToken token = default) where CostCentreType : CostCentre;
 
-//    /// <inheritdoc cref="GetCostCentersAsync(RequestOptions,CancellationToken)" />
+//    /// <inheritdoc cref="GetCostCentersAsync(RequestOptionsBuilder,CancellationToken)" />
 //    Task<PaginatedResponse<CostCentre>?> GetCostCentersAsync(PaginatedRequestOptions ReqOptions, CancellationToken token = default);
 
-//    /// <inheritdoc cref="GetTaxUnitsAsync(RequestOptions,CancellationToken)" />
+//    /// <inheritdoc cref="GetTaxUnitsAsync(RequestOptionsBuilder,CancellationToken)" />
 //    Task<PaginatedResponse<TaxUnitType>?> GetTaxUnitsAsync<TaxUnitType>(PaginatedRequestOptions ReqOptions, CancellationToken token = default) where TaxUnitType : TaxUnit;
 
-//    /// <inheritdoc cref="GetTaxUnitsAsync(RequestOptions,CancellationToken)" />
+//    /// <inheritdoc cref="GetTaxUnitsAsync(RequestOptionsBuilder,CancellationToken)" />
 //    Task<PaginatedResponse<TaxUnit>?> GetTaxUnitsAsync(PaginatedRequestOptions ReqOptions, CancellationToken token = default);
 
 //    #endregion
@@ -138,8 +138,8 @@ public interface ITallyService : IBaseTallyService
 
 //    /// <typeparam name="CurrencyType">type of currency</typeparam>
 //    /// <returns cref="List{CurrencyType}"></returns>
-//    /// <inheritdoc cref="GetCurrenciesAsync(RequestOptions,CancellationToken)" />
-//    Task<List<CurrencyType>?> GetCurrenciesAsync<CurrencyType>(RequestOptions? ReqOptions = null, CancellationToken token = default) where CurrencyType : Currency;
+//    /// <inheritdoc cref="GetCurrenciesAsync(RequestOptionsBuilder,CancellationToken)" />
+//    Task<List<CurrencyType>?> GetCurrenciesAsync<CurrencyType>(RequestOptionsBuilder? ReqOptions = null, CancellationToken token = default) where CurrencyType : Currency;
 
 //    /// <summary>
 //    /// Gets All Currencies
@@ -147,68 +147,68 @@ public interface ITallyService : IBaseTallyService
 //    /// <param name="ReqOptions">options to configure this request</param>
 //    /// <param name="token"></param>
 //    /// <returns cref="List{Currency}">List of Currencies</returns>
-//    Task<List<Currency>?> GetCurrenciesAsync(RequestOptions? ReqOptions = null, CancellationToken token = default);
+//    Task<List<Currency>?> GetCurrenciesAsync(RequestOptionsBuilder? ReqOptions = null, CancellationToken token = default);
 
-//    /// <inheritdoc cref="GetGroupsAsync(RequestOptions,CancellationToken)" />
-//    Task<List<GroupType>?> GetGroupsAsync<GroupType>(RequestOptions? ReqOptions = null, CancellationToken token = default) where GroupType : Group;
+//    /// <inheritdoc cref="GetGroupsAsync(RequestOptionsBuilder,CancellationToken)" />
+//    Task<List<GroupType>?> GetGroupsAsync<GroupType>(RequestOptionsBuilder? ReqOptions = null, CancellationToken token = default) where GroupType : Group;
 
 //    /// <summary>
 //    /// Gets all Groups
 //    /// </summary>
 //    /// <param name="ReqOptions">options to configure this request</param>
 //    /// <returns></returns>
-//    Task<List<Group>?> GetGroupsAsync(RequestOptions? ReqOptions = null, CancellationToken token = default);
+//    Task<List<Group>?> GetGroupsAsync(RequestOptionsBuilder? ReqOptions = null, CancellationToken token = default);
 
-//    /// <inheritdoc cref="GetLedgersAsync(RequestOptions,CancellationToken)" />
-//    Task<List<LedgerType>?> GetLedgersAsync<LedgerType>(RequestOptions? ReqOptions = null, CancellationToken token = default) where LedgerType : Ledger;
+//    /// <inheritdoc cref="GetLedgersAsync(RequestOptionsBuilder,CancellationToken)" />
+//    Task<List<LedgerType>?> GetLedgersAsync<LedgerType>(RequestOptionsBuilder? ReqOptions = null, CancellationToken token = default) where LedgerType : Ledger;
 //    /// <summary>
 //    /// Gets all Ledgers
 //    /// </summary>
 //    /// <param name="ReqOptions">options to configure this request</param>
 //    /// <param name="token"></param>
 //    /// <returns></returns>
-//    Task<List<Ledger>?> GetLedgersAsync(RequestOptions? ReqOptions = null, CancellationToken token = default);
+//    Task<List<Ledger>?> GetLedgersAsync(RequestOptionsBuilder? ReqOptions = null, CancellationToken token = default);
 
-//    /// <inheritdoc cref="GetVoucherTypesAsync(RequestOptions,CancellationToken)" />
-//    Task<List<VChTypeType>?> GetVoucherTypesAsync<VChTypeType>(RequestOptions? ReqOptions = null, CancellationToken token = default) where VChTypeType : VoucherType;
+//    /// <inheritdoc cref="GetVoucherTypesAsync(RequestOptionsBuilder,CancellationToken)" />
+//    Task<List<VChTypeType>?> GetVoucherTypesAsync<VChTypeType>(RequestOptionsBuilder? ReqOptions = null, CancellationToken token = default) where VChTypeType : VoucherType;
 //    /// <summary>
 //    /// Gets all VoucherTypes
 //    /// </summary>
 //    /// <param name="ReqOptions">options to configure this request</param>
 //    /// <param name="token"></param>
 //    /// <returns></returns>
-//    Task<List<VoucherType>?> GetVoucherTypesAsync(RequestOptions? ReqOptions = null, CancellationToken token = default);
+//    Task<List<VoucherType>?> GetVoucherTypesAsync(RequestOptionsBuilder? ReqOptions = null, CancellationToken token = default);
 
-//    /// <inheritdoc cref="GetCostCategoriesAsync(RequestOptions,CancellationToken)" />
-//    Task<List<CostCategoryType>?> GetCostCategoriesAsync<CostCategoryType>(RequestOptions? ReqOptions = null, CancellationToken token = default) where CostCategoryType : CostCategory;
+//    /// <inheritdoc cref="GetCostCategoriesAsync(RequestOptionsBuilder,CancellationToken)" />
+//    Task<List<CostCategoryType>?> GetCostCategoriesAsync<CostCategoryType>(RequestOptionsBuilder? ReqOptions = null, CancellationToken token = default) where CostCategoryType : CostCategory;
 //    /// <summary>
 //    /// Gets all CostCategories
 //    /// </summary>
 //    /// <param name="ReqOptions">options to configure this request</param>
 //    /// <param name="token"></param>
 //    /// <returns></returns>
-//    Task<List<CostCategory>?> GetCostCategoriesAsync(RequestOptions? ReqOptions = null, CancellationToken token = default);
+//    Task<List<CostCategory>?> GetCostCategoriesAsync(RequestOptionsBuilder? ReqOptions = null, CancellationToken token = default);
 
-//    /// <inheritdoc cref="GetCostCentersAsync(RequestOptions,CancellationToken)" />
-//    Task<List<CostCentreType>?> GetCostCentersAsync<CostCentreType>(RequestOptions? ReqOptions = null, CancellationToken token = default) where CostCentreType : CostCentre;
+//    /// <inheritdoc cref="GetCostCentersAsync(RequestOptionsBuilder,CancellationToken)" />
+//    Task<List<CostCentreType>?> GetCostCentersAsync<CostCentreType>(RequestOptionsBuilder? ReqOptions = null, CancellationToken token = default) where CostCentreType : CostCentre;
 //    /// <summary>
 //    /// Gets all CostCentres
 //    /// </summary>
 //    /// <param name="ReqOptions">options to configure this request</param>
 //    /// <param name="token"></param>
 //    /// <returns></returns>
-//    Task<List<CostCentre>?> GetCostCentersAsync(RequestOptions? ReqOptions = null, CancellationToken token = default);
+//    Task<List<CostCentre>?> GetCostCentersAsync(RequestOptionsBuilder? ReqOptions = null, CancellationToken token = default);
 
 
-//    /// <inheritdoc cref="GetTaxUnitsAsync(RequestOptions,CancellationToken)" />
-//    Task<List<TaxUnitType>?> GetTaxUnitsAsync<TaxUnitType>(RequestOptions? ReqOptions = null, CancellationToken token = default) where TaxUnitType : TaxUnit;
+//    /// <inheritdoc cref="GetTaxUnitsAsync(RequestOptionsBuilder,CancellationToken)" />
+//    Task<List<TaxUnitType>?> GetTaxUnitsAsync<TaxUnitType>(RequestOptionsBuilder? ReqOptions = null, CancellationToken token = default) where TaxUnitType : TaxUnit;
 //    /// <summary>
 //    /// Gets all CostCentres
 //    /// </summary>
 //    /// <param name="ReqOptions">options to configure this request</param>
 //    /// <param name="token"></param>
 //    /// <returns></returns>
-//    Task<List<TaxUnit>?> GetTaxUnitsAsync(RequestOptions? ReqOptions = null, CancellationToken token = default);
+//    Task<List<TaxUnit>?> GetTaxUnitsAsync(RequestOptionsBuilder? ReqOptions = null, CancellationToken token = default);
 
 
 //    #endregion
@@ -264,21 +264,21 @@ public interface ITallyService : IBaseTallyService
 //    /// <param name="ReqOptions"></param>
 //    /// <param name="token"></param>
 //    /// <returns></returns>
-//    Task<List<UnitType>?> GetUnitsAsync<UnitType>(RequestOptions? ReqOptions = null, CancellationToken token = default) where UnitType : Unit;
+//    Task<List<UnitType>?> GetUnitsAsync<UnitType>(RequestOptionsBuilder? ReqOptions = null, CancellationToken token = default) where UnitType : Unit;
 
-//    Task<List<Unit>?> GetUnitsAsync(RequestOptions? ReqOptions = null, CancellationToken token = default);
-//    Task<List<GodownType>?> GetGodownsAsync<GodownType>(RequestOptions? ReqOptions = null, CancellationToken token = default) where GodownType : Godown;
+//    Task<List<Unit>?> GetUnitsAsync(RequestOptionsBuilder? ReqOptions = null, CancellationToken token = default);
+//    Task<List<GodownType>?> GetGodownsAsync<GodownType>(RequestOptionsBuilder? ReqOptions = null, CancellationToken token = default) where GodownType : Godown;
 
-//    Task<List<Godown>?> GetGodownsAsync(RequestOptions? ReqOptions = null, CancellationToken token = default);
-//    Task<List<StockCategoryType>?> GetStockCategoriesAsync<StockCategoryType>(RequestOptions? ReqOptions = null, CancellationToken token = default) where StockCategoryType : StockCategory;
+//    Task<List<Godown>?> GetGodownsAsync(RequestOptionsBuilder? ReqOptions = null, CancellationToken token = default);
+//    Task<List<StockCategoryType>?> GetStockCategoriesAsync<StockCategoryType>(RequestOptionsBuilder? ReqOptions = null, CancellationToken token = default) where StockCategoryType : StockCategory;
 
-//    Task<List<StockCategory>?> GetStockCategoriesAsync(RequestOptions? ReqOptions = null, CancellationToken token = default);
-//    Task<List<StockGroupType>?> GetStockGroupsAsync<StockGroupType>(RequestOptions? ReqOptions = null, CancellationToken token = default) where StockGroupType : StockGroup;
+//    Task<List<StockCategory>?> GetStockCategoriesAsync(RequestOptionsBuilder? ReqOptions = null, CancellationToken token = default);
+//    Task<List<StockGroupType>?> GetStockGroupsAsync<StockGroupType>(RequestOptionsBuilder? ReqOptions = null, CancellationToken token = default) where StockGroupType : StockGroup;
 
-//    Task<List<StockGroup>?> GetStockGroupsAsync(RequestOptions? ReqOptions = null, CancellationToken token = default);
-//    Task<List<StckItmType>?> GetStockItemsAsync<StckItmType>(RequestOptions? ReqOptions = null, CancellationToken token = default) where StckItmType : StockItem;
+//    Task<List<StockGroup>?> GetStockGroupsAsync(RequestOptionsBuilder? ReqOptions = null, CancellationToken token = default);
+//    Task<List<StckItmType>?> GetStockItemsAsync<StckItmType>(RequestOptionsBuilder? ReqOptions = null, CancellationToken token = default) where StckItmType : StockItem;
 
-//    Task<List<StockItem>?> GetStockItemsAsync(RequestOptions? ReqOptions = null, CancellationToken token = default);
+//    Task<List<StockItem>?> GetStockItemsAsync(RequestOptionsBuilder? ReqOptions = null, CancellationToken token = default);
 
 //    #endregion
 
@@ -309,8 +309,8 @@ public interface ITallyService : IBaseTallyService
 //    #endregion
 
 //    #region Bulk Get - Methods 
-//    Task<List<AtndTypeType>?> GetAttendanceTypesAsync<AtndTypeType>(RequestOptions? ReqOptions = null, CancellationToken token = default) where AtndTypeType : AttendanceType;
-//    Task<List<AttendanceType>?> GetAttendanceTypesAsync(RequestOptions? ReqOptions = null, CancellationToken token = default);
+//    Task<List<AtndTypeType>?> GetAttendanceTypesAsync<AtndTypeType>(RequestOptionsBuilder? ReqOptions = null, CancellationToken token = default) where AtndTypeType : AttendanceType;
+//    Task<List<AttendanceType>?> GetAttendanceTypesAsync(RequestOptionsBuilder? ReqOptions = null, CancellationToken token = default);
 
 //    #endregion
 
@@ -358,7 +358,7 @@ public interface ITallyService : IBaseTallyService
 //    Task<ObjType> GetObjectAsync<ObjType>(string lookupValue, MasterRequestOptions? requestOptions = null, CancellationToken token = default) where ObjType : TallyBaseObject, INamedTallyObject;
 //    Task<ObjType> GetObjectAsync<ObjType>(string lookupValue, VoucherRequestOptions? requestOptions = null, CancellationToken token = default) where ObjType : Voucher;
 //    Task<PaginatedResponse<ObjType>?> GetObjectsAsync<ObjType>(PaginatedRequestOptions? objectOptions = null, CancellationToken token = default) where ObjType : TallyBaseObject;
-//    Task<List<ObjType>> GetAllObjectsAsync<ObjType>(RequestOptions? objectOptions = null, IProgress<ReportProgressHelper>? progress = null, CancellationToken token = default) where ObjType : TallyBaseObject;
+//    Task<List<ObjType>> GetAllObjectsAsync<ObjType>(RequestOptionsBuilder? objectOptions = null, IProgress<ReportProgressHelper>? progress = null, CancellationToken token = default) where ObjType : TallyBaseObject;
 
 //    Task<ReturnType?> GetTDLReportAsync<ReportType, ReturnType>(DateFilterRequestOptions? requestOptions = null, string? requestType = null, CancellationToken token = default);
 //    Task<ReturnType?> GetTDLReportAsync<ReturnType>(DateFilterRequestOptions? requestOptions = null, CancellationToken token = default) where ReturnType : TallyBaseObject;

@@ -1,4 +1,5 @@
-﻿using TallyConnector.Core.Models;
+﻿using TallyConnector.Abstractions.Models;
+using TallyConnector.Core.Models;
 
 namespace TallyConnector.Core.Extensions;
 public static class EnveopeExtensions

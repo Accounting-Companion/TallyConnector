@@ -205,9 +205,9 @@ public class MetaDataGenerator
                 arguments.SafeAddArgument(InvocationExpression(IdentifierName("GeneratePath"))
                     .WithArgumentList(ArgumentList([Argument(CreateStringLiteral(path))])));
 
-                NameSyntax = IdentifierName(Constants.Models.Abstractions.PropertyMetaDataTypeName);
-                //.WithTypeArgumentList(TypeArgumentList(SeparatedList<TypeSyntax>(new SyntaxNodeOrToken[]{
-                //                                    IdentifierName(val.PropertyOriginalType.GetClassMetaName()) })));
+                NameSyntax = GenericName(Constants.Models.Abstractions.PropertyMetaDataTypeName)
+                .WithTypeArgumentList(TypeArgumentList(SeparatedList<TypeSyntax>(new SyntaxNodeOrToken[]{
+                                                    IdentifierName(val.PropertyOriginalType.GetClassMetaName()) })));
             }
             List<SyntaxToken> tokens = [Token(SyntaxKind.PublicKeyword)];
             if (val.IsOverridenProperty)
