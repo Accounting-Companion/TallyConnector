@@ -41,6 +41,7 @@ public class ModelTransformer
             classData.AllDirectMembers.AppendDict(classData.BaseData.AllDirectMembers);
             classData.AllMembers.AppendDict(classData.BaseData.AllMembers, prefixPath);
             classData.DefaultTDLFunctions.CopyFrom(classData.BaseData.DefaultTDLFunctions);
+            classData.IsBaseIRequestableObject = classData.BaseData.Symbol.CheckInterface(Constants.Models.Interfaces.TallyRequestableObjectInterfaceFullName);
         }
         await TransformMembers(classData, prefixPath, token);
         var values = classData.Members.Values;
@@ -116,6 +117,12 @@ public class ModelTransformer
                         var nestedSimpleOveriddenProperties = propertyData.OverridenProperty.ClassData.AllUniqueMembers.Values.Select(c => c.PropertyData.UniqueName);
                         classData.AllUniqueMembers.RemoveDict(nestedSimpleOveriddenProperties);
                     }
+                    foreach (var OverridenXmlData in propertyData.OverridenProperty.XMLData)
+                    {
+                        if(OverridenXmlData.ClassData == null) continue;
+                        var nestedSimpleOveriddenProperties = OverridenXmlData.ClassData.AllUniqueMembers.Values.Select(c => c.PropertyData.UniqueName);
+                        classData.AllUniqueMembers.RemoveDict(nestedSimpleOveriddenProperties);
+                    }
                 }
                 classData.AllUniqueMembers.RemoveDict([propertyData.OverridenProperty.UniqueName]);
 
@@ -160,6 +167,7 @@ public class ClassData : IClassAttributeTranfomable
         Symbol = symbol;
         IsEnum = Symbol.TypeKind == TypeKind.Enum;
         IsTallyComplexObject = symbol.CheckInterface(TallyComplexObjectInterfaceName);
+
     }
 
     public ClassData? BaseData { get; set; }
@@ -180,6 +188,7 @@ public class ClassData : IClassAttributeTranfomable
     public TDLCollectionData? TDLCollectionData { get; internal set; }
     public Dictionary<string, ClassPropertyData> AllDirectMembers { get; internal set; } = [];
     public Dictionary<string, ClassPropertyData> AllMembers { get; internal set; } = [];
+    public bool IsBaseIRequestableObject { get; internal set; }
 
     public override string ToString()
     {

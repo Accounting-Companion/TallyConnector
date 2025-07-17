@@ -46,24 +46,27 @@ public partial class GSTDetail
     [XmlElement(ElementName = "INCLUDEEXPFORSLABCALC")]
     public bool? IncludeExpForSlabCalc { get; set; }
 
-    //[XmlElement(ElementName = "STATEWISEDETAILS.LIST")]
-    //public List<StateWiseDetail>? StateWiseDetails { get; set; }
+    [XmlElement(ElementName = "STATEWISEDETAILS.LIST")]
+    
+    public List<StateWiseDetail>? StateWiseDetails { get; set; }
 
 }
 
 [XmlRoot(ElementName = "STATEWISEDETAILS.LIST")]
+[TDLCollection(CollectionName = "STATEWISEDETAILS", ExplodeCondition = "$$NUMITEMS:STATEWISEDETAILS>0")]
 public partial class StateWiseDetail
 {
     [XmlElement(ElementName = "STATENAME")]
     public string? StateName { get; set; }
 
-    [XmlElement(ElementName = "RATEDETAILS.LIST")]
+    [XmlElement(ElementName = "RATEDETAILS.LIST")]    
     public List<GSTRateDetail>? GSTRateDetails { get; set; }
 
 
 }
 
 [XmlRoot(ElementName = "RATEDETAILS.LIST")]
+[TDLCollection(CollectionName = "RATEDETAILS", ExplodeCondition = "$$NUMITEMS:RATEDETAILS>0")]
 public partial class GSTRateDetail
 {
     [XmlElement(ElementName = "GSTRATEDUTYHEAD")]

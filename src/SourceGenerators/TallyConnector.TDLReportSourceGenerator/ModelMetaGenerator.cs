@@ -68,7 +68,10 @@ public class ModelMetaGenerator : IIncrementalGenerator
             {
                 if (modelData.Symbol.CheckInterface(Constants.Models.Abstractions.IMetaGeneratedFullTypeName))
                 {
-                    continue;
+                    if (modelData.BaseData == null || !modelData.BaseData.Symbol.CheckInterface(Constants.Models.Abstractions.IMetaGeneratedFullTypeName))
+                    {
+                        continue;
+                    }
                 }
                 if (modelData.Symbol.ContainingAssembly.MetadataName != assembly.MetadataName)
                 {

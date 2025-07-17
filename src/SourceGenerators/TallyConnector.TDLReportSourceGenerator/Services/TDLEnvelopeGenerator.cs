@@ -7,12 +7,30 @@ public class TDLEnvelopeGenerator
     private readonly ClassData _modelData;
     private readonly SourceProductionContext context;
     private readonly CancellationToken token;
-
+    SyntaxToken[] modifiers;
     public TDLEnvelopeGenerator(ClassData modelData, SourceProductionContext context, CancellationToken token)
     {
         this._modelData = modelData;
         this.context = context;
         this.token = token;
+        if(_modelData.IsBaseIRequestableObject)
+        {
+            modifiers =
+            [
+                Token(SyntaxKind.PublicKeyword),
+                Token(SyntaxKind.NewKeyword),
+                Token(SyntaxKind.StaticKeyword)
+            ];
+        }
+        else
+        {
+            modifiers =
+            [
+                Token(SyntaxKind.PublicKeyword),
+                Token(SyntaxKind.StaticKeyword)
+            ];
+        }
+        
     }
     public void Generate()
     {
@@ -85,18 +103,21 @@ public class TDLEnvelopeGenerator
 
         statements.Add(CreateAssignFromPropertyStatement(tdlMsgVariableName, "Field", [Meta.FieldsPropPath]));
 
-        statements.Add(CreateAssignFromPropertyStatement(tdlMsgVariableName, "Collection", [], [Meta.DefaultCollectionPropPath]));
+        if (!(_modelData.TDLCollectionData?.Exclude ?? false))
+        {
+            statements.Add(CreateAssignFromPropertyStatement(tdlMsgVariableName, "Collection", [], [Meta.DefaultCollectionPropPath]));
 
-
+        }
         statements.Add(CreateAssignFromMethodStatement(tdlMsgVariableName, "Functions", [], [.. _modelData.DefaultTDLFunctions]));
 
 
-        statements.Add(CreateAssignFromPropertyStatement(tdlMsgVariableName, "NameSet", [Meta.NameSetsPropPath] ));
+        statements.Add(CreateAssignFromPropertyStatement(tdlMsgVariableName, "NameSet", [Meta.NameSetsPropPath]));
         statements.Add(ReturnStatement(IdentifierName(envelopeVariableName)));
+
 
         var methodDeclarationSyntax = MethodDeclaration(GetGlobalNameforType(RequestEnvelopeFullTypeName),
                                                         Identifier(string.Format(GetRequestEnvelopeMethodName, "")))
-            .WithModifiers(TokenList([Token(SyntaxKind.PublicKeyword), Token(SyntaxKind.StaticKeyword)]))
+            .WithModifiers(TokenList(modifiers))
             .WithBody(Block(statements));
         return methodDeclarationSyntax;
     }
@@ -207,11 +228,11 @@ public class TDLEnvelopeGenerator
                                 })))));
 
 
-      
+
         statements.Add(ReturnStatement(IdentifierName(xmlAttributeOverridesVarName)));
         var methodDeclarationSyntax = MethodDeclaration(GetGlobalNameforType(XmlAttributeOverridesClassName),
                                                        Identifier(string.Format(GetXMLAttributeOveridesMethodName, "")))
-           .WithModifiers(TokenList([Token(SyntaxKind.PublicKeyword), Token(SyntaxKind.StaticKeyword)]))
+           .WithModifiers(TokenList(modifiers))
            .WithParameterList(ParameterList())
            .WithBody(Block(statements));
         return methodDeclarationSyntax;
