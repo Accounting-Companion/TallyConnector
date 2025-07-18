@@ -226,8 +226,29 @@ public class TDLEnvelopeGenerator
                                          Argument(IdentifierName(_varAttrs)
                                          ),
                                 })))));
-
-
+        foreach (var keyValuePair in _modelData.OveriddenProperties)
+        {
+            var overridenProperty = keyValuePair.Value;
+            statements.Add(ExpressionStatement(InvocationExpression(MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression, IdentifierName(xmlAttributeOverridesVarName), IdentifierName("Add")))
+            .WithArgumentList(ArgumentList(
+                                SeparatedList<ArgumentSyntax>(new SyntaxNodeOrToken[]
+                                {
+                                         Argument(TypeOfExpression(GetGlobalNameforType(overridenProperty.ParentData.FullName))),
+                                          Token(SyntaxKind.CommaToken),
+                                         Argument(CreateStringLiteral(overridenProperty.Name)),
+                                          Token(SyntaxKind.CommaToken),
+                                         Argument(ObjectCreationExpression(GetGlobalNameforType(XmlAttributesClassName))
+                                         .WithArgumentList(ArgumentList())
+                                         .WithInitializer(InitializerExpression(
+                                                        SyntaxKind.ObjectInitializerExpression,
+                                                        SingletonSeparatedList<ExpressionSyntax>(
+                                                            AssignmentExpression(
+                                                                SyntaxKind.SimpleAssignmentExpression,
+                                                                IdentifierName("XmlIgnore"),
+                                                                LiteralExpression(
+                                                                    SyntaxKind.TrueLiteralExpression)))))),
+                                })))));
+        }
 
         statements.Add(ReturnStatement(IdentifierName(xmlAttributeOverridesVarName)));
         var methodDeclarationSyntax = MethodDeclaration(GetGlobalNameforType(XmlAttributeOverridesClassName),

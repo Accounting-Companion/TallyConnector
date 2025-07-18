@@ -42,6 +42,7 @@ public class ModelTransformer
             classData.AllMembers.AppendDict(classData.BaseData.AllMembers, prefixPath);
             classData.DefaultTDLFunctions.CopyFrom(classData.BaseData.DefaultTDLFunctions);
             classData.IsBaseIRequestableObject = classData.BaseData.Symbol.CheckInterface(Constants.Models.Interfaces.TallyRequestableObjectInterfaceFullName);
+            classData.OveriddenProperties.AppendDict(classData.BaseData.OveriddenProperties);
         }
         await TransformMembers(classData, prefixPath, token);
         var values = classData.Members.Values;
@@ -50,6 +51,7 @@ public class ModelTransformer
         classData.AllDirectMembers.AppendDict(classData.Members);
 
         classData.AllMembers.AppendDict(classData.AllDirectMembers, prefixPath);
+
         return classData;
     }
     private async Task TransformMembers(ClassData classData,
@@ -73,12 +75,32 @@ public class ModelTransformer
             }
 
             ClassPropertyData propertyData = TransformMember(member, classData);
+            if (propertyData.IsOverridenProperty && propertyData.OverridenProperty != null)
+            {
+                if (propertyData.OverridenProperty.IsComplex)
+                {
+                    if (propertyData.OverridenProperty.ClassData != null)
+                    {
+                        var nestedSimpleOveriddenProperties = propertyData.OverridenProperty.ClassData.AllUniqueMembers.Values.Select(c => c.PropertyData.UniqueName);
+                        classData.AllUniqueMembers.RemoveDict(nestedSimpleOveriddenProperties);
+                    }
+                    foreach (var OverridenXmlData in propertyData.OverridenProperty.XMLData)
+                    {
+                        if (OverridenXmlData.ClassData == null) continue;
+                        var nestedSimpleOveriddenProperties = OverridenXmlData.ClassData.AllUniqueMembers.Values.Select(c => c.PropertyData.UniqueName);
+                        classData.AllUniqueMembers.RemoveDict(nestedSimpleOveriddenProperties);
+                    }
+                }
+                classData.AllUniqueMembers.RemoveDict([propertyData.OverridenProperty.UniqueName]);
+                classData.OveriddenProperties[propertyData.OverridenProperty.UniqueName] = propertyData.OverridenProperty;
+
+            }
             if (propertyData.IsComplex)
             {
                 string PropertyprefixPath = $"{prefixPath}{propertyData.Name}.";
                 propertyData.ClassData = await TransformClassSymbolAsync(propertyData.PropertyOriginalType, PropertyprefixPath,
                                                                          token);
-                classData.AllMembers.AppendDict(propertyData.ClassData.AllMembers,PropertyprefixPath);
+                classData.AllMembers.AppendDict(propertyData.ClassData.AllMembers, PropertyprefixPath);
                 classData.AllUniqueMembers.AppendDict(propertyData.ClassData.AllUniqueMembers);
                 classData.AllUniqueMembers
                     .AppendDict(propertyData.ClassData.Members.Values
@@ -87,6 +109,7 @@ public class ModelTransformer
                 classData.DefaultTDLFunctions.CopyFrom(propertyData.ClassData.DefaultTDLFunctions);
 
                 propertyData.TDLCollectionData ??= propertyData.ClassData.TDLCollectionData;
+                classData.OveriddenProperties.AppendDict(propertyData.ClassData.OveriddenProperties);
                 foreach (var xMLData in propertyData.XMLData)
                 {
                     if (xMLData.Symbol == null) continue;
@@ -108,25 +131,7 @@ public class ModelTransformer
                                                                          token);
 
             }
-            if (propertyData.IsOverridenProperty && propertyData.OverridenProperty != null)
-            {
-                if (propertyData.OverridenProperty.IsComplex)
-                {
-                    if (propertyData.OverridenProperty.ClassData != null)
-                    {
-                        var nestedSimpleOveriddenProperties = propertyData.OverridenProperty.ClassData.AllUniqueMembers.Values.Select(c => c.PropertyData.UniqueName);
-                        classData.AllUniqueMembers.RemoveDict(nestedSimpleOveriddenProperties);
-                    }
-                    foreach (var OverridenXmlData in propertyData.OverridenProperty.XMLData)
-                    {
-                        if(OverridenXmlData.ClassData == null) continue;
-                        var nestedSimpleOveriddenProperties = OverridenXmlData.ClassData.AllUniqueMembers.Values.Select(c => c.PropertyData.UniqueName);
-                        classData.AllUniqueMembers.RemoveDict(nestedSimpleOveriddenProperties);
-                    }
-                }
-                classData.AllUniqueMembers.RemoveDict([propertyData.OverridenProperty.UniqueName]);
-
-            }
+          
             classData.Members[propertyData.Name] = propertyData;
 
         }
@@ -189,6 +194,7 @@ public class ClassData : IClassAttributeTranfomable
     public Dictionary<string, ClassPropertyData> AllDirectMembers { get; internal set; } = [];
     public Dictionary<string, ClassPropertyData> AllMembers { get; internal set; } = [];
     public bool IsBaseIRequestableObject { get; internal set; }
+    public Dictionary<string, ClassPropertyData> OveriddenProperties { get; internal set; } = [];
 
     public override string ToString()
     {

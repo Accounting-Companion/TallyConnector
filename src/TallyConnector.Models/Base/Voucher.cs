@@ -140,7 +140,7 @@ public partial class Voucher : BaseTallyObject
 
     [TallyCategory("ExportShippingDetails")]
     [XmlElement(ElementName = "BASICDESTINATIONCOUNTRY")]
-    public string? DesktinationCountry { get; set; }
+    public string? DestinationCountry { get; set; }
 
     [TallyCategory("ExportShippingDetails")]
     [XmlElement(ElementName = "SHIPPINGBILLNO")]

@@ -39,7 +39,8 @@ public class ModelMetaGenerator : IIncrementalGenerator
         return false;
     }
 
-    private INamedTypeSymbol Transform(GeneratorAttributeSyntaxContext context, CancellationToken token)
+    private INamedTypeSymbol Transform(GeneratorAttributeSyntaxContext context,
+                                       CancellationToken token)
     {
 
         var symbol = (INamedTypeSymbol)context.TargetSymbol;
