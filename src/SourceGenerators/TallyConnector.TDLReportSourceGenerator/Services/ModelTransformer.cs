@@ -43,6 +43,8 @@ public class ModelTransformer
             classData.DefaultTDLFunctions.CopyFrom(classData.BaseData.DefaultTDLFunctions);
             classData.IsBaseIRequestableObject = classData.BaseData.Symbol.CheckInterface(Constants.Models.Interfaces.TallyRequestableObjectInterfaceFullName);
             classData.OveriddenProperties.AppendDict(classData.BaseData.OveriddenProperties);
+
+            classData.TDLCollectionData ??= classData.BaseData.TDLCollectionData;
         }
         await TransformMembers(classData, prefixPath, token);
         var values = classData.Members.Values;
@@ -245,6 +247,7 @@ public class ClassPropertyData
     public XMLData? DefaultXMLData { get; internal set; }
     public string? ListXMLTag { get; internal set; }
     public TDLCollectionData? TDLCollectionData { get; internal set; }
+    public bool XmlIgnore { get; internal set; }
 
     private INamedTypeSymbol GetChildType()
     {

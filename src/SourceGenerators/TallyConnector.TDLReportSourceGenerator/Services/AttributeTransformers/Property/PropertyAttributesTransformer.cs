@@ -9,6 +9,7 @@ public class PropertyAttributesTransformer
         { XMLElementAttributeName,new XmlElementAttributeTransformer() },
         { XMLArrayAttributeName,new XmlArrayAttributeTransformer() },
         { XMLArrayItemAttributeName,new XmlElementAttributeTransformer() },
+        { XmlIgnoreAttributeName,new XmlIgnoreAttributeTransformer() },
         { TDLFieldAttributeName,new TDLFieldAttributeTransformer() },
         { TDLCollectionAttributeName,new PropertyCollectionAttributeTransformer() },
         { EnumChoiceAttributeName,new EnumChoiceAttributeTransformer() },

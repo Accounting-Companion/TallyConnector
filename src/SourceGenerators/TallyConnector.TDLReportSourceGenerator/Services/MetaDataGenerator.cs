@@ -149,6 +149,7 @@ public class MetaDataGenerator
             foreach (var member in modelMembers)
             {
                 var val = member.Value;
+                if (val.XmlIgnore) continue;
                 AddPropertyMember(val);
             }
         }
@@ -496,6 +497,7 @@ public class MetaDataGenerator
         foreach (var member in directMembers)
         {
             var prop = member;
+            if (prop.XmlIgnore) continue;
             if (member.IsComplex)
             {
                 AddExplodes(Meta.IdentifierNameVarName, member.Name, member.TDLCollectionData?.ExplodeCondition, member.TDLFieldData?.Set);
@@ -565,7 +567,7 @@ public class MetaDataGenerator
             .WithModifiers(TokenList(modifiers))
             .WithSemicolonToken(Token(SyntaxKind.SemicolonToken)));
 
-  
+
 
         void AddExplodes(string idetifierVarName, string name, string? explodeCondition, string? set = null)
         {
@@ -637,7 +639,9 @@ public class MetaDataGenerator
 
         foreach (var field in allMembers)
         {
+            
             ClassPropertyData propertyData = field.PropertyData;
+            if (propertyData.XmlIgnore) continue;
             var name = propertyData.Name;
             if (propertyData.IsComplex || propertyData.IsList)
             {
