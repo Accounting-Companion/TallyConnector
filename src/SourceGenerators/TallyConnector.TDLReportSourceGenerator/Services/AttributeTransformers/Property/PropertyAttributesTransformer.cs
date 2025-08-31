@@ -14,6 +14,7 @@ public class PropertyAttributesTransformer
         { TDLCollectionAttributeName,new PropertyCollectionAttributeTransformer() },
         { EnumChoiceAttributeName,new EnumChoiceAttributeTransformer() },
         { XMLEnumAttributeName,new XMLEnumAttributeTransformer() },
+        { IgnoreForCreateDTOAttributeName,new IgnoreForCreateDTOAttributeTransformer() },
     };
     /// <summary>
     /// Propogates propertyData properties based on attributes to property
@@ -43,5 +44,13 @@ public class PropertyAttributesTransformer
         }
         propertyData.TDLFieldData.FetchText ??= propertyData.DefaultXMLData?.XmlTag ?? propertyData.Name;
         propertyData.TDLFieldData.Set ??= $"${propertyData.DefaultXMLData?.XmlTag ?? propertyData.Name}";
+    }
+}
+
+internal class IgnoreForCreateDTOAttributeTransformer : AbstractPropertyAttributeTransformer
+{
+    public override void TransformAsync(ClassPropertyData propertyData, AttributeData attributeData)
+    {
+        propertyData.IgnoreForDTO = true;
     }
 }

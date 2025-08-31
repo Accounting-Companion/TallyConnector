@@ -184,17 +184,20 @@ public class ClassData : IClassAttributeTranfomable
     public string FullName { get => Symbol.GetClassMetaName(); }
     public string Name { get => Symbol.Name; }
     public string MetaName { get => $"{Name}Meta"; }
+    public string DTOName { get => $"{Name}DTO"; }
     public string Namespace { get => Symbol.ContainingNamespace.ToString(); }
 
     public bool GenerateITallyRequestableObject { get; set; }
     public Dictionary<string, ClassPropertyData> Members { get; } = [];
-    public Dictionary<string, UniqueMember> AllUniqueMembers { get; } = [];
+    
     public HashSet<string> DefaultTDLFunctions { get; internal set; } = [];
     public HashSet<string> TDLFunctions { get; internal set; } = [];
     public string XMLTag { get; internal set; }
     public TDLCollectionData? TDLCollectionData { get; internal set; }
     public Dictionary<string, ClassPropertyData> AllDirectMembers { get; internal set; } = [];
     public Dictionary<string, ClassPropertyData> AllMembers { get; internal set; } = [];
+
+    public Dictionary<string, UniqueMember> AllUniqueMembers { get; } = [];
     public bool IsBaseIRequestableObject { get; internal set; }
     public Dictionary<string, ClassPropertyData> OveriddenProperties { get; internal set; } = [];
 
@@ -248,6 +251,7 @@ public class ClassPropertyData
     public string? ListXMLTag { get; internal set; }
     public TDLCollectionData? TDLCollectionData { get; internal set; }
     public bool XmlIgnore { get; internal set; }
+    public bool IgnoreForDTO { get; internal set; }
 
     private INamedTypeSymbol GetChildType()
     {

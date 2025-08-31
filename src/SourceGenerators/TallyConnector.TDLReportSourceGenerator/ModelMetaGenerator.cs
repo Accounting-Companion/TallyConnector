@@ -85,7 +85,11 @@ public class ModelMetaGenerator : IIncrementalGenerator
                 {
                     new TDLEnvelopeGenerator(modelData, context, token)
                     .Generate();
+
                 }
+                new PostDTOGenerator(modelData, context, token)
+                       .GenerateDTO();
+
             }
         }
         catch (Exception ex)
@@ -94,4 +98,3 @@ public class ModelMetaGenerator : IIncrementalGenerator
         }
     }
 }
-
