@@ -1,4 +1,5 @@
-﻿namespace TallyConnector.TDLReportSourceGenerator.Services;
+﻿
+namespace TallyConnector.TDLReportSourceGenerator.Services;
 
 internal class PostDTOGenerator
 {
@@ -49,14 +50,13 @@ internal class PostDTOGenerator
 
         return this;
     }
-    public int MyProperty { get; set; }
     private IEnumerable<MemberDeclarationSyntax> GetClassMembers()
     {
         List<MemberDeclarationSyntax> members = [];
         foreach (var item in _modelData.Members)
         {
             var member = item.Value;
-            if (member.IgnoreForDTO) continue;
+            if (member.IgnoreForDTO || member.XmlIgnore) continue;
             List<SyntaxToken> tokens = [Token(SyntaxKind.PublicKeyword)];
             if (member.IsOverridenProperty)
             {
@@ -69,14 +69,15 @@ internal class PostDTOGenerator
                 {
                     var typeName = member.ClassData.DTOName;
                     NameSyntax = GetGlobalNameforType($"{member.ClassData.Namespace}.DTO.{typeName}");
-                    if (member.IsList)
-                    {
-                        NameSyntax = GenericName(Identifier(ListClassName), TypeArgumentList([NameSyntax]));
-                    }
+
                 }
             }
+            if (member.IsList)
+            {
+                NameSyntax = GenericName(Identifier(ListClassName), TypeArgumentList([NameSyntax]));
+            }
             if (member.IsNullable) NameSyntax = NullableType(NameSyntax);
-            members.Add(PropertyDeclaration( NameSyntax, item.Key)
+            members.Add(PropertyDeclaration(NameSyntax, item.Key)
                 .WithAccessorList(
             AccessorList(
                 List(
@@ -96,11 +97,14 @@ internal class PostDTOGenerator
         return members;
     }
 
+
+
     private MemberDeclarationSyntax GetImplicitConverterSyntax()
     {
         List<StatementSyntax> statements = [];
         const string srcParameterName = "src";
         const string dtoVarName = "dto";
+
         statements.Add(IfStatement(
                     BinaryExpression(
                         SyntaxKind.EqualsExpression,
@@ -133,6 +137,9 @@ internal class PostDTOGenerator
                                     .WithArgumentList(
                                         ArgumentList())))))));
 
+
+        AssignAllMembers();
+
         statements.Add(ReturnStatement(IdentifierName(dtoVarName)));
         var declaration = ConversionOperatorDeclaration(
            Token(SyntaxKind.ImplicitKeyword),
@@ -142,11 +149,94 @@ internal class PostDTOGenerator
                 [
                     Token(SyntaxKind.PublicKeyword),
                     Token(SyntaxKind.StaticKeyword)]))
-            .WithParameterList(ParameterList(SeparatedList<ParameterSyntax>(new SyntaxNodeOrToken[] 
+            .WithParameterList(ParameterList(SeparatedList<ParameterSyntax>(new SyntaxNodeOrToken[]
             {
                 Parameter(Identifier(srcParameterName)).WithType(GetGlobalNameforType(_modelData.FullName))
             })))
             .WithBody(Block(statements));
+
+
+        void AssignAllMembers()
+        {
+            foreach (var item in _modelData.AllDirectMembers)
+            {
+                var member = item.Value;
+                if (member.IgnoreForDTO || member.XmlIgnore) continue;
+                ExpressionSyntax right = MemberAccessExpression(
+                             SyntaxKind.SimpleMemberAccessExpression,
+                             IdentifierName(srcParameterName),
+                             IdentifierName(member.Name));
+
+                if (member.IsList && member.IsComplex)
+                {
+                    if (member.ClassData == null) continue;
+                    if (!member.ClassData.IsTallyComplexObject)
+                    {
+                        if (member.XMLData.Count > 0)
+                        {
+                            continue;
+                        }
+                        else
+                        {
+
+                            var rightSelect = InvocationExpression(MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression,
+                                                                           right,
+                                                                           IdentifierName("Select")))
+                                  .WithArgumentList(ArgumentList(SingletonSeparatedList<ArgumentSyntax>(
+                                                          Argument(
+                                                              SimpleLambdaExpression(
+                                                                  Parameter(
+                                                                      Identifier("c")))
+                                                              .WithExpressionBody(
+                                                                  CastExpression(
+                                                                     GetGlobalNameforType($"{member.ClassData.Namespace}.DTO.{member.ClassData.DTOName}"),
+                                                                      IdentifierName("c")))))));
+                            var rightCollection = CollectionExpression(SeparatedList<CollectionElementSyntax>(SeparatedList<CollectionElementSyntax>(new SyntaxNodeOrToken[] { SpreadElement(rightSelect) })));
+                            if (member.IsNullable)
+                            {
+                                right = ConditionalExpression(IsPatternExpression(right,
+                                                                                  ConstantPattern(LiteralExpression(SyntaxKind.NullLiteralExpression))),
+                                                                                   LiteralExpression(SyntaxKind.NullLiteralExpression), rightCollection);
+                            }
+                            else
+                            {
+                                right = rightCollection;
+                            }
+                        }
+                    }
+                    else
+                    {
+                        right = InvocationExpression(MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression, right, IdentifierName("ToString")));
+                    }
+
+                }
+                else
+                {
+                    switch (member.PropertyOriginalType.SpecialType)
+                    {
+                        case SpecialType.System_String:
+                            break;
+                        case SpecialType.System_DateTime or SpecialType.System_Boolean:
+                            right = InvocationExpression(MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression, right, IdentifierName("ToTallyString")));
+                            break;
+                        default:
+                            right = InvocationExpression(MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression, right, IdentifierName("ToString")));
+                            continue;
+                    }
+
+                }
+
+                statements.Add(ExpressionStatement(
+                    AssignmentExpression(
+                        SyntaxKind.SimpleAssignmentExpression,
+                        MemberAccessExpression(
+                            SyntaxKind.SimpleMemberAccessExpression,
+                            IdentifierName(dtoVarName),
+                            IdentifierName(member.Name)),
+                        right)));
+            }
+        }
+
         return declaration;
     }
 
