@@ -50,7 +50,7 @@ public class AutoColumnReportPeriodRequestOptions : DateFilterRequestOptions
 
 public class RequestOptions : DateFilterRequestOptions
 {
-    public List<Filter>? Filters { get; set; }
+    public List<Filter>? Filters { get; set; } = [];
     public List<string>? Compute { get; set; } = [];
     public List<string>? ComputeVar { get; set; } = [];
     public string? Childof { get; set; }
@@ -62,101 +62,16 @@ public class RequestOptions : DateFilterRequestOptions
         this.Company = Company;
         return this;
     }
+
 }
-public class RequestOptionsBuilder<T, TMeta> where T : ITallyRequestableObject where TMeta : MetaObject
+public class RequestOptions<T> : RequestOptions where T : class, new()
 {
-    FilterExpressionParser _parser = new();
-    public RequestOptionsBuilder<T, TMeta> Where(Expression<Func<TMeta, bool>> expression)
+    public RequestOptions<T> Where(Func<T, bool> func)
     {
-
-        return this;
-    }
-    public RequestOptionsBuilder<T, TMeta> Where(Expression<Func<TMeta, PropertyMetaData<bool>>> expression)
-    {
-
         return this;
     }
 }
 
-public class FilterExpressionParser : ExpressionVisitor
-{
-    private readonly Stack<string> _path = new();
-
-    public FilterNode Parse<TMeta>(Expression<Func<TMeta, bool>> expr)
-    {
-        // Start visiting the body (should be BinaryExpression or MethodCallExpression)
-        var visited = Visit(expr.Body) as ConstantExpression;
-
-        if (visited == null || visited.Value == null)
-            throw new InvalidOperationException("Expected a ConstantExpression wrapping FilterNode.");
-
-        return (FilterNode)visited.Value;
-    }
-
-    protected override Expression VisitBinary(BinaryExpression node)
-    {
-        if (node.NodeType == ExpressionType.AndAlso || node.NodeType == ExpressionType.OrElse)
-        {
-            var op = node.NodeType == ExpressionType.AndAlso ? "&&" : "||";
-
-            var leftExpr = Visit(node.Left) as ConstantExpression;
-            var rightExpr = Visit(node.Right) as ConstantExpression;
-
-            if (leftExpr?.Value is not FilterNode leftNode)
-                throw new InvalidOperationException("Invalid left node in logical expression.");
-
-            if (rightExpr?.Value is not FilterNode rightNode)
-                throw new InvalidOperationException("Invalid right node in logical expression.");
-
-            return Expression.Constant(new LogicalFilterNode(op, leftNode, rightNode));
-        }
-
-        if (node.NodeType == ExpressionType.Equal)
-        {
-            Visit(node.Left); // Push property path
-            var propPath = _path.Pop();
-
-            var rightExpr = Visit(node.Right) as ConstantExpression;
-
-            return Expression.Constant(new BinaryFilterNode("==", propPath, rightExpr?.Value));
-        }
-
-        throw new NotSupportedException($"Unsupported binary operation: {node.NodeType}");
-    }
-
-    protected override Expression VisitMethodCall(MethodCallExpression node)
-    {
-        if (node.Method.Name == "Contains")
-        {
-            Visit(node.Object);
-            var propPath = _path.Pop();
-
-            var argExpr = Visit(node.Arguments[0]) as ConstantExpression;
-
-            return Expression.Constant(new MethodFilterNode("Contains", propPath, argExpr?.Value));
-        }
-
-        throw new NotSupportedException($"Unsupported method call: {node.Method.Name}");
-    }
-
-    protected override Expression VisitMember(MemberExpression node)
-    {
-        if (node.Expression is MemberExpression parent)
-        {
-            Visit(parent);
-            var parentPath = _path.Pop();
-            _path.Push($"{parentPath}.{node.Member.Name}");
-        }
-        else
-        {
-            _path.Push(node.Member.Name);
-        }
-
-        return Expression.Constant(null); // Dummy return, path is pushed to stack
-    }
-
-    protected override Expression VisitConstant(ConstantExpression node) => node;
-}
 public class PaginatedRequestOptions : RequestOptions
 {
     public int PageNum { get; set; } = 1;

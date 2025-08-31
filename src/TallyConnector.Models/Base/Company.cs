@@ -6,7 +6,7 @@ namespace TallyConnector.Models.Base;
 /// </summary>
 [XmlRoot(ElementName = "COMPANY")]
 [TDLFunctionsMethodName(nameof(TC_BaseCompanyFunctions))]
-[TDLCollection(Type = "Ledger")]
+[TDLCollection(Type = "COMPANY")]
 [GenerateMeta]
 public partial class BaseCompany : IBaseCompany
 {

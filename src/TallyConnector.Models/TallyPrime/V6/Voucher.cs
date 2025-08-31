@@ -6,7 +6,11 @@ namespace TallyConnector.Models.TallyPrime.V6;
 [XmlType(AnonymousType = true)]
 [GenerateITallyRequestableObect]
 [GenerateMeta]
-public partial class Voucher :TallyConnector.Models.Base.Voucher
+public partial class Voucher : TallyConnector.Models.Base.Voucher
 {
+    IBaseTallyObject ToDTO()
+    {
+        return this;
+    }
 }
 
