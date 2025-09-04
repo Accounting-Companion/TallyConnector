@@ -1,6 +1,7 @@
 ﻿using TallyConnector.Core.Extensions;
 using TallyConnector.Core.Models.Interfaces;
 using TallyConnector.Core.Models.Response;
+using TallyConnector.Models.Base;
 using TallyConnector.Models.Common;
 using TallyConnector.Models.Common.Pagination;
 using static TallyConnector.Core.Constants;
@@ -193,9 +194,9 @@ public class TallyCommonService : ITallyCommonService
     public Task<LicenseInfo> GetLicenseInfoAsync() => _baseHandler.GetLicenseInfoAsync();
 
     public Task<string> GetActiveSimpleCompanyNameAsync() => _baseHandler.GetActiveSimpleCompanyNameAsync();
-    
+
     /// <inheritdoc/>
-    public async Task<List<T>> GetObjectsAsync<T>(BaseRequestOptions? options=null, CancellationToken token = default) where T : ITallyRequestableObject, IBaseObject
+    public async Task<List<T>> GetObjectsAsync<T>(BaseRequestOptions? options = null, CancellationToken token = default) where T : ITallyRequestableObject, IBaseObject
     {
         var reqEnvelope = T.GetRequestEnvelope();
         reqEnvelope.PopulateOptions(options);
@@ -216,6 +217,23 @@ public class TallyCommonService : ITallyCommonService
         var resp = await _baseHandler.SendRequestAsync(reqXml, "", token);
         var respEnv = XMLToObject.GetObjfromXml<ReportResponseEnvelope<T>>(resp.Response!, T.GetXMLAttributeOverides());
         return new(respEnv.TotalCount ?? 0, options?.RecordsPerPage ?? 1000, respEnv.Objects, options?.PageNum ?? 1);
+    }
+
+    public async Task PostTallyObjectsAsync<T>(IEnumerable<T> objects, PostRequestOptions options) where T : TallyObject
+    {
+       
+        foreach (var obj in objects)
+        {
+            //obj.ToDTO();
+           // obj.ToDTO();
+        }
+    }
+    public async Task PostObjectsAsync<T>(IEnumerable<T> objects, PostRequestOptions options) where T : TallyObjectDTO
+    {
+        foreach (var obj in objects)
+        {
+           // obj.ToDTO();
+        }
     }
 
 }

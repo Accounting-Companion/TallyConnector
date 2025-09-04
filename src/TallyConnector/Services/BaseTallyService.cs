@@ -14,7 +14,7 @@ public partial class BaseTallyService : IBaseTallyService
     private int _port;
 
     private string _baseURL;
-    private string FullURL => _baseURL + ":" + _port; 
+    private string FullURL => _baseURL + ":" + _port;
 
     protected readonly ILogger _logger;
 
@@ -124,8 +124,8 @@ public partial class BaseTallyService : IBaseTallyService
         TallyResult tallyResult = await SendRequestAsync(Reqxml, RequestType, token);
         if (tallyResult.Status == RespStatus.Sucess && tallyResult.Response != null)
         {
-            RequestEnvelope<string>? Envelope = XMLToObject.GetObjfromXml<RequestEnvelope<string>>(tallyResult.Response, null, _logger);
-            string result = Envelope?.Body?.Data?.FuncResult ?? throw new Exception($"No Active Company in Tally,Either Select any non group company in tally or Use {nameof(SetCompany)} method to set company");
+            RequestEnvelope? Envelope = XMLToObject.GetObjfromXml<RequestEnvelope>(tallyResult.Response, null, _logger);
+            string result = Envelope?.Body?.RequestData?.FuncResult ?? throw new Exception($"No Active Company in Tally,Either Select any non group company in tally or Use {nameof(SetCompany)} method to set company");
             return result;
         }
         else
@@ -172,13 +172,14 @@ public partial class BaseTallyService : IBaseTallyService
             ])];
         var reqXml = reqEnvelope.GetXML();
         var respXml = await SendRequestAsync(reqXml, reqType, token).ConfigureAwait(false);
-        var XMLAttributeOverrides = new XmlAttributeOverrides();
+        var XMLAttributeOverrides = new XMLOverrideswithTracking();
         var XMLAttributes = new XmlAttributes();
-        XMLAttributes.XmlElements.Add(new(objectName.ToUpper()));
-        XMLAttributeOverrides.Add(typeof(Colllection<LicenseInfo>), "Objects", XMLAttributes);
-        RequestEnvelope<LicenseInfo> envelope = XMLToObject.GetObjfromXml<RequestEnvelope<LicenseInfo>>(respXml.Response ?? throw new Exception("Error While Getting License"), XMLAttributeOverrides);
-        LicenseInfo? licenseInfo = envelope.Body.Data.Collection?.Objects?.FirstOrDefault();
-        if (licenseInfo != null)
+        XMLAttributes.XmlArrayItems.Add(new(objectName.ToUpper(),typeof(LicenseInfo)));
+        XMLAttributes.XmlArray = new("COLLECTION");
+        XMLAttributeOverrides.Add(typeof(RequestData), nameof(RequestData.Data), XMLAttributes);
+        RequestEnvelope envelope = XMLToObject.GetObjfromXml<RequestEnvelope>(respXml.Response ?? throw new Exception("Error While Getting License"), XMLAttributeOverrides);
+        var data = envelope.Body.RequestData.Data;
+        if (data !=null && data is [LicenseInfo licenseInfo])
         {
             _licenseInfo = licenseInfo;
         }
@@ -524,7 +525,7 @@ public partial class BaseTallyService : IBaseTallyService
     }
 
 
-    public static void AddCustomResponseReportForPost<T>(PostRequestEnvelope<T> requestEnvelope) where T : class
+    public static void AddCustomResponseReportForPost(RequestEnvelope requestEnvelope)
     {
         var tDLMessage = requestEnvelope.Body.Desc.TDL.TDLMessage;
 

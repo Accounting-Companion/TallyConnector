@@ -21,7 +21,7 @@ public static class Constants
 
     public const string SendRequestMethodName = "SendRequestAsync";
 
-    public const string XmlAttributeOverridesClassName = "System.Xml.Serialization.XmlAttributeOverrides";
+    public const string XmlAttributeOverridesClassName = $"{TallyConnectorModelsNameSpace}.XMLOverrideswithTracking";
     public const string XmlAttributesClassName = "System.Xml.Serialization.XmlAttributes";
     public const string CollectionsNameSpace = "System.Collections.Generic";
     public const string ListClassName = "List";

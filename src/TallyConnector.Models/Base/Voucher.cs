@@ -1,4 +1,5 @@
 ﻿using System.Text.Json.Serialization;
+using TallyConnector.Core.Models;
 using TallyConnector.Models.Common;
 
 namespace TallyConnector.Models.Base;
@@ -6,11 +7,13 @@ namespace TallyConnector.Models.Base;
 [XmlType(AnonymousType = true)]
 [TDLCollection(Type = "Voucher")]
 [MaptoDTO<BaseVoucherDTO>]
-public partial class BaseVoucher:BaseTallyObject,IBaseVoucherObject
+public partial class BaseVoucher:TallyObject,IBaseVoucherObject
 {
-
+    [IgnoreForCreateDTO]
+    [XmlElement(ElementName = "ALTEREDON")]
+    public DateTime? AlteredOn { get; set; }
 }
-public class BaseVoucherDTO : BaseTallyObjectDTO
+public class BaseVoucherDTO : TallyObjectDTO
 {
     [XmlAttribute("TAGNAME")]
     public string? TagName { get; set; }

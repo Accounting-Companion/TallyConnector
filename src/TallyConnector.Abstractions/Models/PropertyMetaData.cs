@@ -57,20 +57,4 @@ public class PropertyMetaData<T> : PropertyMetaData
     {
     }
 
-    // Dummy operators to satisfy Expression<Func<T, bool>>
-    public static bool operator ==(PropertyMetaData<T> prop, T value) => false;
-    public static bool operator !=(PropertyMetaData<T> prop, T _value) => false;
-
-    public static bool operator >(PropertyMetaData<T> prop, T value) => false;
-    public static bool operator <(PropertyMetaData<T> prop, T value) => false;
-    public static bool operator >=(PropertyMetaData<T> prop, T value) => false;
-    public static bool operator <=(PropertyMetaData<T> prop, T value) => false;
-
-    public bool Contains(string _) => false;
-    public bool StartsWith(string _) => false;
-    public bool EndsWith(string _) => false;
-    public bool Like(string pattern) => false;
-
-    public override bool Equals(object? obj) => base.Equals(obj);
-    public override int GetHashCode() => base.GetHashCode();
 }

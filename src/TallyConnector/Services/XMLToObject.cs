@@ -2,12 +2,13 @@
 using System.Text.RegularExpressions;
 
 namespace TallyConnector.Services;
+
 public static class XMLToObject
 {
     public static Regex XmlIndexRegex = new("[0-9]+", RegexOptions.Compiled);
     //Converts to given object from Xml
     public static Dictionary<string, XmlSerializer> _cache = [];
-    public static T GetObjfromXml<T>(string Xml, XmlAttributeOverrides? attrOverrides = null, ILogger? Logger = null)
+    public static T GetObjfromXml<T>(string Xml, XMLOverrideswithTracking? attrOverrides = null, ILogger? Logger = null)
     {
         XmlSerializer XMLSer = attrOverrides == null ? new(typeof(T)) : GetSerializer(typeof(T), attrOverrides);
 
@@ -92,7 +93,7 @@ public static class XMLToObject
         {
             Logger?.LogError(ex.Message);
             Logger?.LogError("Error - {errs}", GetInnerError(ex)?.Reverse().Take(2));
-            throw ;
+            throw;
         }
 
     }
@@ -109,7 +110,7 @@ public static class XMLToObject
         return errors;
     }
 
-    public static XmlSerializer GetSerializer(Type type, XmlAttributeOverrides attrOverrides)
+    public static XmlSerializer GetSerializer(Type type, XMLOverrideswithTracking attrOverrides)
     {
         Type[] types = type.GetGenericArguments();
         var hash = type.Name;
@@ -117,6 +118,7 @@ public static class XMLToObject
         {
             hash = type.Name + types[0].FullName;
         }
+        hash += attrOverrides.GetHash();
         _ = _cache.TryGetValue(hash, out XmlSerializer? Serializer);
         if (Serializer == null)
         {
@@ -124,5 +126,52 @@ public static class XMLToObject
             _cache[hash] = Serializer;
         }
         return Serializer;
+    }
+    public static string GetHash(this XMLOverrideswithTracking overrides)
+    {
+        var sb = new StringBuilder();
+
+        foreach (var (type, member, attrs) in overrides.Entries
+                                                       .OrderBy(e => e.type.FullName)
+                                                       .ThenBy(e => e.member))
+        {
+            sb.Append(type.FullName).Append(':').Append(member).Append(':');
+            AppendAttributes(sb, attrs);
+        }
+        var bytes = Encoding.UTF8.GetBytes(sb.ToString());
+        return Convert.ToHexString(System.Security.Cryptography.SHA256.HashData(bytes));
+    }
+
+    private static void AppendAttributes(StringBuilder sb, XmlAttributes attrs)
+    {
+        if (attrs.XmlAttribute is XmlAttributeAttribute xmlAttr)
+            sb.Append($"Attr:{xmlAttr.AttributeName}:{xmlAttr.Namespace}:{xmlAttr.Type};");
+
+        if (attrs.XmlArray is XmlArrayAttribute xmlArray)
+            sb.Append($"Array:{xmlArray.ElementName}:{xmlArray.Namespace}:{xmlArray.IsNullable}:{xmlArray.Order};");
+
+        foreach (XmlArrayItemAttribute arrItem in attrs.XmlArrayItems)
+            sb.Append($"ArrayItem:{arrItem.ElementName}:{arrItem.Type}:{arrItem.Namespace}:{arrItem.IsNullable}:{arrItem.NestingLevel};");
+
+        foreach (XmlElementAttribute elem in attrs.XmlElements)
+            sb.Append($"Elem:{elem.ElementName}:{elem.Type}:{elem.Namespace}:{elem.IsNullable}:{elem.Order};");
+
+        foreach (XmlAnyElementAttribute anyElem in attrs.XmlAnyElements)
+            sb.Append($"AnyElem:{anyElem.Name}:{anyElem.Namespace};");
+
+        if (attrs.XmlAnyAttribute is XmlAnyAttributeAttribute anyAttr)
+            sb.Append($"AnyAttr:{anyAttr.TypeId}");
+
+        if (attrs.XmlChoiceIdentifier is XmlChoiceIdentifierAttribute choice)
+            sb.Append($"Choice:{choice.MemberName};");
+
+        if (attrs.XmlRoot is XmlRootAttribute root)
+            sb.Append($"Root:{root.ElementName}:{root.Namespace}:{root.IsNullable};");
+
+        if (attrs.XmlText is XmlTextAttribute text)
+            sb.Append($"Text:{text.Type};");
+
+        if (attrs.XmlType is XmlTypeAttribute typeAttr)
+            sb.Append($"Type:{typeAttr.TypeName}:{typeAttr.Namespace}:{typeAttr.IncludeInSchema};");
     }
 }

@@ -9,6 +9,7 @@ global using TallyConnector.Core.Models.Request;
 global using TallyConnector.Core.Attributes.SourceGenerator;
 global using TallyConnector.Core.Models.TallyComplexObjects;
 global using TallyConnector.Core.Models.TallyComplexObjects.Meta;
+global using TallyConnector.Core.Models;
 global using TallyConnector.Models.Common.Meta;
 global using static TallyConnector.Core.Constants;
 global using  TallyConnector.Abstractions.Attributes;

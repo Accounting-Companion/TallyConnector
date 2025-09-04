@@ -22,6 +22,13 @@ public class BaseTallyServiceTests
 
     }
     [Test]
+    public async Task TestGetLicenseInfoAsync()
+    {
+        var licenseInfo = await TallyService.GetLicenseInfoAsync();
+        Assert.That(licenseInfo, Is.Not.Null);
+
+    }
+    [Test]
     public async Task TestAutoColStats()
     {
         TallyCommonService tallyCommonService = new TallyCommonService();
@@ -32,12 +39,6 @@ public class BaseTallyServiceTests
 
     public async Task TestOptionsBuilder()
     {
-        LedgerRequestOptionsBuilder builder = new();
-        var c = 0 < 5;
-       builder.Where(c => c.Name == "" && c.OpeningBalance > 20);
+       // new RequestOptions<LedgerMeta>().Where(C=>C.MasterId.);
     }
-}
-public class LedgerRequestOptionsBuilder : RequestOptionsBuilder<Ledger, LedgerMeta>
-{
-
 }

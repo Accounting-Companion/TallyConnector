@@ -5,6 +5,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Markup;
+using TallyConnector.Core.Models;
 using TallyConnector.Core.Models.TallyComplexObjects;
 using TallyConnector.Models.Base;
 

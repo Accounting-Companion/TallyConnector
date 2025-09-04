@@ -25,3 +25,15 @@ public class TallyXml
     }
 
 }
+public class XMLOverrideswithTracking : XmlAttributeOverrides
+{
+    private readonly List<(Type type, string member, XmlAttributes attrs)> _entries = new();
+
+    public new void Add(Type type, string member, XmlAttributes attributes)
+    {
+        base.Add(type, member, attributes);
+        _entries.Add((type, member, attributes));
+    }
+
+    public IEnumerable<(Type type, string member, XmlAttributes attrs)> Entries => _entries;
+}

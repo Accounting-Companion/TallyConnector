@@ -8,9 +8,9 @@ namespace TallyConnector.Models.TallyPrime.V6;
 [GenerateMeta]
 public partial class Voucher : TallyConnector.Models.Base.Voucher
 {
-    IBaseTallyObject ToDTO()
-    {
-        return this;
-    }
+    //IBaseTallyObject ToDTO()
+    //{
+    //    return this;
+    //}
 }
 

@@ -4,7 +4,7 @@ using System.Xml.Schema;
 namespace TallyConnector.Core.Models;
 
 [XmlRoot(ElementName = "LICENSEINFO")]
-public class LicenseInfo
+public class LicenseInfo : BaseObject
 {
     [XmlElement(ElementName = "SERIALNUMBER")]
     [TDLField("$$LicenseInfo:SerialNumber")]

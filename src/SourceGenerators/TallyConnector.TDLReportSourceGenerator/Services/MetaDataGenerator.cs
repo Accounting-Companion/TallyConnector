@@ -29,6 +29,18 @@ public class MetaDataGenerator
     public MetaDataGenerator GenerateMeta()
     {
 
+        SimpleBaseTypeSyntax node;
+        if (IsBaseSameAssembly)
+        {
+            node = SimpleBaseType(
+                              GetGlobalNameforType($"{_modelData.BaseData!.Namespace}.Meta.{_modelData.BaseData.MetaName}"));
+        }
+        else
+        {
+            node = SimpleBaseType(
+                              IdentifierName(Constants.Models.Abstractions.MetaObjectypeName));
+        }
+
         ClassDeclarationSyntax classDeclarationSyntax = ClassDeclaration(_modelData.MetaName)
                   .WithModifiers(TokenList([Token(
                             TriviaList(
@@ -40,8 +52,7 @@ public class MetaDataGenerator
                      .WithBaseList(
                     BaseList(
                         SingletonSeparatedList<BaseTypeSyntax>(
-                            SimpleBaseType(
-                              _modelData.BaseData == null ? IdentifierName(Constants.Models.Abstractions.MetaObjectypeName) : GetGlobalNameforType($"{_modelData.BaseData.Namespace}.Meta.{_modelData.BaseData.MetaName}")))));
+                            node)));
 
         var unit = CompilationUnit()
           .WithUsings(List(GetUsings()))
@@ -76,9 +87,9 @@ public class MetaDataGenerator
 
         members.Add(GetMainConstructor());
 
-        members.Add(GetSecondConstructor(_modelData.BaseData != null, _modelData.MetaName));
+        members.Add(GetSecondConstructor(IsBaseSameAssembly, _modelData.MetaName));
 
-        if (_modelData.BaseData == null)
+        if (!IsBaseSameAssembly)
         {
             members.Add(PropertyDeclaration(NullableType(PredefinedType(Token(SyntaxKind.StringKeyword))),
                                             Constants.Meta.XMLTagVarName)
@@ -131,7 +142,8 @@ public class MetaDataGenerator
         if (_modelData.BaseData != null && !_modelData.BaseData.Symbol.CheckInterface(Constants.Models.Abstractions.IMetaGeneratedFullTypeName) &&
             !SymbolEqualityComparer.Default.Equals(_modelData.BaseData.Symbol.ContainingAssembly, _modelData.Symbol.ContainingAssembly))
         {
-            AddMembersAsProperties(_modelData.BaseData.Members);
+            AddBaseMembersAsProperties(_modelData.BaseData);
+            
         }
         AddMembersAsProperties(_modelData.Members);
 
@@ -143,6 +155,15 @@ public class MetaDataGenerator
 
         }
         return members;
+
+        void AddBaseMembersAsProperties(ClassData classData)
+        {
+            if(classData.BaseData != null)
+            {
+                AddBaseMembersAsProperties(classData.BaseData);
+            }
+            AddMembersAsProperties(classData.Members);
+        }
 
         void AddMembersAsProperties(Dictionary<string, ClassPropertyData> modelMembers)
         {

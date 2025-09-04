@@ -1,4 +1,5 @@
 ﻿using TallyConnector.Abstractions.Models;
+using TallyConnector.Core.Models.Request;
 using TallyConnector.Models.Base.Meta;
 using TallyConnector.Models.TallyPrime.V6;
 using TallyConnector.Models.TallyPrime.V6.Masters;
@@ -16,7 +17,7 @@ public class TallyPrimeServiceV6Tests
     [Test]
     public async Task TestGetLedgerAsync()
     {
-        //var ledgers = await primeService.GetObjectsAsync<Ledger>();
+        var ledgers = await primeService.GetLedgersAsync(new PaginatedRequestOptions());
         var c = new Vucheta();
         var scsa = c.Ledgers.Amount;
         var scds = c.Ledgers.As<AllLedgerEntryMeta>().Amount;

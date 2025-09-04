@@ -44,10 +44,10 @@ public partial class V6View : BaseViewModel
 
         // List<LedgerDTO> objects = [new LedgerDTO() { OldName = "Test Ledger from new connecotr", Group = "Sundry Debtors", Action = TallyConnector.Core.Models.Common.Action.Alter }];
         //// var postResults = await _tallyService.PostObjectsAsync(objs.Data.Select(c=>(VoucherDTO)c));
-        // var envp = new global::TallyConnector.Core.Models.PostRequestEnvelope<global::TallyConnector.Services.Models.TallyServicePostRequestEnvelopeMessage>(global::TallyConnector.Core.Models.Request.RequestType.Import, global::TallyConnector.Core.Models.Request.HType.Data, "AllMasters");
+        // var envp = new global::TallyConnector.Core.Models.RequestEnvelope<global::TallyConnector.Services.Models.TallyServicePostRequestEnvelopeMessage>(global::TallyConnector.Core.Models.Request.RequestType.Import, global::TallyConnector.Core.Models.Request.HType.Data, "AllMasters");
         // var msg = new global::TallyConnector.Services.Models.TallyServicePostRequestEnvelopeMessage();
         // msg.Vouchers = objs.Data.Select(c => (VoucherDTO)c).ToList();
-        // envp.Body.RequestData.RequestMessage = msg;
+        // envp.Body.RequestData.Data = msg;
         // TallyService.AddCustomResponseReportForPost(envp);
         // await File.WriteAllTextAsync("Sales.xml", envp.GetXML());
 

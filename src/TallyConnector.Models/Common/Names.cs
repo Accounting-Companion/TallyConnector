@@ -1,6 +1,4 @@
-﻿using TallyConnector.Abstractions.Attributes;
-
-namespace TallyConnector.Models.Common;
+﻿namespace TallyConnector.Models.Common;
 
 [XmlRoot(ElementName = "LANGUAGENAME.LIST")]
 [TDLCollection(CollectionName = "LanguageName")]

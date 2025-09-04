@@ -1,11 +1,13 @@
-﻿using TallyConnector.Models.Common;
+﻿
+using TallyConnector.Core.Models;
+using TallyConnector.Models.Common;
 
 namespace TallyConnector.Models.Base.Masters;
 
 [TDLCollection(Type = "Group")]
 [XmlRoot("GROUP")]
 [XmlType(AnonymousType = true)]
-public partial class Group : BaseAliasedMasterObject,Core.Models.Interfaces.Masters.IBaseGroup
+public partial class Group : BaseAliasedMasterObject, Core.Models.Interfaces.Masters.IBaseGroup
 {
 
     /// <summary>
@@ -68,6 +70,10 @@ public partial class Group : BaseAliasedMasterObject,Core.Models.Interfaces.Mast
     [XmlElement(ElementName = "ISADDABLE")]
     public bool? IsAddable { get; set; }
 
+    //public override TallyObjectDTO ToDTO()
+    //{
+    //    return (GroupDTO)this;
+    //}
     public override string ToString()
     {
         return $"Group - {base.ToString()}";

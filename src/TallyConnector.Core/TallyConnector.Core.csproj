@@ -38,10 +38,11 @@
 		<PackageReference Include="System.Text.Json" Version="9.0.4" />
 	</ItemGroup>
 	<ItemGroup>
+	  <Folder Include="Models\Common\" />
 	  <Folder Include="Models\Meta\" />
 	</ItemGroup>
 	<ItemGroup>
-	  <ProjectReference Include="..\SourceGenerators\TallyConnector.TDLReportSourceGenerator\TallyConnector.TDLReportSourceGenerator.csproj"  OutputItemType="Analyzer" />
+	  <ProjectReference Include="..\SourceGenerators\TallyConnector.TDLReportSourceGenerator\TallyConnector.TDLReportSourceGenerator.csproj" OutputItemType="Analyzer" />
 	  <ProjectReference Include="..\TallyConnector.Abstractions\TallyConnector.Abstractions.csproj" />
 	</ItemGroup>
 

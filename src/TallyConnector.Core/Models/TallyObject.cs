@@ -1,8 +1,12 @@
-﻿using TallyConnector.Core.Models;
+﻿
 
-namespace TallyConnector.Models.Base;
+namespace TallyConnector.Core.Models;
+public partial class BaseObject : IBaseObject
+{
+
+}
 [MaptoDTO<BaseTallyObjectDTO>]
-public partial class BaseTallyObject : IBaseTallyObject
+public partial class BaseTallyObject : BaseObject, IBaseTallyObject
 {
     [XmlElement(ElementName = "GUID")]
     [IgnoreForCreateDTO]
@@ -11,12 +15,14 @@ public partial class BaseTallyObject : IBaseTallyObject
 
     [XmlElement(ElementName = "REMOTEALTGUID")]
     public string RemoteId { get; set; } = null!;
+
+    
 }
-public class BaseTallyObjectDTO
+public class BaseTallyObjectDTO : IBaseTallyObjectDTO
 {
     private string? _remoteId;
     [XmlAttribute("ACTION")]
-    public Core.Models.Action Action { get; set; }
+    public Action Action { get; set; }
 
     [XmlElement(ElementName = "REMOTEALTGUID")]
     public string RemoteId { get { return _remoteId ??= SetRemoteId(suffix:GUIDSuffix); } set { _remoteId = value; } }
@@ -35,7 +41,7 @@ public class BaseTallyObjectDTO
         return _remoteId = guid;
     }
 }
-
+[MaptoDTO<TallyObjectDTO>]
 public partial class TallyObject : BaseTallyObject, ITallyObject
 {
     [XmlElement(ElementName = "MASTERID")]
@@ -55,4 +61,14 @@ public partial class TallyObject : BaseTallyObject, ITallyObject
     [XmlElement(ElementName = "ALTEREDBY")]
     public string? AlteredBy { get; set; }
 
+    public virtual TallyObjectDTO ToDTO()
+    {
+        throw new Exception("this mehtod is auto overidded by Source Generator, check whether class has ");
+    }
+
 }
+
+public class TallyObjectDTO : BaseTallyObjectDTO
+{
+    
+};

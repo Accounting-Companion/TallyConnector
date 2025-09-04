@@ -1,7 +1,9 @@
-﻿using System.Xml.Linq;
+﻿using System.ComponentModel.DataAnnotations;
+using System.Xml.Linq;
+using TallyConnector.Core.Models.DTO;
 using TallyConnector.Models.Common;
 
-namespace TallyConnector.Models.Base;
+namespace TallyConnector.Models.Base.Masters;
 
 
 [MaptoDTO<BaseMasterObjectDTO>]
@@ -13,7 +15,7 @@ public partial class BaseMasterObject : TallyObject, IBaseMasterObject
     public string Name { get; set; } = null!;
 
 }
-public class BaseMasterObjectDTO : TallyConnector.Models.Base.DTO.TallyObjectDTO
+public class BaseMasterObjectDTO : TallyObjectDTO
 {
     [XmlIgnore]
     public string NewName { get; set; } = null!;
