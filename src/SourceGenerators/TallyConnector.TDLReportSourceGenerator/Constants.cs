@@ -40,17 +40,17 @@ public static class Constants
 
 
     public const string CancellationTokenStructName = "System.Threading.CancellationToken";
-    public const string GenerateHelperMethodAttrName = $"{TallyConnectorAttributesNameSpace}.GenerateHelperMethodAttribute";
-    public const string ImplementTallyServiceAttrName = $"{TallyConnectorAttributesNameSpace}.SourceGenerator.ImplementTallyService";
+    public const string GenerateHelperMethodAttrName = $"{TallyConnectorCoreAttributesNameSpace}.GenerateHelperMethodAttribute";
+    public const string ImplementTallyServiceAttrName = $"{TallyConnectorCoreAttributesNameSpace}.SourceGenerator.ImplementTallyService";
 
-    public const string TallyConnectorNameSpace = "TallyConnector.Core";
-    public const string TallyConnectorModelsNameSpace = $"{TallyConnectorNameSpace}.Models";
+    public const string TallyConnectorCoreNameSpace = "TallyConnector.Core";
+    public const string TallyConnectorModelsNameSpace = $"{TallyConnectorCoreNameSpace}.Models";
     public const string TallyConnectorCommonModelsNameSpace = $"{TallyConnectorModelsNameSpace}.Common";
     public const string YesEnum = $"{TallyConnectorModelsNameSpace}.YesNo.Yes";
     public const string NoEnum = $"{TallyConnectorModelsNameSpace}.YesNo.No";
     public const string TallyConnectorRequestModelsNameSpace = $"{TallyConnectorModelsNameSpace}.Request";
     public const string TallyConnectorResponseModelsNameSpace = $"{TallyConnectorModelsNameSpace}.Response";
-    public const string TallyConnectorAttributesNameSpace = $"{TallyConnectorNameSpace}.Attributes";
+    public const string TallyConnectorCoreAttributesNameSpace = $"{TallyConnectorCoreNameSpace}.Attributes";
     public const string TallyConnectorResponseNameSpace = $"{TallyConnectorModelsNameSpace}.Common.Response";
     public const string TallyConnectorPaginationNameSpace = $"TallyConnector.Models.Common.Pagination";
     public const string ReportResponseEnvelopeClassName = "ReportResponseEnvelope";
@@ -88,20 +88,20 @@ public static class Constants
     public const string BaseCompanyTypeName = $"{TallyConnectorModelsNameSpace}.BaseCompany";
     public const string FormFullTypeName = $"{TallyConnectorModelsNameSpace}.Form";
     public const string ExtensionsNameSpace = "TallyConnector.Core.Extensions";
-    public const string TDLCollectionAttributeName = $"{TallyConnectorAttributesNameSpace}.TDLCollectionAttribute";
-    public const string IgnoreForCreateDTOAttributeName = $"{TallyConnectorAttributesNameSpace}.IgnoreForCreateDTOAttribute";
-    public const string TDLFieldAttributeName = $"{TallyConnectorAttributesNameSpace}.TDLFieldAttribute";
-    public const string MaptoDTOAttributeName = $"{TallyConnectorAttributesNameSpace}.MaptoDTOAttribute";
+    public const string TDLCollectionAttributeName = $"{TallyConnectorCoreAttributesNameSpace}.TDLCollectionAttribute";
+    public const string IgnoreForCreateDTOAttributeName = $"{TallyConnectorCoreAttributesNameSpace}.IgnoreForCreateDTOAttribute";
+    public const string TDLFieldAttributeName = $"{TallyConnectorCoreAttributesNameSpace}.TDLFieldAttribute";
+    public const string MaptoDTOAttributeName = $"{TallyConnectorCoreAttributesNameSpace}.MaptoDTOAttribute";
 
-    public const string TDLFunctionsMethodNameAttributeName = $"{TallyConnectorAttributesNameSpace}.TDLFunctionsMethodNameAttribute";
-    public const string TDLCollectionsMethodNameAttributeName = $"{TallyConnectorAttributesNameSpace}.TDLCollectionsMethodNameAttribute";
-    public const string TDLFiltersMethodNameAttributeName = $"{TallyConnectorAttributesNameSpace}.TDLFiltersMethodNameAttribute";
-    public const string TDLComputeMethodNameAttributeName = $"{TallyConnectorAttributesNameSpace}.TDLComputeMethodNameAttribute";
-    public const string TDLNamesetMethodNameAttributeName = $"{TallyConnectorAttributesNameSpace}.TDLNamesetMethodNameAttribute";
-    public const string TDLObjectsMethodNameAttributeName = $"{TallyConnectorAttributesNameSpace}.TDLObjectsMethodNameAttribute";
-    public const string TDLDefaultFiltersMethodNameAttributeName = $"{TallyConnectorAttributesNameSpace}.TDLDefaultFiltersMethodNameAttribute";
-    public const string EnumChoiceAttributeName = $"{TallyConnectorAttributesNameSpace}.EnumXMLChoiceAttribute";
-    public const string ActivitySourceAttributeName = $"{TallyConnectorAttributesNameSpace}.SetActivitySourceAttribute";
+    public const string TDLFunctionsMethodNameAttributeName = $"{TallyConnectorCoreAttributesNameSpace}.TDLFunctionsMethodNameAttribute";
+    public const string TDLCollectionsMethodNameAttributeName = $"{TallyConnectorCoreAttributesNameSpace}.TDLCollectionsMethodNameAttribute";
+    public const string TDLFiltersMethodNameAttributeName = $"{TallyConnectorCoreAttributesNameSpace}.TDLFiltersMethodNameAttribute";
+    public const string TDLComputeMethodNameAttributeName = $"{TallyConnectorCoreAttributesNameSpace}.TDLComputeMethodNameAttribute";
+    public const string TDLNamesetMethodNameAttributeName = $"{TallyConnectorCoreAttributesNameSpace}.TDLNamesetMethodNameAttribute";
+    public const string TDLObjectsMethodNameAttributeName = $"{TallyConnectorCoreAttributesNameSpace}.TDLObjectsMethodNameAttribute";
+    public const string TDLDefaultFiltersMethodNameAttributeName = $"{TallyConnectorCoreAttributesNameSpace}.TDLDefaultFiltersMethodNameAttribute";
+    public const string EnumChoiceAttributeName = $"{TallyConnectorCoreAttributesNameSpace}.EnumXMLChoiceAttribute";
+    public const string ActivitySourceAttributeName = $"{TallyConnectorCoreAttributesNameSpace}.SetActivitySourceAttribute";
 
 
 
@@ -139,8 +139,8 @@ public static class Constants
     public const string GetBooleanFromLogicFieldFunctionName = "TC_GetBooleanFromLogicField";
     public const string GetTransformDateToXSDFunctionName = "TC_TransformDateToXSD";
 
-    public const string GetBooleanFromLogicFieldMethodName = $"{TallyConnectorNameSpace}.Constants.DefaultFunctions.GetBoolFunction";
-    public const string GetTransformDateToXSDMethodName = $"{TallyConnectorNameSpace}.Constants.DefaultFunctions.GetDateFunction";
+    public const string GetBooleanFromLogicFieldMethodName = $"{TallyConnectorCoreNameSpace}.Constants.DefaultFunctions.GetBoolFunction";
+    public const string GetTransformDateToXSDMethodName = $"{TallyConnectorCoreNameSpace}.Constants.DefaultFunctions.GetDateFunction";
 
 
     public const string StartActivityMethodName = "StartActivity";
@@ -180,11 +180,11 @@ public static class Constants
     }
     public class Attributes
     {
-        public const string PREFIX = TallyConnectorAttributesNameSpace;
+        public const string PREFIX = TallyConnectorCoreAttributesNameSpace;
 
         public class SourceGenerator
         {
-            public const string PREFIX = $"{TallyConnectorAttributesNameSpace}.SourceGenerator";
+            public const string PREFIX = $"{TallyConnectorCoreAttributesNameSpace}.SourceGenerator";
             public const string ImplementTallyRequestableObjectAttribute = $"{PREFIX}.ImplementTallyRequestableObjectAttribute";
 
         }

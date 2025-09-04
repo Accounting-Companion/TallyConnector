@@ -1,5 +1,4 @@
 ﻿using System.Collections.Immutable;
-using TallyConnector.TDLReportSourceGenerator.Models;
 
 namespace TallyConnector.TDLReportSourceGenerator.Services.AttributeTransformers.Class;
 public class ClassAttributesTransformer
@@ -8,6 +7,7 @@ public class ClassAttributesTransformer
     {
         {TDLCollectionAttributeName,new ClassCollectionAttributeTransformer() },
         {XmlRootAttributeName,new XMLRootAttributeTransformer() },
+        {MaptoDTOAttributeName,new MaptoDTOAttributeTransformer() },
         {TDLFunctionsMethodNameAttributeName,new FunctionNameExtractor(c=>c.TDLFunctions) },
     };
 
@@ -28,6 +28,20 @@ public class ClassAttributesTransformer
 
         // if class doesnot have xml root attribute
         data.XMLTag ??= data.Name.ToUpper();
+    }
+}
+
+internal class MaptoDTOAttributeTransformer : ClassPropertyAttributeTransformer
+{
+    public override void TransformAsync(ClassData data, AttributeData attributeData)
+    {
+        if (attributeData.AttributeClass?.TypeArguments is { Length: 1 } args &&
+     args[0] is INamedTypeSymbol symbol)
+        {
+            data.DTOName = symbol.Name;
+            data.DTOFullName = symbol.GetClassMetaName();
+            data.IgnoreForGenerateDTO = true;
+        }
     }
 }
 

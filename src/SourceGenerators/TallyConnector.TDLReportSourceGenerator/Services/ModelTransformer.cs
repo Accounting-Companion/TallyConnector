@@ -32,6 +32,8 @@ public class ModelTransformer
         }
         classData = new ClassData(symbol);
         ClassAttributesTransformer.TransformAsync(classData, symbol.GetAttributes());
+        classData.DTOName ??= $"{classData.Name}DTO";
+        classData.DTOFullName ??= $"{classData.Namespace}.DTO.{classData.Name}DTO";
         _symbolsCache[classData.FullName] = classData;
         if (symbol.BaseType != null && !classData.IsEnum && !symbol.BaseType.HasFullyQualifiedMetadataName("object"))
         {
@@ -184,7 +186,7 @@ public class ClassData : IClassAttributeTranfomable
     public string FullName { get => Symbol.GetClassMetaName(); }
     public string Name { get => Symbol.Name; }
     public string MetaName { get => $"{Name}Meta"; }
-    public string DTOName { get => $"{Name}DTO"; }
+    public string DTOName { get; set; }
     public string Namespace { get => Symbol.ContainingNamespace.ToString(); }
 
     public bool GenerateITallyRequestableObject { get; set; }
@@ -200,6 +202,8 @@ public class ClassData : IClassAttributeTranfomable
     public Dictionary<string, UniqueMember> AllUniqueMembers { get; } = [];
     public bool IsBaseIRequestableObject { get; internal set; }
     public Dictionary<string, ClassPropertyData> OveriddenProperties { get; internal set; } = [];
+    public bool IgnoreForGenerateDTO { get; internal set; }
+    public string DTOFullName { get; internal set; }
 
     public override string ToString()
     {

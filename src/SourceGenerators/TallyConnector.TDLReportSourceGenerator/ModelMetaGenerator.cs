@@ -85,10 +85,13 @@ public class ModelMetaGenerator : IIncrementalGenerator
                 {
                     new TDLEnvelopeGenerator(modelData, context, token)
                     .Generate();
+                }
+                if (!modelData.IgnoreForGenerateDTO)
+                {
+                    new PostDTOGenerator(modelData, context, token)
+                           .GenerateDTO();
 
                 }
-                new PostDTOGenerator(modelData, context, token)
-                       .GenerateDTO();
 
             }
         }

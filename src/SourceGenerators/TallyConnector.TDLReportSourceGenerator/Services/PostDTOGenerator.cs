@@ -30,7 +30,7 @@ internal class PostDTOGenerator
                     BaseList(
                         SingletonSeparatedList<BaseTypeSyntax>(
                             SimpleBaseType(
-                              _modelData.BaseData == null ? IdentifierName(Constants.Models.Abstractions.MetaObjectypeName) : GetGlobalNameforType($"{_modelData.BaseData.Namespace}.DTO.{_modelData.BaseData.DTOName}")))));
+                              _modelData.BaseData == null ? IdentifierName(Constants.Models.Abstractions.MetaObjectypeName) : GetGlobalNameforType(_modelData.BaseData.DTOFullName)))));
 
         var unit = CompilationUnit()
           .WithUsings(List(GetUsings()))
@@ -55,6 +55,7 @@ internal class PostDTOGenerator
         List<MemberDeclarationSyntax> members = [];
         foreach (var item in _modelData.Members)
         {
+            List<SyntaxNodeOrToken> attributes = [];
             var member = item.Value;
             if (member.IgnoreForDTO || member.XmlIgnore) continue;
             List<SyntaxToken> tokens = [Token(SyntaxKind.PublicKeyword)];
@@ -77,7 +78,48 @@ internal class PostDTOGenerator
                 NameSyntax = GenericName(Identifier(ListClassName), TypeArgumentList([NameSyntax]));
             }
             if (member.IsNullable) NameSyntax = NullableType(NameSyntax);
-            members.Add(PropertyDeclaration(NameSyntax, item.Key)
+
+            string attributeName = XMLElementAttributeName;
+            if (member.IsList && member.ListXMLTag != null)
+            {
+                attributeName = XMLArrayItemAttributeName;
+                attributes.SafeAdd(Attribute(GetGlobalNameforType(XMLArrayAttributeName))
+               .WithArgumentList(AttributeArgumentList(SeparatedList<AttributeArgumentSyntax>(
+                                               new SyntaxNodeOrToken[] { AttributeArgument(CreateStringLiteral(member.ListXMLTag)) }))));
+            }
+            List<SyntaxNodeOrToken> attributeArgs = [AttributeArgument(CreateStringLiteral(member.DefaultXMLData?.XmlTag ?? member.Name.ToUpper()))];
+            if (member.XMLData.Count > 0 && member.ClassData != null)
+            {
+                attributeArgs.SafeAdd(AttributeArgument(TypeOfExpression(
+                                                                GetGlobalNameforType(member.ClassData.FullName)))
+                                                        .WithNameEquals(
+                                                            NameEquals(
+                                                                IdentifierName("Type"))));
+            }
+
+            attributes.SafeAdd(Attribute(GetGlobalNameforType(attributeName))
+                .WithArgumentList(AttributeArgumentList(SeparatedList<AttributeArgumentSyntax>(
+                                                attributeArgs))));
+            foreach (var xmlData in member.XMLData)
+            {
+                if(xmlData.ClassData == null)
+                {
+                    continue;
+                }
+                attributes.SafeAdd(Attribute(GetGlobalNameforType(XMLElementAttributeName))
+                    .WithArgumentList(AttributeArgumentList(SeparatedList<AttributeArgumentSyntax>(
+                                                [
+                        AttributeArgument(CreateStringLiteral(xmlData.XmlTag ?? member.Name.ToUpper())),
+                         Token(SyntaxKind.CommaToken),
+                         AttributeArgument(
+                                         TypeOfExpression(
+                                             GetGlobalNameforType(xmlData.ClassData.FullName)))
+                                     .WithNameEquals(
+                                         NameEquals(
+                                     IdentifierName("Type")))
+                                                ]))));
+            }
+            PropertyDeclarationSyntax propertyDeclarationSyntax = PropertyDeclaration(NameSyntax, item.Key)
                 .WithAccessorList(
             AccessorList(
                 List(
@@ -90,7 +132,15 @@ internal class PostDTOGenerator
                             SyntaxKind.SetAccessorDeclaration)
                         .WithSemicolonToken(
                             Token(SyntaxKind.SemicolonToken))])))
-                .WithModifiers(TokenList(tokens)));
+                .WithModifiers(TokenList(tokens))
+                .WithAttributeLists(List(
+                         [
+                             AttributeList( SeparatedList<AttributeSyntax>(attributes))
+                         ]));
+
+
+
+            members.Add(propertyDeclarationSyntax);
 
         }
         members.Add(GetImplicitConverterSyntax());
@@ -189,7 +239,7 @@ internal class PostDTOGenerator
                                                                       Identifier("c")))
                                                               .WithExpressionBody(
                                                                   CastExpression(
-                                                                     GetGlobalNameforType($"{member.ClassData.Namespace}.DTO.{member.ClassData.DTOName}"),
+                                                                     GetGlobalNameforType(member.ClassData.DTOFullName),
                                                                       IdentifierName("c")))))));
                             var rightCollection = CollectionExpression(SeparatedList<CollectionElementSyntax>(SeparatedList<CollectionElementSyntax>(new SyntaxNodeOrToken[] { SpreadElement(rightSelect) })));
                             if (member.IsNullable)
