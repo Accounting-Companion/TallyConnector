@@ -5,7 +5,28 @@ namespace TallyConnector.Models.Base;
 [XmlRoot(ElementName = "VOUCHER")]
 [XmlType(AnonymousType = true)]
 [TDLCollection(Type = "Voucher")]
-public partial class Voucher : BaseTallyObject
+[MaptoDTO<BaseVoucherDTO>]
+public partial class BaseVoucher:BaseTallyObject,IBaseVoucherObject
+{
+
+}
+public class BaseVoucherDTO : BaseTallyObjectDTO
+{
+    [XmlAttribute("TAGNAME")]
+    public string? TagName { get; set; }
+
+    [XmlAttribute("TAGVALUE")]
+    public string? TagValue { get; set; }
+
+    [XmlAttribute("DATE")]
+    public string DateAttr { get; set; }
+
+    [XmlAttribute("VCHTYPE")]
+    public string VchTypeAttr { get; set; }
+}
+[XmlRoot(ElementName = "VOUCHER")]
+[XmlType(AnonymousType = true)]
+public partial class Voucher : BaseVoucher
 {
     [XmlElement(ElementName = "DATE")]
     public DateTime Date { get; set; }

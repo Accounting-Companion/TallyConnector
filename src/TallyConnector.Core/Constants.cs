@@ -7,6 +7,8 @@ public static class Constants
     // Search with Const Name 
 
     public const string Prefix = "TC_";
+
+    public const string GUIDSuffix = "AC_TC";
     public const string MaxNumberLength = "31";
     public const string MaxAmountLength = "26";
     public const int IMaxAmountLength = 26;
