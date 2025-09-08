@@ -7,8 +7,8 @@ public class TestswithComplexProperties
     //[Test]
     //public void VerifyComplexClass()
     //{
-    //    Type type = typeof(ModelWithComplexProperties);
-    //    Type complexPropType = typeof(ComplexPropertyModel);
+    //    DTOType type = typeof(ModelWithComplexProperties);
+    //    DTOType complexPropType = typeof(ComplexPropertyModel);
 
     //    Assert.That(type.IsAssignableTo(typeof(ITallyRequestableObject)), Is.True);
 
@@ -42,7 +42,7 @@ public class TestswithComplexProperties
     //    Assert.Multiple(() =>
     //    {
     //        Assert.That(collection1.Name, Is.EqualTo(colName));
-    //        Assert.That(collection1.Type, Is.EqualTo("Ledger"));
+    //        Assert.That(collection1.DTOType, Is.EqualTo("Ledger"));
     //        Assert.That(collection1.NativeFields, Is.Not.Null);
     //        Assert.That(collection1.NativeFields, Is.EqualTo(fetchList).AsCollection);
     //    });
@@ -147,7 +147,7 @@ public class TestswithComplexProperties
     //    });
 
     //    var xmlAttributeOverrides = ModelWithComplexProperties.GetXMLAttributeOverides();
-    //    var rootAttr = xmlAttributeOverrides[ReportResponseEnvelope<ModelWithComplexProperties>.TypeInfo, "Objects"];
+    //    var rootAttr = xmlAttributeOverrides[ReportResponseEnvelope<ModelWithComplexProperties>.DTOTypeInfo, "Objects"];
 
     //    Assert.That(rootAttr, Is.Not.Null);
     //    Assert.That(rootAttr.XmlElements, Has.Count.EqualTo(1));

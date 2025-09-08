@@ -8,6 +8,7 @@ public class ClassAttributesTransformer
         {TDLCollectionAttributeName,new ClassCollectionAttributeTransformer() },
         {XmlRootAttributeName,new XMLRootAttributeTransformer() },
         {MaptoDTOAttributeName,new MaptoDTOAttributeTransformer() },
+        {Attributes.Abstractions.GenerateITallyRequestableObectAttributeeName,new GenerateITallyRequestableObectAttributeTransformer() },
         {TDLFunctionsMethodNameAttributeName,new FunctionNameExtractor(c=>c.TDLFunctions) },
     };
 

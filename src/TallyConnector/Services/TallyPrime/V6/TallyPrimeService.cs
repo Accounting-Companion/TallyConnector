@@ -1,12 +1,26 @@
-﻿using TallyConnector.Models.Common;
+﻿using TallyConnector.Core.Attributes;
+using TallyConnector.Models.Common;
 using TallyConnector.Models.Common.Pagination;
 using TallyConnector.Models.TallyPrime.V6;
 using TallyConnector.Models.TallyPrime.V6.Masters;
 using TallyConnector.Models.TallyPrime.V6.Masters.Inventory;
 
 namespace TallyConnector.Services.TallyPrime.V6;
+[GenerateHelperMethod<Group>()]
+[GenerateHelperMethod<Ledger>()]
 
-public partial class TallyPrimeService : TallyCommonService
+[GenerateHelperMethod<CostCategory>(MethodNameSuffixPlural = "CostCategories")]
+[GenerateHelperMethod<CostCentre>()]
+
+//[GenerateHelperMethod<Unit>()]
+[GenerateHelperMethod<StockCategory>(MethodNameSuffixPlural = "StockCategories")]
+[GenerateHelperMethod<StockGroup>()]
+[GenerateHelperMethod<StockItem>()]
+
+[GenerateHelperMethod<VoucherType>()]
+
+[GenerateHelperMethod<Voucher>()]
+public partial class TallyPrimeService : TallyAbstractClient
 {
     public TallyPrimeService()
     {

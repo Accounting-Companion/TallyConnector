@@ -36,7 +36,7 @@ public static class DataGridExtensions
     {
         switch (e.PropertyName)
         {
-            case nameof(BaseAliasedMasterObject.Name) or nameof(Voucher.VoucherType):
+            case nameof(TallyConnector.Models.Base.Masters.BaseAliasedMasterObject.Name) or nameof(Voucher.VoucherType):
                 e.Column.DisplayIndex = 0;
                 break;
             case nameof(Voucher.VoucherNumber):
@@ -75,7 +75,7 @@ public static class DataGridExtensions
         Type? itemType = GetTypeFromIEnumerable(type);
 
 
-        // --- Step 3: Check if the Discovered Item Type is Simple ---
+        // --- Step 3: Check if the Discovered Item DTOType is Simple ---
 
         // If we couldn't determine an item type, we can't proceed.
         if (itemType == null)

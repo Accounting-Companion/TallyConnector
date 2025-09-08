@@ -56,8 +56,6 @@ public enum YesNo
 }
 public enum Action
 {
-    [EnumXMLChoice(Choice = "")]
-    None,
 
     Create,
 
@@ -67,12 +65,7 @@ public enum Action
 
     Cancel,
 }
-public enum GenerationMode
-{
-    Get,
-    GetMultiple,
-    Post,
-}
+
 public enum MasterLookupField
 {
     MasterId = 1,

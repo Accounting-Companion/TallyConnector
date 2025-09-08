@@ -4,7 +4,7 @@
 
 public class TallyXml 
 {
-    public string GetXML(XmlAttributeOverrides? attrOverrides = null, bool indent = false)
+    public string GetXML(XMLOverrideswithTracking? attrOverrides = null, bool indent = false)
     {
         TextWriter textWriter = new StringWriter();
         XmlWriterSettings settings = new()
@@ -16,7 +16,7 @@ public class TallyXml
             CheckCharacters = false,
             Indent = indent,
         };
-        XmlSerializerNamespaces ns = new(new[] { XmlQualifiedName.Empty });
+        XmlSerializerNamespaces ns = new([XmlQualifiedName.Empty]);
 
         XmlSerializer xmlSerializer = attrOverrides == null ? new(this.GetType()) : new(this.GetType(), attrOverrides);
         var writer = XmlWriter.Create(textWriter, settings);
@@ -25,15 +25,34 @@ public class TallyXml
     }
 
 }
+
 public class XMLOverrideswithTracking : XmlAttributeOverrides
 {
-    private readonly List<(Type type, string member, XmlAttributes attrs)> _entries = new();
+    private readonly Dictionary<(Type type, string member), XmlAttributes> _entries = [];
 
     public new void Add(Type type, string member, XmlAttributes attributes)
     {
         base.Add(type, member, attributes);
-        _entries.Add((type, member, attributes));
+
+        // overwrite if already exists
+        _entries[(type, member)] = attributes;
     }
 
-    public IEnumerable<(Type type, string member, XmlAttributes attrs)> Entries => _entries;
+    /// <summary>
+    /// Get all tracked entries.
+    /// </summary>
+    public IEnumerable<(Type type, string member, XmlAttributes attrs)> Entries =>
+        _entries.Select(kvp => (kvp.Key.type, kvp.Key.member, kvp.Value));
+
+    /// <summary>
+    /// Checks if an override exists for the given type and member.
+    /// </summary>
+    public bool Contains(Type type, string member) =>
+        _entries.ContainsKey((type, member));
+
+    /// <summary>
+    /// Try to get XmlAttributes for a given type and member.
+    /// </summary>
+    public bool TryGet(Type type, string member, out XmlAttributes attributes) =>
+        _entries.TryGetValue((type, member), out attributes);
 }

@@ -1,6 +1,8 @@
-﻿using System.Diagnostics;
+﻿using System.ComponentModel;
+using System.Diagnostics;
 using System.Globalization;
 using TallyConnector.Core;
+using TallyConnector.Core.Extensions;
 using TallyConnector.Core.Models.Interfaces;
 using TallyConnector.Core.Models.Response;
 
@@ -172,14 +174,11 @@ public partial class BaseTallyService : IBaseTallyService
             ])];
         var reqXml = reqEnvelope.GetXML();
         var respXml = await SendRequestAsync(reqXml, reqType, token).ConfigureAwait(false);
-        var XMLAttributeOverrides = new XMLOverrideswithTracking();
-        var XMLAttributes = new XmlAttributes();
-        XMLAttributes.XmlArrayItems.Add(new(objectName.ToUpper(),typeof(LicenseInfo)));
-        XMLAttributes.XmlArray = new("COLLECTION");
-        XMLAttributeOverrides.Add(typeof(RequestData), nameof(RequestData.Data), XMLAttributes);
+
+        var XMLAttributeOverrides = new XMLOverrideswithTracking().AddCollectionArrayItemAttributeOverrides(objectName.ToUpper(),typeof(LicenseInfo));
         RequestEnvelope envelope = XMLToObject.GetObjfromXml<RequestEnvelope>(respXml.Response ?? throw new Exception("Error While Getting License"), XMLAttributeOverrides);
         var data = envelope.Body.RequestData.Data;
-        if (data !=null && data is [LicenseInfo licenseInfo])
+        if (data != null && data is [LicenseInfo licenseInfo])
         {
             _licenseInfo = licenseInfo;
         }
@@ -525,115 +524,7 @@ public partial class BaseTallyService : IBaseTallyService
     }
 
 
-    public static void AddCustomResponseReportForPost(RequestEnvelope requestEnvelope)
-    {
-        var tDLMessage = requestEnvelope.Body.Desc.TDL.TDLMessage;
-
-        const string TDLVarName = "CCTotalMisMatch";
-        const string TDLObjectTypeVarName = "VTMark";
-        const string RemoteIdVarName = "VchType";
-        const string guidVarName = "VchDate";
-        const string MasterIdVarName = "VchMID";
-        const string ActionVarName = "CCCatName";
-        const string NameVarName = "CCLedName";
-        const string errorvarName = "VchNumber";
-
-
-        const string customReportName = "TC_CustomReportAndEvents";
-        const string collectionName = "TC_CustResultsColl";
-        const string importStartFunctionName = "TC_OnImportStart";
-        const string importObjectFunctionName = "TC_BeforeImportObject";
-        const string afterImportObjectFunctionName = "TC_AfterImportObject";
-        const string importEndFunctionName = "TC_OnImportEnd";
-
-        const string objectTypeFieldName = "TC_ObjectTypeField";
-        const string nameFieldName = "TC_NameField";
-        const string masterIdFieldName = "TC_MasterIdField";
-        const string guidFieldName = "TC_guidField";
-        const string remoteIdFieldName = "TC_RemoteIdField";
-        const string actionTypeFieldName = "TC_ActionTypeField";
-        const string respMessageFieldName = "TC_RespMsgField";
-
-
-        const string onKeyword = "On";
-        tDLMessage.ImportFile = [new("ALL MASTERS", [customReportName+":Yes"]){ IsModify=YesNo.Yes},
-            new(customReportName)
-            {
-                IsOption = YesNo.Yes,
-                ResponseReport = customReportName,
-                Delete =[onKeyword],
-                Add =
-                [
-                    $"{onKeyword} : Start Import : Yes : Call : {importStartFunctionName}",
-                    $"{onKeyword} : Import Object : Yes : Call : {importObjectFunctionName}",
-                    $"{onKeyword} : Import Object : Yes :  Import Object ",
-                    $"{onKeyword} : After Import Object  : Yes : Call : {afterImportObjectFunctionName}",
-                    $"{onKeyword} : End Import : Yes : Call : {importEndFunctionName}",
-                ]
-            }];
-        tDLMessage.Report = [new(customReportName)];
-        tDLMessage.Form = [new(customReportName) { ReportTag = "RESULTS" }];
-        tDLMessage.Part = [new(customReportName, collectionName)];
-        tDLMessage.Line = [new(customReportName, [objectTypeFieldName, nameFieldName, masterIdFieldName, guidFieldName, remoteIdFieldName, actionTypeFieldName, respMessageFieldName], "RESULT")];
-        tDLMessage.Field =
-        [
-            new(objectTypeFieldName, "ObjectType", $"${TDLObjectTypeVarName}"),
-            new(nameFieldName, "Name", $"${NameVarName}"),
-            new(masterIdFieldName, "MasterId", $"${MasterIdVarName}"),
-            new(guidFieldName, "GUID", $"${guidVarName}"),
-            new(remoteIdFieldName, "REMOTEID", $"${RemoteIdVarName}"),
-            new(actionTypeFieldName, "ACTION", $"${ActionVarName}"),
-            new(respMessageFieldName, "Error", $"${errorvarName}"),
-        ];
-        int ifcounter = 1;
-        int actionCOunter = 2;
-        string[] objectTypes = ["Group", "Ledger", "CostCategory"];
-        var mastersObjectActions = objectTypes.SelectMany(c =>
-        {
-            List<string> actions = [$"TC_IF{ifcounter:00} : IF : ##TC_ObjecType=\"{c}\""];
-            ifcounter++;
-            actions.Add($"TC_C{actionCOunter:00} : Set Object   : ({c},$Name).");
-            actionCOunter++;
-            actions.Add($"TC_IF{ifcounter:00} : ENDIF");
-            ifcounter++;
-            return actions;
-        });
-        tDLMessage.Functions =
-        [
-            new(importStartFunctionName){ Actions=[$"01A    : LISTDELETE : {TDLVarName}"]},
-            new(importObjectFunctionName){
-                Variables =["TC_ObjecType : String:$$type"],
-                Actions=
-                [
-                    $"TC00   : LISTADD   :{TDLVarName} :$REMOTEALTGUID:$REMOTEALTGUID:{RemoteIdVarName}",
-                    $"TC01   : LISTADD   :{TDLVarName} :$REMOTEALTGUID:##TC_ObjecType:{TDLObjectTypeVarName}",
-                ]},
-            new(afterImportObjectFunctionName){
-                Variables =["TC_ObjecType : String:$$type", "TC_Action : String:$$ImportAction"],
-                Actions=
-                [
-                    $"TC_C00 : LISTADD : {TDLVarName}:$REMOTEALTGUID:##TC_Action:{ActionVarName}",
-                    $"TC_C01 : LISTADD : {TDLVarName}:$REMOTEALTGUID:$$LastImportError:{errorvarName}",
-
-                    ..mastersObjectActions,
-
-                    $"TC_IF{ifcounter:00} : IF : ##TC_ObjecType=\"Voucher\"",
-                    $"TC_C{actionCOunter:00} : Set Object   : (Voucher,$$LastCreatedVchId).",
-                    $"TC_IF{ifcounter+1:00} : ENDIF",
-
-                    $"TC_IF{ifcounter+2:00} : IF :  not $$IsEmpty:$MasterId",
-                    $"TC_C50 : LISTADD : {TDLVarName}:$REMOTEALTGUID:$MasterId:{MasterIdVarName}",
-                    $"TC_C51 : LISTADD : {TDLVarName}:$REMOTEALTGUID:$Name:{NameVarName}",
-                    $"TC_C52 : LISTADD : {TDLVarName}:$REMOTEALTGUID:$GUID:{guidVarName}",
-                     $"TC_IF{ifcounter+3:00} : ENDIF",
-
-                ],
-            },
-            new(importEndFunctionName),
-        ];
-        tDLMessage.Collection = [new() { Name = collectionName, DataSource = $"Variable:{TDLVarName}" }];
-    }
-
+  
     public static DateTime GetToDate(DateTime now)
     {
         return new DateTime(now.Month > 3 ? now.Year + 1 : now.Year, 3, 31);

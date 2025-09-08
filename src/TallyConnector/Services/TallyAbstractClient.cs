@@ -1,7 +1,6 @@
 ﻿using TallyConnector.Core.Extensions;
 using TallyConnector.Core.Models.Interfaces;
 using TallyConnector.Core.Models.Response;
-using TallyConnector.Models.Base;
 using TallyConnector.Models.Common;
 using TallyConnector.Models.Common.Pagination;
 using static TallyConnector.Core.Constants;
@@ -10,23 +9,23 @@ using static TallyConnector.Core.Constants;
 
 namespace TallyConnector.Services;
 
-public class TallyCommonService : ITallyCommonService
+public abstract class TallyAbstractClient : ITallyAbstractClient
 {
     protected readonly ILogger _logger;
     protected readonly IBaseTallyService _baseHandler;
 
-    public TallyCommonService()
+    public TallyAbstractClient()
     {
         _baseHandler = new BaseTallyService();
         _logger = NullLogger.Instance;
     }
-    public TallyCommonService(IBaseTallyService baseTallyService)
+    public TallyAbstractClient(IBaseTallyService baseTallyService)
     {
         _baseHandler = baseTallyService;
         _logger = NullLogger.Instance;
     }
 
-    public TallyCommonService(ILogger logger, IBaseTallyService baseTallyService)
+    public TallyAbstractClient(ILogger logger, IBaseTallyService baseTallyService)
     {
         _logger = logger;
         _baseHandler = baseTallyService;
@@ -214,26 +213,54 @@ public class TallyCommonService : ITallyCommonService
         reqEnvelope.PopulateOptions(options);
         await _baseHandler.PopulateDefaultOptions(reqEnvelope, token);
         var reqXml = reqEnvelope.GetXML();
-        var resp = await _baseHandler.SendRequestAsync(reqXml, "", token);
+        var resp = await _baseHandler.SendRequestAsync(reqXml, "Getting Objects", token);
         var respEnv = XMLToObject.GetObjfromXml<ReportResponseEnvelope<T>>(resp.Response!, T.GetXMLAttributeOverides());
         return new(respEnv.TotalCount ?? 0, options?.RecordsPerPage ?? 1000, respEnv.Objects, options?.PageNum ?? 1);
     }
 
-    public async Task PostTallyObjectsAsync<T>(IEnumerable<T> objects, PostRequestOptions options) where T : TallyObject
+
+    private static IEnumerable<TallyObjectDTO> GetDtos<T>(IEnumerable<T> objects) where T : BaseTallyObject, IBaseObject
     {
-       
         foreach (var obj in objects)
         {
-            //obj.ToDTO();
-           // obj.ToDTO();
+            yield return obj.ToDTO();
         }
     }
-    public async Task PostObjectsAsync<T>(IEnumerable<T> objects, PostRequestOptions options) where T : TallyObjectDTO
+    public Task<List<PostResponse>> PostObjectsAsync<T>(IEnumerable<T> objects,
+                                          PostRequestOptions? options = null,
+                                          CancellationToken token = default) where T : BaseTallyObject, IBaseObject => PostDTOObjectsAsync(GetDtos(objects), options, token);
+    public async Task<List<PostResponse>> PostDTOObjectsAsync<T>(IEnumerable<T> objects,
+                                          PostRequestOptions? options = null,
+                                          CancellationToken token = default) where T : TallyObjectDTO, IBaseObject
     {
+
+        var postEnvelope = new RequestEnvelope();
+        postEnvelope.AddCustomResponseReportForPost();
+        postEnvelope.PopulateOptions(options);
+        var sv = postEnvelope.Body.Desc.StaticVariables ?? new();
+        bool stopatFirstError = options?.StopatFirstError ?? false;
+        switch (_baseHandler.LicenseInfo.TallyShortVersion.MajorVersion)
+        {
+            case > 3 and <=6:
+                sv.ExtraVars.Add(new System.Xml.Linq.XElement("SVIMPBEHAVIOUREXCP", stopatFirstError ? "Stop Import at First Exception" : "Ignore Exceptions and Import"));
+                break;
+            default:
+                break;
+        }
+        postEnvelope.Body.RequestData.Data ??= [];
         foreach (var obj in objects)
         {
-           // obj.ToDTO();
+            postEnvelope.Body.RequestData.Data.Add(obj);
         }
+        var reqXml = postEnvelope.GetXML(GetPostXMLOverrides());
+        var resp = await _baseHandler.SendRequestAsync(reqXml, "Posting Objects", token);
+        var respEnvelope = XMLToObject.GetObjfromXml<PostResponseEnvelope>(resp.Response!);
+        return respEnvelope.Objects;
+    }
+    public virtual XMLOverrideswithTracking? GetPostXMLOverrides()
+    {
+
+        return null;
     }
 
 }

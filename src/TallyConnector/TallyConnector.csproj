@@ -46,6 +46,7 @@
 
 	<ItemGroup>
 		<Compile Remove="Generated\**\*" />
+		<Compile Remove="_Generated\**\*" />
 	</ItemGroup>
 
 

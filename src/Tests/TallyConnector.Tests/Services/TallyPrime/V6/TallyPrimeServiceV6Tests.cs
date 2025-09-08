@@ -1,4 +1,5 @@
 ﻿using TallyConnector.Abstractions.Models;
+using TallyConnector.Core.Models;
 using TallyConnector.Core.Models.Request;
 using TallyConnector.Models.Base.Meta;
 using TallyConnector.Models.TallyPrime.V6;
@@ -21,6 +22,15 @@ public class TallyPrimeServiceV6Tests
         var c = new Vucheta();
         var scsa = c.Ledgers.Amount;
         var scds = c.Ledgers.As<AllLedgerEntryMeta>().Amount;
+    }
+    [Test]
+    public async Task PostGroupAsync()
+    {
+        Group group = new() { Name = "Test Group",Parent ="Sundry Debtors"};
+        Group group2 = new() { Name = "Test Group2",Parent ="Sundry Debtor"};
+        Ledger ledger = new() { Name = "Test ledger",Group = "Test Group" };
+        CostCategory cat = new() { Name = "Test CCAt" };
+       var resp = await primeService.PostGroupsAsync([group, group2]);
     }
 }
 public class Vucheta

@@ -83,7 +83,7 @@ public class PostResult
 {
 
     [XmlElement(ElementName = "NAME")]
-    public string? Name { get; set; } 
+    public string? Name { get; set; }
 
     [XmlElement(ElementName = "MASTERID")]
     public int MasterId { get; set; }
@@ -120,4 +120,30 @@ public class ReportResponseEnvelope<T> where T : ITallyRequestableObject
 
     [System.Xml.Serialization.XmlElementAttribute(ElementName = "TC_TOTALCOUNT")]
     public int? TotalCount { get; set; }
+}
+[XmlRoot("RESULTS")]
+public class PostResponseEnvelope
+{
+    [XmlElement(ElementName = "RESULT")]
+    public List<PostResponse> Objects { get; set; } = [];
+}
+public class PostResponse
+{
+    [XmlElement(ElementName = "OBJECTTYPE")]
+    public string ObjectType { get; set; } = null!;
+
+    [XmlElement(ElementName = "NAME")]
+    public string? Name { get; set; }
+
+    [XmlElement(ElementName = "MASTERID")]
+    public ulong? MasterId { get; set; }
+
+    [XmlElement(ElementName = "GUID")]
+    public string? GUID { get; set; }
+
+    [XmlElement(ElementName = "REMOTEID")]
+    public string RemoteId { get; set; } = null!;
+
+    [XmlElement(ElementName = "ERROR")]
+    public string? Error { get; set; }
 }

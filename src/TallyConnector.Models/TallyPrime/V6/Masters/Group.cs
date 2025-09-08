@@ -8,4 +8,5 @@ namespace TallyConnector.Models.TallyPrime.V6.Masters;
 [GenerateMeta]
 public partial  class Group : Base.Masters.Group
 {
+    //public override TallyObjectDTO ToDTO() => (DTO.GroupDTO)this;
 }

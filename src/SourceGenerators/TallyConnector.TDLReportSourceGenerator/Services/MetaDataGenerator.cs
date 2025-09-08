@@ -798,10 +798,10 @@ public class MetaDataGenerator
         {
             tokens.Add(Token(SyntaxKind.NewKeyword));
         }
-        string typeName = $"{_modelData.Namespace}.Meta.{_modelData.MetaName}";
+        string MetatypeName = $"{_modelData.Namespace}.Meta.{_modelData.MetaName}";
         List<MemberDeclarationSyntax> members = [
-            PropertyDeclaration(GetGlobalNameforType(typeName), "Meta")
-             .WithExpressionBody(ArrowExpressionClause(MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression,GetGlobalNameforType(typeName), IdentifierName("Instance"))))
+            PropertyDeclaration(GetGlobalNameforType(MetatypeName), "Meta")
+             .WithExpressionBody(ArrowExpressionClause(MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression,GetGlobalNameforType(MetatypeName), IdentifierName("Instance"))))
              .WithModifiers(TokenList(tokens))
             .WithSemicolonToken(Token(SyntaxKind.SemicolonToken))
             ];

@@ -8,7 +8,7 @@ public class BasicTestsWithSimpleProperties
     //[Test]
     //public void VerifyBasicClassWithNoInheritance()
     //{
-    //    Type type = typeof(ModelWithSimpleProperties);
+    //    DTOType type = typeof(ModelWithSimpleProperties);
 
     //    Assert.That(type.IsAssignableTo(typeof(ITallyRequestableObject)), Is.True);
 
@@ -38,7 +38,7 @@ public class BasicTestsWithSimpleProperties
     //    Assert.Multiple(() =>
     //    {
     //        Assert.That(collection1.Name, Is.EqualTo(colName));
-    //        Assert.That(collection1.Type, Is.EqualTo("Ledger"));
+    //        Assert.That(collection1.DTOType, Is.EqualTo("Ledger"));
     //        Assert.That(collection1.NativeFields, Is.Not.Null);
     //        Assert.That(collection1.NativeFields, Is.EqualTo(fetchList).AsCollection);
     //    });
@@ -86,7 +86,7 @@ public class BasicTestsWithSimpleProperties
     //    });
 
     //    var xmlAttributeOverrides = ModelWithSimpleProperties.GetXMLAttributeOverides();
-    //    var rootAttr = xmlAttributeOverrides[ReportResponseEnvelope<ModelWithSimpleProperties>.TypeInfo, "Objects"];
+    //    var rootAttr = xmlAttributeOverrides[ReportResponseEnvelope<ModelWithSimpleProperties>.DTOTypeInfo, "Objects"];
 
     //    Assert.That(rootAttr, Is.Not.Null);
     //    Assert.That(rootAttr.XmlElements, Has.Count.EqualTo(1));
@@ -123,8 +123,8 @@ public class BasicTestsWithSimpleProperties
     //[Test]
     //public void VerifyBasicClassWithInheritance()
     //{
-    //    Type baseType = typeof(ModelWithSimpleProperties);
-    //    Type type = typeof(ModelWithSimplePropertiesandInheritance);
+    //    DTOType baseType = typeof(ModelWithSimpleProperties);
+    //    DTOType type = typeof(ModelWithSimplePropertiesandInheritance);
 
     //    Assert.That(type.IsAssignableTo(typeof(ITallyRequestableObject)), Is.True);
 
@@ -160,7 +160,7 @@ public class BasicTestsWithSimpleProperties
     //    Assert.Multiple(() =>
     //    {
     //        Assert.That(collection1.Name, Is.EqualTo(colName));
-    //        Assert.That(collection1.Type, Is.EqualTo("Ledger"));
+    //        Assert.That(collection1.DTOType, Is.EqualTo("Ledger"));
     //        Assert.That(collection1.NativeFields, Is.Not.Null);
     //        Assert.That(collection1.NativeFields, Is.EqualTo(fetchList).AsCollection);
     //    });
@@ -219,7 +219,7 @@ public class BasicTestsWithSimpleProperties
     //    });
 
     //    var xmlAttributeOverrides = ModelWithSimplePropertiesandInheritance.GetXMLAttributeOverides();
-    //    var rootAttr = xmlAttributeOverrides[ReportResponseEnvelope<ModelWithSimplePropertiesandInheritance>.TypeInfo, "Objects"];
+    //    var rootAttr = xmlAttributeOverrides[ReportResponseEnvelope<ModelWithSimplePropertiesandInheritance>.DTOTypeInfo, "Objects"];
 
     //    Assert.That(rootAttr, Is.Not.Null);
     //    Assert.That(rootAttr.XmlElements, Has.Count.EqualTo(1));
@@ -255,8 +255,8 @@ public class BasicTestsWithSimpleProperties
     //[Test]
     //public void VerifyBasicClassWithInheritanceandOverridenProp()
     //{
-    //    Type baseType = typeof(ModelWithSimpleProperties);
-    //    Type type = typeof(ModelWithSimplePropertiesInheritanceandOveridden);
+    //    DTOType baseType = typeof(ModelWithSimpleProperties);
+    //    DTOType type = typeof(ModelWithSimplePropertiesInheritanceandOveridden);
 
     //    Assert.That(type.IsAssignableTo(typeof(ITallyRequestableObject)), Is.True);
 
@@ -292,7 +292,7 @@ public class BasicTestsWithSimpleProperties
     //    Assert.Multiple(() =>
     //    {
     //        Assert.That(collection1.Name, Is.EqualTo(colName));
-    //        Assert.That(collection1.Type, Is.EqualTo("Ledger"));
+    //        Assert.That(collection1.DTOType, Is.EqualTo("Ledger"));
     //        Assert.That(collection1.NativeFields, Is.Not.Null);
     //        Assert.That(collection1.NativeFields, Is.EqualTo(fetchList).AsCollection);
     //    });
@@ -351,7 +351,7 @@ public class BasicTestsWithSimpleProperties
     //    });
 
     //    var xmlAttributeOverrides = ModelWithSimplePropertiesInheritanceandOveridden.GetXMLAttributeOverides();
-    //    var rootAttr = xmlAttributeOverrides[ReportResponseEnvelope<ModelWithSimplePropertiesInheritanceandOveridden>.TypeInfo, "Objects"];
+    //    var rootAttr = xmlAttributeOverrides[ReportResponseEnvelope<ModelWithSimplePropertiesInheritanceandOveridden>.DTOTypeInfo, "Objects"];
         
     //    Assert.That(rootAttr, Is.Not.Null);
     //    Assert.That(rootAttr.XmlElements, Has.Count.EqualTo(1));

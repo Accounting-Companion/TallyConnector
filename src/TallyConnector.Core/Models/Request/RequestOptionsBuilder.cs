@@ -14,7 +14,7 @@ public class BaseRequestOptions
 }
 public class PostRequestOptions : BaseRequestOptions
 {
-
+    public bool StopatFirstError { get; set; } = false;
 }
 
 public class DateFilterRequestOptions : BaseRequestOptions

@@ -1,4 +1,5 @@
-﻿using TallyConnector.Abstractions.Models;
+﻿using System.Xml.Linq;
+using TallyConnector.Abstractions.Models;
 
 namespace TallyConnector.Core.Models.Request;
 
@@ -8,6 +9,7 @@ public class RequestEnvelope : TallyXml
 {
     public RequestEnvelope()
     {
+        Header = new(RequestType.Import,HType.Data, "All Masters");
     }
 
     public RequestEnvelope(HType Type, string iD)
@@ -89,7 +91,15 @@ public class StaticVariables
     [XmlElement(ElementName = "EXPLODEFLAG")]
     public string? ExplodeFlag { get; set; }
 
+    [XmlAnyElement]
+    public List<XElement> ExtraVars { get; set; } = [];
 
+
+}
+public enum RequestDataChoiceType
+{
+    DATA,
+    REQUESTDATA
 }
 [XmlRoot(ElementName = "BODY")]
 public class RequestBody
@@ -99,12 +109,14 @@ public class RequestBody
 
     [XmlElement(ElementName = "DATA")]
     public RequestData RequestData { get; set; } = new();
+
 }
 
 public class RequestData 
 {
 
     public List<BaseObject>? Data { get; set; }
+
     [XmlElement(ElementName = "RESULT")]
 
     public string? FuncResult { get; set; } = null;

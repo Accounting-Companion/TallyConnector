@@ -40,6 +40,7 @@ public static class Constants
 
 
     public const string CancellationTokenStructName = "System.Threading.CancellationToken";
+    public const string GenerateHelperMethodGenericAttrName = $"{TallyConnectorCoreAttributesNameSpace}.GenerateHelperMethodAttribute`1";
     public const string GenerateHelperMethodAttrName = $"{TallyConnectorCoreAttributesNameSpace}.GenerateHelperMethodAttribute";
     public const string ImplementTallyServiceAttrName = $"{TallyConnectorCoreAttributesNameSpace}.SourceGenerator.ImplementTallyService";
 
@@ -50,11 +51,14 @@ public static class Constants
     public const string NoEnum = $"{TallyConnectorModelsNameSpace}.YesNo.No";
     public const string TallyConnectorRequestModelsNameSpace = $"{TallyConnectorModelsNameSpace}.Request";
     public const string TallyConnectorResponseModelsNameSpace = $"{TallyConnectorModelsNameSpace}.Response";
+    public const string PostResponseFullName = $"{TallyConnectorResponseModelsNameSpace}.PostResponse";
     public const string TallyConnectorCoreAttributesNameSpace = $"{TallyConnectorCoreNameSpace}.Attributes";
     public const string TallyConnectorResponseNameSpace = $"{TallyConnectorModelsNameSpace}.Common.Response";
     public const string TallyConnectorPaginationNameSpace = $"TallyConnector.Models.Common.Pagination";
     public const string ReportResponseEnvelopeClassName = "ReportResponseEnvelope";
     public const string FieldFullTypeName = $"{TallyConnectorRequestModelsNameSpace}.Field";
+
+    public const string PostRequestOptionsFullName = $"{TallyConnectorRequestModelsNameSpace}.PostRequestOptions";
     public const string PartTypeName = "Part";
     public const string PartFullTypeName = $"{TallyConnectorRequestModelsNameSpace}.{PartTypeName}";
 
@@ -73,6 +77,7 @@ public static class Constants
 
     public const string BaseLedgerEntryInterfaceName = $"{TallyConnectorModelsNameSpace}.Interfaces.Voucher.IBaseLedgerEntry";
     public const string TallyObjectDTOInterfaceName = $"{TallyConnectorModelsNameSpace}.Interfaces.IBaseTallyObjectDTO";
+    public const string TallyObjectDTOName = $"{TallyConnectorModelsNameSpace}.TallyObjectDTO";
 
 
 
@@ -145,6 +150,10 @@ public static class Constants
 
     public const string StartActivityMethodName = "StartActivity";
 
+    public const string DTOTypeInfoFieldName = "DTOTypeInfo";
+
+    public const string TallyBaseClientFullName = "TallyConnector.Services.TallyAbstractClient";
+
     public const string DateOnlyType = "System.DateOnly";
 
     public const string SimpleFieldsCountFieldName = "SimpleFieldsCount";
@@ -156,7 +165,7 @@ public static class Constants
 
     public class Models
     {
-
+        public const string BaseAliasedMasterObjectFullName = $"TallyConnector.Models.Base.Masters.BaseAliasedMasterObject";
         public class Interfaces
         {
             public const string PREFIX = $"{TallyConnectorModelsNameSpace}.Interfaces";

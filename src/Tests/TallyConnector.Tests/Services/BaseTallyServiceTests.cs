@@ -31,7 +31,7 @@ public class BaseTallyServiceTests
     [Test]
     public async Task TestAutoColStats()
     {
-        TallyCommonService tallyCommonService = new TallyCommonService();
+        //TallyAbstractClient tallyCommonService = new TallyAbstractClient();
         // var objects =await tallyCommonService.GetObjectsAsync<Models.TallyPrime.V6.Masters.Ledger>(new());
         // await new TallyPrimeService().GetGroupsAsync();
         //await TallyService.(new TallyConnector.Core.Models.Request.AutoColumnReportPeriodRequestOptions());

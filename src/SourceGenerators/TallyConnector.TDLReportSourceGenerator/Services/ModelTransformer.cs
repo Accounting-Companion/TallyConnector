@@ -6,7 +6,7 @@ using TallyConnector.TDLReportSourceGenerator.Services.AttributeTransformers.Pro
 namespace TallyConnector.TDLReportSourceGenerator.Services;
 public class ModelTransformer
 {
-    private Dictionary<string, ClassData> _symbolsCache = [];
+    private readonly Dictionary<string, ClassData> _symbolsCache = [];
 
     public static ModelTransformer Instance => new();
 
@@ -18,9 +18,6 @@ public class ModelTransformer
                                   CancellationToken token = default)
     {
         ClassData modelData = await TransformClassSymbolAsync(symbol, token: token);
-        modelData.GenerateITallyRequestableObject = modelData.Symbol
-            .GetAttributes()
-            .Any(c => c.HasFullyQualifiedMetadataName(Attributes.Abstractions.GenerateITallyRequestableObectAttributeeName));
     }
 
     private async Task<ClassData> TransformClassSymbolAsync(INamedTypeSymbol symbol, string prefixPath = "",
@@ -135,7 +132,7 @@ public class ModelTransformer
                                                                          token);
 
             }
-          
+
             classData.Members[propertyData.Name] = propertyData;
 
         }
@@ -191,7 +188,7 @@ public class ClassData : IClassAttributeTranfomable
 
     public bool GenerateITallyRequestableObject { get; set; }
     public Dictionary<string, ClassPropertyData> Members { get; } = [];
-    
+
     public HashSet<string> DefaultTDLFunctions { get; internal set; } = [];
     public HashSet<string> TDLFunctions { get; internal set; } = [];
     public string XMLTag { get; internal set; }
@@ -204,6 +201,7 @@ public class ClassData : IClassAttributeTranfomable
     public Dictionary<string, ClassPropertyData> OveriddenProperties { get; internal set; } = [];
     public bool IgnoreForGenerateDTO { get; internal set; }
     public string DTOFullName { get; internal set; }
+    public GenerationMode GenerationMode { get; internal set; }
 
     public override string ToString()
     {

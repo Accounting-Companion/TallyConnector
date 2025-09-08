@@ -48,7 +48,7 @@ public interface ITallyService : IBaseTallyService
 //    #region Accounting Masters
 //    /*
 //     * Get and Post Methods of Accounting Masters - Currency, Group, Ledger,VoucherType, Cost Category, CostCetre
-//     * To Get an Item use Get[BaseServiceActivityName]Async<Type>(lookupvalue,options);
+//     * To Get an Item use Get[BaseServiceActivityName]Async<DTOType>(lookupvalue,options);
 //     * Ex:To Get Group use - await GetGroupAsync<Group>("BaseServiceActivityName");
 //     */
 //    #region Get - Methods 
@@ -76,7 +76,7 @@ public interface ITallyService : IBaseTallyService
 
 //    /*
 //     * Bulk Get Methods of Accounting Masters by Pagination - Currency, Group, Ledger,VoucherType, Cost Category, CostCetre
-//     * To Get Items with default type use Get[BaseServiceActivityName]sPaginatedAsync<Type>(options);
+//     * To Get Items with default type use Get[BaseServiceActivityName]sPaginatedAsync<DTOType>(options);
 //     * To Get Items with custom type use Get[BaseServiceActivityName]sPaginatedAsync(options);
 //     * Ex:To Get Groups with default type use - await GetGroupsPaginatedAsync(options);
 //     * Ex:To Get Groups with custom type use - await GetGroupsPaginatedAsync<Group>(options);
@@ -131,7 +131,7 @@ public interface ITallyService : IBaseTallyService
 
 //    /*
 //     * Bulk Get Methods of Accounting Masters without Pagination - Currency, Group, Ledger,VoucherType, Cost Category, CostCetre
-//     * To Get Items use Get[BaseServiceActivityName]sAsync<Type>(options);
+//     * To Get Items use Get[BaseServiceActivityName]sAsync<DTOType>(options);
 //     * Ex:To Get Groups use - await GetGroupsAsync<Group>(options);
 //     */
 //    #region Bulk Get - Methods
@@ -369,7 +369,7 @@ public interface ITallyService : IBaseTallyService
 //    #endregion
 
 //    /// <summary>
-//    /// Get Count of collection Type
+//    /// Get Count of collection DTOType
 //    /// </summary>
 //    /// <param name="options">options to configure this requests</param>
 //    /// <param name="requestType">options to configure this requests</param>

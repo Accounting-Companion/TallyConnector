@@ -3,7 +3,7 @@ using TallyConnector.Models.Common;
 using TallyConnector.Models.Common.Pagination;
 
 namespace TallyConnector.Services;
-public interface ITallyCommonService
+public interface ITallyAbstractClient
 {
     Task<LastAlterIdsRoot> GetLastAlterIdsAsync(BaseRequestOptions? baseRequestOptions = null, CancellationToken token = default);
     /// <summary>

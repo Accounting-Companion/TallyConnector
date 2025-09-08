@@ -1,4 +1,4 @@
-﻿namespace TallyConnector.TDLReportSourceGenerator.Models;
+﻿namespace TallyConnector.Abstractions.Models;
 
 public enum GenerationMode
 {

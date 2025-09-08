@@ -13,7 +13,7 @@ public class TDLEnvelopeGenerator
         this._modelData = modelData;
         this.context = context;
         this.token = token;
-        if(_modelData.IsBaseIRequestableObject)
+        if (_modelData.IsBaseIRequestableObject)
         {
             modifiers =
             [
@@ -30,9 +30,9 @@ public class TDLEnvelopeGenerator
                 Token(SyntaxKind.StaticKeyword)
             ];
         }
-        
+
     }
-    public void Generate()
+    public TDLEnvelopeGenerator Generate()
     {
         List<UsingDirectiveSyntax> usings = [
             UsingDirective(IdentifierName(ExtensionsNameSpace)),
@@ -62,6 +62,7 @@ public class TDLEnvelopeGenerator
     }))
           })).NormalizeWhitespace().ToFullString();
         context.AddSource($"Envelope.{_modelData.Name}_{_modelData.Namespace}.g.cs", unit);
+        return this;
     }
 
     private IEnumerable<MemberDeclarationSyntax> GetClassMembers()
@@ -257,5 +258,72 @@ public class TDLEnvelopeGenerator
            .WithParameterList(ParameterList())
            .WithBody(Block(statements));
         return methodDeclarationSyntax;
+    }
+
+    internal void GenerateDTOOveride()
+    {
+        if (_modelData.GenerationMode is Models.GenerationMode.Get or GenerationMode.GetMultiple)
+        {
+            return;
+        }
+        List<MemberDeclarationSyntax> members = [];
+        List<SyntaxToken> modifiers = [
+                            Token(SyntaxKind.PublicKeyword),
+                           Token(SyntaxKind.StaticKeyword)];
+
+        if (_modelData.BaseData != null && _modelData.BaseData.GenerateITallyRequestableObject && _modelData.BaseData.GenerationMode is GenerationMode.Post or GenerationMode.All)
+        {
+            modifiers.Add(Token(SyntaxKind.NewKeyword));
+        }
+        members.Add(FieldDeclaration(
+                    VariableDeclaration(
+                        IdentifierName("Type"))                    
+                    .WithVariables(
+                        SingletonSeparatedList<VariableDeclaratorSyntax>(
+                            VariableDeclarator(
+                                Identifier(DTOTypeInfoFieldName))
+                            .WithInitializer(
+                                EqualsValueClause(
+                                    TypeOfExpression(
+                                        GetGlobalNameforType(_modelData.DTOFullName)))))))
+            .WithModifiers(TokenList(modifiers)));
+        members.Add(MethodDeclaration(
+                    IdentifierName(TallyObjectDTOName),
+                    Identifier("ToDTO"))
+                .WithModifiers(
+                    TokenList(
+                        [
+                            Token(SyntaxKind.PublicKeyword),
+                            Token(SyntaxKind.OverrideKeyword)]))
+                .WithExpressionBody(
+                    ArrowExpressionClause(
+                        CastExpression(
+                            GetGlobalNameforType(_modelData.DTOFullName),
+                            ThisExpression())))
+                .WithSemicolonToken(
+                    Token(SyntaxKind.SemicolonToken)));
+        ClassDeclarationSyntax classDeclarationSyntax = ClassDeclaration(_modelData.Name)
+  .WithModifiers(TokenList([Token(
+                            TriviaList(
+                                Comment($@"/*
+* Generated based on {_modelData.FullName}
+*/")),
+                            SyntaxKind.PartialKeyword,
+                            TriviaList())]));
+        var unit = CompilationUnit()
+          .WithMembers(List(new MemberDeclarationSyntax[]
+          {
+                FileScopedNamespaceDeclaration(IdentifierName(_modelData.Namespace))
+                .WithNamespaceKeyword(Token(TriviaList(Trivia(NullableDirectiveTrivia(Token(SyntaxKind.EnableKeyword),true))),
+                                            SyntaxKind.NamespaceKeyword,
+                                            TriviaList()))
+                .WithMembers(List(new MemberDeclarationSyntax[]
+                {
+                    classDeclarationSyntax
+                    .WithMembers(List(members))
+                     .WithBaseList(BaseList(SingletonSeparatedList<BaseTypeSyntax>(SimpleBaseType(GetGlobalNameforType(Constants.Models.Interfaces.TallyRequestableObjectInterfaceFullName)))))
+    }))
+          })).NormalizeWhitespace().ToFullString();
+        context.AddSource($"ToDTO.{_modelData.Name}_{_modelData.Namespace}.g.cs", unit);
     }
 }

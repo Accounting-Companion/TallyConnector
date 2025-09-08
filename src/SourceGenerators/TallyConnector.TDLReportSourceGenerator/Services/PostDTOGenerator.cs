@@ -32,6 +32,33 @@ internal class PostDTOGenerator
                             SimpleBaseType(
                               _modelData.BaseData == null ? IdentifierName(Constants.Models.Abstractions.MetaObjectypeName) : GetGlobalNameforType(_modelData.BaseData.DTOFullName)))));
 
+
+        classDeclarationSyntax = classDeclarationSyntax.WithAttributeLists(
+            SingletonList<AttributeListSyntax>(
+                AttributeList(
+                    SeparatedList<AttributeSyntax>(
+                        new SyntaxNodeOrToken[]{
+                            Attribute(
+                                IdentifierName("XmlRoot"))
+                            .WithArgumentList(
+                                AttributeArgumentList(
+                                    SingletonSeparatedList<AttributeArgumentSyntax>(
+                                        AttributeArgument(
+                                            LiteralExpression(
+                                                SyntaxKind.StringLiteralExpression,
+                                                Literal(_modelData.XMLTag)))))),
+                            Token(SyntaxKind.CommaToken),
+                            Attribute(
+                                IdentifierName("XmlType"))
+                            .WithArgumentList(
+                                AttributeArgumentList(
+                                    SingletonSeparatedList<AttributeArgumentSyntax>(
+                                        AttributeArgument(
+                                            LiteralExpression(
+                                                SyntaxKind.TrueLiteralExpression))
+                                        .WithNameEquals(
+                                            NameEquals(
+                                                IdentifierName("AnonymousType"))))))}))));
         var unit = CompilationUnit()
           .WithUsings(List(GetUsings()))
           .WithMembers(List(new MemberDeclarationSyntax[]
@@ -91,7 +118,7 @@ internal class PostDTOGenerator
             if (member.XMLData.Count > 0 && member.ClassData != null)
             {
                 attributeArgs.SafeAdd(AttributeArgument(TypeOfExpression(
-                                                                GetGlobalNameforType(member.ClassData.FullName)))
+                                                                GetGlobalNameforType(member.ClassData.DTOFullName)))
                                                         .WithNameEquals(
                                                             NameEquals(
                                                                 IdentifierName("Type"))));
@@ -102,7 +129,7 @@ internal class PostDTOGenerator
                                                 attributeArgs))));
             foreach (var xmlData in member.XMLData)
             {
-                if(xmlData.ClassData == null)
+                if (xmlData.ClassData == null)
                 {
                     continue;
                 }
@@ -113,7 +140,7 @@ internal class PostDTOGenerator
                          Token(SyntaxKind.CommaToken),
                          AttributeArgument(
                                          TypeOfExpression(
-                                             GetGlobalNameforType(xmlData.ClassData.FullName)))
+                                             GetGlobalNameforType(xmlData.ClassData.DTOFullName)))
                                      .WithNameEquals(
                                          NameEquals(
                                      IdentifierName("Type")))
@@ -190,6 +217,12 @@ internal class PostDTOGenerator
 
         AssignAllMembers();
 
+        if (_modelData.Symbol.CheckBaseClass(Constants.Models.BaseAliasedMasterObjectFullName))
+        {
+            statements.Add(ExpressionStatement(InvocationExpression(MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression,IdentifierName(dtoVarName),IdentifierName("SetLanguageNameListAndAlias")))
+                .WithArgumentList(ArgumentList([Argument(IdentifierName($"{srcParameterName}.Alias"))]))));
+        }
+
         statements.Add(ReturnStatement(IdentifierName(dtoVarName)));
         var declaration = ConversionOperatorDeclaration(
            Token(SyntaxKind.ImplicitKeyword),
@@ -242,7 +275,7 @@ internal class PostDTOGenerator
                                                                      GetGlobalNameforType(member.ClassData.DTOFullName),
                                                                       IdentifierName("c")))))));
                             var rightCollection = CollectionExpression(SeparatedList<CollectionElementSyntax>(SeparatedList<CollectionElementSyntax>(new SyntaxNodeOrToken[] { SpreadElement(rightSelect) })));
-                            if (member.IsNullable)
+                            if (true)
                             {
                                 right = ConditionalExpression(IsPatternExpression(right,
                                                                                   ConstantPattern(LiteralExpression(SyntaxKind.NullLiteralExpression))),

@@ -84,9 +84,10 @@ public class ModelMetaGenerator : IIncrementalGenerator
                 if (modelData.GenerateITallyRequestableObject)
                 {
                     new TDLEnvelopeGenerator(modelData, context, token)
-                    .Generate();
+                    .Generate()
+                    .GenerateDTOOveride();
                 }
-                if (!modelData.IgnoreForGenerateDTO)
+                if (!modelData.IgnoreForGenerateDTO && modelData.GenerationMode is Models.GenerationMode.All)
                 {
                     new PostDTOGenerator(modelData, context, token)
                            .GenerateDTO();

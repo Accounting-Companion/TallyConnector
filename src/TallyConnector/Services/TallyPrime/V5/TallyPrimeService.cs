@@ -1,7 +1,7 @@
 ﻿namespace TallyConnector.Services.TallyPrime.V5;
 
 [ImplementTallyService(nameof(_baseHandler))]
-public partial class TallyPrimeService : TallyCommonService
+public partial class TallyPrimeService : TallyAbstractClient
 {
     public TallyPrimeService()
     {

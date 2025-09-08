@@ -9,7 +9,7 @@ public partial class BaseStatistics : IBaseObject
 }
 
 [TDLCollection(CollectionName = "STATObjects", Exclude = true)]
-[GenerateITallyRequestableObect]
+[GenerateITallyRequestableObect(Abstractions.Models.GenerationMode.Get)]
 [GenerateMeta]
 public partial class MasterStatistics : BaseStatistics
 {
@@ -23,7 +23,7 @@ public partial class MasterStatistics : BaseStatistics
 }
 
 [TDLCollection(CollectionName = "STATVchType", Exclude = true)]
-[GenerateITallyRequestableObect]
+[GenerateITallyRequestableObect(Abstractions.Models.GenerationMode.Get)]
 [GenerateMeta]
 public partial class VoucherStatistics : BaseStatistics
 {

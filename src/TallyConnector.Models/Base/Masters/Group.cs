@@ -78,4 +78,5 @@ public partial class Group : BaseAliasedMasterObject, Core.Models.Interfaces.Mas
     {
         return $"Group - {base.ToString()}";
     }
+   
 }
