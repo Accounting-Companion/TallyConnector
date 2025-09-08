@@ -219,7 +219,7 @@ internal class PostDTOGenerator
 
         if (_modelData.Symbol.CheckBaseClass(Constants.Models.BaseAliasedMasterObjectFullName))
         {
-            statements.Add(ExpressionStatement(InvocationExpression(MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression,IdentifierName(dtoVarName),IdentifierName("SetLanguageNameListAndAlias")))
+            statements.Add(ExpressionStatement(InvocationExpression(MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression, IdentifierName(dtoVarName), IdentifierName("SetLanguageNameListAndAlias")))
                 .WithArgumentList(ArgumentList([Argument(IdentifierName($"{srcParameterName}.Alias"))]))));
         }
 
@@ -255,14 +255,42 @@ internal class PostDTOGenerator
                     if (member.ClassData == null) continue;
                     if (!member.ClassData.IsTallyComplexObject)
                     {
+                        ExpressionSyntax rightSelect;
                         if (member.XMLData.Count > 0)
                         {
-                            continue;
+                            List<SyntaxNodeOrToken> swichArm = [];
+                            foreach (var xmlData in member.XMLData)
+                            {
+                                if(xmlData.ClassData == null) continue ;
+                                swichArm.SafeAdd(SwitchExpressionArm(DeclarationPattern(
+                                                                            GetGlobalNameforType(xmlData.ClassData.FullName),
+                                                                            SingleVariableDesignation(
+                                                                                Identifier("src"))),
+                                                                        CastExpression(
+                                                                            GetGlobalNameforType(xmlData.ClassData.DTOFullName),
+                                                                            IdentifierName("src"))));
+                            }
+                            swichArm.SafeAdd(SwitchExpressionArm(
+                                                                    DiscardPattern(),
+                                                                    CastExpression(
+                                                                        IdentifierName(member.ClassData.DTOFullName),
+                                                                        IdentifierName("c"))));
+                             rightSelect = InvocationExpression(MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression,
+                                                                           right,
+                                                                           IdentifierName("Select")))
+                                  .WithArgumentList(ArgumentList(SingletonSeparatedList<ArgumentSyntax>(
+                                                          Argument(
+                                                              SimpleLambdaExpression(
+                                                                  Parameter(
+                                                                      Identifier("c")))
+                                                              .WithExpressionBody(
+                                                                 SwitchExpression(IdentifierName("c")).WithArms(SeparatedList<SwitchExpressionArmSyntax>(
+                                                            swichArm)))))));
                         }
                         else
                         {
 
-                            var rightSelect = InvocationExpression(MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression,
+                             rightSelect = InvocationExpression(MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression,
                                                                            right,
                                                                            IdentifierName("Select")))
                                   .WithArgumentList(ArgumentList(SingletonSeparatedList<ArgumentSyntax>(
@@ -274,17 +302,18 @@ internal class PostDTOGenerator
                                                                   CastExpression(
                                                                      GetGlobalNameforType(member.ClassData.DTOFullName),
                                                                       IdentifierName("c")))))));
-                            var rightCollection = CollectionExpression(SeparatedList<CollectionElementSyntax>(SeparatedList<CollectionElementSyntax>(new SyntaxNodeOrToken[] { SpreadElement(rightSelect) })));
-                            if (true)
-                            {
-                                right = ConditionalExpression(IsPatternExpression(right,
-                                                                                  ConstantPattern(LiteralExpression(SyntaxKind.NullLiteralExpression))),
-                                                                                   LiteralExpression(SyntaxKind.NullLiteralExpression), rightCollection);
-                            }
-                            else
-                            {
-                                right = rightCollection;
-                            }
+                            
+                        }
+                        var rightCollection = CollectionExpression(SeparatedList<CollectionElementSyntax>(SeparatedList<CollectionElementSyntax>(new SyntaxNodeOrToken[] { SpreadElement(rightSelect) })));
+                        if (true)
+                        {
+                            right = ConditionalExpression(IsPatternExpression(right,
+                                                                              ConstantPattern(LiteralExpression(SyntaxKind.NullLiteralExpression))),
+                                                                               LiteralExpression(SyntaxKind.NullLiteralExpression), rightCollection);
+                        }
+                        else
+                        {
+                            right = rightCollection;
                         }
                     }
                     else
