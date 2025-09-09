@@ -1,13 +1,11 @@
-﻿using System.Text.Json.Serialization;
-using TallyConnector.Core.Models;
-using TallyConnector.Models.Common;
+﻿using TallyConnector.Models.Common;
 
 namespace TallyConnector.Models.Base;
 [XmlRoot(ElementName = "VOUCHER")]
 [XmlType(AnonymousType = true)]
 [TDLCollection(Type = "Voucher")]
 [MaptoDTO<BaseVoucherDTO>]
-public partial class BaseVoucher:TallyObject,IBaseVoucherObject
+public partial class BaseVoucher : TallyObject, IBaseVoucherObject
 {
     [IgnoreForCreateDTO]
     [XmlElement(ElementName = "ALTEREDON")]
@@ -26,6 +24,19 @@ public class BaseVoucherDTO : TallyObjectDTO
 
     [XmlAttribute("VCHTYPE")]
     public string VchTypeAttr { get; set; }
+
+    public void SetMasterIdasTagValue(ulong MasterId)
+    {
+        TagName = nameof(BaseVoucher.MasterId);
+        TagValue = MasterId.ToString();
+    }
+    public void SetVoucherNumberasTagValue(string vchType,string VchNo)
+    {
+        TagName = nameof(Voucher.VoucherNumber);
+        TagValue = VchNo;
+        VchTypeAttr = vchType;
+    }
+  
 }
 [XmlRoot(ElementName = "VOUCHER")]
 [XmlType(AnonymousType = true)]

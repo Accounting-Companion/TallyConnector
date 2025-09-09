@@ -222,7 +222,42 @@ internal class PostDTOGenerator
             statements.Add(ExpressionStatement(InvocationExpression(MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression, IdentifierName(dtoVarName), IdentifierName("SetLanguageNameListAndAlias")))
                 .WithArgumentList(ArgumentList([Argument(IdentifierName($"{srcParameterName}.Alias"))]))));
         }
-
+        if (_modelData.Symbol.CheckInterface(VoucherObjectInterfaceName))
+        {
+            statements.Add(ExpressionStatement(
+                   AssignmentExpression(
+                       SyntaxKind.SimpleAssignmentExpression,
+                       MemberAccessExpression(
+                           SyntaxKind.SimpleMemberAccessExpression,
+                           IdentifierName(dtoVarName),
+                           IdentifierName("DateAttr")),
+                        MemberAccessExpression(
+                             SyntaxKind.SimpleMemberAccessExpression,
+                             IdentifierName(dtoVarName),
+                             IdentifierName("Date"))))); 
+            MemberAccessExpressionSyntax masterIdMember = MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression, IdentifierName(srcParameterName), IdentifierName("MasterId"));
+            statements.Add(IfStatement(BinaryExpression(
+                    SyntaxKind.NotEqualsExpression,
+                    masterIdMember,
+                    LiteralExpression(
+                        SyntaxKind.NumericLiteralExpression,
+                        Literal(0))),
+                        Block(ExpressionStatement(
+                        InvocationExpression(
+                            IdentifierName($"{dtoVarName}.SetMasterIdasTagValue"))
+                        .WithArgumentList(
+                            ArgumentList( SeparatedList<ArgumentSyntax>(
+                                    new SyntaxNodeOrToken[]{
+                                        Argument(masterIdMember)}))))),
+                        ElseClause(Block(ExpressionStatement(
+                        InvocationExpression(
+                            IdentifierName($"{dtoVarName}.SetVoucherNumberasTagValue"))
+                        .WithArgumentList(
+                            ArgumentList(SeparatedList<ArgumentSyntax>(
+                                    new SyntaxNodeOrToken[]{
+                                        Argument(IdentifierName($"{srcParameterName}.VoucherType")),
+                                     Token(SyntaxKind.CommaToken),   Argument(IdentifierName($"{srcParameterName}.VoucherNumber")),}))))))));
+        }
         statements.Add(ReturnStatement(IdentifierName(dtoVarName)));
         var declaration = ConversionOperatorDeclaration(
            Token(SyntaxKind.ImplicitKeyword),
@@ -250,18 +285,33 @@ internal class PostDTOGenerator
                              IdentifierName(srcParameterName),
                              IdentifierName(member.Name));
 
-                if (member.IsList && member.IsComplex)
+                if (member.IsComplex)
                 {
                     if (member.ClassData == null) continue;
-                    if (!member.ClassData.IsTallyComplexObject)
+                    if (member.ClassData.IsTallyComplexObject)
                     {
+
+                        if (member.IsNullable)
+                        {
+                            right = ConditionalAccessExpression(right, InvocationExpression(MemberBindingExpression(IdentifierName("ToString"))));
+                        }
+                        else
+                        {
+                            right = InvocationExpression(MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression, right, IdentifierName("ToString")));
+                        }
+
+                    }
+                    else
+                    {
+                        if (member.IsList)
+                        {
                         ExpressionSyntax rightSelect;
                         if (member.XMLData.Count > 0)
                         {
                             List<SyntaxNodeOrToken> swichArm = [];
                             foreach (var xmlData in member.XMLData)
                             {
-                                if(xmlData.ClassData == null) continue ;
+                                    if (xmlData.ClassData == null) continue;
                                 swichArm.SafeAdd(SwitchExpressionArm(DeclarationPattern(
                                                                             GetGlobalNameforType(xmlData.ClassData.FullName),
                                                                             SingleVariableDesignation(
@@ -318,7 +368,8 @@ internal class PostDTOGenerator
                     }
                     else
                     {
-                        right = InvocationExpression(MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression, right, IdentifierName("ToString")));
+                            right = CastExpression(GetGlobalNameforType(member.ClassData.DTOFullName), right);
+                    }
                     }
 
                 }
@@ -332,8 +383,8 @@ internal class PostDTOGenerator
                             right = InvocationExpression(MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression, right, IdentifierName("ToTallyString")));
                             break;
                         default:
-                            right = InvocationExpression(MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression, right, IdentifierName("ToString")));
-                            continue;
+                            right = InvocationExpression(MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression, right, IdentifierName(member.IsEnum ? "ToTallyString" : "ToString")));
+                            break;
                     }
 
                 }
