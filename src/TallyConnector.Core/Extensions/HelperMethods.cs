@@ -1,7 +1,4 @@
-﻿using System.Security.AccessControl;
-using TallyConnector.Core.Models;
-using static TallyConnector.TDLReportSourceGenerator.Constants;
-using System.Linq;
+﻿using TallyConnector.Core.Models;
 namespace TallyConnector.Core.Extensions;
 public static class HelperMethods
 {
@@ -9,6 +6,7 @@ public static class HelperMethods
     {
         return yesNo == YesNo.Yes ? "Yes" : "No";
     }
+   
     public static string? ToTallyString(this bool? src)
     {
         if (src == null) return null;
@@ -20,11 +18,15 @@ public static class HelperMethods
     }
     public static string ToTallyString(this DateTime src)
     {
-        return src.ToString();
+        return src.ToString("dd-MM-yyyy");
     }
     public static string? ToTallyString(this DateTime? src)
     {
-        return src.ToString();
+        if (src.HasValue)
+        {
+            return src.Value.ToTallyString(); 
+        }
+        return null;;
     }
     public static Type RequestDataType = typeof(RequestData);
     public const string RequestDataMember = nameof(RequestData.Data);

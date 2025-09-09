@@ -1,6 +1,4 @@
-﻿using TallyConnector.Core.Models;
-
-namespace TallyConnector.Models.Base.Masters.Inventory;
+﻿namespace TallyConnector.Models.Base.Masters.Inventory;
 [XmlRoot(ElementName = "UNIT")]
 [XmlType(AnonymousType = true)]
 [TDLCollection(Type = "Unit")]

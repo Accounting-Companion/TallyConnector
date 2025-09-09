@@ -1,4 +1,7 @@
 ﻿
+
+using Microsoft.CodeAnalysis.CSharp.Syntax;
+
 namespace TallyConnector.TDLReportSourceGenerator.Services;
 
 internal class PostDTOGenerator
@@ -17,6 +20,10 @@ internal class PostDTOGenerator
 
     public PostDTOGenerator GenerateDTO()
     {
+        //if (_modelData.IsEnum) 
+        //{
+        //    return this;
+        //}
 
         ClassDeclarationSyntax classDeclarationSyntax = ClassDeclaration(_modelData.DTOName)
                   .WithModifiers(TokenList([Token(
@@ -305,71 +312,71 @@ internal class PostDTOGenerator
                     {
                         if (member.IsList)
                         {
-                        ExpressionSyntax rightSelect;
-                        if (member.XMLData.Count > 0)
-                        {
-                            List<SyntaxNodeOrToken> swichArm = [];
-                            foreach (var xmlData in member.XMLData)
+                            ExpressionSyntax rightSelect;
+                            if (member.XMLData.Count > 0)
                             {
+                                List<SyntaxNodeOrToken> swichArm = [];
+                                foreach (var xmlData in member.XMLData)
+                                {
                                     if (xmlData.ClassData == null) continue;
-                                swichArm.SafeAdd(SwitchExpressionArm(DeclarationPattern(
-                                                                            GetGlobalNameforType(xmlData.ClassData.FullName),
-                                                                            SingleVariableDesignation(
-                                                                                Identifier("src"))),
+                                    swichArm.SafeAdd(SwitchExpressionArm(DeclarationPattern(
+                                                                                GetGlobalNameforType(xmlData.ClassData.FullName),
+                                                                                SingleVariableDesignation(
+                                                                                    Identifier("src"))),
+                                                                            CastExpression(
+                                                                                GetGlobalNameforType(xmlData.ClassData.DTOFullName),
+                                                                                IdentifierName("src"))));
+                                }
+                                swichArm.SafeAdd(SwitchExpressionArm(
+                                                                        DiscardPattern(),
                                                                         CastExpression(
-                                                                            GetGlobalNameforType(xmlData.ClassData.DTOFullName),
-                                                                            IdentifierName("src"))));
+                                                                            IdentifierName(member.ClassData.DTOFullName),
+                                                                            IdentifierName("c"))));
+                                rightSelect = InvocationExpression(MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression,
+                                                                              right,
+                                                                              IdentifierName("Select")))
+                                     .WithArgumentList(ArgumentList(SingletonSeparatedList<ArgumentSyntax>(
+                                                             Argument(
+                                                                 SimpleLambdaExpression(
+                                                                     Parameter(
+                                                                         Identifier("c")))
+                                                                 .WithExpressionBody(
+                                                                    SwitchExpression(IdentifierName("c")).WithArms(SeparatedList<SwitchExpressionArmSyntax>(
+                                                               swichArm)))))));
                             }
-                            swichArm.SafeAdd(SwitchExpressionArm(
-                                                                    DiscardPattern(),
-                                                                    CastExpression(
-                                                                        IdentifierName(member.ClassData.DTOFullName),
-                                                                        IdentifierName("c"))));
-                             rightSelect = InvocationExpression(MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression,
-                                                                           right,
-                                                                           IdentifierName("Select")))
-                                  .WithArgumentList(ArgumentList(SingletonSeparatedList<ArgumentSyntax>(
-                                                          Argument(
-                                                              SimpleLambdaExpression(
-                                                                  Parameter(
-                                                                      Identifier("c")))
-                                                              .WithExpressionBody(
-                                                                 SwitchExpression(IdentifierName("c")).WithArms(SeparatedList<SwitchExpressionArmSyntax>(
-                                                            swichArm)))))));
-                        }
-                        else
-                        {
+                            else
+                            {
 
-                             rightSelect = InvocationExpression(MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression,
-                                                                           right,
-                                                                           IdentifierName("Select")))
-                                  .WithArgumentList(ArgumentList(SingletonSeparatedList<ArgumentSyntax>(
-                                                          Argument(
-                                                              SimpleLambdaExpression(
-                                                                  Parameter(
-                                                                      Identifier("c")))
-                                                              .WithExpressionBody(
-                                                                  CastExpression(
-                                                                     GetGlobalNameforType(member.ClassData.DTOFullName),
-                                                                      IdentifierName("c")))))));
-                            
-                        }
-                        var rightCollection = CollectionExpression(SeparatedList<CollectionElementSyntax>(SeparatedList<CollectionElementSyntax>(new SyntaxNodeOrToken[] { SpreadElement(rightSelect) })));
-                        if (true)
-                        {
-                            right = ConditionalExpression(IsPatternExpression(right,
-                                                                              ConstantPattern(LiteralExpression(SyntaxKind.NullLiteralExpression))),
-                                                                               LiteralExpression(SyntaxKind.NullLiteralExpression), rightCollection);
+                                rightSelect = InvocationExpression(MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression,
+                                                                              right,
+                                                                              IdentifierName("Select")))
+                                     .WithArgumentList(ArgumentList(SingletonSeparatedList<ArgumentSyntax>(
+                                                             Argument(
+                                                                 SimpleLambdaExpression(
+                                                                     Parameter(
+                                                                         Identifier("c")))
+                                                                 .WithExpressionBody(
+                                                                     CastExpression(
+                                                                        GetGlobalNameforType(member.ClassData.DTOFullName),
+                                                                         IdentifierName("c")))))));
+
+                            }
+                            var rightCollection = CollectionExpression(SeparatedList<CollectionElementSyntax>(SeparatedList<CollectionElementSyntax>(new SyntaxNodeOrToken[] { SpreadElement(rightSelect) })));
+                            if (true)
+                            {
+                                right = ConditionalExpression(IsPatternExpression(right,
+                                                                                  ConstantPattern(LiteralExpression(SyntaxKind.NullLiteralExpression))),
+                                                                                   LiteralExpression(SyntaxKind.NullLiteralExpression), rightCollection);
+                            }
+                            else
+                            {
+                                right = rightCollection;
+                            }
                         }
                         else
                         {
-                            right = rightCollection;
-                        }
-                    }
-                    else
-                    {
                             right = CastExpression(GetGlobalNameforType(member.ClassData.DTOFullName), right);
-                    }
+                        }
                     }
 
                 }
@@ -410,5 +417,93 @@ internal class PostDTOGenerator
             UsingDirective(IdentifierName(TallyConnectorRequestModelsNameSpace)),
             UsingDirective(IdentifierName(Constants.Models.Abstractions.PREFIX))
                     ];
+    }
+
+    internal void GenerateEnumExtension()
+    {
+        ClassDeclarationSyntax classDeclarationSyntax = ClassDeclaration($"{_modelData.Name}HelperMethods")
+                  .WithModifiers(TokenList([Token(
+                            TriviaList(
+                                Comment($@"/*
+* Generated based on {_modelData.FullName}
+*/")),
+                            SyntaxKind.PublicKeyword,
+                            TriviaList()),Token(SyntaxKind.StaticKeyword),Token(SyntaxKind.PartialKeyword)]));
+
+        List<MemberDeclarationSyntax> members = [];
+        List<SyntaxNodeOrToken> switchExpressions = [];
+        foreach (var classProperty in _modelData.Members.Values)
+        {
+            switchExpressions.SafeAdd(SwitchExpressionArm(ConstantPattern(
+                                       MemberAccessExpression(
+                                           SyntaxKind.SimpleMemberAccessExpression,
+                                           GetGlobalNameforType(_modelData.FullName),
+                                           IdentifierName(classProperty.Name))),
+                                   LiteralExpression(
+                                       SyntaxKind.StringLiteralExpression,
+                                       Literal(classProperty.DefaultXMLData?.EnumChoices.Last().Choice ?? string.Empty))));
+        }
+
+        members.Add(MethodDeclaration(PredefinedType(Token(SyntaxKind.StringKeyword)), "ToTallyString")
+            .WithModifiers(TokenList([Token(SyntaxKind.PublicKeyword), Token(SyntaxKind.StaticKeyword)]))
+             .WithParameterList(
+                ParameterList(
+                    SingletonSeparatedList<ParameterSyntax>(
+                        Parameter(
+                            Identifier("src"))
+                        .WithModifiers(
+                            TokenList(
+                                Token(SyntaxKind.ThisKeyword)))
+                        .WithType(
+                            GetGlobalNameforType(_modelData.FullName)))))
+            .WithExpressionBody(ArrowExpressionClause(SwitchExpression(
+                        IdentifierName("src")).WithArms(
+                        SeparatedList<SwitchExpressionArmSyntax>(
+                            switchExpressions))))
+            .WithSemicolonToken(Token(SyntaxKind.SemicolonToken)));
+
+        members.Add(MethodDeclaration(PredefinedType(Token(SyntaxKind.StringKeyword)), "ToTallyString")
+            .WithModifiers(TokenList([Token(SyntaxKind.PublicKeyword), Token(SyntaxKind.StaticKeyword)]))
+            .WithExpressionBody(ArrowExpressionClause(
+                    ConditionalExpression(
+                        IsPatternExpression(
+                            IdentifierName("src"),
+                            ConstantPattern(
+                                LiteralExpression(
+                                    SyntaxKind.NullLiteralExpression))),
+                        LiteralExpression(
+                            SyntaxKind.NullLiteralExpression),
+                        InvocationExpression(
+                            IdentifierName("ToTallyString"))
+                        .WithArgumentList(
+                            ArgumentList(
+                                SingletonSeparatedList<ArgumentSyntax>(
+                                    Argument(
+                                        IdentifierName("src"))))))))
+             .WithParameterList(
+                ParameterList(
+                    SingletonSeparatedList<ParameterSyntax>(
+                        Parameter(
+                            Identifier("src"))
+                        .WithModifiers(
+                            TokenList(
+                                Token(SyntaxKind.ThisKeyword)))
+                        .WithType(
+                           NullableType( GetGlobalNameforType(_modelData.FullName))))))
+             .WithSemicolonToken(Token(SyntaxKind.SemicolonToken)));
+        var unit = CompilationUnit()
+       .WithMembers(List(new MemberDeclarationSyntax[]
+       {
+                FileScopedNamespaceDeclaration(IdentifierName(ExtensionsNameSpace))
+                .WithNamespaceKeyword(Token(TriviaList(Trivia(NullableDirectiveTrivia(Token(SyntaxKind.EnableKeyword),true))),
+                                            SyntaxKind.NamespaceKeyword,
+                                            TriviaList()))
+                .WithMembers(List(new MemberDeclarationSyntax[]
+                {
+                    classDeclarationSyntax
+                    .WithMembers(List(members))
+                }))
+       })).NormalizeWhitespace().ToFullString();
+        _context.AddSource($"EnumExt.{_modelData.Name}_{_modelData.Namespace}.g.cs", unit);
     }
 }

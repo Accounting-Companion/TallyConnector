@@ -209,7 +209,7 @@ public static class EnvelopeExtensions
                     //$"TC_C{++actionCounter:00} : Set     : {dummyVarName} : $$Evaluate:($$sprintf:\"SetObject:(%s,$Name).\":##TC_ObjecType)",
                     $"TC_IF{++ifcounter:00} : ENDIF",
 
-                    $"TC_IF{++ifcounter:00} : IF :  ((not $$IsEmpty:$MasterId) and ##TC_ObjecType <> \"Voucher\") or  (##TC_ObjecType = \"Voucher\" AND $REMOTEALTGUID = ##VRemoteId)",
+                    $"TC_IF{++ifcounter:00} : IF :  (not $$IsEmpty:$MasterId) and ((##TC_ObjecType <> \"Voucher\") or  (##TC_ObjecType = \"Voucher\" AND $REMOTEALTGUID = ##VRemoteId))",
                     $"TC_C50 : LISTADD : {TDLVarName}:$REMOTEALTGUID:$MasterId:{MasterIdVarName}",
                     $"TC_C51 : LISTADD : {TDLVarName}:$REMOTEALTGUID:$Name:{NameVarName}",
                     $"TC_C52 : LISTADD : {TDLVarName}:$REMOTEALTGUID:$GUID:{guidVarName}",

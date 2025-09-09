@@ -1,7 +1,4 @@
-﻿using TallyConnector.Abstractions.Models;
-using TallyConnector.Core.Models;
-
-namespace TallyConnector.Core.Attributes;
+﻿namespace TallyConnector.Core.Attributes;
 
 
 [AttributeUsage(AttributeTargets.Class, AllowMultiple = true, Inherited = false)]

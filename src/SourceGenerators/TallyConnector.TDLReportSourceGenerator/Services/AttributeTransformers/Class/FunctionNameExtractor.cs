@@ -1,6 +1,4 @@
-﻿using TallyConnector.TDLReportSourceGenerator.Models;
-
-namespace TallyConnector.TDLReportSourceGenerator.Services.AttributeTransformers.Class;
+﻿namespace TallyConnector.TDLReportSourceGenerator.Services.AttributeTransformers.Class;
 public class FunctionNameExtractor : ClassPropertyAttributeTransformer
 {
     private readonly Func<ClassData, HashSet<string>> selector;

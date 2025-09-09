@@ -1,5 +1,4 @@
-﻿using System.Linq.Expressions;
-using TallyConnector.Abstractions.Models;
+﻿using TallyConnector.Abstractions.Models;
 
 namespace TallyConnector.Core.Models.Request;
 public class BaseRequestOptions

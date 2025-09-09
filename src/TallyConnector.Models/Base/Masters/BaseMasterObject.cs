@@ -1,7 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
-using System.Xml.Linq;
-using TallyConnector.Core.Models.DTO;
-using TallyConnector.Models.Common;
+﻿using TallyConnector.Models.Common;
 
 namespace TallyConnector.Models.Base.Masters;
 

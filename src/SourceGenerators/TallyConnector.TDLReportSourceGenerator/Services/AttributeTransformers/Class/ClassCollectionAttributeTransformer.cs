@@ -1,5 +1,4 @@
-﻿using TallyConnector.TDLReportSourceGenerator.Models;
-using TallyConnector.TDLReportSourceGenerator.Services.AttributeTransformers.Common;
+﻿using TallyConnector.TDLReportSourceGenerator.Services.AttributeTransformers.Common;
 
 namespace TallyConnector.TDLReportSourceGenerator.Services.AttributeTransformers.Class;
 public class ClassCollectionAttributeTransformer : ClassPropertyAttributeTransformer

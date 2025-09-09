@@ -1,6 +1,4 @@
-﻿using System.Reflection;
-
-namespace TallyConnector.Abstractions.Models;
+﻿namespace TallyConnector.Abstractions.Models;
 public class PropertyMetaData
 {
 

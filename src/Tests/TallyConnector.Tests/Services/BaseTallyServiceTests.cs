@@ -1,7 +1,4 @@
-﻿using TallyConnector.Core.Models.Request;
-using TallyConnector.Models.TallyPrime.V6.Masters;
-using TallyConnector.Models.TallyPrime.V6.Masters.Meta;
-using TallyConnector.Services;
+﻿using TallyConnector.Services;
 
 namespace TallyConnector.Tests.Services;
 

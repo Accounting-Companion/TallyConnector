@@ -1,5 +1,4 @@
-﻿using Microsoft.CodeAnalysis.CSharp.Syntax;
-using TallyConnector.TDLReportSourceGenerator.Models;
+﻿using TallyConnector.TDLReportSourceGenerator.Models;
 
 namespace TallyConnector.TDLReportSourceGenerator.Services;
 public class TDLEnvelopeGenerator
@@ -262,6 +261,10 @@ public class TDLEnvelopeGenerator
 
     internal void GenerateDTOOveride()
     {
+        if (_modelData.IsEnum)
+        {
+            return;
+        }
         if (_modelData.GenerationMode is Models.GenerationMode.Get or GenerationMode.GetMultiple)
         {
             return;

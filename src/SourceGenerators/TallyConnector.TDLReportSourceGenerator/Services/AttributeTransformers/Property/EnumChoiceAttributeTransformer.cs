@@ -1,6 +1,4 @@
-﻿using TallyConnector.TDLReportSourceGenerator.Models;
-
-namespace TallyConnector.TDLReportSourceGenerator.Services.AttributeTransformers.Property;
+﻿namespace TallyConnector.TDLReportSourceGenerator.Services.AttributeTransformers.Property;
 
 public class EnumChoiceAttributeTransformer : AbstractPropertyAttributeTransformer
 {

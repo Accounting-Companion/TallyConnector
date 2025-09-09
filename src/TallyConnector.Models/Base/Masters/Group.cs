@@ -1,6 +1,4 @@
-﻿
-using TallyConnector.Core.Models;
-using TallyConnector.Models.Common;
+﻿using TallyConnector.Models.Common;
 
 namespace TallyConnector.Models.Base.Masters;
 

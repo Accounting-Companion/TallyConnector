@@ -89,8 +89,17 @@ public class ModelMetaGenerator : IIncrementalGenerator
                 }
                 if (!modelData.IgnoreForGenerateDTO && modelData.GenerationMode is Models.GenerationMode.All)
                 {
-                    new PostDTOGenerator(modelData, context, token)
-                           .GenerateDTO();
+                    PostDTOGenerator postDTOGenerator = new(modelData, context, token);
+                    if (!modelData.IsEnum)
+                    {
+                        postDTOGenerator
+                               .GenerateDTO();
+                    }
+                    else 
+                    {
+                        postDTOGenerator
+                              .GenerateEnumExtension();
+                    }
 
                 }
 

@@ -152,20 +152,29 @@ public class HelperMethodsGenerator
         const string optionsParamName = "options";
 
         List<SyntaxNodeOrToken> methodArgs = [];
+
         methodArgs.SafeAddArgument(IdentifierName(objectsParamName));
         methodArgs.SafeAddArgument(IdentifierName(optionsParamName));
         methodArgs.SafeAddArgument(IdentifierName(CancellationTokenArgName));
 
         List<SyntaxNodeOrToken> methodParams = [];
+
+        List<SyntaxNodeOrToken> method2Params = [];
         
         methodParams.SafeAdd(Parameter(Identifier(objectsParamName)).WithType(QualifiedName(IdentifierName(CollectionsNameSpace), GenericName(IEnumerableClassName)
             .WithTypeArgumentList(TypeArgumentList(SeparatedList<TypeSyntax>(
                                 new SyntaxNodeOrToken[] {GetGlobalNameforType(obj.FullName) }))))));
-        methodParams.SafeAdd(Parameter(Identifier(optionsParamName)).WithType(NullableType( GetGlobalNameforType(PostRequestOptionsFullName)))
+        method2Params.SafeAdd(Parameter(Identifier(objectsParamName)).WithType(QualifiedName(IdentifierName(CollectionsNameSpace), GenericName(IEnumerableClassName)
+            .WithTypeArgumentList(TypeArgumentList(SeparatedList<TypeSyntax>(
+                                new SyntaxNodeOrToken[] { GetGlobalNameforType(obj.DTOFullName) }))))));
+        ParameterSyntax optionsParam = Parameter(Identifier(optionsParamName)).WithType(NullableType(GetGlobalNameforType(PostRequestOptionsFullName)))
             .WithDefault(EqualsValueClause(LiteralExpression(
                                                         SyntaxKind.DefaultLiteralExpression,
-                                                        Token(SyntaxKind.NullKeyword)))));
+                                                        Token(SyntaxKind.NullKeyword))));
+        methodParams.SafeAdd(optionsParam);
+        method2Params.SafeAdd(optionsParam);
         methodParams.SafeAdd(GetCancellationTokenParameterSyntax());
+        method2Params.SafeAdd(GetCancellationTokenParameterSyntax());
 
         var methodDeclartion = MethodDeclaration(GenericName(Identifier("Task"))
             .WithTypeArgumentList(TypeArgumentList(SeparatedList<TypeSyntax>(
@@ -185,7 +194,25 @@ public class HelperMethodsGenerator
             .WithArgumentList(ArgumentList(SeparatedList<ArgumentSyntax>(methodArgs)))))
                  .WithSemicolonToken(
                     Token(SyntaxKind.SemicolonToken));
-        return [methodDeclartion];
+        var dtomethodDeclartion = MethodDeclaration(GenericName(Identifier("Task"))
+           .WithTypeArgumentList(TypeArgumentList(SeparatedList<TypeSyntax>(
+                               new SyntaxNodeOrToken[] { QualifiedName(IdentifierName(CollectionsNameSpace), GenericName(Identifier(ListClassName))
+                .WithTypeArgumentList(TypeArgumentList(SeparatedList<TypeSyntax>(
+                                new SyntaxNodeOrToken[] { GetGlobalNameforType(PostResponseFullName) })))) })))
+           , $"PostDTO{obj.PluralSuffix}Async")
+           .WithParameterList(ParameterList(SeparatedList<ParameterSyntax>(
+                       method2Params)))
+           .WithModifiers(TokenList(
+                           [
+                               Token(SyntaxKind.PublicKeyword)]))
+
+           .WithExpressionBody(ArrowExpressionClause(InvocationExpression(GenericName("PostDTOObjectsAsync")
+           .WithTypeArgumentList(TypeArgumentList(SeparatedList<TypeSyntax>(
+                               new SyntaxNodeOrToken[] { GetGlobalNameforType(obj.DTOFullName) }))))
+           .WithArgumentList(ArgumentList(SeparatedList<ArgumentSyntax>(methodArgs)))))
+                .WithSemicolonToken(
+                   Token(SyntaxKind.SemicolonToken));
+        return [methodDeclartion, dtomethodDeclartion];
     }
 
     private MemberDeclarationSyntax GetPostXMLOverrides()
@@ -249,6 +276,7 @@ public class ObjectData
         UniqueSuffix = suffix;
         Name = TypeSymbol.Name;
         FullName = TypeSymbol.GetClassMetaName();
+        DTOFullName =$"{TypeSymbol.ContainingNamespace}.DTO.{Name}DTO";
     }
 
     public string UniqueSuffix { get; set; }
@@ -256,6 +284,7 @@ public class ObjectData
     public string PluralSuffix { get; set; }
     public string Name { get; set; }
     public string FullName { get; set; }
+    public string DTOFullName { get; set; }
     public INamedTypeSymbol TypeSymbol { get; set; }
     public GenerationMode GenerationMode { get; set; }
 }

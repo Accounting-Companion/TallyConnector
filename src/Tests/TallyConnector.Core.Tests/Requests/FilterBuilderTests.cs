@@ -1,5 +1,4 @@
-﻿using TallyConnector.Core.Models.Request;
-using static NUnit.Framework.Legacy.StringAssert;
+﻿using static NUnit.Framework.Legacy.StringAssert;
 namespace TallyConnector.Core.Tests.Requests;
 public class FilterBuilderTests
 {
