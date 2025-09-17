@@ -44,7 +44,7 @@ public class ServiceHelperMethodGenerator : IIncrementalGenerator
                         switch (namedArg.Key)
                         {
                             case "MethodNameSuffixPlural":
-                                PluralName =(string? )namedArg.Value.Value;
+                                PluralName = (string?)namedArg.Value.Value;
                                 break;
                             default:
                                 break;
@@ -138,12 +138,78 @@ public class HelperMethodsGenerator
             var obj = item.Value;
             if (obj.GenerationMode is GenerationMode.All or GenerationMode.Post)
             {
+                members.AddRange(GetGetMethods(obj));
                 members.AddRange(GetPostMethods(obj));
             }
         }
 
         members.Add(GetPostXMLOverrides());
         return members;
+    }
+
+    private IEnumerable<MemberDeclarationSyntax> GetGetMethods(ObjectData obj)
+    {
+        List<SyntaxNodeOrToken> getMethodArgs = [];
+        List<SyntaxNodeOrToken> getMethodParams = [];
+        string reqOptionsParamName = "requestOptions";
+
+        getMethodParams.SafeAdd(Parameter(Identifier(reqOptionsParamName)).WithType((GetGlobalNameforType(RequestOptionsClassName))));
+        getMethodParams.SafeAdd(GetCancellationTokenParameterSyntax());
+
+        getMethodArgs.SafeAddArgument(IdentifierName(reqOptionsParamName));
+        getMethodArgs.SafeAddArgument(IdentifierName(CancellationTokenArgName));
+
+        var methodDeclartion = MethodDeclaration(GenericName(Identifier("Task"))
+        .WithTypeArgumentList(TypeArgumentList(SeparatedList<TypeSyntax>(
+                            new SyntaxNodeOrToken[] { QualifiedName(IdentifierName(CollectionsNameSpace), GenericName(Identifier(ListClassName))
+                .WithTypeArgumentList(TypeArgumentList(SeparatedList<TypeSyntax>(
+                                new SyntaxNodeOrToken[] { GetGlobalNameforType(obj.FullName) })))) })))
+        , $"Get{obj.PluralSuffix}Async")
+        .WithParameterList(ParameterList(SeparatedList<ParameterSyntax>(
+                    getMethodParams)))
+        .WithModifiers(TokenList(
+                        [
+                            Token(SyntaxKind.PublicKeyword)]))
+
+        .WithExpressionBody(ArrowExpressionClause(InvocationExpression(GenericName("GetObjectsAsync")
+        .WithTypeArgumentList(TypeArgumentList(SeparatedList<TypeSyntax>(
+                            new SyntaxNodeOrToken[] { GetGlobalNameforType(obj.FullName) }))))
+        .WithArgumentList(ArgumentList(SeparatedList<ArgumentSyntax>(getMethodArgs)))))
+             .WithSemicolonToken(
+                Token(SyntaxKind.SemicolonToken));
+
+        List<SyntaxNodeOrToken> getPaginatedMethodArgs = [];
+        List<SyntaxNodeOrToken> getPaginatedMethodParams = [];
+
+        getPaginatedMethodParams.SafeAdd(Parameter(Identifier(reqOptionsParamName)).WithType(NullableType(GetGlobalNameforType(PaginatedRequestOptionsClassName)))
+        .WithDefault(EqualsValueClause(LiteralExpression(
+                                                    SyntaxKind.DefaultLiteralExpression,
+                                                    Token(SyntaxKind.NullKeyword)))));
+        getPaginatedMethodParams.SafeAdd(GetCancellationTokenParameterSyntax());
+
+        getPaginatedMethodArgs.SafeAddArgument(IdentifierName(reqOptionsParamName));
+        getPaginatedMethodArgs.SafeAddArgument(IdentifierName(CancellationTokenArgName));
+
+        var paginatedMethodDeclartion = MethodDeclaration(GenericName(Identifier("Task"))
+   .WithTypeArgumentList(TypeArgumentList(SeparatedList<TypeSyntax>(
+                       new SyntaxNodeOrToken[] {  GenericName(Identifier(PaginatedResponseClassName))
+                .WithTypeArgumentList(TypeArgumentList(SeparatedList<TypeSyntax>(
+                                new SyntaxNodeOrToken[] { GetGlobalNameforType(obj.FullName) }))) })))
+   , $"Get{obj.PluralSuffix}Async")
+   .WithParameterList(ParameterList(SeparatedList<ParameterSyntax>(
+               getPaginatedMethodParams)))
+   .WithModifiers(TokenList(
+                   [
+                       Token(SyntaxKind.PublicKeyword)]))
+
+   .WithExpressionBody(ArrowExpressionClause(InvocationExpression(GenericName("GetObjectsAsync")
+   .WithTypeArgumentList(TypeArgumentList(SeparatedList<TypeSyntax>(
+                       new SyntaxNodeOrToken[] { GetGlobalNameforType(obj.FullName) }))))
+   .WithArgumentList(ArgumentList(SeparatedList<ArgumentSyntax>(getPaginatedMethodArgs)))))
+        .WithSemicolonToken(
+           Token(SyntaxKind.SemicolonToken));
+
+        return [methodDeclartion, paginatedMethodDeclartion];
     }
 
     private IEnumerable<MemberDeclarationSyntax> GetPostMethods(ObjectData obj)
@@ -160,10 +226,10 @@ public class HelperMethodsGenerator
         List<SyntaxNodeOrToken> methodParams = [];
 
         List<SyntaxNodeOrToken> method2Params = [];
-        
+
         methodParams.SafeAdd(Parameter(Identifier(objectsParamName)).WithType(QualifiedName(IdentifierName(CollectionsNameSpace), GenericName(IEnumerableClassName)
             .WithTypeArgumentList(TypeArgumentList(SeparatedList<TypeSyntax>(
-                                new SyntaxNodeOrToken[] {GetGlobalNameforType(obj.FullName) }))))));
+                                new SyntaxNodeOrToken[] { GetGlobalNameforType(obj.FullName) }))))));
         method2Params.SafeAdd(Parameter(Identifier(objectsParamName)).WithType(QualifiedName(IdentifierName(CollectionsNameSpace), GenericName(IEnumerableClassName)
             .WithTypeArgumentList(TypeArgumentList(SeparatedList<TypeSyntax>(
                                 new SyntaxNodeOrToken[] { GetGlobalNameforType(obj.DTOFullName) }))))));
@@ -276,7 +342,7 @@ public class ObjectData
         UniqueSuffix = suffix;
         Name = TypeSymbol.Name;
         FullName = TypeSymbol.GetClassMetaName();
-        DTOFullName =$"{TypeSymbol.ContainingNamespace}.DTO.{Name}DTO";
+        DTOFullName = $"{TypeSymbol.ContainingNamespace}.DTO.{Name}DTO";
     }
 
     public string UniqueSuffix { get; set; }
