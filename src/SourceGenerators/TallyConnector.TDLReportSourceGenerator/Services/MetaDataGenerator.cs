@@ -142,7 +142,7 @@ public class MetaDataGenerator
             !SymbolEqualityComparer.Default.Equals(_modelData.BaseData.Symbol.ContainingAssembly, _modelData.Symbol.ContainingAssembly))
         {
             AddBaseMembersAsProperties(_modelData.BaseData);
-            
+
         }
         AddMembersAsProperties(_modelData.Members);
 
@@ -157,7 +157,7 @@ public class MetaDataGenerator
 
         void AddBaseMembersAsProperties(ClassData classData)
         {
-            if(classData.BaseData != null)
+            if (classData.BaseData != null)
             {
                 AddBaseMembersAsProperties(classData.BaseData);
             }
@@ -659,7 +659,7 @@ public class MetaDataGenerator
 
         foreach (var field in allMembers)
         {
-            
+
             ClassPropertyData propertyData = field.PropertyData;
             if (propertyData.XmlIgnore) continue;
             var name = propertyData.Name;
@@ -778,6 +778,12 @@ public class MetaDataGenerator
             collectionConstructorArgs.SafeAddArgument(IdentifierName(Meta.CollectionNameVarName));
             collectionConstructorArgs.SafeAddArgument(IdentifierName(Meta.ObjectTypeVarName));
             collectionConstructorArgs.SafeAdd(Argument(IdentifierName("FetchText")).WithNameColon(NameColon(IdentifierName("nativeFields"))));
+            if (_modelData.DefaultTDLFiltersMethod != null)
+            {
+                collectionConstructorArgs.SafeAdd(Argument(CollectionExpression(SeparatedList<CollectionElementSyntax>(
+                                        new SyntaxNodeOrToken[] { SpreadElement(InvocationExpression(MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression, GetGlobalNameforType(_modelData.FullName), IdentifierName(_modelData.DefaultTDLFiltersMethod))))
+                                        }))).WithNameColon(NameColon(IdentifierName("filters"))));
+            }
             members.Add(PropertyDeclaration(GetGlobalNameforType(CollectionFullTypeName),
                                             Identifier(Meta.DefaultCollectionVarName))
                 .WithModifiers(TokenList(modifiers))

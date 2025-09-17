@@ -10,6 +10,16 @@ public class FunctionNameExtractor : ClassPropertyAttributeTransformer
 
     public override void TransformAsync(ClassData data, AttributeData attributeData)
     {
+        string? functionName = Extract(attributeData);
+        if (!string.IsNullOrWhiteSpace(functionName))
+        {
+            var functionList = selector(data);
+            functionList.Add(functionName);
+        }
+    }
+
+    public static string? Extract(AttributeData attributeData)
+    {
         string? functionName = null;
         if (attributeData.ConstructorArguments != null && attributeData.ConstructorArguments.Length > 0)
         {
@@ -40,10 +50,7 @@ public class FunctionNameExtractor : ClassPropertyAttributeTransformer
                 }
             }
         }
-        if (!string.IsNullOrWhiteSpace(functionName))
-        {
-            var functionList = selector(data);
-            functionList.Add(functionName);
-        }
+
+        return functionName;
     }
 }

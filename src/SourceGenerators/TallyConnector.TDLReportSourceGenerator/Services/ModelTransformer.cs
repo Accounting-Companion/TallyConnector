@@ -44,6 +44,7 @@ public class ModelTransformer
             classData.OveriddenProperties.AppendDict(classData.BaseData.OveriddenProperties);
 
             classData.TDLCollectionData ??= classData.BaseData.TDLCollectionData;
+            classData.DefaultTDLFiltersMethod ??= classData.BaseData?.DefaultTDLFiltersMethod;
         }
         await TransformMembers(classData, prefixPath, token);
         var values = classData.Members.Values;
@@ -202,6 +203,7 @@ public class ClassData : IClassAttributeTranfomable
     public bool IgnoreForGenerateDTO { get; internal set; }
     public string DTOFullName { get; internal set; }
     public GenerationMode GenerationMode { get; internal set; }
+    public string? DefaultTDLFiltersMethod { get; internal set; }
 
     public override string ToString()
     {

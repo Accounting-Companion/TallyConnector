@@ -36,6 +36,8 @@ public static partial class ServiceExtensions
         services.AddTransient<AbstractDataFetcherViewModel, VoucherTypeViewModel>();
 
         services.AddTransient<AbstractDataFetcherViewModel, VoucherViewModel>();
+
+        services.AddTransient<AbstractDataFetcherViewModel, GSTRegistrationsViewModel>();
         
         return services;
     }

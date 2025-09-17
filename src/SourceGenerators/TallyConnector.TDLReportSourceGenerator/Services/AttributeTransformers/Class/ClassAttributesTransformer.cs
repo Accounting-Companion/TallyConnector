@@ -10,6 +10,7 @@ public class ClassAttributesTransformer
         {MaptoDTOAttributeName,new MaptoDTOAttributeTransformer() },
         {Attributes.Abstractions.GenerateITallyRequestableObectAttributeeName,new GenerateITallyRequestableObectAttributeTransformer() },
         {TDLFunctionsMethodNameAttributeName,new FunctionNameExtractor(c=>c.TDLFunctions) },
+        {TDLDefaultFiltersMethodNameAttributeName,new DefaultFiltersFunctionNameExtractor() }
     };
 
     /// <summary>
@@ -29,6 +30,16 @@ public class ClassAttributesTransformer
 
         // if class doesnot have xml root attribute
         data.XMLTag ??= data.Name.ToUpper();
+    }
+}
+
+internal class DefaultFiltersFunctionNameExtractor : ClassPropertyAttributeTransformer
+{
+    public override void TransformAsync(ClassData data, AttributeData attributeData)
+    {
+        data.DefaultTDLFiltersMethod = FunctionNameExtractor.Extract(attributeData);
+        
+
     }
 }
 
