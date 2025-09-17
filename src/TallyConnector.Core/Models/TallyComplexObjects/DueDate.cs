@@ -6,7 +6,7 @@ namespace TallyConnector.Core.Models.TallyComplexObjects;
 [GenerateMeta]
 public partial class DueDate : ITallyComplexObject, IBaseObject
 {
-    [TDLField(Set = "$$string:{0}:UniversalDate")]
+    [TDLField(Set = "{0}")]
     [XmlElement(ElementName = "DUEONDATE")]
     public DateTime DueOnDate { get; set; }
 

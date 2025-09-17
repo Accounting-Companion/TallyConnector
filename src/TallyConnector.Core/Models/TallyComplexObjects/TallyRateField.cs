@@ -7,6 +7,17 @@ namespace TallyConnector.Core.Models.TallyComplexObjects;
 [GenerateMeta]
 public partial class TallyRateField : ITallyComplexObject, IBaseObject
 {
+    public TallyRateField()
+    {
+    }
+
+    public TallyRateField(decimal rate, string unit, decimal? forexRate=null)
+    {
+        Rate = rate;
+        Unit = unit;
+        ForexRate = forexRate;
+    }
+
     [TDLField(TallyType = "Rate : Price",Set ="{0}")]
     [XmlElement(ElementName = "BASERATE")]
     [Column(TypeName = "decimal(20,4)")]

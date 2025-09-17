@@ -21,6 +21,14 @@ public class TallyPrimeServiceV6Tests
         //var scds = c.Ledgers.As<AllLedgerEntryMeta>().Amount;
     }
     [Test]
+    public async Task TestGetUnitsAsync()
+    {
+        var ledgers = await primeService.GetUnitsAsync(new PaginatedRequestOptions());
+        //var c = new Vucheta();
+        //var scsa = c.Ledgers.Amount;
+        //var scds = c.Ledgers.As<AllLedgerEntryMeta>().Amount;
+    }
+    [Test]
     public async Task PostGroupAsync()
     {
         Group group = new() { Name = "Test Group", Parent = "Sundry Debtors" };
@@ -38,13 +46,14 @@ public class TallyPrimeServiceV6Tests
         voucher.Narration = "From Tally Connector library";
         voucher.View = Models.Base.VoucherViewType.InvoiceVoucherView;
         voucher.IsInvoice = true;
-        Models.Base.AllInventoryAllocations inventoryAlloc1 = new();
+        Models.Base.AllInventoryEntries inventoryAlloc1 = new();
         inventoryAlloc1.StockItemName = "Item1";
         inventoryAlloc1.Rate = new() { Rate = 20, Unit = "Nos" };
         inventoryAlloc1.ActualQuantity = new() { Quantity = 50, Unit = "Nos" };
         inventoryAlloc1.Amount = new Core.Models.TallyComplexObjects.TallyAmountField(1000, false);
         inventoryAlloc1.IsDeemedPositive = false;
         inventoryAlloc1.Ledgers = [new() { LedgerName = "Sales", Amount = inventoryAlloc1.Amount,IsDeemedPositive=false }];
+        
         voucher.InventoryAllocations = [inventoryAlloc1];
         Models.Base.LedgerEntry partyledgerEntry = new();
         partyledgerEntry.LedgerName = "Cust1";
@@ -55,7 +64,7 @@ public class TallyPrimeServiceV6Tests
         voucher.MasterId = 69;
         var resp = await primeService.PostVouchersAsync([voucher]);
     }
-    public async  Task AlterVoucherAsync()
+    public async  Task GetVoucherAsync()
     {
 
     }

@@ -1,6 +1,4 @@
 ﻿using TallyConnector.Core.Models.Interfaces;
-using TallyConnector.Models.Common;
-using TallyConnector.Models.Common.Pagination;
 
 namespace TallyConnector.Services;
 public interface ITallyAbstractClient

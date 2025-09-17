@@ -1,8 +1,4 @@
-﻿
-
-using Microsoft.CodeAnalysis.CSharp.Syntax;
-
-namespace TallyConnector.TDLReportSourceGenerator.Services;
+﻿namespace TallyConnector.TDLReportSourceGenerator.Services;
 
 internal class PostDTOGenerator
 {

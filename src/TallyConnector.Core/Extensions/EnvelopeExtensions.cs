@@ -8,7 +8,7 @@ public static class EnvelopeExtensions
     {
         if (requestOptions != null)
         {
-            
+
             switch (requestOptions)
             {
                 case RequestOptions options:
@@ -51,7 +51,12 @@ public static class EnvelopeExtensions
             {
                 collection.Compute = requestOptions.Compute;
                 collection.ComputeVar = requestOptions.ComputeVar;
-                collection.Filters = requestOptions.Filters?.Select(c => c.FilterName!).ToList();
+                if (requestOptions.Filters != null && requestOptions.Filters.Count != 0)
+                {
+
+                    collection.Filters ??= [];
+                    collection.Filters.AddRange([.. requestOptions.Filters.Select(c => c.FilterName!)]);
+                }
                 collection.Childof = requestOptions.Childof;
                 collection.BelongsTo = requestOptions.BelongsTo ?? YesNo.None;
                 if (!string.IsNullOrWhiteSpace(requestOptions.CollectionType))
@@ -176,9 +181,9 @@ public static class EnvelopeExtensions
             new(respMessageFieldName, "Error", $"${errorvarName}"),
         ];
         int ifcounter = 1;
-        int actionCounter = 2;  
+        int actionCounter = 2;
 
-        string[] objectTypes = ["Group", "Ledger", "Cost Category", "Cost Centre","Unit", "Stock Group", "Stock Category", "Stock Item", "Godown", "Attendance Type", "Voucher Type","Currency"];
+        string[] objectTypes = ["Group", "Ledger", "Cost Category", "Cost Centre", "Unit", "Stock Group", "Stock Category", "Stock Item", "Godown", "Attendance Type", "Voucher Type", "Currency"];
         var mastersObjectActions = objectTypes.SelectMany(c =>
         {
             List<string> actions = [$"TC_IF{++ifcounter:00} : IF : ##TC_ObjecType=\"{c}\""];

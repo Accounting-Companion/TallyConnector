@@ -1,6 +1,9 @@
-﻿namespace TallyConnector.Models.Base.Masters;
+﻿using TallyConnector.Abstractions.Models;
+
+namespace TallyConnector.Models.Base.Masters;
 [XmlRoot(ElementName = "COSTCENTRE")]
 [XmlType(AnonymousType = true)]
+[TDLDefaultFiltersMethodName(nameof(GetDefaultFilters))]
 public partial class CostCentre : BaseAliasedMasterObject
 {
     [XmlElement(ElementName = "CATEGORY")]
@@ -15,4 +18,9 @@ public partial class CostCentre : BaseAliasedMasterObject
     [XmlElement(ElementName = "REVENUELEDFOROPBAL")]
     public bool? ShowOpeningBal { get; set; }
 
+
+    public static IEnumerable<string> GetDefaultFilters()
+    {
+        return ["CostCentreFilter"];
+    }
 }

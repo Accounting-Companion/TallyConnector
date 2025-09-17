@@ -220,6 +220,9 @@ public partial class Voucher : BaseVoucher
     [XmlElement(ElementName = "COUNTRYOFRESIDENCE")]
     public string? Country { get; set; }
 
+    [XmlElement(ElementName = "GSTREGISTRATION")]
+    public string? GSTRegistration { get; set; }
+
     [TallyCategory("PartyDetails")]
     [XmlElement(ElementName = "GSTREGISTRATIONTYPE")]
     public string? RegistrationType { get; set; }
@@ -283,15 +286,16 @@ public partial class Voucher : BaseVoucher
     [XmlElement(ElementName = "LEDGERENTRIES.LIST", Type = typeof(LedgerEntry))]
     public List<AllLedgerEntry> LedgerEntries { get; set; } = [];
 
-    [XmlElement(ElementName = "ALLINVENTORYENTRIES.LIST", Type = typeof(AllInventoryAllocations))]
+    [XmlElement(ElementName = "ALLINVENTORYENTRIES.LIST", Type = typeof(AllInventoryEntries))]
     [XmlElement(ElementName = "INVENTORYENTRIES.LIST", Type = typeof(InventoryEntries))]
-    public List<AllInventoryAllocations>? InventoryAllocations { get; set; } = [];
+    public List<AllInventoryEntries> InventoryAllocations { get; set; } = [];
 
     public override string ToString()
     {
         return $"Voucher - {VoucherType}_{VoucherNumber}_{Date.ToShortDateString()}";
     }
 }
+
 public partial class BaseInventoryEntry
 {
     [XmlArray("BASICUSERDESCRIPTION.LIST")]
@@ -312,6 +316,9 @@ public partial class BaseInventoryEntry
     [XmlElement(ElementName = "ISSCRAP")]
     public bool? IsScrap { get; set; }
 
+    [XmlElement(ElementName = "DISCOUNT")]
+    public decimal? Discount { get; set; }
+
 
     [XmlElement(ElementName = "ISDEEMEDPOSITIVE")]
     public bool IsDeemedPositive { get; set; }
@@ -327,11 +334,16 @@ public partial class BaseInventoryEntry
 
     [XmlElement(ElementName = "AMOUNT")]
     public TallyAmountField? Amount { get; set; }
+
+
+    [XmlElement(ElementName = "BATCHALLOCATIONS.LIST")]
+    [TDLCollection(CollectionName = "BATCHALLOCATIONS")]
+    public List<BatchAllocation>? BatchAllocations { get; set; }
 }
 
 [XmlRoot(ElementName = "ALLINVENTORYENTRIES.LIST")]
 [TDLCollection(CollectionName = "ALLINVENTORYENTRIES", ExplodeCondition = $"$PERSISTEDVIEW =$$SysName:{Core.Constants.Voucher.ViewType.InvoiceVoucherView}")]
-public partial class AllInventoryAllocations : BaseInventoryEntry
+public partial class AllInventoryEntries : BaseInventoryEntry
 {
     [XmlElement(ElementName = "ACCOUNTINGALLOCATIONS.LIST")]
     [TDLCollection(CollectionName = "ACCOUNTINGALLOCATIONS")]
@@ -340,7 +352,7 @@ public partial class AllInventoryAllocations : BaseInventoryEntry
 
 [XmlRoot(ElementName = "INVENTORYENTRIES.LIST")]
 [TDLCollection(CollectionName = "INVENTORYENTRIES", ExplodeCondition = $"$PERSISTEDVIEW =$$SysName:{Core.Constants.Voucher.ViewType.MfgJournalVoucherView}")]
-public partial class InventoryEntries : AllInventoryAllocations
+public partial class InventoryEntries : AllInventoryEntries
 {
 }
 public partial class BaseLedgerEntry
@@ -420,4 +432,40 @@ public enum VoucherViewType
 
     [EnumXMLChoice(Choice = "Consumption Voucher View")]
     ConsumptionVoucherView = 5,
+}
+
+
+[XmlRoot(ElementName = "BATCHALLOCATIONS.LIST")]
+public partial class BatchAllocation
+{
+    [XmlElement(ElementName = "MFDON")]
+    public DateTime? ManufacturedOn { get; set; }
+
+    [XmlElement(ElementName = "TRACKINGNUMBER")]
+    public string? TrackingNo { get; set; }
+
+    [XmlElement(ElementName = "ORDERNO")]
+    public string? OrderNo { get; set; }
+
+    [XmlElement(ElementName = "GODOWNNAME")]
+    public string? GodownName { get; set; }
+
+
+    [XmlElement(ElementName = "BATCHNAME")]
+    public string? BatchName { get; set; }
+
+    [XmlElement(ElementName = "ORDERDUEDATE")]
+    public DueDate? OrderDueDate { get; set; }
+
+    [XmlElement(ElementName = "EXPIRYPERIOD")]
+    public DueDate? ExpiryPeriod { get; set; }
+
+    [XmlElement(ElementName = "AMOUNT")]
+    public TallyAmountField? Amount { get; set; }
+
+    [XmlElement(ElementName = "ACTUALQTY")]
+    public TallyQuantityField? ActualQuantity { get; set; }
+
+    [XmlElement(ElementName = "BILLEDQTY")]
+    public TallyQuantityField? BilledQuantity { get; set; }
 }

@@ -1,8 +1,6 @@
 ﻿using TallyConnector.Core.Extensions;
 using TallyConnector.Core.Models.Interfaces;
 using TallyConnector.Core.Models.Response;
-using TallyConnector.Models.Common;
-using TallyConnector.Models.Common.Pagination;
 using static TallyConnector.Core.Constants;
 
 //[assembly: InternalsVisibleTo("TestProject")]
@@ -35,6 +33,10 @@ public abstract class TallyAbstractClient : ITallyAbstractClient
     {
         _baseHandler.Setup(url, port);
     }
+
+    public Task<bool> CheckAsync()=> _baseHandler.CheckAsync();
+
+    public Task<string> GetActiveSimpleCompanyNameAsync()=> _baseHandler.GetActiveSimpleCompanyNameAsync();
 
     public async Task<LastAlterIdsRoot> GetLastAlterIdsAsync(BaseRequestOptions? baseRequestOptions = null, CancellationToken token = default)
     {
@@ -192,7 +194,6 @@ public abstract class TallyAbstractClient : ITallyAbstractClient
 
     public Task<LicenseInfo> GetLicenseInfoAsync() => _baseHandler.GetLicenseInfoAsync();
 
-    public Task<string> GetActiveSimpleCompanyNameAsync() => _baseHandler.GetActiveSimpleCompanyNameAsync();
 
     /// <inheritdoc/>
     public async Task<List<T>> GetObjectsAsync<T>(BaseRequestOptions? options = null, CancellationToken token = default) where T : ITallyRequestableObject, IBaseObject

@@ -4,8 +4,8 @@
 [TDLCollection(Type = "Unit")]
 public partial class Unit : BaseMasterObject
 {
-    [XmlElement(ElementName = "ORIGINALNAME")]
-    public new string Name { get; set; }
+    //[XmlElement(ElementName = "ORIGINALNAME")]
+    //public new string Name { get; set; }
 
     [XmlElement(ElementName = "BASEUNITS")]
     public string? BaseUnit { get; set; }

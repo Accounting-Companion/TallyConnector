@@ -3,6 +3,16 @@
 [GenerateMeta]
 public partial class TallyQuantityField : ITallyComplexObject, IBaseObject
 {
+    public TallyQuantityField()
+    {
+    }
+
+    public TallyQuantityField(decimal quantity, string unit)
+    {
+        Quantity = quantity;
+        Unit = unit;
+    }
+
     [TDLField(TallyType = "Quantity : UnitSymbol", Set = "{0}")]
     [XmlElement(ElementName = "UNIT")]
     public string Unit { get; set; } = null!;
