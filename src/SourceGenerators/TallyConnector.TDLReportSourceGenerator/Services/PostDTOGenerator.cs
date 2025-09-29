@@ -1,4 +1,7 @@
-﻿namespace TallyConnector.TDLReportSourceGenerator.Services;
+﻿using Microsoft.CodeAnalysis.CSharp.Syntax;
+using static TallyConnector.TDLReportSourceGenerator.Constants;
+
+namespace TallyConnector.TDLReportSourceGenerator.Services;
 
 internal class PostDTOGenerator
 {
@@ -83,6 +86,32 @@ internal class PostDTOGenerator
     private IEnumerable<MemberDeclarationSyntax> GetClassMembers()
     {
         List<MemberDeclarationSyntax> members = [];
+        if (_modelData.Symbol.CheckBaseClass(Constants.Models.BaseMasterObjectFullName) && !_modelData.Symbol.CheckBaseClass(Constants.Models.BaseAliasedMasterObjectFullName))
+        {
+            List<SyntaxNodeOrToken> attributes = [];
+            attributes.SafeAdd(Attribute(GetGlobalNameforType(XMLElementAttributeName))
+          .WithArgumentList(AttributeArgumentList(SeparatedList<AttributeArgumentSyntax>(
+                                          [AttributeArgument(CreateStringLiteral("NAME"))]))));
+            PropertyDeclarationSyntax propertyDeclarationSyntax = PropertyDeclaration(PredefinedType(Token(SyntaxKind.StringKeyword)), "NewName")
+                .WithAccessorList(
+            AccessorList(
+                List(
+                    [
+                        AccessorDeclaration(
+                            SyntaxKind.GetAccessorDeclaration)
+                        .WithSemicolonToken(
+                            Token(SyntaxKind.SemicolonToken)),
+                        AccessorDeclaration(
+                            SyntaxKind.SetAccessorDeclaration)
+                        .WithSemicolonToken(
+                            Token(SyntaxKind.SemicolonToken))])))
+                .WithModifiers(TokenList([Token(SyntaxKind.PublicKeyword)]))
+                .WithAttributeLists(List(
+                         [
+                             AttributeList( SeparatedList<AttributeSyntax>(attributes))
+                         ]));
+            members.Add(propertyDeclarationSyntax);
+        }
         foreach (var item in _modelData.Members)
         {
             List<SyntaxNodeOrToken> attributes = [];
@@ -217,7 +246,21 @@ internal class PostDTOGenerator
                                     .WithArgumentList(
                                         ArgumentList())))))));
 
+        if (_modelData.Symbol.CheckBaseClass(Constants.Models.BaseMasterObjectFullName) && !_modelData.Symbol.CheckBaseClass(Constants.Models.BaseAliasedMasterObjectFullName))
 
+        {
+            statements.Add(ExpressionStatement(
+                    AssignmentExpression(
+                        SyntaxKind.SimpleAssignmentExpression,
+                        MemberAccessExpression(
+                            SyntaxKind.SimpleMemberAccessExpression,
+                            IdentifierName(dtoVarName),
+                            IdentifierName("NewName")),
+                        MemberAccessExpression(
+                             SyntaxKind.SimpleMemberAccessExpression,
+                             IdentifierName(srcParameterName),
+                             IdentifierName("Name")))));
+        }
         AssignAllMembers();
 
         if (_modelData.Symbol.CheckBaseClass(Constants.Models.BaseAliasedMasterObjectFullName))
@@ -237,7 +280,7 @@ internal class PostDTOGenerator
                         MemberAccessExpression(
                              SyntaxKind.SimpleMemberAccessExpression,
                              IdentifierName(dtoVarName),
-                             IdentifierName("Date"))))); 
+                             IdentifierName("Date")))));
             MemberAccessExpressionSyntax masterIdMember = MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression, IdentifierName(srcParameterName), IdentifierName("MasterId"));
             statements.Add(IfStatement(BinaryExpression(
                     SyntaxKind.NotEqualsExpression,
@@ -249,7 +292,7 @@ internal class PostDTOGenerator
                         InvocationExpression(
                             IdentifierName($"{dtoVarName}.SetMasterIdasTagValue"))
                         .WithArgumentList(
-                            ArgumentList( SeparatedList<ArgumentSyntax>(
+                            ArgumentList(SeparatedList<ArgumentSyntax>(
                                     new SyntaxNodeOrToken[]{
                                         Argument(masterIdMember)}))))),
                         ElseClause(Block(ExpressionStatement(
@@ -485,7 +528,7 @@ internal class PostDTOGenerator
                             TokenList(
                                 Token(SyntaxKind.ThisKeyword)))
                         .WithType(
-                           NullableType( GetGlobalNameforType(_modelData.FullName))))))
+                           NullableType(GetGlobalNameforType(_modelData.FullName))))))
              .WithSemicolonToken(Token(SyntaxKind.SemicolonToken)));
         var unit = CompilationUnit()
        .WithMembers(List(new MemberDeclarationSyntax[]

@@ -166,6 +166,7 @@ public static class Constants
     public class Models
     {
         public const string BaseAliasedMasterObjectFullName = $"TallyConnector.Models.Base.Masters.BaseAliasedMasterObject";
+        public const string BaseMasterObjectFullName = $"TallyConnector.Models.Base.Masters.BaseMasterObject";
         public class Interfaces
         {
             public const string PREFIX = $"{TallyConnectorModelsNameSpace}.Interfaces";

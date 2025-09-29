@@ -30,7 +30,7 @@ public partial class TallyPrimeService : TallyAbstractClient
 
     public TallyPrimeService(ILogger logger, IBaseTallyService baseTallyService) : base(logger, baseTallyService)
     {
-        
+
     }
 
     public Task<List<Company>> GetCompaniesAsync(CancellationToken cancellationToken = default) => GetObjectsAsync<Company>(token: cancellationToken);

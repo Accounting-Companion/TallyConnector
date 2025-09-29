@@ -1,4 +1,7 @@
-﻿using TallyConnector.Services;
+﻿using TallyConnector.Core;
+using TallyConnector.Models.TallyPrime.V6.Masters;
+using TallyConnector.Models.TallyPrime.V6.Masters.Meta;
+using TallyConnector.Services;
 
 namespace TallyConnector.Tests.Services;
 
@@ -36,6 +39,9 @@ public class BaseTallyServiceTests
 
     public async Task TestOptionsBuilder()
     {
-       // new RequestOptions<LedgerMeta>().Where(C=>C.MasterId.);
+        // new RequestOptions<LedgerMeta>().Where(C=>C.MasterId.);
+
+       // var builder = new FilterBuilder<Ledger, LedgerMeta>(Ledger.Meta);
+       // builder.FilterBy(c => c.GSTDetails.HSNMasterName == "");
     }
 }

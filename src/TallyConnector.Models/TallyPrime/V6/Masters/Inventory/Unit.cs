@@ -5,5 +5,4 @@
 [GenerateMeta]
 public partial class Unit : Base.Masters.Inventory.Unit
 {
-
 }

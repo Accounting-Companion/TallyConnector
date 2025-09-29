@@ -1,4 +1,5 @@
 ﻿using TallyConnector.Abstractions.Models;
+using static TallyConnector.TDLReportSourceGenerator.Constants;
 
 namespace TallyConnector.Core.Models.Request;
 public class BaseRequestOptions
@@ -63,10 +64,21 @@ public class RequestOptions : DateFilterRequestOptions
     }
 
 }
-public class RequestOptions<T> : RequestOptions where T : class, new()
+public class RequestOptions<T, TMeta> : RequestOptions where T : BaseObject, IMetaGenerated where TMeta : MetaObject
 {
-    public RequestOptions<T> Where(Func<T, bool> func)
+    TMeta _meta;
+    public RequestOptions(TMeta meta)
     {
+        _meta = meta;
+    }
+
+    public RequestOptions<T, TMeta> FilterBy(Func<TMeta, FilterCondition> builder, string? name = null)
+    {
+        Filters ??= [];
+
+        FilterCondition filterCondition = builder(_meta);
+        name ??= $"{filterCondition.Name}";
+        Filters.Add(new(name, filterCondition.ToString()!));
         return this;
     }
 }

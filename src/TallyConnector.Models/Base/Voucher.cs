@@ -296,6 +296,7 @@ public partial class Voucher : BaseVoucher
     }
 }
 
+[XmlType(AnonymousType = true)]
 public partial class BaseInventoryEntry
 {
     [XmlArray("BASICUSERDESCRIPTION.LIST")]
@@ -342,6 +343,7 @@ public partial class BaseInventoryEntry
 }
 
 [XmlRoot(ElementName = "ALLINVENTORYENTRIES.LIST")]
+[XmlType(AnonymousType = true)]
 [TDLCollection(CollectionName = "ALLINVENTORYENTRIES", ExplodeCondition = $"$PERSISTEDVIEW =$$SysName:{Core.Constants.Voucher.ViewType.InvoiceVoucherView}")]
 public partial class AllInventoryEntries : BaseInventoryEntry
 {
@@ -351,10 +353,12 @@ public partial class AllInventoryEntries : BaseInventoryEntry
 }
 
 [XmlRoot(ElementName = "INVENTORYENTRIES.LIST")]
+[XmlType(AnonymousType = true)]
 [TDLCollection(CollectionName = "INVENTORYENTRIES", ExplodeCondition = $"$PERSISTEDVIEW =$$SysName:{Core.Constants.Voucher.ViewType.MfgJournalVoucherView}")]
 public partial class InventoryEntries : AllInventoryEntries
 {
 }
+[XmlType(AnonymousType = true)]
 public partial class BaseLedgerEntry
 {
     public BaseLedgerEntry()
@@ -381,6 +385,7 @@ public partial class BaseLedgerEntry
     public TallyAmountField Amount { get; set; }
 }
 [XmlRoot(ElementName = "ALLLEDGERENTRIES.LIST")]
+[XmlType(AnonymousType = true)]
 [TDLCollection(CollectionName = "ALLLEDGERENTRIES", ExplodeCondition = $"$PERSISTEDVIEW =$$SysName:{TallyConnector.Core.Constants.Voucher.ViewType.AccountingVoucherView}")]
 public partial class AllLedgerEntry : BaseLedgerEntry
 {
@@ -394,6 +399,7 @@ public partial class AllLedgerEntry : BaseLedgerEntry
     public string? SWIFTCode { get; set; }
 }
 [XmlRoot(ElementName = "LEDGERENTRIES.LIST")]
+[XmlType(AnonymousType = true)]
 [TDLCollection(CollectionName = "LEDGERENTRIES", ExplodeCondition = $"$PERSISTEDVIEW =$$SysName:{Core.Constants.Voucher.ViewType.InvoiceVoucherView}")]
 public partial class LedgerEntry : AllLedgerEntry
 {
@@ -401,6 +407,7 @@ public partial class LedgerEntry : AllLedgerEntry
 
 }
 [XmlRoot(ElementName = "INVOICEDELNOTES.LIST")]
+[XmlType(AnonymousType = true)]
 public partial class DeliveryNotes
 {
     [XmlElement(ElementName = "BASICSHIPPINGDATE")]
@@ -436,6 +443,7 @@ public enum VoucherViewType
 
 
 [XmlRoot(ElementName = "BATCHALLOCATIONS.LIST")]
+[XmlType(AnonymousType = true)]
 public partial class BatchAllocation
 {
     [XmlElement(ElementName = "MFDON")]

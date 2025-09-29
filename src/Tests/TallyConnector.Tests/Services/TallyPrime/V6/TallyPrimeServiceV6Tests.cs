@@ -1,6 +1,7 @@
 ﻿using TallyConnector.Core.Models.Request;
 using TallyConnector.Models.TallyPrime.V6;
 using TallyConnector.Models.TallyPrime.V6.Masters;
+using TallyConnector.Models.TallyPrime.V6.Masters.Inventory;
 using TallyConnector.Services.TallyPrime.V6;
 
 namespace TallyConnector.Tests.Services.TallyPrime.V6;
@@ -38,8 +39,14 @@ public class TallyPrimeServiceV6Tests
         var resp = await primeService.PostGroupsAsync([group, group2]);
     }
     [Test]
+    public async Task PostUnitsAsync()
+    {
+        Unit unit = new() { Name = "dzn", FormalName = "Dozens" };
+        var resp = await primeService.PostUnitsAsync([unit]);
+    }
+    [Test]
     public async Task PostVoucherAsync()
-           {
+    {
         Voucher voucher = new();
         voucher.VoucherType = "Sales";
         voucher.Date = new DateTime(2025, 09, 01);
@@ -52,8 +59,8 @@ public class TallyPrimeServiceV6Tests
         inventoryAlloc1.ActualQuantity = new() { Quantity = 50, Unit = "Nos" };
         inventoryAlloc1.Amount = new Core.Models.TallyComplexObjects.TallyAmountField(1000, false);
         inventoryAlloc1.IsDeemedPositive = false;
-        inventoryAlloc1.Ledgers = [new() { LedgerName = "Sales", Amount = inventoryAlloc1.Amount,IsDeemedPositive=false }];
-        
+        inventoryAlloc1.Ledgers = [new() { LedgerName = "Sales", Amount = inventoryAlloc1.Amount, IsDeemedPositive = false }];
+
         voucher.InventoryAllocations = [inventoryAlloc1];
         Models.Base.LedgerEntry partyledgerEntry = new();
         partyledgerEntry.LedgerName = "Cust1";
@@ -64,7 +71,7 @@ public class TallyPrimeServiceV6Tests
         voucher.MasterId = 69;
         var resp = await primeService.PostVouchersAsync([voucher]);
     }
-    public async  Task GetVoucherAsync()
+    public async Task GetVoucherAsync()
     {
 
     }

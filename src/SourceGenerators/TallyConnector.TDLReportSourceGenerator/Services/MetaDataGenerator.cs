@@ -11,6 +11,7 @@ public class MetaDataGenerator
     public bool IsBaseNull { get; }
     public bool IsBaseSameAssembly { get; }
     public bool IsBaseRequestableObject { get; }
+    public bool IsBaseMetaGenerated { get; }
 
     public MetaDataGenerator(ClassData modelData,
                              SourceProductionContext context,
@@ -23,19 +24,21 @@ public class MetaDataGenerator
         IsBaseNull = _modelData.BaseData == null;
         IsBaseSameAssembly = !IsBaseNull && SymbolEqualityComparer.Default.Equals(_modelData.BaseData!.Symbol.ContainingAssembly, _modelData.Symbol.ContainingAssembly);
         IsBaseRequestableObject = !IsBaseNull && _modelData.BaseData!.Symbol.CheckInterface(Constants.Models.Interfaces.TallyRequestableObjectInterfaceFullName);
+        IsBaseMetaGenerated = _modelData.BaseData?.Symbol.CheckInterface(Constants.Models.Abstractions.IMetaGeneratedFullTypeName) ?? false;
     }
 
     public MetaDataGenerator GenerateMeta()
     {
 
         SimpleBaseTypeSyntax node;
-        if (IsBaseSameAssembly)
+        if (IsBaseSameAssembly || IsBaseMetaGenerated)
         {
             node = SimpleBaseType(
                               GetGlobalNameforType($"{_modelData.BaseData!.Namespace}.Meta.{_modelData.BaseData.MetaName}"));
         }
         else
         {
+
             node = SimpleBaseType(
                               IdentifierName(Constants.Models.Abstractions.MetaObjectypeName));
         }
@@ -86,9 +89,9 @@ public class MetaDataGenerator
 
         members.Add(GetMainConstructor());
 
-        members.Add(GetSecondConstructor(IsBaseSameAssembly, _modelData.MetaName));
+        members.Add(GetSecondConstructor(IsBaseSameAssembly || IsBaseMetaGenerated, _modelData.MetaName));
 
-        if (!IsBaseSameAssembly)
+        if (!IsBaseSameAssembly && !IsBaseMetaGenerated)
         {
             members.Add(PropertyDeclaration(NullableType(PredefinedType(Token(SyntaxKind.StringKeyword))),
                                             Constants.Meta.XMLTagVarName)

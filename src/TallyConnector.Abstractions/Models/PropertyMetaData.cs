@@ -55,4 +55,23 @@ public class PropertyMetaData<T> : PropertyMetaData
     {
     }
 
+    // --- NEW: Operator Overloads ---
+
+    /// <summary>
+    /// Overloads the '==' operator to create an 'Equals' FilterCondition.
+    /// </summary>
+    public static FilterCondition operator ==(PropertyMetaData<T> prop, T value)
+    {
+        return new SimpleFilterCondition(prop, FilterOperator.Equals, value);
+    }
+
+    /// <summary>
+    /// Overloads the '!=' operator to create a 'NotEquals' FilterCondition.
+    /// </summary>
+    public static FilterCondition operator !=(PropertyMetaData<T> prop, T value)
+    {
+        return new SimpleFilterCondition(prop, FilterOperator.NotEquals, value);
+    }
+
 }
+

@@ -68,7 +68,7 @@ public partial class StockItem : BaseAliasedMasterObject
     public string? RateOfDuty { get; set; }
 
     [XmlElement(ElementName = "OPENINGBALANCE")]
-    public TallyQuantityField? OpeningBal { get; set; }
+    public TallyQuantityField? OpeningBalance { get; set; }
 
     [XmlElement(ElementName = "OPENINGVALUE")]
     public TallyAmountField? OpeningValue { get; set; }

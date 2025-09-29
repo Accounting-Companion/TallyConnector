@@ -108,7 +108,7 @@ public class TDLEnvelopeGenerator
             statements.Add(CreateAssignFromPropertyStatement(tdlMsgVariableName, "Collection", [], [Meta.DefaultCollectionPropPath]));
 
         }
-        statements.Add(CreateAssignFromMethodStatement(tdlMsgVariableName, "Functions", [], [.. _modelData.DefaultTDLFunctions]));
+        statements.Add(CreateAssignFromMethodStatement(tdlMsgVariableName, "Functions", [.. _modelData.TDLFunctions], [.. _modelData.DefaultTDLFunctions]));
 
 
         statements.Add(CreateAssignFromPropertyStatement(tdlMsgVariableName, "NameSet", [Meta.NameSetsPropPath]));

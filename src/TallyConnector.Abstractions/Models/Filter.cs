@@ -1,5 +1,6 @@
 ﻿namespace TallyConnector.Abstractions.Models;
 
+
 public class Filter
 {
     public Filter()
@@ -18,67 +19,60 @@ public class Filter
     public string FilterFormulae { get; set; }
     public bool ExcludeinCollection { get; set; }
 }
-public abstract class FilterNode
+public abstract class FilterCondition
 {
-    public abstract string ToDebugString(int indent = 0);
+    public string Name { get; set; }
+    public static FilterCondition And(FilterCondition left, FilterCondition right) => new CompositeFilterCondition(left, right, true);
+    public static FilterCondition Or(FilterCondition left, FilterCondition right) => new CompositeFilterCondition(left, right, false);
 }
-
-public class BinaryFilterNode : FilterNode
+public enum FilterOperator
 {
-    public string Operator { get; }
-    public string PropertyPath { get; }
+    Equals, NotEquals, GreaterThan, GreaterThanOrEqual, LessThan, LessThanOrEqual,
+    StartsWith, Contains, EndsWith
+}
+public class SimpleFilterCondition : FilterCondition
+{
+    public PropertyMetaData Property { get; }
+    public FilterOperator Operator { get; }
     public object Value { get; }
+    public SimpleFilterCondition(PropertyMetaData property, FilterOperator op, object value) { Property = property; Operator = op; Value = value; }
 
-    public BinaryFilterNode(string op, string prop, object value)
+    public override string ToString()
     {
-        Operator = op;
-        PropertyPath = prop;
-        Value = value;
-    }
-
-    public override string ToDebugString(int indent = 0)
-    {
-        var pad = new string(' ', indent);
-        return $"{pad}{PropertyPath} {Operator} {Value}";
-    }
-}
-
-public class MethodFilterNode : FilterNode
-{
-    public string Method { get; }
-    public string PropertyPath { get; }
-    public object Argument { get; }
-
-    public MethodFilterNode(string method, string prop, object arg)
-    {
-        Method = method;
-        PropertyPath = prop;
-        Argument = arg;
-    }
-
-    public override string ToDebugString(int indent = 0)
-    {
-        var pad = new string(' ', indent);
-        return $"{pad}{PropertyPath}.{Method}({Argument})";
+        var value = Value is string stringVal ? $"\"{stringVal}\"" : Value.ToString();
+        switch (Operator)
+        {
+            case FilterOperator.Equals:
+                return $"{Property.Set} = {value}";
+            case FilterOperator.NotEquals:
+                return $"{Property.Set} <> {value}";
+            case FilterOperator.GreaterThan:
+                return $"{Property.Set} > {value}";
+            case FilterOperator.GreaterThanOrEqual:
+                return $"{Property.Set} >= {value}";
+            case FilterOperator.LessThan:
+                return $"{Property.Set} < {value}";
+            case FilterOperator.LessThanOrEqual:
+                return $"{Property.Set} <= {value}";
+            case FilterOperator.StartsWith:
+                return $"{Property.Set} Starts with {value}";
+            case FilterOperator.Contains:
+                return $"{Property.Set} Contains {value}";
+            case FilterOperator.EndsWith:
+                return $"{Property.Set} Endwith {value}";
+        }
+        return string.Empty;
     }
 }
-
-public class LogicalFilterNode : FilterNode
+public class CompositeFilterCondition : FilterCondition
 {
-    public string Operator { get; }
-    public FilterNode Left { get; }
-    public FilterNode Right { get; }
+    public FilterCondition Left { get; }
+    public FilterCondition Right { get; }
+    public bool IsAndOperator { get; }
+    public CompositeFilterCondition(FilterCondition left, FilterCondition right, bool isAnd) { Left = left; Right = right; IsAndOperator = isAnd; }
 
-    public LogicalFilterNode(string op, FilterNode left, FilterNode right)
+    public override string ToString()
     {
-        Operator = op;
-        Left = left;
-        Right = right;
-    }
-
-    public override string ToDebugString(int indent = 0)
-    {
-        var pad = new string(' ', indent);
-        return $"{pad}(\n{Left.ToDebugString(indent + 2)}\n{pad} {Operator}\n{Right.ToDebugString(indent + 2)}\n{pad})";
+        return $"{Left} {(IsAndOperator ? "AND" : "OR")} {Right}";
     }
 }

@@ -7,7 +7,7 @@
 public partial class GSTDetail
 {
     [XmlElement(ElementName = "APPLICABLEFROM")]
-    public DateTime? ApplicableFrom { get; set; }
+    public DateTime? ApplicableFrom { get; set; } 
 
     [XmlElement(ElementName = "CALCULATIONTYPE")]
     public string? CalculationType { get; set; }
@@ -18,15 +18,6 @@ public partial class GSTDetail
     [XmlElement(ElementName = "GSTNATUREOFTRANSACTION")]
     public GSTNatureOfTransaction NatureOfTransaction { get; set; }
 
-
-    [XmlElement(ElementName = "HSNCODE")]
-    public string? HSNCode { get; set; }
-
-    [XmlElement(ElementName = "HSN")]
-    public string? HSNDescription { get; set; }
-
-    [XmlElement(ElementName = "HSNMASTERNAME")]
-    public string? HSNMasterName { get; set; }
 
     [XmlElement(ElementName = "ISNONGSTGOODS")]
     public bool? IsNonGSTGoods { get; set; }

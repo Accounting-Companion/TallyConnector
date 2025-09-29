@@ -40,6 +40,7 @@ public class ModelTransformer
             classData.AllDirectMembers.AppendDict(classData.BaseData.AllDirectMembers);
             classData.AllMembers.AppendDict(classData.BaseData.AllMembers, prefixPath);
             classData.DefaultTDLFunctions.CopyFrom(classData.BaseData.DefaultTDLFunctions);
+            classData.TDLFunctions.CopyFrom(classData.BaseData.TDLFunctions);
             classData.IsBaseIRequestableObject = classData.BaseData.Symbol.CheckInterface(Constants.Models.Interfaces.TallyRequestableObjectInterfaceFullName);
             classData.OveriddenProperties.AppendDict(classData.BaseData.OveriddenProperties);
 
