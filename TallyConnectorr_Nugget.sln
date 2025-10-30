@@ -13,6 +13,10 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SourceGenerators", "SourceG
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TallyConnector.TDLReportSourceGenerator", "src\SourceGenerators\TallyConnector.TDLReportSourceGenerator\TallyConnector.TDLReportSourceGenerator.csproj", "{218197F7-EA08-431C-9BB6-21BBD2A0C3E5}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TallyConnector.Models", "src\TallyConnector.Models\TallyConnector.Models.csproj", "{1DD0021A-05C7-1E91-FB26-4ADCD526EF1C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TallyConnector.Abstractions", "src\TallyConnector.Abstractions\TallyConnector.Abstractions.csproj", "{47FDEDB5-26D4-E2E1-B9B4-1E501EC1126F}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -31,6 +35,14 @@ Global
 		{218197F7-EA08-431C-9BB6-21BBD2A0C3E5}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{218197F7-EA08-431C-9BB6-21BBD2A0C3E5}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{218197F7-EA08-431C-9BB6-21BBD2A0C3E5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1DD0021A-05C7-1E91-FB26-4ADCD526EF1C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1DD0021A-05C7-1E91-FB26-4ADCD526EF1C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1DD0021A-05C7-1E91-FB26-4ADCD526EF1C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1DD0021A-05C7-1E91-FB26-4ADCD526EF1C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{47FDEDB5-26D4-E2E1-B9B4-1E501EC1126F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{47FDEDB5-26D4-E2E1-B9B4-1E501EC1126F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{47FDEDB5-26D4-E2E1-B9B4-1E501EC1126F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{47FDEDB5-26D4-E2E1-B9B4-1E501EC1126F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -40,5 +52,7 @@ Global
 		{01CB1D84-633F-4D7B-A9AB-03F0C7D47B29} = {93809C71-F001-49C8-9226-591B592AE0D9}
 		{FC6FB42C-5BF5-4226-AB94-D31A2759CB16} = {93809C71-F001-49C8-9226-591B592AE0D9}
 		{218197F7-EA08-431C-9BB6-21BBD2A0C3E5} = {FC6FB42C-5BF5-4226-AB94-D31A2759CB16}
+		{1DD0021A-05C7-1E91-FB26-4ADCD526EF1C} = {93809C71-F001-49C8-9226-591B592AE0D9}
+		{47FDEDB5-26D4-E2E1-B9B4-1E501EC1126F} = {93809C71-F001-49C8-9226-591B592AE0D9}
 	EndGlobalSection
 EndGlobal

@@ -2,6 +2,7 @@
 using TallyConnector.Models.TallyPrime.V6;
 using TallyConnector.Models.TallyPrime.V6.Masters;
 using TallyConnector.Models.TallyPrime.V6.Masters.Inventory;
+using TallyConnector.Models.TallyPrime.V6.Masters.Meta;
 using TallyConnector.Services.TallyPrime.V6;
 
 namespace TallyConnector.Tests.Services.TallyPrime.V6;
@@ -11,7 +12,7 @@ public class TallyPrimeServiceV6Tests
     public TallyPrimeServiceV6Tests()
     {
         primeService = new TallyPrimeService();
-        //primeService.SetupTallyService("http://localhost", 9001);
+        primeService.SetupTallyService("http://localhost", 9001);
     }
     [Test]
     public async Task TestGetLedgerAsync()
@@ -43,6 +44,7 @@ public class TallyPrimeServiceV6Tests
     {
         Unit unit = new() { Name = "dzn", FormalName = "Dozens" };
         var resp = await primeService.PostUnitsAsync([unit]);
+
     }
     [Test]
     public async Task PostVoucherAsync()
@@ -71,9 +73,12 @@ public class TallyPrimeServiceV6Tests
         voucher.MasterId = 69;
         var resp = await primeService.PostVouchersAsync([voucher]);
     }
+
+    [Test]
     public async Task GetVoucherAsync()
     {
-
+        RequestOptions<Ledger, LedgerMeta> options = new(LedgerMeta.Instance);
+        options.FilterBy(c => c.Name == "");
     }
 }
 //public class Vucheta

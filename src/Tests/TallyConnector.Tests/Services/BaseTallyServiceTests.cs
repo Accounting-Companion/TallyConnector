@@ -39,9 +39,8 @@ public class BaseTallyServiceTests
 
     public async Task TestOptionsBuilder()
     {
-        // new RequestOptions<LedgerMeta>().Where(C=>C.MasterId.);
+     
 
-       // var builder = new FilterBuilder<Ledger, LedgerMeta>(Ledger.Meta);
-       // builder.FilterBy(c => c.GSTDetails.HSNMasterName == "");
+
     }
 }

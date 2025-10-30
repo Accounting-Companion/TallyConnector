@@ -22,7 +22,7 @@ public partial class GSTRegistrationsViewModel : AbstractDataFetcherViewModel
 
         try
         {
-            var data = await _tallyService.GetObjectsAsync<GSTRegistration>(options).ConfigureAwait(false);
+            var data = await _tallyService.GetGSTRegistrations().ConfigureAwait(false);
             DataView = CollectionViewSource.GetDefaultView(data);
             DataView.Refresh();
         }

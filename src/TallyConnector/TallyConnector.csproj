@@ -32,7 +32,7 @@
 
 		<Platforms>AnyCPU;x64</Platforms>
 
-		<!--<GenerateDocumentationFile>True</GenerateDocumentationFile>-->
+		<GenerateDocumentationFile>True</GenerateDocumentationFile>
 		<EmitCompilerGeneratedFiles>true</EmitCompilerGeneratedFiles>
 		<CompilerGeneratedFilesOutputPath>Generated</CompilerGeneratedFilesOutputPath>
 	</PropertyGroup>

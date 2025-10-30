@@ -30,13 +30,13 @@ public class BaseVoucherDTO : TallyObjectDTO
         TagName = nameof(BaseVoucher.MasterId);
         TagValue = MasterId.ToString();
     }
-    public void SetVoucherNumberasTagValue(string vchType,string VchNo)
+    public void SetVoucherNumberasTagValue(string vchType, string VchNo)
     {
         TagName = nameof(Voucher.VoucherNumber);
         TagValue = VchNo;
         VchTypeAttr = vchType;
     }
-  
+
 }
 [XmlRoot(ElementName = "VOUCHER")]
 [XmlType(AnonymousType = true)]
@@ -397,7 +397,47 @@ public partial class AllLedgerEntry : BaseLedgerEntry
 
     [XmlElement(ElementName = "SWIFTCODE")]
     public string? SWIFTCode { get; set; }
+
+    [XmlElement(ElementName = "BILLALLOCATIONS.LIST")]
+    [TDLCollection(CollectionName = "BILLALLOCATIONS", ExplodeCondition = $"$$NUMITEMS:BILLALLOCATIONS>0")]
+    public List<BillAllocations>? BillAllocations { get; set; } = [];
+
+    [XmlElement(ElementName = "INVENTORYALLOCATIONS.LIST")]
+    [TDLCollection(CollectionName = "INVENTORYALLOCATIONS", ExplodeCondition = $"$$NUMITEMS:INVENTORYALLOCATIONS>0")]
+    public List<BaseInventoryEntry>? InventoryAllocations { get; set; } = [];
 }
+
+[XmlRoot(ElementName = "BILLALLOCATIONS.LIST")]
+[XmlType(AnonymousType = true)]
+
+public partial class BillAllocations
+{
+    [XmlElement(ElementName = "BILLTYPE")]
+    public BillRefType? BillType { get; set; }
+
+    [XmlElement(ElementName = "NAME")]
+    public string? Name { get; set; }
+
+
+    [XmlElement(ElementName = "BILLCREDITPERIOD")]
+    public DueDate? BillCreditPeriod { get; set; }
+
+    [XmlElement(ElementName = "AMOUNT")]
+    public TallyAmountField? Amount { get; set; }
+}
+public enum BillRefType
+{
+    [EnumXMLChoice(Choice = "New Ref")]
+    NewRef,
+    [EnumXMLChoice(Choice = "On Account")]
+    OnAccount,
+    [EnumXMLChoice(Choice = "Agst Ref")]
+    AgstRef,
+    [EnumXMLChoice(Choice = "Advance")]
+    Advance
+
+}
+
 [XmlRoot(ElementName = "LEDGERENTRIES.LIST")]
 [XmlType(AnonymousType = true)]
 [TDLCollection(CollectionName = "LEDGERENTRIES", ExplodeCondition = $"$PERSISTEDVIEW =$$SysName:{Core.Constants.Voucher.ViewType.InvoiceVoucherView}")]
