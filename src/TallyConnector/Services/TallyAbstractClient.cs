@@ -37,7 +37,7 @@ public abstract class TallyAbstractClient : ITallyAbstractClient
     public Task<bool> CheckAsync()=> _baseHandler.CheckAsync();
 
     public Task<string> GetActiveSimpleCompanyNameAsync()=> _baseHandler.GetActiveSimpleCompanyNameAsync();
-
+    public void SetCompany(ICompany company) => _baseHandler.SetCompany(company);
     public async Task<LastAlterIdsRoot> GetLastAlterIdsAsync(BaseRequestOptions? baseRequestOptions = null, CancellationToken token = default)
     {
         var reqType = "Getting Last AlterIds from Tally";
