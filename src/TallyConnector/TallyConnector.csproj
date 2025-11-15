@@ -2,35 +2,15 @@
 
 	<PropertyGroup>
 		<IncludeAllContentForSelfExtract>true</IncludeAllContentForSelfExtract>
-		<TargetFrameworks>net9.0;net8.0</TargetFrameworks>
 		<OutputType>Library</OutputType>
 		<AssemblyName>TallyConnector</AssemblyName>
-		<LangVersion>latest</LangVersion>
-		<Authors>saivineeth</Authors>
-		<PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
-		<RepositoryUrl>https://github.com/Accounting-Companion/TallyConnector.git</RepositoryUrl>
-		<PackageProjectUrl>https://github.com/Accounting-Companion/TallyConnector</PackageProjectUrl>
 		<Description>
-			Using This library we can interact with Tally prime / Tally erp9 easily without knowing Tally XML.
+			Using This library we can interact with Tally prime / Tally erp9 easily without knowing
+			Tally XML.
 			- We can Create,Alter and Delete all types of masters, and Vouchers
 			- Get Custom TDL reports Based on C# object
 			- Have support for Custom Fields, and computed fields
 		</Description>
-
-		<ImplicitUsings>enable</ImplicitUsings>
-
-		<PackageTags>tally,xml,tallyprime,tallyerp9,tallyxml</PackageTags>
-
-		<PackageLicenseExpression>MIT</PackageLicenseExpression>
-
-		<RepositoryType>git</RepositoryType>
-
-		<!--<VersionSuffix>rc</VersionSuffix>-->
-		<Nullable>enable</Nullable>
-
-		<GeneratePackageOnBuild>True</GeneratePackageOnBuild>
-
-		<Platforms>AnyCPU;x64</Platforms>
 
 		<GenerateDocumentationFile>True</GenerateDocumentationFile>
 		<EmitCompilerGeneratedFiles>true</EmitCompilerGeneratedFiles>
@@ -39,8 +19,8 @@
 
 
 	<ItemGroup>
-		<PackageReference Include="System.Diagnostics.DiagnosticSource" Version="9.0.9" />
-		<PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="9.0.9" />
+		<PackageReference Include="System.Diagnostics.DiagnosticSource" />
+		<PackageReference Include="Microsoft.Extensions.Logging.Abstractions" />
 	</ItemGroup>
 
 
@@ -50,17 +30,14 @@
 	</ItemGroup>
 
 
-
-
-
-
-
 	<ItemGroup>
-		<ProjectReference Include="..\SourceGenerators\TallyConnector.TDLReportSourceGenerator\TallyConnector.TDLReportSourceGenerator.csproj" OutputItemType="Analyzer" />
+		<ProjectReference
+			Include="..\SourceGenerators\TallyConnector.TDLReportSourceGenerator\TallyConnector.TDLReportSourceGenerator.csproj"
+			OutputItemType="Analyzer" />
 	</ItemGroup>
 
 	<ItemGroup>
-	  <ProjectReference Include="..\TallyConnector.Models\TallyConnector.Models.csproj" />
+		<ProjectReference Include="..\TallyConnector.Models\TallyConnector.Models.csproj" />
 	</ItemGroup>
 
 

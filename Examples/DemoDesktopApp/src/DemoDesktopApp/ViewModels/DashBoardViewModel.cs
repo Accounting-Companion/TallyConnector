@@ -18,7 +18,7 @@ public partial class DashBoardViewModel : BaseViewModel
     public async Task OnLoaded()
     {
         try
-        {
+         {
             SelectedCompanyName = await _tallyService.GetActiveSimpleCompanyNameAsync();
             LicenseInfo = _tallyService.LicenseInfo;
         }

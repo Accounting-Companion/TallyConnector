@@ -12,4 +12,3 @@ global using static TallyConnector.Services.ActivitySources;
 global using TallyConnector.Core.Attributes;
 global using TallyConnector.Models.Common;
 global using TallyConnector.Models.Common.Pagination;
-
