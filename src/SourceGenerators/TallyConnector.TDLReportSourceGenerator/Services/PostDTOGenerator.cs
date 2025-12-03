@@ -518,7 +518,7 @@ internal class PostDTOGenerator
                             ArgumentList(
                                 SingletonSeparatedList<ArgumentSyntax>(
                                     Argument(
-                                        IdentifierName("src"))))))))
+                                        IdentifierName("src.Value"))))))))
              .WithParameterList(
                 ParameterList(
                     SingletonSeparatedList<ParameterSyntax>(

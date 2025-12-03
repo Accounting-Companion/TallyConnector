@@ -107,7 +107,14 @@ public class ModelMetaGenerator : IIncrementalGenerator
         }
         catch (Exception ex)
         {
-            //throw;
+            context.ReportDiagnostic(Diagnostic.Create(new DiagnosticDescriptor("TC0001",
+                                                                                 "TallyConnector Source Generator Error",
+                                                                                 "An unhandled exception was thrown by the TallyConnector source generator: {0}",
+                                                                                 "TallyConnector Source Generator",
+                                                                                 DiagnosticSeverity.Error,
+                                                                                 true),
+                                                        Location.None,
+                                                        ex.ToString()));
         }
     }
 }
