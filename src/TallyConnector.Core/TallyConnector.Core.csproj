@@ -34,7 +34,7 @@
 	<ItemGroup Condition=" '$(TargetFramework)' == 'net48'">
 		<Reference Include="Microsoft.CSharp" />
 		<Reference Include="System.ComponentModel.DataAnnotations" />
-		<PackageReference Include="System.Net.Http"  />
+		<PackageReference Include="System.Net.Http" />
 		<PackageReference Include="System.Text.Json" />
 	</ItemGroup>
 	<ItemGroup>
@@ -42,8 +42,11 @@
 	  <Folder Include="Models\Meta\" />
 	</ItemGroup>
 	<ItemGroup>
+	  <ProjectReference Include="..\..\..\XmlSourceGenerator\src\XmlSourceGenerator.Abstractions\XmlSourceGenerator.Abstractions.csproj" />
+	  <!--<ProjectReference Include="..\..\..\XmlSourceGenerator\src\XmlSourceGenerator\XmlSourceGenerator.csproj" OutputItemType="Analyzer" />-->
 	  <ProjectReference Include="..\SourceGenerators\TallyConnector.TDLReportSourceGenerator\TallyConnector.TDLReportSourceGenerator.csproj" OutputItemType="Analyzer" />
 	  <ProjectReference Include="..\TallyConnector.Abstractions\TallyConnector.Abstractions.csproj" />
+
 	</ItemGroup>
 
 </Project>

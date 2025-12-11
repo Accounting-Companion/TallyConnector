@@ -13,12 +13,14 @@
 		<Compile Remove="Generated\**\*" />
 	</ItemGroup>
   <ItemGroup>
+
     <ProjectReference Include="..\TallyConnector.Core\TallyConnector.Core.csproj" />
   </ItemGroup>
 
 	<ItemGroup>
 
 		<ProjectReference Include="..\SourceGenerators\TallyConnector.TDLReportSourceGenerator\TallyConnector.TDLReportSourceGenerator.csproj" OutputItemType="Analyzer" />
+		<!--<ProjectReference Include="..\..\..\XmlSourceGenerator\src\XmlSourceGenerator\XmlSourceGenerator.csproj"  OutputItemType="Analyzer" />-->
 	</ItemGroup>
 
 </Project>
