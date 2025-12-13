@@ -32,7 +32,7 @@ public static partial class ServiceExtensions
         services.AddTransient<AbstractDataFetcherViewModel, StockGroupVieModel>();
         services.AddTransient<AbstractDataFetcherViewModel, StockCategoryVieModel>();
         services.AddTransient<AbstractDataFetcherViewModel, StockItemsViewModel>();
-
+        services.AddTransient<AbstractDataFetcherViewModel, GodownVieModel>();
         services.AddTransient<AbstractDataFetcherViewModel, VoucherTypeViewModel>();
 
         services.AddTransient<AbstractDataFetcherViewModel, VoucherViewModel>();

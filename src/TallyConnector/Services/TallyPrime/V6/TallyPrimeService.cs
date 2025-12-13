@@ -15,6 +15,7 @@ namespace TallyConnector.Services.TallyPrime.V6;
 [GenerateHelperMethod<StockCategory>(MethodNameSuffixPlural = "StockCategories")]
 [GenerateHelperMethod<StockGroup>()]
 [GenerateHelperMethod<StockItem>()]
+[GenerateHelperMethod<Godown>()]
 
 [GenerateHelperMethod<VoucherType>()]
 
