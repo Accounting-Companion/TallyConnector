@@ -1,4 +1,6 @@
-﻿namespace TallyConnector.Core.Models;
+﻿using XmlSourceGenerator.Abstractions;
+
+namespace TallyConnector.Core.Models;
 
 
 
@@ -23,6 +25,8 @@ public class TallyXml
         xmlSerializer.Serialize(writer, this, ns);
         return textWriter.ToString()!;
     }
+
+    
 
 }
 

@@ -1,5 +1,6 @@
 ﻿using TallyConnector.Core.Models.Request;
 using TallyConnector.Models.TallyPrime.V6;
+using TallyConnector.Models.TallyPrime.V6.DTO;
 using TallyConnector.Models.TallyPrime.V6.Masters;
 using TallyConnector.Models.TallyPrime.V6.Masters.Inventory;
 using TallyConnector.Models.TallyPrime.V6.Masters.Meta;
@@ -12,7 +13,7 @@ public class TallyPrimeServiceV6Tests
     public TallyPrimeServiceV6Tests()
     {
         primeService = new TallyPrimeService();
-        primeService.SetupTallyService("http://localhost", 9001);
+        primeService.SetupTallyService("http://localhost", 9000);
     }
     [Test]
     public async Task TestGetLedgerAsync()
@@ -71,7 +72,7 @@ public class TallyPrimeServiceV6Tests
         voucher.PartyName = partyledgerEntry.LedgerName;
         voucher.LedgerEntries = [partyledgerEntry];
         voucher.MasterId = 69;
-        var resp = await primeService.PostVouchersAsync([voucher]);
+        var resp = await primeService.PostDTOObjectsAsyncNew<VoucherDTO>([voucher]);
     }
 
     [Test]

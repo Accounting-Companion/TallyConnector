@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
-		<TargetFrameworks>net9.0;net8.0</TargetFrameworks>
+		
 		<ImplicitUsings>enable</ImplicitUsings>
 		<Nullable>enable</Nullable>
 		<AssemblyName>TallyConnector.Core</AssemblyName>
@@ -43,7 +43,7 @@
 	</ItemGroup>
 	<ItemGroup>
 	  <ProjectReference Include="..\..\..\XmlSourceGenerator\src\XmlSourceGenerator.Abstractions\XmlSourceGenerator.Abstractions.csproj" />
-	  <!--<ProjectReference Include="..\..\..\XmlSourceGenerator\src\XmlSourceGenerator\XmlSourceGenerator.csproj" OutputItemType="Analyzer" />-->
+	  <ProjectReference Include="..\..\..\XmlSourceGenerator\src\XmlSourceGenerator\XmlSourceGenerator.csproj" OutputItemType="Analyzer" />
 	  <ProjectReference Include="..\SourceGenerators\TallyConnector.TDLReportSourceGenerator\TallyConnector.TDLReportSourceGenerator.csproj" OutputItemType="Analyzer" />
 	  <ProjectReference Include="..\TallyConnector.Abstractions\TallyConnector.Abstractions.csproj" />
 

@@ -24,6 +24,7 @@ public partial class DashBoardViewModel : BaseViewModel
         }
         catch (Exception ex)
         {
+
         }
         
     }

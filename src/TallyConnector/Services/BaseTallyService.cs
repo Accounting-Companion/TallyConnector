@@ -174,7 +174,7 @@ public partial class BaseTallyService : IBaseTallyService
         var reqXml = reqEnvelope.GetXML();
         var respXml = await SendRequestAsync(reqXml, reqType, token).ConfigureAwait(false);
 
-        var XMLAttributeOverrides = new XMLOverrideswithTracking().AddCollectionArrayItemAttributeOverrides(objectName.ToUpper(),typeof(LicenseInfo));
+        var XMLAttributeOverrides = new XMLOverrideswithTracking().AddCollectionArrayItemAttributeOverrides(objectName.ToUpper(), typeof(LicenseInfo));
         RequestEnvelope envelope = XMLToObject.GetObjfromXml<RequestEnvelope>(respXml.Response ?? throw new Exception("Error While Getting License"), XMLAttributeOverrides);
         var data = envelope.Body.RequestData.Data;
         if (data != null && data is [LicenseInfo licenseInfo])
@@ -290,6 +290,151 @@ public partial class BaseTallyService : IBaseTallyService
         }
         return result;
     }
+
+
+    /// <inheritdoc/>
+    public async Task<Stream> SendRequestAsStreamAsync(Stream requestStream, string? requestType = null, CancellationToken token = default)
+    {
+        Activity.Current?.AddTag("Tally URL", FullURL);
+        HttpRequestMessage requestMessage = new(HttpMethod.Post, FullURL);
+
+        if (requestType != null)
+        {
+            LogRequestType(requestType);
+        }
+
+        if (requestStream != null && requestStream.Length > 0)
+        {
+#if DEBUG
+            if (requestStream.CanSeek)
+            {
+
+                requestStream.Position = 0;
+                using StreamReader reader = new(requestStream, Encoding.Unicode, true, 1024, true);
+                var xml = await reader.ReadToEndAsync();
+                _logger?.LogDebug("Tally Request: {xml}", xml);
+                requestStream.Position = 0;
+
+            }
+#endif
+            var streamContent = new StreamContent(requestStream);
+            streamContent.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue("application/xml") { CharSet = "utf-16" };
+            requestMessage.Content = streamContent;
+        }
+
+        try
+        {
+            Activity.Current?.AddEvent(new ActivityEvent("Sending Request"));
+            HttpResponseMessage tallyResponse = await _httpClient.SendAsync(requestMessage, HttpCompletionOption.ResponseHeadersRead, token).ConfigureAwait(false);
+            Activity.Current?.AddEvent(new ActivityEvent("Received Response"));
+
+            if (tallyResponse.StatusCode == HttpStatusCode.OK)
+            {
+#if DEBUG
+                var stream = await tallyResponse.Content.ReadAsStreamAsync().ConfigureAwait(false);
+                return new LoggingStream(stream, _logger);
+#else
+                return await tallyResponse.Content.ReadAsStreamAsync().ConfigureAwait(false);
+#endif
+            }
+            else
+            {
+                var errorXml = await tallyResponse.Content.ReadAsStringAsync();
+                throw new Exception($"Tally returned failure: {tallyResponse.StatusCode}. Response: {errorXml}");
+            }
+        }
+        catch (HttpRequestException exc)
+        {
+            Activity.Current?.SetStatus(ActivityStatusCode.Error, $"Tally is not running on {FullURL}");
+            throw new TallyConnectivityException("Tally is not running", FullURL, exc);
+        }
+        catch (TaskCanceledException)
+        {
+            Activity.Current?.SetStatus(ActivityStatusCode.Error, $"Task Cancelled");
+            throw;
+        }
+        catch (OperationCanceledException)
+        {
+            Activity.Current?.SetStatus(ActivityStatusCode.Error, $"Operation Cancelled");
+            throw;
+        }
+        catch (Exception exc)
+        {
+            Activity.Current?.SetStatus(ActivityStatusCode.Error, exc.Message);
+            throw;
+        }
+    }
+
+#if DEBUG
+    private class LoggingStream : Stream
+    {
+        private readonly Stream _inner;
+        private readonly ILogger? _logger;
+
+        public LoggingStream(Stream inner, ILogger? logger)
+        {
+            _inner = inner;
+            _logger = logger;
+        }
+
+        public override bool CanRead => _inner.CanRead;
+
+        public override bool CanSeek => _inner.CanSeek;
+
+        public override bool CanWrite => _inner.CanWrite;
+
+        public override long Length => _inner.Length;
+
+        public override long Position { get => _inner.Position; set => _inner.Position = value; }
+
+        public override void Flush()
+        {
+            _inner.Flush();
+        }
+
+        public override int Read(byte[] buffer, int offset, int count)
+        {
+            var read = _inner.Read(buffer, offset, count);
+            Log(buffer, offset, read);
+            return read;
+        }
+
+        public override async Task<int> ReadAsync(byte[] buffer, int offset, int count, CancellationToken cancellationToken)
+        {
+            var read = await _inner.ReadAsync(buffer, offset, count, cancellationToken);
+            Log(buffer, offset, read);
+            return read;
+        }
+
+        private void Log(byte[] buffer, int offset, int count)
+        {
+            if (count > 0 && _logger != null)
+            {
+                try
+                {
+                    var chunk = Encoding.Unicode.GetString(buffer, offset, count);
+                    _logger.LogDebug("Response Chunk: {chunk}", chunk);
+                }
+                catch { }
+            }
+        }
+
+        public override long Seek(long offset, SeekOrigin origin)
+        {
+            return _inner.Seek(offset, origin);
+        }
+
+        public override void SetLength(long value)
+        {
+            _inner.SetLength(value);
+        }
+
+        public override void Write(byte[] buffer, int offset, int count)
+        {
+            _inner.Write(buffer, offset, count);
+        }
+    }
+#endif
 
     /// <inheritdoc/>
     private static string CleanResponseXML(string Xml)
@@ -523,7 +668,7 @@ public partial class BaseTallyService : IBaseTallyService
     }
 
 
-  
+
     public static DateTime GetToDate(DateTime now)
     {
         return new DateTime(now.Month > 3 ? now.Year + 1 : now.Year, 3, 31);

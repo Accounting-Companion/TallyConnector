@@ -1,12 +1,16 @@
 ﻿using System.Diagnostics;
 using System.Globalization;
+using System.Xml.Linq;
 using System.Xml.Schema;
+using XmlSourceGenerator.Abstractions;
 
 namespace TallyConnector.Core.Models;
 [DebuggerDisplay("{ToString()}")]
-public class TallyDate : IXmlSerializable
+public class TallyDate : IXmlSerializable, IXmlStreamable
 {
     private protected DateTime Date;
+
+    public string DefaultXmlRootElementName => nameof(TallyDate);
 
     public TallyDate(DateTime date)
     {
@@ -91,6 +95,36 @@ public class TallyDate : IXmlSerializable
         return Date.ToString("dd-MM-yyyy", CultureInfo.InvariantCulture);
     }
 
+    public virtual void ReadFromXml(XElement element, XmlSerializationOptions options = null)
+    {
+        if (element == null) return;
+        string content = element.Value;
+        if (content != null)
+        {
+            if (DateTime.TryParseExact(content, "yyyyMMdd", CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime date))
+            {
+                Date = date;
+                return;
+            }
+             //Fallback to dd-MM-yyyy if needed or stick to original ReadXml logic
+             if (DateTime.TryParseExact(content, "d-M-yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out date))
+            {
+                Date = date;
+            }
+        }
+    }
+
+    public virtual XElement WriteToXml(XmlSerializationOptions options = null)
+    {
+        // Element name will be replaced by the property's XML name mapping by the generator
+        var element = new XElement("Date"); 
+        if (Date != DateTime.MinValue)
+        {
+             element.Add(new XAttribute("TYPE", "Date"));
+             element.Value = ToString() ?? "";
+        }
+        return element;
+    }
 }
 public class TallyDMYYYYDate : TallyDate, IXmlSerializable
 {
@@ -109,6 +143,19 @@ public class TallyDMYYYYDate : TallyDate, IXmlSerializable
                 }
             }
 
+        }
+    }
+
+    public override void ReadFromXml(XElement element, XmlSerializationOptions options = null)
+    {
+        if (element == null) return;
+        string content = element.Value;
+        if (content != null)
+        {
+            if (DateTime.TryParseExact(content, "d-M-yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime date))
+            {
+                Date = date;
+            }
         }
     }
 }

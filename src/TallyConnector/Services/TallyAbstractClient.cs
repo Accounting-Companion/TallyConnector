@@ -2,6 +2,11 @@
 using TallyConnector.Core.Models.Interfaces;
 using TallyConnector.Core.Models.Response;
 using static TallyConnector.Core.Constants;
+using System.IO;
+using System.Text;
+using System.Linq;
+using XmlSourceGenerator.Abstractions;
+using System.Runtime.CompilerServices;
 
 //[assembly: InternalsVisibleTo("TestProject")]
 
@@ -206,7 +211,42 @@ public abstract class TallyAbstractClient : ITallyAbstractClient
         var respEnv = XMLToObject.GetObjfromXml<ReportResponseEnvelope<T>>(resp.Response!, T.GetXMLAttributeOverides());
         return respEnv.Objects;
     }
+    public async IAsyncEnumerable<T> GetObjectsAsyncNew<T>(BaseRequestOptions? options = null, [EnumeratorCancellation] CancellationToken token = default) where T : ITallyRequestableObject, IBaseObject, new()
+    {
+        var reqEnvelope = T.GetRequestEnvelope();
+        reqEnvelope.PopulateOptions(options);
+        await _baseHandler.PopulateDefaultOptions(reqEnvelope, token);
+        using var requestStream = new MemoryStream();
+        await GenericXmlStreamer.WriteDataToStreamAsync(requestStream, reqEnvelope, new XmlSerializationOptions { Encoding = Encoding.Unicode });
+        requestStream.Position = 0;
+        using var responseStream = await _baseHandler.SendRequestAsStreamAsync(requestStream, "", token);
 
+        using var streamReader = new StreamReader(responseStream, Encoding.Unicode);
+        
+        using var cleaner = new TallyResponseCleaner(streamReader);
+
+
+        IEnumerator<T> enumerator = GenericXmlStreamer.ReadNestedListDataFromTextReader<T>(
+            cleaner, 
+            new[] { "ENVELOPE" }
+        ).GetEnumerator();
+        
+        while (true)
+        {
+            T? item = default;
+            try
+            {
+                if (!enumerator.MoveNext()) break;
+                item = enumerator.Current;
+            }
+            catch (Exception ex)
+            {
+                _logger?.LogError(ex, "Error while parsing XML response from Tally");
+                throw;
+            }
+            yield return item;
+        }
+    }
     /// <inheritdoc/>
     public async Task<PaginatedResponse<T>> GetObjectsAsync<T>(PaginatedRequestOptions options, CancellationToken token = default) where T : ITallyRequestableObject, IBaseObject
     {
@@ -258,6 +298,44 @@ public abstract class TallyAbstractClient : ITallyAbstractClient
         var respEnvelope = XMLToObject.GetObjfromXml<PostResponseEnvelope>(resp.Response!);
         return respEnvelope.Objects;
     }
+    public async Task<List<PostResponse>> PostDTOObjectsAsyncNew<T>(IEnumerable<T> objects,
+                                      PostRequestOptions? options = null,
+                                      CancellationToken token = default) where T : TallyObjectDTO, IBaseObject
+    {
+        var postEnvelope = new RequestEnvelope();
+        postEnvelope.AddCustomResponseReportForPost();
+        postEnvelope.PopulateOptions(options);
+        
+        var sv = postEnvelope.Body.Desc.StaticVariables ?? new();
+        bool stopatFirstError = options?.StopatFirstError ?? false;
+        switch (_baseHandler.LicenseInfo.TallyShortVersion.MajorVersion)
+        {
+            case > 3 and <= 6:
+                sv.ExtraVars.Add(new System.Xml.Linq.XElement("SVIMPBEHAVIOUREXCP", stopatFirstError ? "Stop Import at First Exception" : "Ignore Exceptions and Import"));
+                break;
+            default:
+                break;
+        }
+
+        postEnvelope.Body.RequestData.Data ??= [];
+        foreach (var obj in objects)
+        {
+             postEnvelope.Body.RequestData.Data.Add(obj);
+        }
+        
+        using var requestStream = new MemoryStream();
+        await GenericXmlStreamer.WriteDataToStreamAsync(requestStream, postEnvelope, new XmlSerializationOptions { Encoding = Encoding.Unicode });
+        requestStream.Position = 0;
+
+        var resp = await _baseHandler.SendRequestAsStreamAsync(requestStream, "Posting Objects", token);
+        
+        using var streamReader = new StreamReader(resp, Encoding.Unicode);
+        var respString = await streamReader.ReadToEndAsync();
+        
+        var respEnvelope = XMLToObject.GetObjfromXml<PostResponseEnvelope>(respString);
+        return respEnvelope.Objects;
+    }
+
     public virtual XMLOverrideswithTracking? GetPostXMLOverrides()
     {
 

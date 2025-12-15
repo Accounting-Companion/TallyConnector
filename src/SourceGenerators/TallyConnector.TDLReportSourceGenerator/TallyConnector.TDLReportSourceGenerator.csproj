@@ -22,6 +22,9 @@
 		<PackageReference Include="System.Collections.Immutable" />
 
 	</ItemGroup>
+    <ItemGroup>
+        <ProjectReference Include="..\..\..\..\XmlSourceGenerator\src\XmlSourceGenerator\XmlSourceGenerator.csproj" />
+    </ItemGroup>
 
 
 </Project>

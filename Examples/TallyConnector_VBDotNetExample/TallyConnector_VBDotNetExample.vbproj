@@ -20,7 +20,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="TallyConnector" Version="2.2.0" />
+    <!--<PackageReference Include="TallyConnector" Version="2.2.0" />-->
   </ItemGroup>
 
 </Project>

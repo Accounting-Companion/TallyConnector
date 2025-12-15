@@ -12,5 +12,7 @@ public partial class MainViewModel : BaseViewModel
     public async Task OnLoaded()
     {
         NavigationState.Navigate(ViewType.DashBoard);
+
+
     }
 }

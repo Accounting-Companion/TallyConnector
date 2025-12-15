@@ -69,14 +69,20 @@ public class ModelTransformer
             {
                 continue;
             }
-            if (member.DeclaredAccessibility != Accessibility.Public || member.Kind != SymbolKind.Property)
+            if (member.DeclaredAccessibility != Accessibility.Public || member.Kind != SymbolKind.Property )
             {
                 if (!classData.IsEnum || member.Kind != SymbolKind.Field)
                 {
                     continue;
                 }
             }
-
+            if(member is IPropertySymbol propertySymbol)
+            {
+                if (propertySymbol.IsReadOnly || propertySymbol.GetMethod == null || propertySymbol.SetMethod == null)
+                {
+                    continue;
+                }
+            }
             ClassPropertyData propertyData = TransformMember(member, classData);
             if (propertyData.IsOverridenProperty && propertyData.OverridenProperty != null)
             {

@@ -1,7 +1,10 @@
-﻿using TallyConnector.Core;
+﻿using System.Collections;
+using TallyConnector.Core;
+using TallyConnector.Core.Models.Request;
 using TallyConnector.Models.TallyPrime.V6.Masters;
 using TallyConnector.Models.TallyPrime.V6.Masters.Meta;
 using TallyConnector.Services;
+using XmlSourceGenerator.Abstractions;
 
 namespace TallyConnector.Tests.Services;
 
@@ -37,9 +40,14 @@ public class BaseTallyServiceTests
         //await TallyService.(new TallyConnector.Core.Models.Request.AutoColumnReportPeriodRequestOptions());
     }
 
-    public async Task TestOptionsBuilder()
+    public async Task TestNewXML()
     {
-     
+        var postEnvelope = new RequestEnvelope();
+        postEnvelope.Body.RequestData.Data ??=  [];
+        var data = postEnvelope.Body.RequestData.Data;
+
+      
+        postEnvelope.WriteToXml();
 
 
     }

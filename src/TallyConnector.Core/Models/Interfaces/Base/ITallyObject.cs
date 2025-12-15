@@ -47,6 +47,17 @@ public interface IBaseTallyService
     /// <exception cref="TallyConnectivityException"></exception>
     Task<TallyResult> SendRequestAsync(string? xml = null, string? requestType = null, CancellationToken token = default);
 
+
+    /// <summary>
+    /// A helper function to send request to Tally and return response as Stream
+    /// Note: This bypasses XML cleaning (regex replacements) performed in SendRequestAsync!
+    /// </summary>
+    /// <param name="requestStream">Stream containing the XML request</param>
+    /// <param name="requestType">Type of request for logging</param>
+    /// <param name="token">Cancellation Token</param>
+    /// <returns>Response Stream</returns>
+    Task<Stream> SendRequestAsStreamAsync(Stream requestStream, string? requestType = null, CancellationToken token = default);
+
     /// <summary>
     /// Checks whether xml has linerror and returns error
     /// if noerror returns null
