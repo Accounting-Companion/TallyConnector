@@ -2,7 +2,7 @@
 
 public class PropertyTDLFieldData
 {
-    public string Set { get; internal set; }
+    public string Set { get; internal set; } = string.Empty;
     public bool ExcludeInFetch { get; internal set; }
     public string? Use { get; internal set; }
     public string? TallyType { get; internal set; }

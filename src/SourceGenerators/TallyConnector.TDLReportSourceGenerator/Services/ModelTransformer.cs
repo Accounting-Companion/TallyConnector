@@ -29,8 +29,8 @@ public class ModelTransformer
         }
         classData = new ClassData(symbol);
         ClassAttributesTransformer.TransformAsync(classData, symbol.GetAttributes());
-        classData.DTOName ??= $"{classData.Name}DTO";
-        classData.DTOFullName ??= $"{classData.Namespace}.DTO.{classData.Name}DTO";
+        if (string.IsNullOrEmpty(classData.DTOName)) classData.DTOName = $"{classData.Name}DTO";
+        if (string.IsNullOrEmpty(classData.DTOFullName)) classData.DTOFullName = $"{classData.Namespace}.DTO.{classData.Name}DTO";
         _symbolsCache[classData.FullName] = classData;
         if (symbol.BaseType != null && !classData.IsEnum && !symbol.BaseType.HasFullyQualifiedMetadataName("object"))
         {
@@ -181,7 +181,9 @@ public class ClassData : IClassAttributeTranfomable
         Symbol = symbol;
         IsEnum = Symbol.TypeKind == TypeKind.Enum;
         IsTallyComplexObject = symbol.CheckInterface(TallyComplexObjectInterfaceName);
-
+        DTOName = string.Empty;
+        XMLTag = string.Empty;
+        DTOFullName = string.Empty;
     }
 
     public ClassData? BaseData { get; set; }
@@ -209,6 +211,7 @@ public class ClassData : IClassAttributeTranfomable
     public Dictionary<string, ClassPropertyData> OveriddenProperties { get; internal set; } = [];
     public bool IgnoreForGenerateDTO { get; internal set; }
     public string DTOFullName { get; internal set; }
+    public INamedTypeSymbol? DTOSymbol { get; internal set; }
     public GenerationMode GenerationMode { get; internal set; }
     public string? DefaultTDLFiltersMethod { get; internal set; }
 
@@ -262,6 +265,7 @@ public class ClassPropertyData
     public string? ListXMLTag { get; internal set; }
     public TDLCollectionData? TDLCollectionData { get; internal set; }
     public bool XmlIgnore { get; internal set; }
+    public bool IsAttribute { get; internal set; }
     public bool IgnoreForDTO { get; internal set; }
 
     private INamedTypeSymbol GetChildType()
@@ -327,9 +331,9 @@ public class TDLClassReport
 }
 public class TDLClassProperty
 {
-    public string VariableName { get; set; }
+    public string VariableName { get; set; } = string.Empty;
 
-    public string Value { get; set; }
+    public string Value { get; set; } = string.Empty;
 
     public bool IsNumber { get; set; }
 }

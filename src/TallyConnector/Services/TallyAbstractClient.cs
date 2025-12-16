@@ -228,7 +228,7 @@ public abstract class TallyAbstractClient : ITallyAbstractClient
 
         IEnumerator<T> enumerator = GenericXmlStreamer.ReadNestedListDataFromTextReader<T>(
             cleaner, 
-            new[] { "ENVELOPE" }
+            ["ENVELOPE"]
         ).GetEnumerator();
         
         while (true)
@@ -324,16 +324,13 @@ public abstract class TallyAbstractClient : ITallyAbstractClient
         }
         
         using var requestStream = new MemoryStream();
-        await GenericXmlStreamer.WriteDataToStreamAsync(requestStream, postEnvelope, new XmlSerializationOptions { Encoding = Encoding.Unicode });
+        await GenericXmlStreamer.WriteDataToStreamAsync(requestStream, postEnvelope, new XmlSerializationOptions { Encoding = Encoding.Unicode,IgnoreNullValues=true });
         requestStream.Position = 0;
 
-        var resp = await _baseHandler.SendRequestAsStreamAsync(requestStream, "Posting Objects", token);
+        using var resp = await _baseHandler.SendRequestAsStreamAsync(requestStream, "Posting Objects", token);
         
-        using var streamReader = new StreamReader(resp, Encoding.Unicode);
-        var respString = await streamReader.ReadToEndAsync();
-        
-        var respEnvelope = XMLToObject.GetObjfromXml<PostResponseEnvelope>(respString);
-        return respEnvelope.Objects;
+        var respEnvelope = GenericXmlStreamer.ReadDataFromStream<PostResponseEnvelope>(resp);
+        return respEnvelope?.Objects ?? [];
     }
 
     public virtual XMLOverrideswithTracking? GetPostXMLOverrides()

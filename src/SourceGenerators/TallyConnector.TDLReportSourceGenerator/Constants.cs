@@ -247,6 +247,8 @@ public static class Constants
         public const string DefaultCollectionVarName = "DefaultCollection";
         public const string ExplodesVarName = "Explodes";
         public const string NameSetsVarName = "NameSets";
+        public const string AllPropertiesVarName = "AllProperties";
+        public const string AllComplexPropertiesVarName = "AllComplexProperties";
 
         public const string AllPartsPropPath = $"{Name}.{AllPartsVarName}";
         public const string AllLinesPropPath = $"{Name}.{AllLinesVarName}";

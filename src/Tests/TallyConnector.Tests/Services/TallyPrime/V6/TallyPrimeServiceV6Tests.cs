@@ -50,12 +50,14 @@ public class TallyPrimeServiceV6Tests
     [Test]
     public async Task PostVoucherAsync()
     {
-        Voucher voucher = new();
-        voucher.VoucherType = "Sales";
-        voucher.Date = new DateTime(2025, 09, 01);
-        voucher.Narration = "From Tally Connector library";
-        voucher.View = Models.Base.VoucherViewType.InvoiceVoucherView;
-        voucher.IsInvoice = true;
+        Voucher voucher = new()
+        {
+            VoucherType = "Sales",
+            Date = new DateTime(2025, 09, 02),
+            Narration = "From Tally Connector library_",
+            View = Models.Base.VoucherViewType.InvoiceVoucherView,
+            IsInvoice = true
+        };
         Models.Base.AllInventoryEntries inventoryAlloc1 = new();
         inventoryAlloc1.StockItemName = "Item1";
         inventoryAlloc1.Rate = new() { Rate = 20, Unit = "Nos" };
@@ -71,7 +73,7 @@ public class TallyPrimeServiceV6Tests
         partyledgerEntry.IsDeemedPositive = true;
         voucher.PartyName = partyledgerEntry.LedgerName;
         voucher.LedgerEntries = [partyledgerEntry];
-        voucher.MasterId = 69;
+        voucher.MasterId = 86;
         var resp = await primeService.PostDTOObjectsAsyncNew<VoucherDTO>([voucher]);
     }
 

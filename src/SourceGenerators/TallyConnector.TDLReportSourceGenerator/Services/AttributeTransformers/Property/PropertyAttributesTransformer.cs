@@ -14,6 +14,7 @@ public class PropertyAttributesTransformer
         { TDLCollectionAttributeName,new PropertyCollectionAttributeTransformer() },
         { EnumChoiceAttributeName,new EnumChoiceAttributeTransformer() },
         { XMLEnumAttributeName,new XMLEnumAttributeTransformer() },
+        { XMLAttributeAttributeName,new XmlAttributeAttributeTransformer() },
         { IgnoreForCreateDTOAttributeName,new IgnoreForCreateDTOAttributeTransformer() },
     };
     /// <summary>
@@ -42,8 +43,11 @@ public class PropertyAttributesTransformer
             propertyData.DefaultXMLData = propertyData.XMLData[0];
             propertyData.XMLData.RemoveAt(0);
         }
-        propertyData.TDLFieldData.FetchText ??= propertyData.DefaultXMLData?.XmlTag ?? propertyData.Name;
-        propertyData.TDLFieldData.Set ??= $"${propertyData.DefaultXMLData?.XmlTag ?? propertyData.Name}";
+        propertyData.TDLFieldData.FetchText ??= propertyData.DefaultXMLData?.XmlTag ?? propertyData.Name.ToUpper();
+        if (string.IsNullOrEmpty(propertyData.TDLFieldData.Set))
+        {
+            propertyData.TDLFieldData.Set = $"${propertyData.DefaultXMLData?.XmlTag ?? propertyData.Name.ToUpper()}";
+        }
     }
 }
 

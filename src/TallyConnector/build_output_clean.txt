@@ -1,9 +1,0 @@
-  Determining projects to restore...
-  All projects are up-to-date for restore.
-D:\SourceCode\AccountingCompanion\TallyConnector_New\src\TallyConnector\Services\TallyAbstractClient.cs(223,19): error CS0128: A local variable or function named 'responseStream' is already defined in this scope [D:\SourceCode\AccountingCompanion\TallyConnector_New\src\TallyConnector\TallyConnector.csproj::TargetFramework=net8.0]
-
-Build FAILED.
-    27 Warning(s)
-    1 Error(s)
-
-Time Elapsed 00:00:01.99

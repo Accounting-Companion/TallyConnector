@@ -52,6 +52,7 @@ internal class MaptoDTOAttributeTransformer : ClassPropertyAttributeTransformer
         {
             data.DTOName = symbol.Name;
             data.DTOFullName = symbol.GetClassMetaName();
+            data.DTOSymbol = symbol;
             data.IgnoreForGenerateDTO = true;
         }
     }

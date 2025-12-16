@@ -95,7 +95,7 @@ public class TallyDate : IXmlSerializable, IXmlStreamable
         return Date.ToString("dd-MM-yyyy", CultureInfo.InvariantCulture);
     }
 
-    public virtual void ReadFromXml(XElement element, XmlSerializationOptions options = null)
+    public virtual void ReadFromXml(XElement element, XmlSerializationOptions? options = null)
     {
         if (element == null) return;
         string content = element.Value;
@@ -114,7 +114,7 @@ public class TallyDate : IXmlSerializable, IXmlStreamable
         }
     }
 
-    public virtual XElement WriteToXml(XmlSerializationOptions options = null)
+    public virtual XElement WriteToXml(XmlSerializationOptions? options = null)
     {
         // Element name will be replaced by the property's XML name mapping by the generator
         var element = new XElement("Date"); 
@@ -146,7 +146,7 @@ public class TallyDMYYYYDate : TallyDate, IXmlSerializable
         }
     }
 
-    public override void ReadFromXml(XElement element, XmlSerializationOptions options = null)
+    public override void ReadFromXml(XElement element, XmlSerializationOptions? options = null)
     {
         if (element == null) return;
         string content = element.Value;

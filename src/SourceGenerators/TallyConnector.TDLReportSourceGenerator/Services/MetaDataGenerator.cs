@@ -513,6 +513,8 @@ public class MetaDataGenerator
         List<SyntaxNodeOrToken> explodeExpressions = [];
         List<SyntaxNodeOrToken> fieldNameExpressions = [];
         List<SyntaxNodeOrToken> fetchTextExpressions = [];
+        List<SyntaxNodeOrToken> propertyExpressions = [];
+        List<SyntaxNodeOrToken> complexPropertyExpressions = [];
         if (_modelData.IsTallyComplexObject)
         {
             fetchTextExpressions.SafeAddExpressionElement(IdentifierName("_pathPrefix"));
@@ -523,6 +525,7 @@ public class MetaDataGenerator
             if (prop.XmlIgnore) continue;
             if (member.IsComplex)
             {
+                complexPropertyExpressions.SafeAddExpressionElement(IdentifierName(prop.Name));
                 AddExplodes(Meta.IdentifierNameVarName, member.Name, member.TDLCollectionData?.ExplodeCondition, member.TDLFieldData?.Set);
                 fetchTextExpressions.SafeAdd(SpreadElement(MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression,
                                                                                   IdentifierName(prop.Name),
@@ -537,6 +540,7 @@ public class MetaDataGenerator
             }
             else
             {
+                propertyExpressions.SafeAddExpressionElement(IdentifierName(prop.Name));
                 if (member.IsList)
                 {
                     AddExplodes("Name", member.Name, member.TDLCollectionData?.ExplodeCondition, member.TDLFieldData?.Set);
@@ -587,6 +591,26 @@ public class MetaDataGenerator
                                             PredefinedType(
                                                 Token(SyntaxKind.StringKeyword))))), Identifier("FetchText"))
             .WithExpressionBody(ArrowExpressionClause(CollectionExpression(SeparatedList<CollectionElementSyntax>(fetchTextExpressions))))
+            .WithModifiers(TokenList(modifiers))
+            .WithSemicolonToken(Token(SyntaxKind.SemicolonToken)));
+
+        members.Add(PropertyDeclaration(GenericName(
+                                    Identifier("List"))
+                                .WithTypeArgumentList(
+                                    TypeArgumentList(
+                                        SingletonSeparatedList<TypeSyntax>(
+                                            IdentifierName(Constants.Models.Abstractions.PropertyMetaDataTypeName)))), Identifier(Meta.AllPropertiesVarName))
+            .WithExpressionBody(ArrowExpressionClause(CollectionExpression(SeparatedList<CollectionElementSyntax>(propertyExpressions))))
+            .WithModifiers(TokenList(modifiers))
+            .WithSemicolonToken(Token(SyntaxKind.SemicolonToken)));
+
+        members.Add(PropertyDeclaration(GenericName(
+                                    Identifier("List"))
+                                .WithTypeArgumentList(
+                                    TypeArgumentList(
+                                        SingletonSeparatedList<TypeSyntax>(
+                                            IdentifierName(Constants.Models.Abstractions.MetaObjectypeName)))), Identifier(Meta.AllComplexPropertiesVarName))
+            .WithExpressionBody(ArrowExpressionClause(CollectionExpression(SeparatedList<CollectionElementSyntax>(complexPropertyExpressions))))
             .WithModifiers(TokenList(modifiers))
             .WithSemicolonToken(Token(SyntaxKind.SemicolonToken)));
 

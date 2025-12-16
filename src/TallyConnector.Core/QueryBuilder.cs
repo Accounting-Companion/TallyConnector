@@ -10,6 +10,7 @@ public class QueryBuilder<TEntity, TMeta> where TEntity : BaseObject, IMetaGener
     private readonly List<FilterCondition> _metaFilterConditions = new();
     public QueryBuilder(TMeta meta)
     {
+        _meta = meta;
     }
     public QueryBuilder<TEntity, TMeta> FilterBy(Func<TMeta, FilterCondition> builder, string? name = null)
     {
