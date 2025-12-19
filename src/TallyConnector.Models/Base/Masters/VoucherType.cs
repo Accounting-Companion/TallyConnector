@@ -13,19 +13,15 @@ public partial class VoucherType : BaseAliasedMasterObject
     public string? NumberingMethod { get; set; }
 
     [XmlElement(ElementName = "USEZEROENTRIES")]
-    [Column(TypeName = "nvarchar(3)")]
     public bool? UseZeroEntries { get; set; }
 
     [XmlElement(ElementName = "ISACTIVE")]
-    [Column(TypeName = "nvarchar(3)")]
     public bool? IsActive { get; set; }
 
     [XmlElement(ElementName = "PRINTAFTERSAVE")]
-    [Column(TypeName = "nvarchar(3)")]
     public bool? PrintAfterSave { get; set; }
 
     [XmlElement(ElementName = "USEFORPOSINVOICE")]
-    [Column(TypeName = "nvarchar(3)")]
     public bool? UseforPOSInvoice { get; set; }
 
     [XmlElement(ElementName = "VCHPRINTBANKNAME")]

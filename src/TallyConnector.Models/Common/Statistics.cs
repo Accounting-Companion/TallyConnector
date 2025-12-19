@@ -3,7 +3,7 @@ public partial class BaseStatistics : IBaseObject
 {
     [XmlElement(ElementName = "COUNT")]
     [TDLField(Set = "if $$ISEMPTY:$StatVal then 0 else $StatVal")]
-    public int Count { get; set; }
+    public ulong Count { get; set; }
 }
 
 [TDLCollection(CollectionName = "STATObjects", Exclude = true)]

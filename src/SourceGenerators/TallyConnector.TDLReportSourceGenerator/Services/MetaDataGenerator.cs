@@ -802,19 +802,39 @@ public class MetaDataGenerator
         if (!(_modelData.TDLCollectionData?.Exclude ?? false))
         {
             List<SyntaxNodeOrToken> collectionConstructorArgs = [];
+            List<SyntaxNodeOrToken> countCollectionConstructorArgs = [];
+
+           
+
             collectionConstructorArgs.SafeAddArgument(IdentifierName(Meta.CollectionNameVarName));
             collectionConstructorArgs.SafeAddArgument(IdentifierName(Meta.ObjectTypeVarName));
+
+            countCollectionConstructorArgs.SafeAddArgument(IdentifierName(Meta.CollectionNameVarName));
+            countCollectionConstructorArgs.SafeAddArgument(IdentifierName(Meta.ObjectTypeVarName));
+            countCollectionConstructorArgs.SafeAdd(Argument(IdentifierName("[]")).WithNameColon(NameColon(IdentifierName("nativeFields"))));
+
             collectionConstructorArgs.SafeAdd(Argument(IdentifierName("FetchText")).WithNameColon(NameColon(IdentifierName("nativeFields"))));
             if (_modelData.DefaultTDLFiltersMethod != null)
             {
                 collectionConstructorArgs.SafeAdd(Argument(CollectionExpression(SeparatedList<CollectionElementSyntax>(
                                         new SyntaxNodeOrToken[] { SpreadElement(InvocationExpression(MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression, GetGlobalNameforType(_modelData.FullName), IdentifierName(_modelData.DefaultTDLFiltersMethod))))
                                         }))).WithNameColon(NameColon(IdentifierName("filters"))));
+
+                countCollectionConstructorArgs.SafeAdd(Argument(CollectionExpression(SeparatedList<CollectionElementSyntax>(
+                                       new SyntaxNodeOrToken[] { SpreadElement(InvocationExpression(MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression, GetGlobalNameforType(_modelData.FullName), IdentifierName(_modelData.DefaultTDLFiltersMethod))))
+                                       }))).WithNameColon(NameColon(IdentifierName("filters"))));
             }
             members.Add(PropertyDeclaration(GetGlobalNameforType(CollectionFullTypeName),
                                             Identifier(Meta.DefaultCollectionVarName))
                 .WithModifiers(TokenList(modifiers))
                 .WithExpressionBody(ArrowExpressionClause(CreateImplicitObjectExpression(collectionConstructorArgs)))
+                .WithSemicolonToken(Token(SyntaxKind.SemicolonToken)));
+
+            
+            members.Add(PropertyDeclaration(GetGlobalNameforType(CollectionFullTypeName),
+                                            Identifier(Meta.CountCollectionNameVarName))
+                .WithModifiers(TokenList(modifiers))
+                .WithExpressionBody(ArrowExpressionClause(CreateImplicitObjectExpression(countCollectionConstructorArgs)))
                 .WithSemicolonToken(Token(SyntaxKind.SemicolonToken)));
         }
     }

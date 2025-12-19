@@ -3,6 +3,7 @@
 namespace TallyConnector.Services;
 public interface ITallyAbstractClient
 {
+    Task<ulong> GetCountAsync<T>(BaseRequestOptions? options = null, CancellationToken token = default) where T : ITallyRequestableObject, IBaseObject;
     Task<LastAlterIdsRoot> GetLastAlterIdsAsync(BaseRequestOptions? baseRequestOptions = null, CancellationToken token = default);
     /// <summary>
     /// Get paginated data from Tally

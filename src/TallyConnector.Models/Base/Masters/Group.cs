@@ -53,7 +53,7 @@ public partial class Group : BaseAliasedMasterObject, Core.Models.Interfaces.Mas
     /// Tally Field - Method to Allocate when used in purchase invoice
     /// </summary>
     [XmlElement(ElementName = "ADDLALLOCTYPE")]
-    [Column(TypeName = "nvarchar(25)")]
+    [MaxLength(30)]
     public AdAllocType? AddlAllocType { get; set; }
 
     /// <summary>

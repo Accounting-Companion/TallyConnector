@@ -1,14 +1,15 @@
 ﻿namespace TallyConnector.Models.Common.Pagination;
+
 public class Pagination : PaginationBase
 {
 
-    public Pagination(int totalCount, int pageSize = 100) : base(totalCount, pageSize)
+    public Pagination(ulong totalCount, int pageSize = 100) : base(totalCount, pageSize)
     {
 
         IntialCalculate();
     }
 
-    public Pagination(int totalCount, int pageSize = 100, int pageNum = 1) : base(totalCount, pageSize, pageNum)
+    public Pagination(ulong totalCount, int pageSize = 100, int pageNum = 1) : base(totalCount, pageSize, pageNum)
     {
 
         IntialCalculate();
@@ -16,7 +17,7 @@ public class Pagination : PaginationBase
     }
 
     public int Start { get; private set; }
-    public int End { get; private set; }
+    public ulong End { get; private set; }
 
     public string GetFilterFormulae()
     {
@@ -27,7 +28,7 @@ public class Pagination : PaginationBase
         PageNum++;
         Start += PageSize;
 
-        End += PageSize;
+        End += (ulong)PageSize;
         if (End > TotalCount)
         {
             End = TotalCount;
@@ -39,7 +40,7 @@ public class Pagination : PaginationBase
         {
             PageNum = pageNum;
             Start = PageSize * (pageNum - 1);
-            End = PageSize * pageNum;
+            End = (ulong)(PageSize * pageNum);
             if (End > TotalCount)
             {
                 End = TotalCount;
@@ -54,6 +55,6 @@ public class Pagination : PaginationBase
     {
         TotalPages = (int)Math.Ceiling((decimal)TotalCount / PageSize);
         Start = 0;
-        End = 0 + PageSize;
+        End = (ulong)(0 + PageSize);
     }
 }

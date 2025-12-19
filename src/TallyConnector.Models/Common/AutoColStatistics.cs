@@ -6,7 +6,7 @@ public class AutoColVoucherTypeStat : IBaseObject
     public string Name { get; set; } = null!;
 
     [XmlElement(ElementName = "TOTALCOUNT")]
-    public int TotalCount { get; set; }
+    public ulong TotalCount { get; set; }
 
     [XmlElement(ElementName = "PERIODSTAT")]
     public List<PeriodStat> PeriodStats { get; set; } = [];
@@ -21,13 +21,13 @@ public class PeriodStat
     public DateTime ToDate { get; set; }
 
     [XmlElement(ElementName = "CANCELLEDCOUNT")]
-    public int CancelledCount { get; set; }
+    public ulong CancelledCount { get; set; }
 
     [XmlElement(ElementName = "OTIONALCOUNT")]
-    public int OptioinalCount { get; set; }
+    public ulong OptioinalCount { get; set; }
 
     [XmlElement(ElementName = "TOTALCOUNT")]
-    public int TotalCount { get; set; }
+    public ulong TotalCount { get; set; }
 
     public override string ToString()
     {

@@ -1,6 +1,7 @@
 ﻿using System.Collections.Immutable;
 
 namespace TallyConnector.TDLReportSourceGenerator.Services.AttributeTransformers.Class;
+
 public class ClassAttributesTransformer
 {
     private static readonly Dictionary<string, ClassPropertyAttributeTransformer> _classattributeTransformers = new()
@@ -10,7 +11,8 @@ public class ClassAttributesTransformer
         {MaptoDTOAttributeName,new MaptoDTOAttributeTransformer() },
         {Attributes.Abstractions.GenerateITallyRequestableObectAttributeeName,new GenerateITallyRequestableObectAttributeTransformer() },
         {TDLFunctionsMethodNameAttributeName,new FunctionNameExtractor(c=>c.TDLFunctions) },
-        {TDLDefaultFiltersMethodNameAttributeName,new DefaultFiltersFunctionNameExtractor() }
+        {TDLDefaultFiltersMethodNameAttributeName,new DefaultFiltersFunctionNameExtractor() },
+         {TDLObjectsMethodNameAttributeName,new DefaultObjectsFunctionNameExtractor() }
     };
 
     /// <summary>
@@ -29,7 +31,24 @@ public class ClassAttributesTransformer
         }
 
         // if class doesnot have xml root attribute
-        data.XMLTag ??= data.Name.ToUpper();
+        if (string.IsNullOrWhiteSpace(data.XMLTag))
+        {
+            data.XMLTag = data.Name.ToUpper();
+        }
+    }
+}
+
+internal class DefaultObjectsFunctionNameExtractor : ClassPropertyAttributeTransformer
+{
+    public override void TransformAsync(ClassData data, AttributeData attributeData)
+    {
+        string? funcName = FunctionNameExtractor.Extract(attributeData);
+        if (!string.IsNullOrWhiteSpace(funcName))
+        {
+            data.DefaultTDLObjects.Add($"{data.FullName}.{funcName!}");
+        }
+
+
     }
 }
 
@@ -38,7 +57,7 @@ internal class DefaultFiltersFunctionNameExtractor : ClassPropertyAttributeTrans
     public override void TransformAsync(ClassData data, AttributeData attributeData)
     {
         data.DefaultTDLFiltersMethod = FunctionNameExtractor.Extract(attributeData);
-        
+
 
     }
 }

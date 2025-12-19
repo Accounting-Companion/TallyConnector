@@ -1,6 +1,7 @@
 ﻿using TallyConnector.TDLReportSourceGenerator.Models;
 
 namespace TallyConnector.TDLReportSourceGenerator.Services;
+
 public class TDLEnvelopeGenerator
 {
     private readonly ClassData _modelData;
@@ -68,6 +69,8 @@ public class TDLEnvelopeGenerator
     {
         List<MemberDeclarationSyntax> members = [];
         members.Add(GetReqEnvelopeMethod());
+
+        members.Add(GetCountReqEnvelopeMethod());
         members.Add(GenerateGetXmlAttributeOverridesMethodSyntax());
         return members;
     }
@@ -109,6 +112,7 @@ public class TDLEnvelopeGenerator
 
         }
         statements.Add(CreateAssignFromMethodStatement(tdlMsgVariableName, "Functions", [.. _modelData.TDLFunctions], [.. _modelData.DefaultTDLFunctions]));
+        statements.Add(CreateAssignFromMethodStatement(tdlMsgVariableName, "Object", [.. _modelData.DefaultTDLObjects], []));
 
 
         statements.Add(CreateAssignFromPropertyStatement(tdlMsgVariableName, "NameSet", [Meta.NameSetsPropPath]));
@@ -122,6 +126,50 @@ public class TDLEnvelopeGenerator
         return methodDeclarationSyntax;
     }
 
+    private MemberDeclarationSyntax GetCountReqEnvelopeMethod()
+    {
+
+        const string envelopeVariableName = "reqEnvelope";
+        const string tdlMsgVariableName = "tdlMsg";
+        const string objectCountNameVar = "objectCountName";
+        List<StatementSyntax> statements = [];
+
+        // Declaring Variable for RequestEnvelope
+        //statements.Add(LocalDeclarationStatement(CreateVariableDelaration(PredefinedType(Token(SyntaxKind.StringKeyword)),
+        //                                                                               objectCountNameVar,
+        //                                                                               LiteralExpression(SyntaxKind.StringLiteralExpression, Literal("TC_ObjectsCount")))));
+        statements.Add(CreateVarInsideMethodWithExpression(envelopeVariableName, ObjectCreationExpression(GetGlobalNameforType(RequestEnvelopeFullTypeName))
+            .WithArgumentList(ArgumentList(SeparatedList<ArgumentSyntax>(new SyntaxNodeOrToken[]
+            {
+                Argument(MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression,GetGlobalNameforType(HeaderTypeEnumName),IdentifierName("Data"))),
+                Token(SyntaxKind.CommaToken),
+                Argument(IdentifierName(Meta.IdentifierPropPath))
+            })))));
+        // ctreate var for TDLMessage
+        statements.Add(CreateVarInsideMethodWithExpression(tdlMsgVariableName,
+                                                           MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression,
+                                                                                  IdentifierName(envelopeVariableName),
+                                                                                  IdentifierName("Body.Desc.TDL.TDLMessage"))));
+
+        statements.Add(CreateReportAndFormAsssignStatement(tdlMsgVariableName, "Report"));
+        statements.Add(CreateReportAndFormAsssignStatement(tdlMsgVariableName, "Form"));
+
+
+        if (!(_modelData.TDLCollectionData?.Exclude ?? false))
+        {
+            statements.Add(CreateAssignFromPropertyStatement(tdlMsgVariableName, "Collection", [], [Meta.CountCollectionPropPath]));
+
+        }
+
+        statements.Add(ReturnStatement(IdentifierName(envelopeVariableName)));
+
+
+        var methodDeclarationSyntax = MethodDeclaration(GetGlobalNameforType(RequestEnvelopeFullTypeName),
+                                                        Identifier(string.Format(GetRequestEnvelopeMethodName, "Count")))
+            .WithModifiers(TokenList(modifiers))
+            .WithBody(Block(statements));
+        return methodDeclarationSyntax;
+    }
     private ExpressionStatementSyntax CreateReportAndFormAsssignStatement(string tdlMsgVariableName,
                                                                          string name)
     {
@@ -280,7 +328,7 @@ public class TDLEnvelopeGenerator
         }
         members.Add(FieldDeclaration(
                     VariableDeclaration(
-                        IdentifierName("Type"))                    
+                        IdentifierName("Type"))
                     .WithVariables(
                         SingletonSeparatedList<VariableDeclaratorSyntax>(
                             VariableDeclarator(

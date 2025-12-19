@@ -3,7 +3,7 @@
 public class LastAlterIdsRoot : IBaseObject
 {
     [XmlElement(ElementName = "MASTERSLASTID")]
-    public uint MastersLastAlterId { get; set; }
+    public ulong MastersLastAlterId { get; set; }
     [XmlElement(ElementName = "VOUCHERSLASTID")]
-    public uint VouchersLastAlterId { get; set; }
+    public ulong VouchersLastAlterId { get; set; }
 }

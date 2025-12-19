@@ -6,7 +6,7 @@ public class PaginationBase : IPaginationBase
     {
     }
 
-    public PaginationBase(int totalCount, int pageSize)
+    public PaginationBase(ulong totalCount, int pageSize)
     {
         TotalCount = totalCount;
         PageSize = pageSize;
@@ -14,14 +14,14 @@ public class PaginationBase : IPaginationBase
         TotalPages = totalCount != 0 ? (int)Math.Ceiling((decimal)TotalCount / PageSize) : 0;
     }
 
-    public PaginationBase(int totalCount, int pageSize, int pageNum) : this(totalCount, pageSize)
+    public PaginationBase(ulong totalCount, int pageSize, int pageNum) : this(totalCount, pageSize)
     {
         TotalCount = totalCount;
         PageNum = pageNum;
         PageSize = pageSize;
     }
 
-    public PaginationBase(int pageNum, int pageSize, int totalCount, int totalPages)
+    public PaginationBase(int pageNum, int pageSize, ulong totalCount, int totalPages)
     {
         PageNum = pageNum;
         PageSize = pageSize;
@@ -33,7 +33,7 @@ public class PaginationBase : IPaginationBase
     public int PageSize { get; }
 
 
-    public int TotalCount { get; }
+    public ulong TotalCount { get; }
     public int TotalPages { get; internal set; }
 
 

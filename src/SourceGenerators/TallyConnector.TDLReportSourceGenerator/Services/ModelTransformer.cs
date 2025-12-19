@@ -40,12 +40,14 @@ public class ModelTransformer
             classData.AllDirectMembers.AppendDict(classData.BaseData.AllDirectMembers);
             classData.AllMembers.AppendDict(classData.BaseData.AllMembers, prefixPath);
             classData.DefaultTDLFunctions.CopyFrom(classData.BaseData.DefaultTDLFunctions);
+            classData.DefaultTDLObjects.CopyFrom(classData.BaseData.DefaultTDLObjects);
             classData.TDLFunctions.CopyFrom(classData.BaseData.TDLFunctions);
             classData.IsBaseIRequestableObject = classData.BaseData.Symbol.CheckInterface(Constants.Models.Interfaces.TallyRequestableObjectInterfaceFullName);
             classData.OveriddenProperties.AppendDict(classData.BaseData.OveriddenProperties);
 
             classData.TDLCollectionData ??= classData.BaseData.TDLCollectionData;
             classData.DefaultTDLFiltersMethod ??= classData.BaseData?.DefaultTDLFiltersMethod;
+            
         }
         await TransformMembers(classData, prefixPath, token);
         var values = classData.Members.Values;
@@ -116,6 +118,7 @@ public class ModelTransformer
                     .ToDictionary(c => c.UniqueName, c => c), PropertyprefixPath);
 
                 classData.DefaultTDLFunctions.CopyFrom(propertyData.ClassData.DefaultTDLFunctions);
+                classData.DefaultTDLObjects.CopyFrom(propertyData.ClassData.DefaultTDLObjects);
 
                 propertyData.TDLCollectionData ??= propertyData.ClassData.TDLCollectionData;
                 classData.OveriddenProperties.AppendDict(propertyData.ClassData.OveriddenProperties);
@@ -200,6 +203,7 @@ public class ClassData : IClassAttributeTranfomable
     public Dictionary<string, ClassPropertyData> Members { get; } = [];
 
     public HashSet<string> DefaultTDLFunctions { get; internal set; } = [];
+    public HashSet<string> DefaultTDLObjects { get; internal set; } = [];
     public HashSet<string> TDLFunctions { get; internal set; } = [];
     public string XMLTag { get; internal set; }
     public TDLCollectionData? TDLCollectionData { get; internal set; }
@@ -225,6 +229,7 @@ public interface IClassAttributeTranfomable
 {
     //  Dictionary<string, UniqueMember> AllUniqueMembers { get; }
     HashSet<string> DefaultTDLFunctions { get; }
+    HashSet<string> DefaultTDLObjects { get; }
     HashSet<string> TDLFunctions { get; }
     string XMLTag { get; }
     TDLCollectionData? TDLCollectionData { get; }

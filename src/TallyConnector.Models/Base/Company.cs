@@ -15,7 +15,7 @@ public partial class BaseCompany : IBaseCompany
     /// Name of Company
     /// </summary>
     [XmlElement(ElementName = "NAME")]
-    [Column(TypeName = $"nvarchar({MaxNameLength})")]
+    [MaxLength(MaxNameLength)]
     public string? Name { get; set; }
 
     [XmlElement(ElementName = "TC_STARTINGFROM")]
@@ -67,19 +67,19 @@ public partial class Company : BaseCompany, ICompany
     public DateTime BooksFrom { get; set; }
 
     [XmlElement(ElementName = "GUID")]
-    [Column(TypeName = $"nvarchar({GUIDLength})")]
+    [MaxLength(GUIDLength)]
     public string GUID { get; set; }
 
     [XmlElement(ElementName = "BASICCOMPANYFORMALNAME")]
-    [Column(TypeName = $"nvarchar({MaxNameLength})")]
+    [MaxLength(MaxNameLength)]
     public string? FormalName { get; set; }
 
     [XmlElement(ElementName = "STATENAME")]
-    [Column(TypeName = $"nvarchar({MaxNameLength})")]
+    [MaxLength(MaxNameLength)]
     public string? State { get; set; }
 
     [XmlElement(ElementName = "COUNTRYNAME")]
-    [Column(TypeName = $"nvarchar({MaxNameLength})")]
+    [MaxLength(MaxNameLength)]
     public string? Country { get; set; }
 
     [XmlElement(ElementName = "PINCODE")]

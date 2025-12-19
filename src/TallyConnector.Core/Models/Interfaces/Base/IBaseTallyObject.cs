@@ -3,7 +3,7 @@
 
 public interface IBaseObject
 {
-
+    
 }
 public interface IBaseTallyObject : IBaseObject
 {

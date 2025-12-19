@@ -4,6 +4,6 @@ public interface IPaginationBase
 {
     int PageNum { get; }
     int PageSize { get; }
-    int TotalCount { get; }
+    ulong TotalCount { get; }
     int TotalPages { get; }
 }

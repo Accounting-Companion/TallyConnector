@@ -9,18 +9,18 @@ public static class Constants
     public const string Prefix = "TC_";
 
     public const string GUIDSuffix = "AC_TC";
-    public const string MaxNumberLength = "31";
-    public const string MaxAmountLength = "26";
+    public const int MaxNumberLength = 31;
+    public const int MaxAmountLength = 26;
     public const int IMaxAmountLength = 26;
-    public const string MaxQtyLength = "15";
-    public const string MaxSymbolLength = "15";
-    public const string MaxRateLength = "9";
-    public const string MaxUnitLength = "3";
-    public const string MaxNarrLength = "4000";
-    public const string MaxNameLength = "100";
-    public const string MaxDateLength = "25";
-    public const string MaxParticularsLength = "30";
-    public const string GUIDLength = "100";
+    public const int MaxQtyLength = 15;
+    public const int MaxSymbolLength = 15;
+    public const int MaxRateLength = 9;
+    public const int MaxUnitLength = 3;
+    public const int MaxNarrLength = 4000;
+    public const int MaxNameLength = 100;
+    public const int MaxDateLength = 25;
+    public const int MaxParticularsLength = 30;
+    public const int GUIDLength = 100;
 
     public const string TallyPrimeLicense = "$$SPrintf:@@CapProductDetails:@@VersionReleaseString:@@VersionBuildString:" +
                                             "@@ProductBitnessStr:($$String:@@MajorReleaseeFormula):($$String:@@MinorReleaseFormula)" +

@@ -7,6 +7,7 @@ using System.Text;
 using System.Linq;
 using XmlSourceGenerator.Abstractions;
 using System.Runtime.CompilerServices;
+using System.Numerics;
 
 //[assembly: InternalsVisibleTo("TestProject")]
 
@@ -39,9 +40,9 @@ public abstract class TallyAbstractClient : ITallyAbstractClient
         _baseHandler.Setup(url, port);
     }
 
-    public Task<bool> CheckAsync()=> _baseHandler.CheckAsync();
+    public Task<bool> CheckAsync() => _baseHandler.CheckAsync();
 
-    public Task<string> GetActiveSimpleCompanyNameAsync()=> _baseHandler.GetActiveSimpleCompanyNameAsync();
+    public Task<string> GetActiveSimpleCompanyNameAsync() => _baseHandler.GetActiveSimpleCompanyNameAsync();
     public void SetCompany(ICompany company) => _baseHandler.SetCompany(company);
     public async Task<LastAlterIdsRoot> GetLastAlterIdsAsync(BaseRequestOptions? baseRequestOptions = null, CancellationToken token = default)
     {
@@ -222,15 +223,15 @@ public abstract class TallyAbstractClient : ITallyAbstractClient
         using var responseStream = await _baseHandler.SendRequestAsStreamAsync(requestStream, "", token);
 
         using var streamReader = new StreamReader(responseStream, Encoding.Unicode);
-        
+
         using var cleaner = new TallyResponseCleaner(streamReader);
 
 
         IEnumerator<T> enumerator = GenericXmlStreamer.ReadNestedListDataFromTextReader<T>(
-            cleaner, 
+            cleaner,
             ["ENVELOPE"]
         ).GetEnumerator();
-        
+
         while (true)
         {
             T? item = default;
@@ -246,6 +247,27 @@ public abstract class TallyAbstractClient : ITallyAbstractClient
             }
             yield return item;
         }
+    }
+
+    /// <inheritdoc/>
+    public async Task<ulong> GetCountAsync<T>(BaseRequestOptions? options = null, CancellationToken token = default) where T : ITallyRequestableObject, IBaseObject
+    {
+        const string objectCountName = "TC_ObjectsCount_Req";
+        var reqEnvelope = T.GetCountRequestEnvelope();
+        var tDLMessage = reqEnvelope.Body.Desc.TDL.TDLMessage;
+       var report = tDLMessage.Report!.First();
+        Part part = new(report.Name, null, objectCountName);
+        tDLMessage.Part = [part];
+        tDLMessage.Line = [new(objectCountName, [objectCountName])];
+        Collection collection = tDLMessage.Collection.First();
+        tDLMessage.Field = [ new Field(objectCountName, "TC_TotalCount", $"$$NUMITEMS:{collection.Name}")];
+        reqEnvelope.PopulateOptions(options);
+        await _baseHandler.PopulateDefaultOptions(reqEnvelope, token);
+        await using var requestStream = new MemoryStream();
+        await GenericXmlStreamer.WriteDataToStreamAsync(requestStream, reqEnvelope, new XmlSerializationOptions { Encoding = Encoding.Unicode });
+        var respStream = await _baseHandler.SendRequestAsStreamAsync(requestStream,"Count Request",token);
+        var respEnv = GenericXmlStreamer.ReadDataFromStream<CountResponseEnvelope>(respStream);
+        return respEnv?.TotalCount ?? 0;
     }
     /// <inheritdoc/>
     public async Task<PaginatedResponse<T>> GetObjectsAsync<T>(PaginatedRequestOptions options, CancellationToken token = default) where T : ITallyRequestableObject, IBaseObject
@@ -282,7 +304,7 @@ public abstract class TallyAbstractClient : ITallyAbstractClient
         bool stopatFirstError = options?.StopatFirstError ?? false;
         switch (_baseHandler.LicenseInfo.TallyShortVersion.MajorVersion)
         {
-            case > 3 and <=6:
+            case > 3 and <= 6:
                 sv.ExtraVars.Add(new System.Xml.Linq.XElement("SVIMPBEHAVIOUREXCP", stopatFirstError ? "Stop Import at First Exception" : "Ignore Exceptions and Import"));
                 break;
             default:
@@ -305,7 +327,7 @@ public abstract class TallyAbstractClient : ITallyAbstractClient
         var postEnvelope = new RequestEnvelope();
         postEnvelope.AddCustomResponseReportForPost();
         postEnvelope.PopulateOptions(options);
-        
+
         var sv = postEnvelope.Body.Desc.StaticVariables ?? new();
         bool stopatFirstError = options?.StopatFirstError ?? false;
         switch (_baseHandler.LicenseInfo.TallyShortVersion.MajorVersion)
@@ -320,15 +342,15 @@ public abstract class TallyAbstractClient : ITallyAbstractClient
         postEnvelope.Body.RequestData.Data ??= [];
         foreach (var obj in objects)
         {
-             postEnvelope.Body.RequestData.Data.Add(obj);
+            postEnvelope.Body.RequestData.Data.Add(obj);
         }
-        
+
         using var requestStream = new MemoryStream();
-        await GenericXmlStreamer.WriteDataToStreamAsync(requestStream, postEnvelope, new XmlSerializationOptions { Encoding = Encoding.Unicode,IgnoreNullValues=true });
+        await GenericXmlStreamer.WriteDataToStreamAsync(requestStream, postEnvelope, new XmlSerializationOptions { Encoding = Encoding.Unicode, IgnoreNullValues = true });
         requestStream.Position = 0;
 
         using var resp = await _baseHandler.SendRequestAsStreamAsync(requestStream, "Posting Objects", token);
-        
+
         var respEnvelope = GenericXmlStreamer.ReadDataFromStream<PostResponseEnvelope>(resp);
         return respEnvelope?.Objects ?? [];
     }

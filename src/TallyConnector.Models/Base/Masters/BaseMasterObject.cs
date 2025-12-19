@@ -8,7 +8,7 @@ public partial class BaseMasterObject : TallyObject, IBaseMasterObject
 {
     [XmlElement(ElementName = "NAME")]
     [Required]
-    [Column(TypeName = $"nvarchar({MaxNameLength})")]
+    [MaxLength(MaxNameLength)]
     public string Name { get; set; } = null!;
 
 }
@@ -24,7 +24,7 @@ public class BaseMasterObjectDTO : TallyObjectDTO
 public partial class BaseAliasedMasterObject : BaseMasterObject
 
 {
-    [Column(TypeName = $"nvarchar({MaxNameLength})")]
+    [MaxLength(MaxNameLength)]
     [TDLField(Set = "$_FirstAlias")]
     [IgnoreForCreateDTO]
     public string? Alias { get; set; }

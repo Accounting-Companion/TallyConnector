@@ -6,6 +6,7 @@ public interface ITallyRequestableObject
     // static string XMLTag;
     static abstract XMLOverrideswithTracking GetXMLAttributeOverides();
     static abstract RequestEnvelope GetRequestEnvelope();
+    static abstract RequestEnvelope GetCountRequestEnvelope();
 
 }
 

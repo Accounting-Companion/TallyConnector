@@ -231,6 +231,7 @@ public static class Constants
         public const string InstanceVarName = "Instance";
         public const string ReportVarName = "TDLReportName";
         public const string CollectionNameVarName = "TDLDefaultCollectionName";
+        public const string CountCollectionNameVarName = "TDLCountCollectionName";
         public const string TDLDefaultPartVarName = "TDLDefaultPart";
         public const string TDLDefaultLineVarName = "TDLDefaultLine";
         public const string ObjectTypeVarName = "TallyObjectType";
@@ -257,6 +258,7 @@ public static class Constants
         public const string ObjectTypePropPath = $"{Name}.{ObjectTypeVarName}";
         public const string AllFetchTextPropPath = $"{Name}.{AllFetchTextVarName}";
         public const string DefaultCollectionPropPath = $"{Name}.{DefaultCollectionVarName}";
+        public const string CountCollectionPropPath = $"{Name}.{CountCollectionNameVarName}";
 
         public const string TDLDefaultLinePropPath = $"{Name}.{TDLDefaultLineVarName}";
         public const string TDLDefaultPartPropPath = $"{Name}.{TDLDefaultPartVarName}";
