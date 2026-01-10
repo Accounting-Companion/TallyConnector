@@ -107,11 +107,19 @@ public partial class BaseTallyService : IBaseTallyService
     {
         var reqType = "Test Request";
         using var activity = BaseTallyServiceActivitySource.StartActivity(reqType);
-        TallyResult tallyResult = await SendRequestAsync(requestType: "Test Request",
-                                                         token: token);
-        if (tallyResult.Status == RespStatus.Sucess)
+        try
         {
-            return true;
+            
+            TallyResult tallyResult = await SendRequestAsync(requestType: "Test Request",
+                                                             token: token);
+            if (tallyResult.Status == RespStatus.Sucess)
+            {
+                return true;
+            }
+        }
+        catch (TallyConnectivityException ex)
+        {
+            _logger?.LogError(ex, "Tally connectivity error");
         }
         return false;
     }
