@@ -68,7 +68,30 @@ public partial class Ledger : BaseAliasedMasterObject
     [XmlElement(ElementName = "GSTTYPEOFSUPPLY")]
     public GSTTypeOfSupply? GSTTypeOfSupply { get; set; }
 
-  
+    [XmlElement(ElementName = "BANKINGCONFIGBANK")]
+    public string? BankName { get; set; }
+
+
+    [XmlElement(ElementName = "BANKDETAILS")]
+    public string? AccountNumber { get; set; }
+
+    [XmlElement(ElementName = "BANKBSRCODE")]
+    public string? BankBsrCode { get; set; }
+
+    [XmlElement(ElementName = "BRANCHNAME")]
+    public string? BranchName { get; set; }
+
+
+    [XmlElement(ElementName = "IFSCODE")]
+    public string? IFSCODE { get; set; }
+
+    [XmlElement(ElementName = "SWIFTCODE")]
+    public string? SWIFTCODE { get; set; }
+
+
+    [XmlElement(ElementName = "PAYMENTDETAILS.LIST")]
+    [TDLCollection(CollectionName = "PAYMENTDETAILS", ExplodeCondition = "$$NUMITEMS:PAYMENTDETAILS>0")]
+    public List<PaymentDetails>? PaymentDetails { get; set; }
 
     [XmlElement(ElementName = "LEDMULTIADDRESSLIST.LIST")]
     [TDLCollection(CollectionName = "LEDMULTIADDRESSLIST", ExplodeCondition = "$$NUMITEMS:LEDMULTIADDRESSLIST>0")]
@@ -101,13 +124,13 @@ public partial class Ledger : BaseAliasedMasterObject
     }
 }
 
-public  enum GSTTypeOfSupply
-{ 
-    [EnumXMLChoice(Choice ="Goods")]
+public enum GSTTypeOfSupply
+{
+    [EnumXMLChoice(Choice = "Goods")]
     Goods,
-    [EnumXMLChoice(Choice ="Services")]
+    [EnumXMLChoice(Choice = "Services")]
     Services,
-    [EnumXMLChoice(Choice ="Capital Goods")]
+    [EnumXMLChoice(Choice = "Capital Goods")]
     CapitalGoods
 }
 

@@ -3,7 +3,8 @@
 
 //Related to payroll and ledger
 [XmlRoot(ElementName = "PAYMENTDETAILS.LIST")]
-public class PaymentDetails
+[GenerateMeta]
+public partial class PaymentDetails
 {
     [XmlElement(ElementName = "DEFAULTTRANSACTIONTYPE")]
     public string? DefaultTransactionType { get; set; }

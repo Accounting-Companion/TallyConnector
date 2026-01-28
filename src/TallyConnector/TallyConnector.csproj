@@ -31,14 +31,11 @@
 
 
 	<ItemGroup>
-		<ProjectReference
-			Include="..\SourceGenerators\TallyConnector.TDLReportSourceGenerator\TallyConnector.TDLReportSourceGenerator.csproj"
-			OutputItemType="Analyzer" />
+		<ProjectReference Include="..\SourceGenerators\TallyConnector.TDLReportSourceGenerator\TallyConnector.TDLReportSourceGenerator.csproj" OutputItemType="Analyzer" />
 	</ItemGroup>
 
 	<ItemGroup>
 		<ProjectReference Include="..\TallyConnector.Models\TallyConnector.Models.csproj" />
-		<ProjectReference Include="..\..\..\XmlSourceGenerator\src\XmlSourceGenerator.Abstractions\XmlSourceGenerator.Abstractions.csproj" />
 	</ItemGroup>
 
 

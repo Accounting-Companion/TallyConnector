@@ -12,19 +12,21 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-		<None Include="$(OutputPath)\$(AssemblyName).dll" Pack="true"
-			PackagePath="analyzers/dotnet/cs" Visible="false" />
+		<None Include="$(OutputPath)\$(AssemblyName).dll" Pack="true" PackagePath="analyzers/dotnet/cs" Visible="false" />
+		<!-- <None Include="$(OutputPath)\XmlSourceGenerator.dll" Pack="true"
+			PackagePath="analyzers/dotnet/cs" Visible="false" /> -->
 		<PackageReference Include="Microsoft.CodeAnalysis.Analyzers">
 			<PrivateAssets>all</PrivateAssets>
 			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 		</PackageReference>
 		<PackageReference Include="Microsoft.CodeAnalysis.CSharp" PrivateAssets="all" />
 		<PackageReference Include="System.Collections.Immutable" />
+		<PackageReference Include="XmlSourceGenerator" />
 
 	</ItemGroup>
-    <ItemGroup>
+    <!--<ItemGroup>
         <ProjectReference Include="..\..\..\..\XmlSourceGenerator\src\XmlSourceGenerator\XmlSourceGenerator.csproj" />
-    </ItemGroup>
+    </ItemGroup>-->
 
 
 </Project>

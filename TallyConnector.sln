@@ -39,10 +39,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TallyConnector.Abstractions
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TallyConnector.Tests", "src\Tests\TallyConnector.Tests\TallyConnector.Tests.csproj", "{30650066-D1A0-B468-5327-B51FD8C646EA}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "XmlSourceGenerator.Abstractions", "..\XmlSourceGenerator\src\XmlSourceGenerator.Abstractions\XmlSourceGenerator.Abstractions.csproj", "{8EF24ED3-C930-C158-BA41-0359B319F5C6}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "XmlSourceGenerator", "..\XmlSourceGenerator\src\XmlSourceGenerator\XmlSourceGenerator.csproj", "{CECE4894-4B0F-1690-0167-51563F409C3E}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -93,14 +89,6 @@ Global
 		{30650066-D1A0-B468-5327-B51FD8C646EA}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{30650066-D1A0-B468-5327-B51FD8C646EA}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{30650066-D1A0-B468-5327-B51FD8C646EA}.Release|Any CPU.Build.0 = Release|Any CPU
-		{8EF24ED3-C930-C158-BA41-0359B319F5C6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{8EF24ED3-C930-C158-BA41-0359B319F5C6}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{8EF24ED3-C930-C158-BA41-0359B319F5C6}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{8EF24ED3-C930-C158-BA41-0359B319F5C6}.Release|Any CPU.Build.0 = Release|Any CPU
-		{CECE4894-4B0F-1690-0167-51563F409C3E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{CECE4894-4B0F-1690-0167-51563F409C3E}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{CECE4894-4B0F-1690-0167-51563F409C3E}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{CECE4894-4B0F-1690-0167-51563F409C3E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

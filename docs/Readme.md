@@ -24,28 +24,49 @@ ___
 1. [Getting Started with C#](https://github.com/Accounting-Companion/TallyConnector_Samples/blob/master/1.GettingStrated.ipynb)
 2. [Getting Started with Python](https://github.com/saivineeth100/Python_Tally/blob/main/Tally.ipynb)
 3. [Documentation](https://docs.accountingcompanion.com/Tallyconnector/api/TallyConnector.Services.TallyService.html)
+
+### Example Usage
+```csharp
+using TallyConnector.Services;
+using TallyConnector.Models.TallyPrime.V6;
+using TallyConnector.Core.Models.Request;
+
+// Instantiate the service
+TallyPrimeService primeService = new();
+
+// Setup connection (default is localhost:9000)
+primeService.Setup("http://localhost", 9000);
+
+// Fetch Ledgers
+var ledgers = await primeService.GetLedgersAsync();
+```
 ___
 
 ## Supported Environments
 
-1. .Net Core 8.0 | .Net Core 9.0
-3. Visual Basic
+1. .Net Core 8.0 | .Net Core 9.0 | .Net Core 10.0
+3. Visual Basic (No Source Generator Support)
 
 ___
 
-## What's New
+## 🚀 Release Notes
 
-- **Auto TDL Report Generation Using Source Generator**: We've introduced an automatic TDL report generation feature. Now, you don't have to manually create TDL reports. Our source generator does it for you!
+### [v3.0.0](v3_CHANGELOG.md)
+- **Auto TDL Report Generation**: Automatic creation of TDL reports using source generators.
+- **Improved Performance**: Fetch only required fields from Tally for faster operations.
 
-- **Fetch Only Required Fields**: To optimize performance and efficiency, we've added a feature that fetches only the data you need from Tally. This means less data clutter and faster operations!
+
 ___
+
 ## 📁 What's included?
 
 | Name| Framework |
 | --- | --- |
-| **TallyConnector.Core**  <br/>Core Library that used in TallyConnector.<br/> Contains models,converters,attributes | ![NET8](https://img.shields.io/badge/.NET-8.0-green)  ![NET9](https://img.shields.io/badge/.NET-9.0-orange) |
-| **TallyConnector.TDLReportSourceGenerator**  <br/>contains source generators and analyzers <br/> | ![NET8](https://img.shields.io/badge/.NET-8.0-green)  ![NET9](https://img.shields.io/badge/.NET-9.0-orange) |
-| **TallyConnector**  <br/>We can use this library to interact with Tally Erp9 / Tally prime using C# objects  | ![NET8](https://img.shields.io/badge/.NET-8.0-green)  ![NET9](https://img.shields.io/badge/.NET-9.0-orange) |
+| **TallyConnector.Abstractions**  <br/>Contains Abstractions and Interfaces | ![NET8](https://img.shields.io/badge/.NET-8.0-green)  ![NET9](https://img.shields.io/badge/.NET-9.0-orange) ![NET10](https://img.shields.io/badge/.NET-10.0-blue) |
+| **TallyConnector.Core**  <br/>Core Library that used in TallyConnector.<br/> Contains Attributes, Constants | ![NET8](https://img.shields.io/badge/.NET-8.0-green)  ![NET9](https://img.shields.io/badge/.NET-9.0-orange) ![NET10](https://img.shields.io/badge/.NET-10.0-blue) |
+| **TallyConnector.Models**  <br/>Contains Models that are used in TallyConnector | ![NET8](https://img.shields.io/badge/.NET-8.0-green)  ![NET9](https://img.shields.io/badge/.NET-9.0-orange) ![NET10](https://img.shields.io/badge/.NET-10.0-blue) |
+| **TallyConnector.TDLReportSourceGenerator**  <br/>Contains source generators and analyzers <br/> | ![NET8](https://img.shields.io/badge/.NET-8.0-green)  ![NET9](https://img.shields.io/badge/.NET-9.0-orange) ![NET10](https://img.shields.io/badge/.NET-10.0-blue)|
+| **TallyConnector**  <br/>Main library to interact with Tally Erp9 / Tally prime using C# objects  | ![NET8](https://img.shields.io/badge/.NET-8.0-green)  ![NET9](https://img.shields.io/badge/.NET-9.0-orange) ![NET10](https://img.shields.io/badge/.NET-10.0-blue)|
 ___
 
 ## Other Useful Resources Related to Tally Integration

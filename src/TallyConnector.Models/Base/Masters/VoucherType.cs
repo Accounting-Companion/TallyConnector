@@ -4,6 +4,7 @@ namespace TallyConnector.Models.Base.Masters;
 
 [XmlRoot(ElementName = "VOUCHERTYPE")]
 [XmlType(AnonymousType = true)]
+[TDLObjectsMethodName(nameof(GetVoucherTypeObjects))]
 public partial class VoucherType : BaseAliasedMasterObject
 {
     [XmlElement(ElementName = "PARENT")]
@@ -73,6 +74,22 @@ public partial class VoucherType : BaseAliasedMasterObject
 
     [XmlElement(ElementName = "CANDELETE")]
     public bool? CanDelete { get; set; }
+
+    public static TallyCustomObject[] GetVoucherTypeObjects()
+    {
+        const string CoreVchtypeFormulae1 = "CoreVoucherType:(if $$IsSales:$NAME then \"Sales\" else if $$IsPurchase:$NAME then \"Purchase\" else if $$IsDebitNote:$Name then \"DebitNote\" else if $$IsCreditNote:$Name then \"CreditNote\" else if $$IsPayment:$Name then \"Payment\" else if $$IsReceipt:$Name then \"Receipt\" else if  $$IsContra:$Name then \"Contra\" else if  $$IsJournal:$Name then \"Journal\" else if  $$IsSalesOrder:$Name then \"SalesOrder\" else if  $$IsPurcOrder:$Name then \"PurchaseOrder\" else if  $$IsMemo:$Name then \"Memo\" else \"\") +  ";
+        const string CoreVchtypeFormulae2 = "(if  $$IsRevJrnl:$Name then \"Reversing Journal\"  else if $$IsJobMaterialReceive:$NAME then \"MaterialIn\" else if  $$IsJobMaterialIssue:$Name then \"MaterialOut\" else if  $$IsJobOrderIn:$Name then \"JobWork In Order\" else if  $$IsJobOrderOut:$Name then \"JobWork Out Order\" else if  $$IsRcptNote:$Name then \"ReceiptNote\" else \"\") + ";
+        const string CoreVchtypeFormulae3 = "(if  $$IsDelNote:$Name then \"DeliveryNote\" else if  $$IsPhysStock:$Name then \"PhysicalStock\" else if  $$IsPayroll:$Name then \"Payroll\" else if  $$IsAttendance:$Name then \"Attendance\" else if  $$IsRejIn:$Name then \"RejectionsIn\"  else if  $$IsRejOut:$Name then \"RejectionsOut\" else if  $$IsStockJrnl:$Name then \"StockJournal\" else \"\")";
+
+        return [new TallyCustomObject("VoucherType", [
+            "DefaultVoucherCategory:if $$IsAccountingVch:$NAME then \"AccountingVch\" else " +
+                                   "if $$IsInventoryVch:$NAME then \"InventoryVch\" " +
+                                   "else if $$IsOrderVch:$Name then \"OrderVch\" else " +
+                                   "if $$IsPayrollVch:$Name then \"PayrollVch\" else " +
+                                   "if $$IsAttendance:$Name then \"PayrollAttndVch\" else \"\"",
+
+                                   CoreVchtypeFormulae1 + CoreVchtypeFormulae2 + CoreVchtypeFormulae3]) { IsModify = YesNo.Yes }];
+    }
 }
 public partial class VoucherClass
 {

@@ -255,17 +255,17 @@ public abstract class TallyAbstractClient : ITallyAbstractClient
         const string objectCountName = "TC_ObjectsCount_Req";
         var reqEnvelope = T.GetCountRequestEnvelope();
         var tDLMessage = reqEnvelope.Body.Desc.TDL.TDLMessage;
-       var report = tDLMessage.Report!.First();
+        var report = tDLMessage.Report!.First();
         Part part = new(report.Name, null, objectCountName);
         tDLMessage.Part = [part];
         tDLMessage.Line = [new(objectCountName, [objectCountName])];
         Collection collection = tDLMessage.Collection.First();
-        tDLMessage.Field = [ new Field(objectCountName, "TC_TotalCount", $"$$NUMITEMS:{collection.Name}")];
+        tDLMessage.Field = [new Field(objectCountName, "TC_TotalCount", $"$$NUMITEMS:{collection.Name}")];
         reqEnvelope.PopulateOptions(options);
         await _baseHandler.PopulateDefaultOptions(reqEnvelope, token);
         await using var requestStream = new MemoryStream();
         await GenericXmlStreamer.WriteDataToStreamAsync(requestStream, reqEnvelope, new XmlSerializationOptions { Encoding = Encoding.Unicode });
-        var respStream = await _baseHandler.SendRequestAsStreamAsync(requestStream,"Count Request",token);
+        var respStream = await _baseHandler.SendRequestAsStreamAsync(requestStream, "Count Request", token);
         var respEnv = GenericXmlStreamer.ReadDataFromStream<CountResponseEnvelope>(respStream);
         return respEnv?.TotalCount ?? 0;
     }
@@ -289,6 +289,13 @@ public abstract class TallyAbstractClient : ITallyAbstractClient
             yield return obj.ToDTO();
         }
     }
+
+    public Task<List<PostResponse>> PostObjectsAsyncNew<T>(IEnumerable<T> objects,
+                                          PostRequestOptions? options = null,
+                                          CancellationToken token = default) where T : BaseTallyObject, IBaseObject => PostDTOObjectsAsyncNew(GetDtos(objects), options, token);
+
+
+
     public Task<List<PostResponse>> PostObjectsAsync<T>(IEnumerable<T> objects,
                                           PostRequestOptions? options = null,
                                           CancellationToken token = default) where T : BaseTallyObject, IBaseObject => PostDTOObjectsAsync(GetDtos(objects), options, token);

@@ -7,6 +7,7 @@ using TallyConnector.Models.TallyPrime.V6.Masters.Meta;
 using TallyConnector.Services.TallyPrime.V6;
 
 namespace TallyConnector.Tests.Services.TallyPrime.V6;
+
 public class TallyPrimeServiceV6Tests
 {
     private readonly TallyPrimeService primeService;
@@ -82,6 +83,19 @@ public class TallyPrimeServiceV6Tests
     {
         RequestOptions<Ledger, LedgerMeta> options = new(LedgerMeta.Instance);
         options.FilterBy(c => c.Name == "");
+    }
+
+    [Test]
+    public async Task TestPostStockItemsAsync()
+    {
+        var item1 = new StockItem();
+        item1.Name = "TC_Item1";
+        item1.BaseUnit = "Nos";
+        item1.OpeningBalance = new(5_000, "Nos");
+        item1.OpeningRate = new(10, "Nos");
+        item1.OpeningValue = new(50_000, false);
+        item1.GSTDetails = [new() { SourceOfGSTDetails = "Specify Details Here", ApplicableFrom = new DateTime(2026, 04, 01), Taxability = Models.Common.GSTTaxabilityType.Taxable,su }];
+        var stockItems = await primeService.PostStockItemsAsync([item1]);
     }
 }
 //public class Vucheta
