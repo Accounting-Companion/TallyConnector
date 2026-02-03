@@ -30,15 +30,25 @@ public partial class VoucherStatistics : BaseStatistics
 
     [XmlElement(ElementName = "CANCELLEDCOUNT")]
     [TDLField(Set = "if $$ISEMPTY:$CancVal then 0 else $CancVal")]
-    public int CancelledCount { get; set; }
+    public ulong CancelledCount { get; set; }
 
+    /// <summary>
+    /// returns total count irrespective of period
+    /// </summary>
     [XmlElement(ElementName = "TOTALCOUNT")]
     [TDLField(Set = "if $$ISEMPTY:$MigVal then 0 else $MigVal")]
-    public int TotalCount { get; set; }
+    public ulong TotalCount { get; set; }
+
+    /// <summary>
+    ///  return count based on period
+    /// </summary>
+    [XmlElement(ElementName = "COUNT")]
+    [TDLField(Set = "if $$ISEMPTY:$StatVal then 0 else $StatVal")]    
+    public ulong Count { get; set; }
 
     [XmlElement(ElementName = "OPTIONALCOUNT")]
     [TDLField(Set = "if $$ISEMPTY:$$DirectOptionalVch:$Name then 0 else $$DirectOptionalVch:$Name")]
-    public int OptionalCount { get; set; }
+    public ulong OptionalCount { get; set; }
 
 
     public override string ToString()

@@ -13,9 +13,9 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="Microsoft.NET.Test.Sdk"  />
-    <PackageReference Include="NUnit"  />
-    <PackageReference Include="NUnit.Analyzers" >
+    <PackageReference Include="Microsoft.NET.Test.Sdk" />
+    <PackageReference Include="NUnit" />
+    <PackageReference Include="NUnit.Analyzers">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
@@ -24,6 +24,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\TallyConnector\TallyConnector.csproj" />
+    <ProjectReference Include="..\TallyConnector.XmlTests\TallyConnector.XmlTests.csproj" />
   </ItemGroup>
 
   <ItemGroup>

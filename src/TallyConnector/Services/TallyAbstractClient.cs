@@ -8,6 +8,7 @@ using System.Linq;
 using XmlSourceGenerator.Abstractions;
 using System.Runtime.CompilerServices;
 using System.Numerics;
+using TallyConnector.Abstractions.Models;
 
 //[assembly: InternalsVisibleTo("TestProject")]
 
@@ -132,13 +133,14 @@ public abstract class TallyAbstractClient : ITallyAbstractClient
         tDLMessage.Part = [part];
         const string nameFieldName = "TC_VchTypeName";
         const string totalCountFieldName = "TC_VchTypeTotalCount";
+        const string CountFieldName = "TC_VchTypeCount";
         const string periodCountRootFieldName = "TC_VchTypePeriodStat";
         const string fromDateFieldName = "TC_VchTypeFromDate";
         const string toDateFieldName = "TC_VchTypeToDate";
         const string cancelledCountFieldName = "TC_VchTypeCancCount";
         const string optionalCountFieldName = "TC_VchTypeOptCount";
         const string totalPeriodCountFieldName = "TC_VchTypeTotalPeriodCount";
-        List<string> rootFields = [nameFieldName, totalCountFieldName];
+        List<string> rootFields = [nameFieldName, totalCountFieldName,CountFieldName,optionalCountFieldName,cancelledCountFieldName];
         const string line2Name = $"{reportName}Repeat";
         Line line = new(reportName, rootFields, "VchTypeStat") { Option = [$"{line2Name}:$MigVal>0"] };
         Line line2 = new(line2Name, [periodCountRootFieldName]) { Name = line2Name, Repeat = [periodCountRootFieldName], IsOption = YesNo.Yes };
@@ -146,34 +148,32 @@ public abstract class TallyAbstractClient : ITallyAbstractClient
         tDLMessage.Field =
         [
             new(nameFieldName,"Name","$Name"),
-            new(totalCountFieldName,"TotalCount","($$DirectTotalVch:$Name)+($$DirectOptionalVch:$Name)+($$DirectCancVch:$Name)"),
+            new(totalCountFieldName,"TotalCount","$MigVal"),
+            new(CountFieldName,"Count","$StatVal"),
             new(periodCountRootFieldName,"PeriodStat",null){Fields=[fromDateFieldName,toDateFieldName,cancelledCountFieldName,optionalCountFieldName,totalPeriodCountFieldName] },
             new(fromDateFieldName,"FromDate","$$TC_TransformDateToXSD:##SVFromDate"){Invisible="$$ISEmpty:$$value"},
             new(toDateFieldName,"ToDate","$$TC_TransformDateToXSD:##SVToDate"){Use="$$ISEmpty:$$value"},
-            new(totalPeriodCountFieldName,"TotalCount","$TotalPeriodCount"),
-            new(optionalCountFieldName,"OtionalCount","$OptionalCount"),
-            new(cancelledCountFieldName,"CancelledCount","$CancelledCount")
+            new(totalPeriodCountFieldName,"TotalCount","$StatVal"),
+            new(optionalCountFieldName,"OtionalCount","$$DirectOptionalVch:$Name"),
+            new(cancelledCountFieldName,"CancelledCount","$CancVal")
         ];
+        var col = new Collection(colName: CollectionName, colType: "VoucherTypes");
+        if (!string.IsNullOrEmpty(requestOptions?.VoucherType))
+        {
+            Filter filter = new($"TC_VchTypeFilter",$"$Name=\"{requestOptions.VoucherType}\"");
+            col.Filters = [filter.FilterName];
+            tDLMessage.System = [new(filter.FilterName,filter.FilterFormulae)];
+        }
         tDLMessage.Collection =
         [
-            new(colName:CollectionName,colType: "VoucherTypes")
-            {
-                Compute =
-                [
-                    "CancelledCount : $$DirectCancVch:$Name",
-                    "OptionalCount :  $$DirectOptionalVch:$Name",
-                    "TotalPeriodCount : ($$DirectTotalVch:$Name) + $OptionalCount + $CancelledCount",
-                ]
-            }
+            col
         ];
+        
         tDLMessage.Functions = BaseTallyService.GetDefaultTDLFunctions();
         await _baseHandler.PopulateDefaultOptions(requestEnvelope, token);
         string requestXml = requestEnvelope.GetXML();
         string RequestType = $"VchType Auto Column Stats({periodicity}) of company - {sv.SVCompany} ({sv.SVFromDate} to {sv.SVToDate})";
-        if (activity != null)
-        {
-            activity.DisplayName = RequestType;
-        }
+        activity?.DisplayName = RequestType;
         TallyResult tallyResult = await _baseHandler.SendRequestAsync(requestXml, RequestType, token);
         if (tallyResult.Status == RespStatus.Sucess)
         {

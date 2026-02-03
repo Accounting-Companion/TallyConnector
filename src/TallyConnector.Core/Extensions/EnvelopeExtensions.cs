@@ -1,5 +1,6 @@
 ﻿using TallyConnector.Abstractions.Models;
 using TallyConnector.Core.Models;
+using TallyConnector.Core.Models.Request;
 
 namespace TallyConnector.Core.Extensions;
 public static class EnvelopeExtensions
@@ -84,18 +85,18 @@ public static class EnvelopeExtensions
 
             int recordsPerPage = requestOptions.RecordsPerPage ?? 1000;
             int Start = recordsPerPage * (requestOptions.PageNum - 1);
+            TDLMessage tDLMessage = requestEnvelope.Body.Desc.TDL.TDLMessage;
+            Collection collection = tDLMessage.Collection.First();
+            if (!string.IsNullOrWhiteSpace(requestOptions.CollectionType))
+            {
+                collection.Type = requestOptions.CollectionType;
+            }
             if (!requestOptions.DisableCountTag)
             {
-                TDLMessage tDLMessage = requestEnvelope.Body.Desc.TDL.TDLMessage;
-                Collection collection = tDLMessage.Collection.First();
                 if (!string.IsNullOrWhiteSpace(requestOptions.Childof))
                 {
                     collection.Childof = requestOptions.Childof;
-                    collection.BelongsTo = requestOptions.BelongsTo ?? YesNo.None;
-                    if (!string.IsNullOrWhiteSpace(requestOptions.CollectionType))
-                    {
-                        collection.Type = requestOptions.CollectionType;
-                    }
+                    collection.BelongsTo = requestOptions.BelongsTo ?? YesNo.None;                    
                 }
                 string CollectionName = $"{collection.Name}_NonPaginated";
                 tDLMessage.Collection.Add(new(CollectionName, collection.Type!, filters: [.. requestOptions.Filters.Select(c => c.FilterName!)]) { Childof = requestOptions.Childof, BelongsTo = requestOptions.BelongsTo ?? YesNo.None });

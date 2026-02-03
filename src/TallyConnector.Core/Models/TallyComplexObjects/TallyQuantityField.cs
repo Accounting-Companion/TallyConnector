@@ -26,6 +26,6 @@ public partial class TallyQuantityField : ITallyComplexObject, IBaseObject
 
     public override string ToString()
     {
-        return $" {Quantity} {Unit}";
+        return $"{TallyUnitHelper.ConvertToCompoundUnit(Quantity, Unit)}";
     }
 }

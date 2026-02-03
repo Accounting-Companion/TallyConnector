@@ -313,16 +313,17 @@ public partial class BaseTallyService : IBaseTallyService
 
         if (requestStream != null && requestStream.Length > 0)
         {
+            if (requestStream.CanSeek)
+            {
+                requestStream.Position = 0;
+            }
 #if DEBUG
             if (requestStream.CanSeek)
             {
-
-                requestStream.Position = 0;
                 using StreamReader reader = new(requestStream, Encoding.Unicode, true, 1024, true);
                 var xml = await reader.ReadToEndAsync();
                 _logger?.LogDebug("Tally Request: {xml}", xml);
                 requestStream.Position = 0;
-
             }
 #endif
             var streamContent = new StreamContent(requestStream);

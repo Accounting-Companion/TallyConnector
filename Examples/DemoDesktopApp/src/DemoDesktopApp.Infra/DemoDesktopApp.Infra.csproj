@@ -13,7 +13,11 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="TallyConnector" />
+    <!--<PackageReference Include="TallyConnector" />-->
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\..\src\TallyConnector\TallyConnector.csproj" />
   </ItemGroup>
 
 </Project>

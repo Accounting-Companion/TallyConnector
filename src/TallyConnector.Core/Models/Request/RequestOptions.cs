@@ -45,6 +45,8 @@ public class DateFilterRequestOptions : BaseRequestOptions
 public class AutoColumnReportPeriodRequestOptions : DateFilterRequestOptions
 {
     public PeriodicityType Periodicity { get; set; }
+
+    public string? VoucherType { get; set; }
 }
 
 

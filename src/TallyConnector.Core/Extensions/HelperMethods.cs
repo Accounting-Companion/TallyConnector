@@ -74,5 +74,12 @@ public static class HelperMethods
         xMLOverrides.AddDataAttributeOverrides(XMLAttributes);
         return xMLOverrides;
     }
-
+    //public static XMLOverrideswithTracking AddRequestDataItemAttributeOverrides(this XMLOverrideswithTracking xMLOverrides, string xmlTag, Type type)
+    //{
+    //    var XMLAttributes = new XmlAttributes();
+    //    XMLAttributes.XmlArrayItems.Add(new(xmlTag, type));
+    //    XMLAttributes.XmlArray = new("TALLYMESSAGE");
+    //    xMLOverrides.AddDataAttributeOverrides(XMLAttributes);
+    //    return xMLOverrides;
+    //}
 }

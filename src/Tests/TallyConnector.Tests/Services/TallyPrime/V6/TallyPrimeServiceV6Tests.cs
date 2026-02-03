@@ -3,6 +3,7 @@ using TallyConnector.Models.TallyPrime.V6;
 using TallyConnector.Models.TallyPrime.V6.DTO;
 using TallyConnector.Models.TallyPrime.V6.Masters;
 using TallyConnector.Models.TallyPrime.V6.Masters.Inventory;
+using TallyConnector.Models.TallyPrime.V6.Masters.Inventory.DTO;
 using TallyConnector.Models.TallyPrime.V6.Masters.Meta;
 using TallyConnector.Services.TallyPrime.V6;
 
@@ -81,8 +82,10 @@ public class TallyPrimeServiceV6Tests
     [Test]
     public async Task GetVoucherAsync()
     {
-        RequestOptions<Ledger, LedgerMeta> options = new(LedgerMeta.Instance);
-        options.FilterBy(c => c.Name == "");
+        PaginatedRequestOptions requestOptions = new() { Filters = [new("tc_GUIDFilter", "$GUID='52889497-5b6b-403d-8f83-224e3c7759b4-00001422'")] };
+        requestOptions.From(new(2022, 04, 01));
+        requestOptions.To(new(2022, 04, 01));
+        await  primeService.GetVouchersAsync(requestOptions);
     }
 
     [Test]
@@ -90,12 +93,26 @@ public class TallyPrimeServiceV6Tests
     {
         var item1 = new StockItem();
         item1.Name = "TC_Item1";
-        item1.BaseUnit = "Nos";
-        item1.OpeningBalance = new(5_000, "Nos");
+        //item1.BaseUnit = "Nos";
+        item1.StockGroup = "Components";
+        item1.OpeningBalance = new(7_000, "Nos");
         item1.OpeningRate = new(10, "Nos");
-        item1.OpeningValue = new(50_000, false);
-        item1.GSTDetails = [new() { SourceOfGSTDetails = "Specify Details Here", ApplicableFrom = new DateTime(2026, 04, 01), Taxability = Models.Common.GSTTaxabilityType.Taxable,su }];
+        item1.OpeningValue = new(60_000, true);
+        //item1.GSTDetails = [new() { SourceOfGSTDetails = "Specify Details Here", ApplicableFrom = new DateTime(2026, 04, 01), Taxability = Models.Common.GSTTaxabilityType.Taxable,
+        //    StateWiseDetails=[new() { StateName = "Any", GSTRateDetails = [new() { GSTRate = 18, DutyHead="IGST"}] }] }];
+        //var itemdto = (StockItemDTO)item1.ToDTO();
+        ////itemdto.Action = Core.Models.Action.Alter;
+        //itemdto.LanguageNameList.Last().Names.Add("faswf");
         var stockItems = await primeService.PostStockItemsAsync([item1]);
+    }
+    [Test]
+    public async Task TestPostLedgers()
+    {
+        var ledger1 = new Ledger();
+        ledger1.Name = "TC_Test Ledger";
+        ledger1.Group = "Sundry Debtors";
+        ledger1.ContactDetails = [new() { Name = "Contact 1", PhoneNumber = "12314" }];
+        var resp = await primeService.PostLedgersAsync([ledger1]);
     }
 }
 //public class Vucheta

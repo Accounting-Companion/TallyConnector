@@ -26,6 +26,7 @@ public partial class BaseAliasedMasterObject : BaseMasterObject
 {
     [MaxLength(MaxNameLength)]
     [TDLField(Set = "$_FirstAlias")]
+    [XmlElement(ElementName = "ALIAS")]
     [IgnoreForCreateDTO]
     public string? Alias { get; set; }
 
