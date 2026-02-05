@@ -1,3 +1,7 @@
+using NUnit.Framework;
+using System.Threading.Tasks;
+using TallyConnector.Services;
+using TallyConnector.Services.TallyPrime.V6;
 using V6Ledger = TallyConnector.Models.TallyPrime.V6.Masters.Ledger;
 
 namespace TallyConnector.XmlTests.TallyPrime.V6.Ledger;
@@ -17,8 +21,10 @@ public class LedgerDeserializationTests : XmlTestBase
     protected override string ResourceSubPath => "TallyPrime/V6/Ledger";
 
     [Test]
-    public void Test_BasicProperties()
+    public async Task Test_BasicProperties()
     {
+        
+        
         using (Assert.EnterMultipleScope())
         {
             Assert.That(ledger, Is.Not.Null);
@@ -130,4 +136,6 @@ public class LedgerDeserializationTests : XmlTestBase
         }
         ;
     }
+
+
 }

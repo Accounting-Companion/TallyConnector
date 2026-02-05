@@ -6,6 +6,12 @@
 [GenerateMeta]
 public partial class PaymentDetails
 {
+    [XmlElement(ElementName = "BANKNAME")]
+    public string BankName { get; set; } = string.Empty;
+
+    [XmlElement(ElementName = "CITY")]
+    public string? City { get; set; }
+
     [XmlElement(ElementName = "DEFAULTTRANSACTIONTYPE")]
     public string? DefaultTransactionType { get; set; }
 
@@ -19,7 +25,7 @@ public partial class PaymentDetails
     public string? ChequeCrossComment { get; set; }
 
     [XmlElement(ElementName = "SETASDEFAULT")]
-    public string? SetasDefault { get; set; }
+    public bool SetasDefault { get; set; } = false;
 
     [XmlElement(ElementName = "ACCOUNTNUMBER")]
     public string? BankAccountNo { get; set; }

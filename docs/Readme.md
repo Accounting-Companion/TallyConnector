@@ -15,15 +15,15 @@ Experience the power of abstraction and let **TallyConnector** handle the heavy 
 You can use **[Tally Connector](https://github.com/saivineeth100/TallyConnector/)** to Integrate your desktop/Mobile Applications with Tally.
 
 ## Supported Tally Versions
-
-1. Tally Prime 6
-2. Tally Prime 5
-3. Tally Prime 4
+1. Tally Prime 7
+2. Tally Prime 6
+3. Tally Prime 5
+4. Tally Prime 4
 ___
 ## Getting Started
 1. [Getting Started with C#](https://github.com/Accounting-Companion/TallyConnector_Samples/blob/master/1.GettingStrated.ipynb)
 2. [Getting Started with Python](https://github.com/saivineeth100/Python_Tally/blob/main/Tally.ipynb)
-3. [Documentation](https://docs.accountingcompanion.com/Tallyconnector/api/TallyConnector.Services.TallyService.html)
+3. [Documentation](https://docs.accountingcompanion.com/tally-connector)
 
 ### Example Usage
 ```csharp

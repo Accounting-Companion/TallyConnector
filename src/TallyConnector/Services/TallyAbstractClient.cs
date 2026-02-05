@@ -1,14 +1,10 @@
-﻿using TallyConnector.Core.Extensions;
+﻿using System.Runtime.CompilerServices;
+using TallyConnector.Abstractions.Models;
+using TallyConnector.Core.Extensions;
 using TallyConnector.Core.Models.Interfaces;
 using TallyConnector.Core.Models.Response;
-using static TallyConnector.Core.Constants;
-using System.IO;
-using System.Text;
-using System.Linq;
 using XmlSourceGenerator.Abstractions;
-using System.Runtime.CompilerServices;
-using System.Numerics;
-using TallyConnector.Abstractions.Models;
+using static TallyConnector.Core.Constants;
 
 //[assembly: InternalsVisibleTo("TestProject")]
 
@@ -140,7 +136,7 @@ public abstract class TallyAbstractClient : ITallyAbstractClient
         const string cancelledCountFieldName = "TC_VchTypeCancCount";
         const string optionalCountFieldName = "TC_VchTypeOptCount";
         const string totalPeriodCountFieldName = "TC_VchTypeTotalPeriodCount";
-        List<string> rootFields = [nameFieldName, totalCountFieldName,CountFieldName,optionalCountFieldName,cancelledCountFieldName];
+        List<string> rootFields = [nameFieldName, totalCountFieldName, CountFieldName, optionalCountFieldName, cancelledCountFieldName];
         const string line2Name = $"{reportName}Repeat";
         Line line = new(reportName, rootFields, "VchTypeStat") { Option = [$"{line2Name}:$MigVal>0"] };
         Line line2 = new(line2Name, [periodCountRootFieldName]) { Name = line2Name, Repeat = [periodCountRootFieldName], IsOption = YesNo.Yes };
@@ -160,15 +156,15 @@ public abstract class TallyAbstractClient : ITallyAbstractClient
         var col = new Collection(colName: CollectionName, colType: "VoucherTypes");
         if (!string.IsNullOrEmpty(requestOptions?.VoucherType))
         {
-            Filter filter = new($"TC_VchTypeFilter",$"$Name=\"{requestOptions.VoucherType}\"");
+            Filter filter = new($"TC_VchTypeFilter", $"$Name=\"{requestOptions.VoucherType}\"");
             col.Filters = [filter.FilterName];
-            tDLMessage.System = [new(filter.FilterName,filter.FilterFormulae)];
+            tDLMessage.System = [new(filter.FilterName, filter.FilterFormulae)];
         }
         tDLMessage.Collection =
         [
             col
         ];
-        
+
         tDLMessage.Functions = BaseTallyService.GetDefaultTDLFunctions();
         await _baseHandler.PopulateDefaultOptions(requestEnvelope, token);
         string requestXml = requestEnvelope.GetXML();
@@ -208,7 +204,7 @@ public abstract class TallyAbstractClient : ITallyAbstractClient
         reqEnvelope.PopulateOptions(options);
         await _baseHandler.PopulateDefaultOptions(reqEnvelope, token);
         var reqXml = reqEnvelope.GetXML();
-        var resp = await _baseHandler.SendRequestAsync(reqXml, "", token);
+        var resp = await _baseHandler.SendRequestAsync(reqXml, $"Getting Objects of type {reqEnvelope.Body.Desc.TDL.TDLMessage.Collection.FirstOrDefault()?.Type}", token);
         var respEnv = XMLToObject.GetObjfromXml<ReportResponseEnvelope<T>>(resp.Response!, T.GetXMLAttributeOverides());
         return respEnv.Objects;
     }
@@ -220,7 +216,7 @@ public abstract class TallyAbstractClient : ITallyAbstractClient
         using var requestStream = new MemoryStream();
         await GenericXmlStreamer.WriteDataToStreamAsync(requestStream, reqEnvelope, new XmlSerializationOptions { Encoding = Encoding.Unicode });
         requestStream.Position = 0;
-        using var responseStream = await _baseHandler.SendRequestAsStreamAsync(requestStream, "", token);
+        using var responseStream = await _baseHandler.SendRequestAsStreamAsync(requestStream, $"Getting Objects of type {reqEnvelope.Body.Desc.TDL.TDLMessage.Collection.FirstOrDefault()?.Type}", token);
 
         using var streamReader = new StreamReader(responseStream, Encoding.Unicode);
 
