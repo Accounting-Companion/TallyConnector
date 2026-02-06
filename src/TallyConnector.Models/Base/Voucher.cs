@@ -351,7 +351,7 @@ public partial class BaseInventoryEntry
 
     [XmlElement(ElementName = "GSTRATEDETAILS.LIST")]
     [TDLCollection(CollectionName = "GSTRATEDETAILS", ExplodeCondition = $"$$NUMITEMS:GSTRATEDETAILS>0")]
-    public List<GSTRateDetail> GSTRateDetails { get; set; }
+    public List<GSTRateDetails> GSTRateDetails { get; set; }
 }
 
 [XmlRoot(ElementName = "ALLINVENTORYENTRIES.LIST")]
@@ -402,7 +402,7 @@ public partial class BaseLedgerEntry
 
     [XmlElement(ElementName = "GSTRATEDETAILS.LIST")]
     [TDLCollection(CollectionName = "GSTRATEDETAILS", ExplodeCondition = $"$$NUMITEMS:GSTRATEDETAILS>0")]
-    public List<GSTRateDetail> GSTRateDetails { get; set; } 
+    public List<GSTRateDetails> GSTRateDetails { get; set; } 
 }
 [XmlRoot(ElementName = "ALLLEDGERENTRIES.LIST")]
 [XmlType(AnonymousType = true)]
@@ -523,6 +523,8 @@ public partial class BatchAllocation
     [XmlElement(ElementName = "GODOWNNAME")]
     public string? GodownName { get; set; }
 
+    [XmlElement(ElementName = "DESTINATIONGODOWNNAME")]
+    public string? DestinationGodownName { get; set; }
 
     [XmlElement(ElementName = "BATCHNAME")]
     public string? BatchName { get; set; }
