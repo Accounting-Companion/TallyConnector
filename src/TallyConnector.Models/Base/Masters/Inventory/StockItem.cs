@@ -103,7 +103,7 @@ public partial class OpeningBatchAllocation
      [XmlElement(ElementName = "BATCHNAME")]
     public string? BatchName { get; set; }
 
-    [XmlElement(ElementName = "BATCHNAME")]
+    [XmlElement(ElementName = "GODOWNNAME")]
     public string  GodownName { get; set; }
 
     [XmlElement(ElementName = "NAME")]
