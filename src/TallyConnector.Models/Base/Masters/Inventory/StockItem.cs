@@ -115,13 +115,13 @@ public partial class OpeningBatchAllocation
     [XmlElement(ElementName = "EXPIRYPERIOD")]
     public DueDate? ExpiryPeriod { get; set; }
 
-    [XmlElement(ElementName = "QUANTITY")]
+    [XmlElement(ElementName = "OPENINGBALANCE")]
     public TallyQuantityField? Quantity { get; set; }
 
-    [XmlElement(ElementName = "RATE")]
+    [XmlElement(ElementName = "OPENINGRATE")]
     public TallyRateField? Rate { get; set; }
 
-    [XmlElement(ElementName = "VALUE")]
+    [XmlElement(ElementName = "OPENINGVALUE")]
     public TallyAmountField? Value { get; set; }
 
 }
