@@ -15,25 +15,19 @@ public partial class BaseTallyService : IBaseTallyService
     private int _port;
 
     private string _baseURL;
-    private string FullURL => _baseURL + ":" + _port;
+    private string _fullURL;
 
     protected readonly ILogger _logger;
 
     private LicenseInfo? _licenseInfo { get; set; }
-    public LicenseInfo LicenseInfo
+    public LicenseInfo? LicenseInfo
     {
         get
         {
             if (_licenseInfo == null)
             {
-                try
-                {
-                    _licenseInfo = GetLicenseInfoAsync().Result;
-                }
-                finally
-                {
-
-                }
+                // Run on thread pool to avoid UI deadlock (Sync-over-Async)
+                _licenseInfo = Task.Run(async () => await GetLicenseInfoAsync()).Result;
             }
             return _licenseInfo;
         }
@@ -60,6 +54,7 @@ public partial class BaseTallyService : IBaseTallyService
         _httpClient = new();
         _baseURL = "http://localhost";
         _port = 9000;
+        _fullURL = $"{_baseURL}:{_port}";
         _httpClient.Timeout = TimeSpan.FromMinutes(3);
         _logger = NullLogger.Instance;
     }
@@ -83,6 +78,7 @@ public partial class BaseTallyService : IBaseTallyService
         _httpClient.Timeout = TimeSpan.FromMinutes(timeoutMinutes);
         _baseURL = baseURL;
         _port = port;
+        _fullURL = $"{_baseURL}:{_port}";
         _logger = NullLogger.Instance;
     }
 
@@ -100,6 +96,7 @@ public partial class BaseTallyService : IBaseTallyService
         _httpClient.Timeout = TimeSpan.FromMinutes(timeoutMinutes);
         _baseURL = "http://localhost";
         _port = 9000;
+        _fullURL = $"{_baseURL}:{_port}";
         _logger = logger ?? NullLogger.Instance;
     }
     /// <inheritdoc/>
@@ -127,9 +124,7 @@ public partial class BaseTallyService : IBaseTallyService
     {
         const string RequestType = "Getting Active Simple Company Name";
         using var activity = BaseTallyServiceActivitySource.StartActivity(RequestType);
-        RequestEnvelope requestEnvelope = new(HType.Function, "$$CurrentSimpleCompany");
-
-        string Reqxml = requestEnvelope.GetXML();
+        string Reqxml = _activeSimpleCompanyRequestXml;
         TallyResult tallyResult = await SendRequestAsync(Reqxml, RequestType, token);
         if (tallyResult.Status == RespStatus.Sucess && tallyResult.Response != null)
         {
@@ -153,7 +148,7 @@ public partial class BaseTallyService : IBaseTallyService
         var reqEnvelope = new RequestEnvelope(HType.Collection, collectionName);
         var tdlMsg = reqEnvelope.Body.Desc.TDL.TDLMessage;
         tdlMsg.Collection = [new Collection(collectionName, objectName)];
-        tdlMsg.Functions = GetDefaultTDLFunctions();
+        tdlMsg.Functions = _defaultTDLFunctions;
         tdlMsg.Object = [new TallyCustomObject(objectName,
             [
                 "SERIALNUMBER:$$LicenseInfo:SerialNumber",
@@ -210,6 +205,7 @@ public partial class BaseTallyService : IBaseTallyService
         if (url != _baseURL || port != _port) { _licenseInfo = null; }
         _baseURL = url;
         _port = port;
+        _fullURL = $"{_baseURL}:{_port}";
 
     }
 
@@ -225,8 +221,8 @@ public partial class BaseTallyService : IBaseTallyService
     public async Task<TallyResult> SendRequestAsync(string? xml = null, string? requestType = null, CancellationToken token = default)
     {
         TallyResult result = new();
-        Activity.Current?.AddTag("Tally URL", FullURL);
-        HttpRequestMessage requestMessage = new(HttpMethod.Post, FullURL);
+        Activity.Current?.AddTag("Tally URL", _fullURL);
+        HttpRequestMessage requestMessage = new(HttpMethod.Post, _fullURL);
 
         //Check whether xml is null or empty
         if (xml != null)
@@ -273,9 +269,9 @@ public partial class BaseTallyService : IBaseTallyService
         catch (HttpRequestException exc)
         {
             result.Response = exc.Message;
-            Activity.Current?.SetStatus(ActivityStatusCode.Error, $"Tally is not running on {FullURL}");
+            Activity.Current?.SetStatus(ActivityStatusCode.Error, $"Tally is not running on {_fullURL}");
 
-            throw new TallyConnectivityException("Tally is not running", FullURL, exc);
+            throw new TallyConnectivityException("Tally is not running", _fullURL, exc);
         }
         catch (TaskCanceledException ex)
         {
@@ -301,10 +297,12 @@ public partial class BaseTallyService : IBaseTallyService
 
 
     /// <inheritdoc/>
+    private static readonly System.Net.Http.Headers.MediaTypeHeaderValue _xmlMediaType = new("application/xml") { CharSet = "utf-16" };
+
     public async Task<Stream> SendRequestAsStreamAsync(Stream requestStream, string? requestType = null, CancellationToken token = default)
     {
-        Activity.Current?.AddTag("Tally URL", FullURL);
-        HttpRequestMessage requestMessage = new(HttpMethod.Post, FullURL);
+        Activity.Current?.AddTag("Tally URL", _fullURL);
+        HttpRequestMessage requestMessage = new(HttpMethod.Post, _fullURL);
 
         if (requestType != null)
         {
@@ -327,7 +325,7 @@ public partial class BaseTallyService : IBaseTallyService
             }
 #endif
             var streamContent = new StreamContent(requestStream);
-            streamContent.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue("application/xml") { CharSet = "utf-16" };
+            streamContent.Headers.ContentType = _xmlMediaType;
             requestMessage.Content = streamContent;
         }
 
@@ -354,8 +352,8 @@ public partial class BaseTallyService : IBaseTallyService
         }
         catch (HttpRequestException exc)
         {
-            Activity.Current?.SetStatus(ActivityStatusCode.Error, $"Tally is not running on {FullURL}");
-            throw new TallyConnectivityException("Tally is not running", FullURL, exc);
+            Activity.Current?.SetStatus(ActivityStatusCode.Error, $"Tally is not running on {_fullURL}");
+            throw new TallyConnectivityException("Tally is not running", _fullURL, exc);
         }
         catch (TaskCanceledException)
         {
@@ -584,6 +582,10 @@ public partial class BaseTallyService : IBaseTallyService
         }
         return null;
     }
+    private static readonly List<TDLFunction> _defaultTDLFunctions = GetDefaultTDLFunctions();
+
+    private static readonly string _activeSimpleCompanyRequestXml = new RequestEnvelope(HType.Function, "$$CurrentSimpleCompany").GetXML();
+
     /// <summary>
     /// Default functions used in Request RequestEnvelope XML
     /// </summary>

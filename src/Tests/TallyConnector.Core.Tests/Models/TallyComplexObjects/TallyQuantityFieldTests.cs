@@ -7,6 +7,7 @@ namespace TallyConnector.Core.Tests.Models.TallyComplexObjects;
 [TestFixture]
 public class TallyQuantityFieldTests
 {
+
     [TestCase("300", "Box of 10 Nos", "30 Box 0 Nos")]
     [TestCase("2545", "Box of 100 strips of 10 tablets", "2 Box 54 strips 5 tablets")]
     [TestCase("10000", "Box of 100 strips of 10 tablets", "10 Box 0 strips 0 tablets")]

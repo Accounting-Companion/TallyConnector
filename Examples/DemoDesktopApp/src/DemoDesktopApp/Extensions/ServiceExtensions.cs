@@ -13,7 +13,7 @@ public static partial class ServiceExtensions
         services.AddSingleton<MainWindow>();
         services.AddSingleton<NavigationState>();
 
-        services.AddSingleton<TallyConnector.Services.TallyPrime.V6.TallyPrimeService>();
+        services.AddSingleton<TallyConnector.Services.TallyPrime.V6.TallyPrimeService>();       
 
         services.AddSingleton<IBaseTallyService,BaseTallyService>();
 
@@ -31,7 +31,7 @@ public static partial class ServiceExtensions
 
         services.AddTransient<AbstractDataFetcherViewModel, StockGroupVieModel>();
         services.AddTransient<AbstractDataFetcherViewModel, StockCategoryVieModel>();
-        services.AddTransient<AbstractDataFetcherViewModel, StockItemsViewModel>();
+        services.AddTransient<AbstractDataFetcherViewModel, StockItemViewModel>();
         services.AddTransient<AbstractDataFetcherViewModel, GodownVieModel>();
         services.AddTransient<AbstractDataFetcherViewModel, VoucherTypeViewModel>();
 

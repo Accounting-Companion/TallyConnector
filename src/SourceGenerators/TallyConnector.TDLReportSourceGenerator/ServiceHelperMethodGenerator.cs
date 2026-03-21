@@ -169,7 +169,16 @@ public class HelperMethodsGenerator
                     getMethodParams)))
         .WithModifiers(TokenList(
                         [
-                            Token(SyntaxKind.PublicKeyword)]))
+                            Token(
+                            TriviaList(
+                                Comment($"/// <summary>"),
+                                Comment($"/// Gets all <see cref=\"{obj.FullName}\"/> objects from Tally."),
+                                Comment($"/// </summary>"),
+                                Comment($"/// <param name=\"{reqOptionsParamName}\">Request options for filtering and configuring the request.</param>"),
+                                Comment($"/// <param name=\"{CancellationTokenArgName}\">Cancellation token to cancel the operation.</param>"),
+                                Comment($"/// <returns>A list of <see cref=\"{obj.FullName}\"/> objects.</returns>")),
+                            SyntaxKind.PublicKeyword,
+                            TriviaList())]))
 
         .WithExpressionBody(ArrowExpressionClause(InvocationExpression(GenericName("GetObjectsAsync")
         .WithTypeArgumentList(TypeArgumentList(SeparatedList<TypeSyntax>(
@@ -200,7 +209,16 @@ public class HelperMethodsGenerator
                getPaginatedMethodParams)))
    .WithModifiers(TokenList(
                    [
-                       Token(SyntaxKind.PublicKeyword)]))
+                       Token(
+                            TriviaList(
+                                Comment($"/// <summary>"),
+                                Comment($"/// Gets <see cref=\"{obj.FullName}\"/> objects from Tally with pagination support."),
+                                Comment($"/// </summary>"),
+                                Comment($"/// <param name=\"{reqOptionsParamName}\">Paginated request options for filtering, pagination, and configuring the request.</param>"),
+                                Comment($"/// <param name=\"{CancellationTokenArgName}\">Cancellation token to cancel the operation.</param>"),
+                                Comment($"/// <returns>A paginated response containing <see cref=\"{obj.FullName}\"/> objects.</returns>")),
+                            SyntaxKind.PublicKeyword,
+                            TriviaList())]))
 
    .WithExpressionBody(ArrowExpressionClause(InvocationExpression(GenericName("GetObjectsAsync")
    .WithTypeArgumentList(TypeArgumentList(SeparatedList<TypeSyntax>(
@@ -252,7 +270,17 @@ public class HelperMethodsGenerator
                         methodParams)))
             .WithModifiers(TokenList(
                             [
-                                Token(SyntaxKind.PublicKeyword)]))
+                                Token(
+                            TriviaList(
+                                Comment($"/// <summary>"),
+                                Comment($"/// Posts a collection of <see cref=\"{obj.FullName}\"/> objects to Tally."),
+                                Comment($"/// </summary>"),
+                                Comment($"/// <param name=\"{objectsParamName}\">The collection of <see cref=\"{obj.FullName}\"/> objects to post.</param>"),
+                                Comment($"/// <param name=\"{optionsParamName}\">Post request options for configuring the request.</param>"),
+                                Comment($"/// <param name=\"{CancellationTokenArgName}\">Cancellation token to cancel the operation.</param>"),
+                                Comment($"/// <returns>A list of post responses indicating the result for each object.</returns>")),
+                            SyntaxKind.PublicKeyword,
+                            TriviaList())]))
 
             .WithExpressionBody(ArrowExpressionClause(InvocationExpression(GenericName("PostObjectsAsync")
             .WithTypeArgumentList(TypeArgumentList(SeparatedList<TypeSyntax>(
@@ -270,7 +298,17 @@ public class HelperMethodsGenerator
                        method2Params)))
            .WithModifiers(TokenList(
                            [
-                               Token(SyntaxKind.PublicKeyword)]))
+                               Token(
+                            TriviaList(
+                                Comment($"/// <summary>"),
+                                Comment($"/// Posts a collection of <see cref=\"{obj.DTOFullName}\"/> DTO objects to Tally."),
+                                Comment($"/// </summary>"),
+                                Comment($"/// <param name=\"{objectsParamName}\">The collection of <see cref=\"{obj.DTOFullName}\"/> DTO objects to post.</param>"),
+                                Comment($"/// <param name=\"{optionsParamName}\">Post request options for configuring the request.</param>"),
+                                Comment($"/// <param name=\"{CancellationTokenArgName}\">Cancellation token to cancel the operation.</param>"),
+                                Comment($"/// <returns>A list of post responses indicating the result for each DTO object.</returns>")),
+                            SyntaxKind.PublicKeyword,
+                            TriviaList())]))
 
            .WithExpressionBody(ArrowExpressionClause(InvocationExpression(GenericName("PostDTOObjectsAsync")
            .WithTypeArgumentList(TypeArgumentList(SeparatedList<TypeSyntax>(

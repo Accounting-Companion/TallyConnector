@@ -43,7 +43,6 @@
 	  <Folder Include="Models\Meta\" />
 	</ItemGroup>
 	<ItemGroup>
-	  <!--<ProjectReference Include="..\..\..\XmlSourceGenerator\src\XmlSourceGenerator\XmlSourceGenerator.csproj" OutputItemType="Analyzer" />-->
 	  <ProjectReference Include="..\SourceGenerators\TallyConnector.TDLReportSourceGenerator\TallyConnector.TDLReportSourceGenerator.csproj" OutputItemType="Analyzer" />
 	  <ProjectReference Include="..\TallyConnector.Abstractions\TallyConnector.Abstractions.csproj" />
 

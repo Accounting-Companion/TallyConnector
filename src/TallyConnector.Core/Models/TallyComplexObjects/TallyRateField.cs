@@ -24,7 +24,7 @@ public partial class TallyRateField : ITallyComplexObject, IBaseObject
     [Column(TypeName = "decimal(20,4)")]
     public decimal Rate { get; set; }
 
-    [TDLField(TallyType = "Number", Set = "$$String:{0}:\"Forex\"", Invisible = $"$$Value=#TC_{nameof(TallyRateField)}_{nameof(Rate)}")]
+    [TDLField(TallyType = "Number", Set = "$$String:{0}:\"Forex\"", Invisible = $"$$Value=#RATE_QZYE")]
     [Column(TypeName = "decimal(20,4)")]
     [XmlElement(ElementName = "FOREXRATE")]
     public decimal? ForexRate { get; set; }

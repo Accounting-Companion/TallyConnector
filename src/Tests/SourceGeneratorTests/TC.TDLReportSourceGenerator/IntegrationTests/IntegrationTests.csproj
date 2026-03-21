@@ -26,29 +26,32 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<PackageReference Include="coverlet.collector" >
+		<PackageReference Include="coverlet.collector">
 			<PrivateAssets>all</PrivateAssets>
 			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 		</PackageReference>
-		<PackageReference Include="Microsoft.NET.Test.Sdk"  />
+		<PackageReference Include="Microsoft.NET.Test.Sdk" />
 		<PackageReference Include="NUnit" />
-		<PackageReference Include="NUnit.Analyzers" >
+		<PackageReference Include="NUnit.Analyzers">
 			<PrivateAssets>all</PrivateAssets>
 			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 		</PackageReference>
-		<PackageReference Include="NUnit3TestAdapter"  />
+		<PackageReference Include="NUnit3TestAdapter" />
 	</ItemGroup>
 
 	<ItemGroup>
 
 		
-		<ProjectReference Include="..\..\..\..\SourceGenerators\TallyConnector.TDLReportSourceGenerator\TallyConnector.TDLReportSourceGenerator.csproj"  OutputItemType="Analyzer" >
+		<ProjectReference Include="..\..\..\..\SourceGenerators\TallyConnector.TDLReportSourceGenerator\TallyConnector.TDLReportSourceGenerator.csproj" OutputItemType="Analyzer">
 			<PrivateAssets>all</PrivateAssets>
 			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 		</ProjectReference>
 
 		
 		<ProjectReference Include="..\..\..\..\TallyConnector.Core\TallyConnector.Core.csproj" />
+
+		
+		<ProjectReference Include="..\..\..\..\TallyConnector.Models\TallyConnector.Models.csproj" />
 
 	</ItemGroup>
 

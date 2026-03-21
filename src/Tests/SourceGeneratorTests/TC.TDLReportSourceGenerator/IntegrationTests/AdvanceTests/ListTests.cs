@@ -1,4 +1,5 @@
 ﻿using System.Xml.Serialization;
+using TallyConnector.Models.Common;
 
 namespace IntegrationTests.AdvanceTests;
 public class ListTests
@@ -125,3 +126,6 @@ public partial class ModelwithSimpleList
     [TDLCollection(CollectionName ="Address")]
     public List<string> Addreses { get; set; }
 }
+
+
+

@@ -7,6 +7,7 @@ namespace DemoDesktopApp.ViewModels;
 [RegisterViews<ViewType, BaseViewModel>]
 [RegisterView<DashBoardViewModel, DashboardView>(ViewType.DashBoard)]
 [RegisterView<ReadDataViewModel, ReadDataView>(ViewType.Read)]
+[RegisterView<SettingsViewModel, SettingsView>(ViewType.Settings)]
 public partial class ViewModelFactory
 {
 

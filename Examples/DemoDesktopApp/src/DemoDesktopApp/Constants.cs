@@ -15,7 +15,8 @@ public static class Constants
     public static List<MenuItem> MenuItems =
         [
             new MenuItem(ViewType.DashBoard,"","Dashboard"),
-            new MenuItem(ViewType.Read,"","Read")
+            new MenuItem(ViewType.Read,"","Read"),
+            new MenuItem(ViewType.Settings,"","Settings")
         ];
 
 }
@@ -24,6 +25,7 @@ public enum ViewType
 {
     DashBoard,
     Read,
+    Settings,
     Update,
     Create,
     Delete

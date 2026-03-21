@@ -16,6 +16,12 @@ public partial class App
 
 
         IHost host = hostApplicationBuilder.Build();
+        host.Start();
+
+        var settings = DemoDesktopApp.Models.AppSettings.Load();
+        var tallyService = host.Services.GetRequiredService<TallyConnector.Services.TallyPrime.V6.TallyPrimeService>();
+        tallyService.SetupTallyService(settings.TallyBaseUrl, settings.TallyPort);
+
         base.OnStartup(e);
         host.Services.GetRequiredService<MainWindow>().Show();
     }

@@ -3,8 +3,6 @@ using TallyConnector.Models.TallyPrime.V6;
 using TallyConnector.Models.TallyPrime.V6.DTO;
 using TallyConnector.Models.TallyPrime.V6.Masters;
 using TallyConnector.Models.TallyPrime.V6.Masters.Inventory;
-using TallyConnector.Models.TallyPrime.V6.Masters.Inventory.DTO;
-using TallyConnector.Models.TallyPrime.V6.Masters.Meta;
 using TallyConnector.Services.TallyPrime.V6;
 
 namespace TallyConnector.Tests.Services.TallyPrime.V6;
@@ -85,7 +83,7 @@ public class TallyPrimeServiceV6Tests
         PaginatedRequestOptions requestOptions = new() { Filters = [new("tc_GUIDFilter", "$GUID='52889497-5b6b-403d-8f83-224e3c7759b4-00001422'")] };
         requestOptions.From(new(2022, 04, 01));
         requestOptions.To(new(2022, 04, 01));
-        await  primeService.GetVouchersAsync(requestOptions);
+        await primeService.GetVouchersAsync(requestOptions);
     }
 
     [Test]
@@ -93,13 +91,16 @@ public class TallyPrimeServiceV6Tests
     {
         var item1 = new StockItem();
         item1.Name = "TC_Item1";
-        //item1.BaseUnit = "Nos";
+        item1.BaseUnit = "Nos";
         item1.StockGroup = "Components";
-        item1.OpeningBalance = new(7_000, "Nos");
+        item1.OpeningBalance = new(8_000, "Nos");
         item1.OpeningRate = new(10, "Nos");
-        item1.OpeningValue = new(60_000, true);
-        //item1.GSTDetails = [new() { SourceOfGSTDetails = "Specify Details Here", ApplicableFrom = new DateTime(2026, 04, 01), Taxability = Models.Common.GSTTaxabilityType.Taxable,
-        //    StateWiseDetails=[new() { StateName = "Any", GSTRateDetails = [new() { GSTRate = 18, DutyHead="IGST"}] }] }];
+        item1.OpeningValue = new(80_000, true);
+        item1.GSTDetails = [
+            new() { SourceOfGSTDetails = "Specify Details Here", ApplicableFrom = new DateTime(2026, 04, 01), Taxability = Models.Common.GSTTaxabilityType.Taxable,
+           StateWiseDetails=[new() { StateName = "\u0004 Any", GSTRateDetails = [new() { GSTRate = 18, DutyHead="IGST"}] }] }
+            ];
+        item1.OpeningBatchAllocations = [new() { GodownName = "Main Location", BatchName = "Primary Batch", Quantity = new(8_000, "Nos"), Value = new(80_000, true), Rate = new(10, "Nos") }];
         //var itemdto = (StockItemDTO)item1.ToDTO();
         ////itemdto.Action = Core.Models.Action.Alter;
         //itemdto.LanguageNameList.Last().Names.Add("faswf");

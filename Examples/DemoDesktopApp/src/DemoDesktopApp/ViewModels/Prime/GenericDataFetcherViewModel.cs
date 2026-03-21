@@ -25,7 +25,8 @@ public class GenericDataFetcherViewModel<T> : AbstractDataFetcherViewModel
         try
         {
            //await _tallyService.GetObjectsAsync<T>(options);
-            await LoadStreamAsync(_tallyService.GetObjectsAsyncNew<T>(options));
+           await LoadStreamAsync(_tallyService.GetObjectsAsyncNew<T>(options));
+           //await FetchPaginatedData();
         }
         catch (Exception ex)
         {
