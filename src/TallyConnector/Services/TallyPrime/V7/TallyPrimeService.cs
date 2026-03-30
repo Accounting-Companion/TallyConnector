@@ -5,6 +5,7 @@ using TallyConnector.Models.TallyPrime.V7.Masters.Inventory;
 
 namespace TallyConnector.Services.TallyPrime.V7;
 
+[GenerateHelperMethod<Currency>()]
 [GenerateHelperMethod<Group>()]
 [GenerateHelperMethod<Ledger>()]
 

@@ -1,9 +1,9 @@
 ﻿namespace TallyConnector.Models.TallyPrime.V3.Masters;
 
+[XmlRoot(ElementName = "GSTREGISTRATION")]
 [XmlType(AnonymousType = true)]
-[XmlRoot("CURRENCY")]
 [GenerateITallyRequestableObect]
 [GenerateMeta]
-public partial class Currency :  Base.Masters.Currency
+public partial class GSTRegistration : Base.GSTRegistration
 {
 }

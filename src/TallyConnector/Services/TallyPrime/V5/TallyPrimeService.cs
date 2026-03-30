@@ -1,5 +1,6 @@
 ﻿namespace TallyConnector.Services.TallyPrime.V5;
 
+
 public partial class TallyPrimeService : TallyAbstractClient
 {
     public TallyPrimeService()

@@ -3,6 +3,6 @@
 [XmlRoot("CURRENCY")]
 [GenerateITallyRequestableObect]
 [GenerateMeta]
-public partial class Currency :Base.Masters.Currency
+public partial class Currency :V5.Masters.Currency
 {
 }

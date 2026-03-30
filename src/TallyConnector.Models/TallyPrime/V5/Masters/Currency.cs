@@ -3,7 +3,7 @@
 [XmlType(AnonymousType = true)]
 [XmlRoot("CURRENCY")]
 [ImplementTallyRequestableObject]
-public partial class Currency : Base.Masters.Currency
+public partial class Currency : V4.Masters.Currency
 {
 }
 

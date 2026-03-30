@@ -1,9 +1,10 @@
 ﻿namespace TallyConnector.Models.TallyPrime.V3.Masters;
 
+[XmlRoot(ElementName = "COSTCENTRE")]
 [XmlType(AnonymousType = true)]
-[XmlRoot("CURRENCY")]
 [GenerateITallyRequestableObect]
 [GenerateMeta]
-public partial class Currency :  Base.Masters.Currency
+public partial class CostCentre : Base.Masters.CostCentre
 {
+
 }
