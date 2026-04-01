@@ -4,7 +4,7 @@ using TallyConnector.Models.TallyPrime.V6.Masters.Inventory;
 
 namespace TallyConnector.Services.TallyPrime.V6;
 
-[GenerateHelperMethod<Currency>()]
+[GenerateHelperMethod<Currency>(MethodNameSuffixPlural = "Currencies")]
 [GenerateHelperMethod<Group>()]
 [GenerateHelperMethod<Ledger>()]
 

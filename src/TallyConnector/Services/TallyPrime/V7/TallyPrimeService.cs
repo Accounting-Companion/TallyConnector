@@ -1,11 +1,10 @@
-﻿using TallyConnector.Core.Models.Interfaces;
-using TallyConnector.Models.TallyPrime.V7;
+﻿using TallyConnector.Models.TallyPrime.V7;
 using TallyConnector.Models.TallyPrime.V7.Masters;
 using TallyConnector.Models.TallyPrime.V7.Masters.Inventory;
 
 namespace TallyConnector.Services.TallyPrime.V7;
 
-[GenerateHelperMethod<Currency>()]
+[GenerateHelperMethod<Currency>(MethodNameSuffixPlural = "Currencies")]
 [GenerateHelperMethod<Group>()]
 [GenerateHelperMethod<Ledger>()]
 
@@ -33,10 +32,10 @@ public partial class TallyPrimeService : TallyAbstractClient
 
     public TallyPrimeService(ILogger logger, IBaseTallyService baseTallyService) : base(logger, baseTallyService)
     {
-        
+
     }
 
-    
+
 
     public Task<List<Company>> GetCompaniesAsync(CancellationToken cancellationToken = default) => GetObjectsAsync<Company>(token: cancellationToken);
 
