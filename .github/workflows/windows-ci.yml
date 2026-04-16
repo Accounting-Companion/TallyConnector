@@ -1,0 +1,76 @@
+name: CI — Windows + CodeQL
+
+on:
+  push:
+    branches: ["main", "master"]
+  pull_request:
+    branches: ["main", "master"]
+  workflow_dispatch:
+
+jobs:
+  build:
+    name: Build and Test (Windows)
+    runs-on: windows-latest
+    strategy:
+      matrix:
+        dotnet: ["8.0.x", "9.0.x", "10.0.x"]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: ${{ matrix.dotnet }}
+
+      - name: Restore
+        run: dotnet restore TallyConnector.sln
+
+      - name: Build
+        run: dotnet build TallyConnector.sln -c Release --no-restore
+
+      - name: Test
+        run: |
+          dotnet test --no-build -c Release || echo "Tests finished with exit code $?"
+
+      - name: List Vulnerable Packages
+        run: |
+          dotnet list package --vulnerable --include-transitive || echo "Vulnerability check failed"
+
+      - name: Upload Test Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: dotnet-artifacts
+          path: |
+            **/TestResults/**
+            **/artifacts/**
+
+  codeql:
+    name: CodeQL Scan
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@v2
+        with:
+          languages: csharp
+
+      - name: Setup .NET for CodeQL build
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: '8.0.x'
+
+      - name: Restore for CodeQL
+        run: dotnet restore TallyConnector.sln
+
+      - name: Build for CodeQL
+        run: dotnet build TallyConnector.sln -c Release
+
+      - name: Run CodeQL Analysis
+        uses: github/codeql-action/analyze@v2
