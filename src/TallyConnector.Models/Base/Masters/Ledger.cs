@@ -32,6 +32,9 @@ public partial class Ledger : BaseAliasedMasterObject
     [XmlElement(ElementName = "GSTTYPE")]
     public GSTTaxType? GSTTaxType { get; set; }
 
+    [XmlElement(ElementName = "GSTDUTYHEAD")]
+    public GSTTaxType? GSTDutyHead { get; set; }
+
     [XmlElement(ElementName = "RATEOFTAXCALCULATION")]
     public float? RateofTax { get; set; }
 

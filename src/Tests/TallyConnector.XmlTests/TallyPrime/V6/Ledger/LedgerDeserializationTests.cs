@@ -1,5 +1,6 @@
 using NUnit.Framework;
 using System.Threading.Tasks;
+using TallyConnector.Core.Extensions;
 using TallyConnector.Services;
 using TallyConnector.Services.TallyPrime.V6;
 using V6Ledger = TallyConnector.Models.TallyPrime.V6.Masters.Ledger;
@@ -23,14 +24,15 @@ public class LedgerDeserializationTests : XmlTestBase
     [Test]
     public async Task Test_BasicProperties()
     {
-        
-        
+
+
         using (Assert.EnterMultipleScope())
         {
             Assert.That(ledger, Is.Not.Null);
             Assert.That(ledger.Name, Is.EqualTo("Test Party Ledger"));
             Assert.That(ledger.Alias, Is.EqualTo("TPL"));
             Assert.That(ledger.Group, Is.EqualTo("Sundry Debtors"));
+            Assert.That(ledger.GSTDutyHead, Is.EqualTo(TallyConnector.Models.Common.GSTTaxType.IGST));
             Assert.That(ledger.RemoteId, Is.EqualTo("52889497-5b6b-403d-8f83-224e3c7759b4"));
             Assert.That(ledger.OpeningBalance?.Amount, Is.EqualTo(50000m));
             Assert.That(ledger.OpeningBalance?.IsDebit, Is.True);
@@ -41,6 +43,14 @@ public class LedgerDeserializationTests : XmlTestBase
             Assert.That(ledger.PANNumber, Is.EqualTo("ABCDE1234F"));
         }
         ;
+    }
+
+    [Test]
+    public void LedgerRequestFetchesGstDutyHead()
+    {
+        var requestXml = V6Ledger.GetRequestEnvelope().GetXML();
+
+        Assert.That(requestXml, Does.Contain("GSTDUTYHEAD"));
     }
 
     [Test]
